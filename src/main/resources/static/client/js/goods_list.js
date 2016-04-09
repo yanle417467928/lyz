@@ -93,7 +93,7 @@ function changeColor(goodsId) {
 }
 
 // 选择指定调色包的方法
-function getColor(colorNum, colorId) {
+function getColor(colorNum, colorId,obj) {
 	$("#color_name").html(colorNum);
 	// 拼接代表价格的标签的id
 	var priceId = "#colorPackagePrice" + colorId;
@@ -109,6 +109,8 @@ function getColor(colorNum, colorId) {
 	var colorPackageInventory = $(inventoryId).val();
 	// 将指定调色包的库存量存储到库存标签中
 	$("#color_package_inventory").val(colorPackageInventory);
+	$('.colo_box li').css("border","none");
+	$(obj).css("border","1px solid #cccccc");
 }
 
 // 改变选中调色包的数量的方法
@@ -183,7 +185,7 @@ function addColor() {
 
 			$('.colo_choice').height($(window).height())
 			$('.colo_box').height($(window).height() - 150)
-			$('.colo_box li').height($('.colo_box li').width() * 1)
+			$('.colo_box li').height($('.colo_box li').width() * 0.16)
 			$('.colo_sec').height($(window).height() - 50)
 			var hei = $(window).height() - 100
 			$('.colo_sec dl').css({
