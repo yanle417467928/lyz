@@ -173,39 +173,39 @@ public class TdDeliveryIndexController {
 			{
 				if (type.equals(1)) 
 				{
-					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeBetween(2L, startDate, endDate);
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),2L, startDate, endDate);
 				}
 				else if (type.equals(2)) 
 				{
-					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeBetween(3L, startDate, endDate);
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),3L, startDate, endDate);
 				}
 				else if (type.equals(3)) 
 				{
-					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeBetween(4L, startDate, endDate);
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),4L, startDate, endDate);
 				}
 
-				map.addAttribute("count_type_1",tdReturnNoteService.countByStatusIdAndOrderTimeBetween(2L, startDate, endDate));
-				map.addAttribute("count_type_2", tdReturnNoteService.countByStatusIdAndOrderTimeBetween(3L, startDate, endDate));
-				map.addAttribute("count_type_3", tdReturnNoteService.countByStatusIdAndOrderTimeBetween(4L, startDate, endDate));
+				map.addAttribute("count_type_1",tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),2L, startDate, endDate));
+				map.addAttribute("count_type_2", tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),3L, startDate, endDate));
+				map.addAttribute("count_type_3", tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),4L, startDate, endDate));
 			}
 			else
 			{
 				if (type.equals(1))
 				{
-					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeAfter(2L, startDate);
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),2L, startDate);
 				}
 				else if (type.equals(2))
 				{
-					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeAfter(3L, startDate);
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),3L, startDate);
 				}
 				else if (type.equals(3)) 
 				{
-					rnList = tdReturnNoteService.findByStatusIdAndOrderTimeAfter(4L, startDate);
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),4L, startDate);
 				}
 
-				map.addAttribute("count_type_1",tdReturnNoteService.countByStatusIdAndOrderTimeAfter(2L, startDate));
-				map.addAttribute("count_type_2", tdReturnNoteService.countByStatusIdAndOrderTimeAfter(3L, startDate));
-				map.addAttribute("count_type_3", tdReturnNoteService.countByStatusIdAndOrderTimeAfter(4L, startDate));
+				map.addAttribute("count_type_1",tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),2L, startDate));
+				map.addAttribute("count_type_2", tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),3L, startDate));
+				map.addAttribute("count_type_3", tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),4L, startDate));
 			}
 		}
 

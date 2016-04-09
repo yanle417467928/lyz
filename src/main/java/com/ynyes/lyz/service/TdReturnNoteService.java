@@ -98,7 +98,7 @@ public class TdReturnNoteService {
 	public List<TdReturnNote> findAll() {
 		return (List<TdReturnNote>) repository.findAll();
 	}
-	
+	//以前的退货查询方法
 	public List<TdReturnNote> findByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end) {
 
 		if (null == statusId || null == start || null == end) {
@@ -107,7 +107,7 @@ public class TdReturnNoteService {
 
 		return repository.findByStatusIdAndOrderTimeBetweenOrderByIdDesc(statusId, start, end);
 	}
-	
+	//以前的退货查询方法
 	public Integer countByStatusIdAndOrderTimeBetween(Long statusId, Date start, Date end) {
 
 		if (null == statusId || null == start || null == end) {
@@ -116,7 +116,7 @@ public class TdReturnNoteService {
 
 		return repository.countByStatusIdAndOrderTimeBetweenOrderByIdDesc(statusId, start, end);
 	}
-	
+	//以前的退货查询方法
 	public List<TdReturnNote> findByStatusIdAndOrderTimeAfter(Long statusId, Date time) {
 
 		if (null == statusId || null == time) {
@@ -125,7 +125,7 @@ public class TdReturnNoteService {
 
 		return repository.findByStatusIdAndOrderTimeAfterOrderByIdDesc(statusId, time);
 	}
-	
+	//以前的退货查询方法
 	public Integer countByStatusIdAndOrderTimeAfter(Long statusId, Date time) {
 
 		if (null == statusId || null == time) {
@@ -236,5 +236,41 @@ public class TdReturnNoteService {
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
 	}
+	//退货查询 增加配送员编号
+	public List<TdReturnNote> findByDriverAndStatusIdAndOrderTimeBetween(String driver,Long statusId, Date start, Date end) {
+
+		if (null == statusId || null == start || null == end) {
+			return null;
+		}
+		return repository.findByDriverAndStatusIdAndOrderTimeBetweenOrderByIdDesc(driver,statusId, start, end);
+	}
+	//退货查询 增加配送员编号
+	public Integer countByDriverAndStatusIdAndOrderTimeBetween(String driver,Long statusId, Date start, Date end) {
+
+		if (null == statusId || null == start || null == end) {
+			return null;
+		}
+
+		return repository.countByDriverAndStatusIdAndOrderTimeBetweenOrderByIdDesc(driver,statusId, start, end);
+	}
+	//退货查询 增加配送员编号
+	public List<TdReturnNote> findByDriverAndStatusIdAndOrderTimeAfter(String driver,Long statusId, Date time) {
+
+		if (null == statusId || null == time) {
+			return null;
+		}
+
+		return repository.findByDriverAndStatusIdAndOrderTimeAfterOrderByIdDesc(driver,statusId, time);
+	}
+	//退货查询 增加配送员编号
+	public Integer countByDriverAndStatusIdAndOrderTimeAfter(String driver,Long statusId, Date time) {
+
+		if (null == statusId || null == time) {
+			return null;
+		}
+
+		return repository.countByDriverAndStatusIdAndOrderTimeAfterOrderByIdDesc(driver,statusId, time);
+	}
+
 
 }
