@@ -98,10 +98,11 @@ function failureMsg(msg,objId){
                             <option value="2" <#if !isUsed?? || isUsed==2>selected="selected"</#if>>未使用</option>                             
                         </select>
             </div>
+            
       </div>
     </div>
       <div class="r-list">
-                <input name="keywords" type="text" class="keyword" value="<#if keywords??>${keywords!''}</#if>">
+              <input name="keywords" type="text" class="keyword" value="<#if keywords??>${keywords!''}</#if>">
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
       </div>
       <div style="clear: both;">

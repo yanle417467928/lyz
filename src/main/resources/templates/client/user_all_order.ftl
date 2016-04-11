@@ -82,4 +82,12 @@
             </ol>
         </#list>
     </div>
+     <!-- <div id="slideDown"> 
+            <div id="slideDown1"> 
+                <p>松开刷新</p> 
+            </div> 
+            <div id="slideDown2"> 
+                <p>正在刷新 ...</p> 
+            </div> 
+        </div>  -->
 </#if>

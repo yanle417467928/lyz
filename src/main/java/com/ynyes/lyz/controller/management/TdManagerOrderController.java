@@ -435,7 +435,7 @@ public class TdManagerOrderController {
 		
 		
         try {//调用存储过程 报错
-        	tdSalesDetailService.callInsertSalesDetail(getStartTime(), getEndTime());
+        	tdSalesDetailService.callInsertSalesDetail(date1, date2);
     	} catch (Exception e) {
     		System.out.println(e);
     	}
@@ -835,7 +835,7 @@ public class TdManagerOrderController {
 		}*/
         
         try {//调用存储过程 报错
-            tdAgencyFundService.callInsertAgencyFund(getStartTime(), getEndTime());
+            tdAgencyFundService.callInsertAgencyFund(date1, date2);
     	} catch (Exception e) {
     		System.out.println(e);
     	}

@@ -12,16 +12,22 @@ var seller = {
 	getE : function(id) {
 		return document.getElementById(id);
 	},
-	// 检查购物车是否有商品的方法
-	checkCart : function() {
+	// 检查购物车是否有商品的方法  type=1时 提示用户检查购物清单
+	checkCart : function(type) {
 		var number = $("#select_num").html();
 		if (0 == number) {
 			warning("亲，请先选择商品");
 			return;
 		}
-		if (number > 0) {
-			this.checkUser();
+		if(type==1){
+			win_yes('去结算选择是,检查已选商品选择否','seller.checkUser');
+			//window.location.href='/user/selected';
+		}else{
+			if (number > 0) {
+				this.checkUser();
+			}
 		}
+		
 	},
 	// 判断当前登录用户是否是会员或者销顾的方法
 	checkUser : function() {

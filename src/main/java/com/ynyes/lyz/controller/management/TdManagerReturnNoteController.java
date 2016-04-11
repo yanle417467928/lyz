@@ -617,13 +617,18 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				}
 			}
 		}*/
-		if(null == end || end.after(getStartTime())){
-        	try {//调用存储过程 报错
-        		tdReturnReportService.callInsertReturnReport(getStartTime(), getEndTime());
-    		} catch (Exception e) {
-    			System.out.println(e);
-    		}
-        }
+		if(null==begin){
+			begin=getStartTime();
+		}
+		if(null==end){
+			end=getEndTime();
+		}
+        try {//调用存储过程 报错
+        	tdReturnReportService.callInsertReturnReport(begin, end);
+    	} catch (Exception e) {
+    		System.out.println(e);
+    	}
+        
     	if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 		{
         	diyCode=tdManager.getDiyCode();
@@ -783,7 +788,8 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 		}
 	}
 	private Date getStartTime(){  
-        Calendar todayStart = Calendar.getInstance();  
+        Calendar todayStart = Calendar.getInstance();
+        todayStart.set(2016, 0, 0);
         todayStart.set(Calendar.HOUR, 0);  
         todayStart.set(Calendar.MINUTE, 0);  
         todayStart.set(Calendar.SECOND, 0);  
