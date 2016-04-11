@@ -18,7 +18,8 @@
         <style type="text/css">
         	.tab-content li section div.div2{
         		left:212px;
-        		top:36px;
+        		top:34px;
+        		font-size: small;
         	}
         </style>
         <script type="text/javascript">
