@@ -1458,7 +1458,7 @@ public class TdCommonService {
 				{
 					//add MDJ
 					Double point;
-					if (totalPrice.equals(0)) 
+					if (totalPrice == 0) 
 					{
 						point =1.0;
 					}
