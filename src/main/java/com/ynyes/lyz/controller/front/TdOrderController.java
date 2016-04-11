@@ -400,7 +400,8 @@ public class TdOrderController {
 		map.addAttribute("limitHour", tempHour);
 
 		map.addAttribute("limitDay", yyyyMMdd.format(limitDate));
-
+		
+		
 		String earlyDate = yyyyMMdd.format(limitDate) + " " + tempHour + ":30-" + (tempHour + 1) + ":30";
 
 		// 获取指定城市下所有的门店
