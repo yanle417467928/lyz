@@ -1410,8 +1410,20 @@ public class TdCommonService {
 					order.setUnCashBalanceUsed(0.00);
 					order.setCashBalanceUsed(0.00);
 					order.setOtherPay(0.00);
-				} else {
-					Double point = price / totalPrice;
+				} 
+				else
+				{
+					//add MDJ
+					Double point;
+					if (totalPrice.equals(0)) 
+					{
+						point =1.0;
+					}
+					else
+					{
+						point = price / totalPrice;
+					}
+					
 					if (null != point) {
 						DecimalFormat df = new DecimalFormat("#.00");
 						String scale2_uncash = df.format(unCashBalanceUsed * point);
