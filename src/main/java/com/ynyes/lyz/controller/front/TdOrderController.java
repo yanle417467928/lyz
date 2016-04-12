@@ -134,7 +134,7 @@ public class TdOrderController {
 
 		// 如果session中没有虚拟订单，则通过方法生成一个
 		if (null == order_temp) {
-			order_temp = tdCommonService.createVirtual(req);
+			order_temp = tdCommonService.createVirtual(req, realUserId);
 		}
 
 		// 判断此单是否拥有商品
@@ -170,13 +170,14 @@ public class TdOrderController {
 			}
 		}
 
-		Map<String, Object> results=null;
+		Map<String, Object> results = null;
 		// 计算价格和最大优惠券使用金额
 		if (null != realUser) {
 			results = tdPriceCouintService.countPrice(order_temp, realUser);
 		} else {
 			results = tdPriceCouintService.countPrice(order_temp, user);
 		}
+
 		// 如果计算的结果不为NULL，就获取一系列的值
 		if (null != results) {
 			TdOrder order_count = (TdOrder) results.get("result");
@@ -217,10 +218,9 @@ public class TdOrderController {
 						.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
 								realUser.getUsername(), 1L, brandId, realUser.getCityName());
 			}
-			if(null != coupon_list){
+			if (null != coupon_list) {
 				no_product_coupon_list.addAll(coupon_list);
 			}
-			
 		}
 
 		// 遍历所有已选，查找用户对于当前订单可以使用的指定商品现金券和产品券
@@ -235,10 +235,10 @@ public class TdOrderController {
 								.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
 										realUser.getUsername(), goods.getGoodsId(), realUser.getCityName());
 					}
-					if(null != p_coupon_list){
+					if (null != p_coupon_list) {
 						product_coupon_list.addAll(p_coupon_list);
 					}
-					
+
 					// 查找能使用的指定商品现金券
 					List<TdCoupon> c_coupon_list = null;
 					if (null != realUser) {
@@ -246,10 +246,9 @@ public class TdOrderController {
 								.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
 										realUser.getUsername(), goods.getGoodsId(), realUser.getCityName());
 					}
-					if(null != c_coupon_list){
+					if (null != c_coupon_list) {
 						no_product_coupon_list.addAll(c_coupon_list);
 					}
-					
 				}
 			}
 		}
@@ -413,8 +412,7 @@ public class TdOrderController {
 		map.addAttribute("limitHour", tempHour);
 
 		map.addAttribute("limitDay", yyyyMMdd.format(limitDate));
-		
-		
+
 		String earlyDate = yyyyMMdd.format(limitDate) + " " + tempHour + ":30-" + (tempHour + 1) + ":30";
 
 		// 获取指定城市下所有的门店
@@ -773,7 +771,6 @@ public class TdOrderController {
 		if (null == realUser) {
 			realUser = new TdUser();
 		}
-		
 
 		// 获取所有已选的商品
 		List<TdOrderGoods> selected_list = order.getOrderGoodsList();
@@ -792,7 +789,7 @@ public class TdOrderController {
 				if (null != brandId) {
 					List<TdCoupon> cash_coupon_brand = tdCouponService
 							.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
-									username, 1L, brandId,user.getCityName());
+									username, 1L, brandId, user.getCityName());
 					if (null != cash_coupon_brand && cash_coupon_brand.size() > 0) {
 						cash_coupon_map.put(brandId, cash_coupon_brand);
 					}
@@ -811,14 +808,14 @@ public class TdOrderController {
 			if (null != cartGoods) {
 				List<TdCoupon> product_coupon_by_goodsId = tdCouponService
 						.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-								username, cartGoods.getGoodsId(),user.getCityName());
+								username, cartGoods.getGoodsId(), user.getCityName());
 				if (null != product_coupon_by_goodsId && product_coupon_by_goodsId.size() > 0) {
 					product_coupon_list.addAll(product_coupon_by_goodsId);
 				}
 
 				List<TdCoupon> no_product_coupon_by_goodsId = tdCouponService
 						.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-								username, cartGoods.getGoodsId(),user.getCityName());
+								username, cartGoods.getGoodsId(), user.getCityName());
 				if (null != no_product_coupon_by_goodsId && no_product_coupon_by_goodsId.size() > 0) {
 					Long brandId = cartGoods.getBrandId();
 					List<TdCoupon> list = cash_coupon_map.get(brandId);
@@ -1142,7 +1139,6 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-		// 获取用户的城市
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		// 获取真实用户的id
 		Long realUserId = order.getRealUserId();
@@ -1165,12 +1161,10 @@ public class TdOrderController {
 								.findByDistrictIdOrderBySortIdAsc(district.getId());
 						map.addAttribute("subdistrict_list", subdistrict_list);
 					}
-
 				}
 			}
-			map.addAttribute("user", user);
+			map.addAttribute("user", realUser);
 		}
-		
 		return "/client/order_add_address";
 	}
 
@@ -1204,7 +1198,6 @@ public class TdOrderController {
 			return res;
 			// return "redirect:/login";
 		}
-		
 
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		// 获取真实用户的id
@@ -1262,12 +1255,8 @@ public class TdOrderController {
 			order.setDeliverFee(tdSubdistrict.getDeliveryFee());
 			req.getSession().setAttribute("order_temp", order);
 			tdOrderService.save(order);
-
-				
 		}
-	
 		res.put("status", 0);
-		
 		return res;
 	}
 
@@ -1283,9 +1272,15 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-
-		List<TdShippingAddress> address_list = user.getShippingAddressList();
-		map.addAttribute("address_list", address_list);
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		// 获取订单的真实用户id
+		Long realUserId = order.getRealUserId();
+		// 获取真实用户
+		TdUser realUser = tdUserService.findOne(realUserId);
+		if (null != realUser) {
+			List<TdShippingAddress> address_list = realUser.getShippingAddressList();
+			map.addAttribute("address_list", address_list);
+		}
 		return "/client/order_change_address";
 	}
 
@@ -1400,16 +1395,23 @@ public class TdOrderController {
 		String cashCouponId = order_temp.getCashCouponId();
 		String productCouponId = order_temp.getProductCouponId();
 
+		// 获取真实用户
+		Long realUserId = order_temp.getRealUserId();
+		TdUser realUser = tdUserService.findOne(realUserId);
+
 		if (isOnline) {
 			// 判断是否还有未支付的金额
 			if (order_temp.getTotalPrice() > 0) {
 				// 修改有效支付时间
 				orderValidTimeSet(req, order_temp);
-
-				// status的值为3代表需要通过第三方支付
-				res.put("status", 3);
-				res.put("title", payType.getTitle());
-				res.put("order_id", order_temp.getId());
+				if (null != order_temp.getIsSellerOrder() && order_temp.getIsSellerOrder()) {
+					res.put("message", "支付金额不足");
+				} else {
+					// status的值为3代表需要通过第三方支付
+					res.put("status", 3);
+					res.put("title", payType.getTitle());
+					res.put("order_id", order_temp.getId());
+				}
 				return res;
 			} else {
 				// 将选择的现金券和产品券设置为已使用
@@ -1449,6 +1451,10 @@ public class TdOrderController {
 					}
 				}
 				order_temp.setStatusId(3L);
+				if (null != order_temp.getIsSellerOrder() && order_temp.getIsSellerOrder()) {
+					order_temp.setUserId(order_temp.getRealUserId());
+					order_temp.setUsername(order_temp.getRealUserUsername());
+				}
 			}
 		} else {
 			// 将选择的现金券和产品券设置为已使用
@@ -1488,20 +1494,24 @@ public class TdOrderController {
 				}
 			}
 			order_temp.setStatusId(3L);
+			if (null != order_temp.getIsSellerOrder() && order_temp.getIsSellerOrder()) {
+				order_temp.setUserId(order_temp.getRealUserId());
+				order_temp.setUsername(order_temp.getRealUserUsername());
+			}
 		}
 		// 获取用户的不可体现余额
-		Double unCashBalance = user.getUnCashBalance();
+		Double unCashBalance = realUser.getUnCashBalance();
 		if (null == unCashBalance) {
 			unCashBalance = 0.00;
 		}
 
 		// 获取用户的可提现余额
-		Double cashBalance = user.getCashBalance();
+		Double cashBalance = realUser.getCashBalance();
 		if (null == cashBalance) {
 			cashBalance = 0.00;
 		}
 
-		Double balance = user.getBalance();
+		Double balance = realUser.getBalance();
 		if (null == balance) {
 			balance = 0.00;
 		}
@@ -1563,8 +1573,13 @@ public class TdOrderController {
 		}
 		// 获取当前订单信息
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+		// 获取真实用户
+		Long realUserId = order.getRealUserId();
+		TdUser realUser = tdUserService.findOne(realUserId);
+		if (null != realUser) {
+			map.addAttribute("user", realUser);
+		}
 		map.addAttribute("order", order);
-		map.addAttribute("user", user);
 		map.addAttribute("max", max);
 		return "/client/order_balance";
 	}
@@ -1655,7 +1670,7 @@ public class TdOrderController {
 		// 查询到销顾的信息
 		TdUser seller = tdUserService.findOne(sellerId);
 		// 生成虚拟订单
-		TdOrder order = tdCommonService.createVirtual(req);
+		TdOrder order = tdCommonService.createVirtual(req, realUserId);
 		tdPriceCouintService.countPrice(order, realUser);
 
 		// 设置真实用户信息
