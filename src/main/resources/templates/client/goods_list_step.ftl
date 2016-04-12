@@ -64,9 +64,9 @@
             </section>
             
             <div class="go_buy">
-                <p onclick="window.location.href='/user/selected'">查看已选(<span id="select_num">${selected_number!'0'}</span>)</p>
-                <a style="background:#ffaa00;" href="javascript:addCart();">加入已选</a>
-                <a href="javascript:seller.checkCart();">去结算</a>
+                <a style="background:#ffaa00;width:50%;" href="javascript:addCart();">加入已选</a>
+                <p style="width:50%;" onclick="window.location.href='/user/selected'">查看已选(<span id="select_num">${selected_number!'0'}</span>)</p>
+                <!-- <a href="javascript:seller.checkCart();">去结算</a> -->
             </div>
             <#include "/client/common_footer.ftl">
         </div>		
