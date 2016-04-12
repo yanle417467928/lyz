@@ -6,7 +6,6 @@ import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -33,6 +32,7 @@ import com.ynyes.lyz.entity.TdActivityGiftList;
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
@@ -126,6 +126,9 @@ public class TdCommonService {
 
 	@Autowired
 	private TdWareHouseService tdWareHouseService;
+	
+	@Autowired
+	private TdCityService tdCityService;
 
 	/**
 	 * 根据仓库编号获取仓库名
@@ -909,13 +912,52 @@ public class TdCommonService {
 			}
 		}
 
-		// 默认的配送日期：第二天的的上午11:30——12:30
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, 1);
-		Date date = cal.getTime();
-		SimpleDateFormat sdf_ymd = new SimpleDateFormat("yyyy-MM-dd");
-		String order_deliveryDate = sdf_ymd.format(date);
-		Long order_deliveryDeatilId = 11L;
+				//		//默认的配送日期：第二天的的上午11:30——12:30
+				//		Calendar cal = Calendar.getInstance();
+				//		cal.add(Calendar.DATE, 1);
+				//		Date date = cal.getTime();
+				//		SimpleDateFormat sdf_ymd = new SimpleDateFormat("yyyy-MM-dd");
+				//		String order_deliveryDate = sdf_ymd.format(date);
+				//		Long order_deliveryDeatilId = 11L;
+						
+						
+		// 获取配送时间的限制（时间选择机制：如果是上午下单，最早的配送时间是当前下午，如果是下午下单，最早配送时间是第二天的上午）
+		// 获取用户的城市
+		Long cityId = user.getCityId();
+		TdCity city = tdCityService.findBySobIdCity(cityId);
+
+		SimpleDateFormat hh = new SimpleDateFormat("HH");
+		SimpleDateFormat mm = new SimpleDateFormat("mm");
+		SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy-MM-dd");
+		Date now1 = new Date();
+		String h = hh.format(now1);
+		String m = mm.format(now1);
+		Long hour = Long.parseLong(h);
+		Long minute = Long.parseLong(m);
+
+		Date limitDate = now1;
+
+		Long delay = city.getDelayHour();
+		if (null == delay) {
+			delay = 0L;
+		}
+
+		Long tempHour = hour + delay;
+		if (24 <= tempHour) {
+			limitDate = new Date(now1.getTime() + (1000 * 60 * 60 * 24));
+			tempHour -= 24;
+			limitDate = new Date(now1.getTime() + (1000 * 60 * 60 * 24));
+			tempHour = 9L;
+		}
+
+		// 判断能否当天配送
+		if (tempHour > city.getFinishHour() || (tempHour == city.getFinishHour() && minute > city.getFinishMinute())) {
+			limitDate = new Date(now1.getTime() + (1000 * 60 * 60 * 24));
+			tempHour = 9L;
+		}
+		String order_deliveryDate = yyyyMMdd.format(limitDate);
+		Long order_deliveryDeatilId = tempHour;
+						
 
 		// 以下代码用于生成订单编号
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -1438,8 +1480,20 @@ public class TdCommonService {
 					order.setUnCashBalanceUsed(0.00);
 					order.setCashBalanceUsed(0.00);
 					order.setOtherPay(0.00);
-				} else {
-					Double point = price / totalPrice;
+				} 
+				else
+				{
+					//add MDJ
+					Double point;
+					if (totalPrice == 0) 
+					{
+						point =1.0;
+					}
+					else
+					{
+						point = price / totalPrice;
+					}
+
 					if (null != point) {
 						DecimalFormat df = new DecimalFormat("#.00");
 						String scale2_uncash = df.format(unCashBalanceUsed * point);
