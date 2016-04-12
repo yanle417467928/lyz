@@ -57,12 +57,12 @@
                             <#case 4>
                                 <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                 <a href="">物流详情</a>
-                                <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a>
+                                <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                             <#break>
                             <#case 5>
                                 <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                 <#if !item.isRefund?? || !item.isRefund>
-                                <a href="javascript:;" onclick="order_return(${item.id?c})">申请退货</a>
+                                <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
                                 <a href="">立即评价</a>
                                 </#if>
                             <#break>
@@ -75,6 +75,20 @@
                                 <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                 <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                             <#break>
+                            <#case 9>
+                            	<a href="/user/order/detail/${item.id?c}">订单详情</a>
+                            <#break>
+                            <#case 10>
+                            	<a href="/user/order/detail/${item.id?c}">订单详情</a>
+                            <#break>
+                            <#case 11>
+                            	<a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
+                            <#break>
+                            <#case 12>
+                            	<a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
+                            <#break>
                         </#switch>
                     </#if>
                 </div>
@@ -82,12 +96,4 @@
             </ol>
         </#list>
     </div>
-     <!-- <div id="slideDown"> 
-            <div id="slideDown1"> 
-                <p>松开刷新</p> 
-            </div> 
-            <div id="slideDown2"> 
-                <p>正在刷新 ...</p> 
-            </div> 
-        </div>  -->
 </#if>
