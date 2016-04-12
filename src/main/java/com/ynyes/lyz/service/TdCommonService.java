@@ -33,6 +33,7 @@ import com.ynyes.lyz.entity.TdActivityGiftList;
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
@@ -57,8 +58,7 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	// static String wmsUrl =
-	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+//	static String wmsUrl =  "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -123,63 +123,62 @@ public class TdCommonService {
 
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
-
+	
 	@Autowired
 	private TdWareHouseService tdWareHouseService;
-
+	
+	@Autowired
+	private TdCityService tdCityService;
+	
+	
 	/**
 	 * 根据仓库编号获取仓库名
-	 * 
 	 * @param name
 	 * @return
 	 */
-	public String changeName(String name) {
-		// 郑州公司 11 总仓
-		// 天荣中转仓 1101 分仓
-		// 五龙口中转仓 1102 分仓
-		// 东大中转仓 1103 分仓
-		// 百姓中转仓 1104 分仓
-		// 主仓库 1105 分仓
-
+	public String changeName(String name)
+	{
+//		郑州公司	11	总仓
+//		天荣中转仓	1101	分仓
+//		五龙口中转仓	1102	分仓
+//		东大中转仓	1103	分仓
+//		百姓中转仓	1104	分仓
+//		主仓库	1105	分仓
+		
 		List<TdWareHouse> wareHouses = tdWareHouseService.findBywhNumberOrderBySortIdAsc(name);
-		if (wareHouses != null && wareHouses.size() > 0) {
+		if (wareHouses != null && wareHouses.size() > 0)
+		{
 			return wareHouses.get(0).getWhName();
-		} else {
+		}
+		else 
+		{
 			return "未知编号：" + name;
 		}
-
-		// if (name == null || name.equalsIgnoreCase(""))
-		// {
-		// return "未知";
-		// }
-		// if (name.equalsIgnoreCase("11"))
-		// {
-		// return "郑州公司";
-		// }
-		// else if (name.equalsIgnoreCase("1101"))
-		// {
-		// return "天荣中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1102"))
-		// {
-		// return "五龙口中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1103"))
-		// {
-		// return "东大中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1104"))
-		// {
-		// return "百姓中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1105"))
-		// {
-		// return "主仓库";
-		// }
-		// else
-		// {
-		// return "未知编号：" + name;
-		// }
+		
+//		if (name == null || name.equalsIgnoreCase(""))
+//		{
+//			return "未知";
+//		}
+//		if (name.equalsIgnoreCase("11"))
+//		{
+//			return "郑州公司";
+//		}
+//		else if (name.equalsIgnoreCase("1101"))
+//		{
+//			return "天荣中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1102"))
+//		{
+//			return "五龙口中转仓";
+//		}
+//		else if (name.equalsIgnoreCase("1105"))
+//		{
+//			return "主仓库";
+//		}
+//		else
+//		{
+//			return "未知编号：" + name;
+//		}
 	}
 
 	public TdReturnNote MakeReturnNote(TdOrder order, Long type, String msg) {
@@ -391,8 +390,7 @@ public class TdCommonService {
 		List<TdGoods> tdGoodsList = new ArrayList<TdGoods>();
 		Long sobId = diySite.getRegionId();
 		String priceType = "LYZ";
-		List<TdPriceList> priceList_list = tdPriceListService
-				.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
+		List<TdPriceList> priceList_list = tdPriceListService.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
 		return tdGoodsList;
 	}
 
@@ -857,7 +855,7 @@ public class TdCommonService {
 	 * 
 	 * @author dengxiao
 	 */
-	public TdOrder createVirtual(HttpServletRequest req, Long realUserId) {
+	public TdOrder createVirtual(HttpServletRequest req) {
 		// 获取登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsername(username);
@@ -874,15 +872,7 @@ public class TdCommonService {
 
 		TdShippingAddress defaultAddress = new TdShippingAddress();
 		// 获取默认的收货地址
-		List<TdShippingAddress> addressList = null;
-		if (0L == user.getUserType()) {
-			addressList = user.getShippingAddressList();
-		} else {
-			TdUser realUser = tdUserService.findOne(realUserId);
-			if (null != realUser) {
-				addressList = realUser.getShippingAddressList();
-			}
-		}
+		List<TdShippingAddress> addressList = user.getShippingAddressList();
 		if (null != addressList) {
 			for (TdShippingAddress address : addressList) {
 				if (null != address && null != address.getIsDefaultAddress() && address.getIsDefaultAddress()) {
@@ -909,13 +899,52 @@ public class TdCommonService {
 			}
 		}
 
-		// 默认的配送日期：第二天的的上午11:30——12:30
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, 1);
-		Date date = cal.getTime();
-		SimpleDateFormat sdf_ymd = new SimpleDateFormat("yyyy-MM-dd");
-		String order_deliveryDate = sdf_ymd.format(date);
-		Long order_deliveryDeatilId = 11L;
+//		//默认的配送日期：第二天的的上午11:30——12:30
+//		Calendar cal = Calendar.getInstance();
+//		cal.add(Calendar.DATE, 1);
+//		Date date = cal.getTime();
+//		SimpleDateFormat sdf_ymd = new SimpleDateFormat("yyyy-MM-dd");
+//		String order_deliveryDate = sdf_ymd.format(date);
+//		Long order_deliveryDeatilId = 11L;
+		
+		
+		// 获取配送时间的限制（时间选择机制：如果是上午下单，最早的配送时间是当前下午，如果是下午下单，最早配送时间是第二天的上午）
+		// 获取用户的城市
+				Long cityId = user.getCityId();
+				TdCity city = tdCityService.findBySobIdCity(cityId);
+
+				SimpleDateFormat hh = new SimpleDateFormat("HH");
+				SimpleDateFormat mm = new SimpleDateFormat("mm");
+				SimpleDateFormat yyyyMMdd = new SimpleDateFormat("yyyy-MM-dd");
+				Date now1 = new Date();
+				String h = hh.format(now1);
+				String m = mm.format(now1);
+				Long hour = Long.parseLong(h);
+				Long minute = Long.parseLong(m);
+	
+				Date limitDate = now1;
+	
+				Long delay = city.getDelayHour();
+				if (null == delay) {
+					delay = 0L;
+				}
+	
+				Long tempHour = hour + delay;
+				if (24 <= tempHour) {
+					limitDate = new Date(now1.getTime() + (1000 * 60 * 60 * 24));
+					tempHour -= 24;
+					limitDate = new Date(now1.getTime() + (1000 * 60 * 60 * 24));
+					tempHour = 9L;
+				}
+	
+				// 判断能否当天配送
+				if (tempHour > city.getFinishHour() || (tempHour == city.getFinishHour() && minute > city.getFinishMinute())) {
+					limitDate = new Date(now1.getTime() + (1000 * 60 * 60 * 24));
+					tempHour = 9L;
+				}
+				String order_deliveryDate = yyyyMMdd.format(limitDate);
+				Long order_deliveryDeatilId = tempHour;
+		
 
 		// 以下代码用于生成订单编号
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -992,19 +1021,6 @@ public class TdCommonService {
 		virtual.setSellerUsername(seller.getUsername());
 
 		virtual.setIsUsedBalance(true);
-		virtual.setRealUserId(user.getId());
-		virtual.setRealUserRealName(user.getRealName());
-		virtual.setRealUserUsername(user.getUsername());
-
-		if (1L == user.getUserType() || 2L == user.getUserType()) {
-			virtual.setIsSellerOrder(true);
-			TdUser realUser = tdUserService.findOne(realUserId);
-			if (null != realUser) {
-				virtual.setRealUserId(realUser.getId());
-				virtual.setRealUserRealName(realUser.getRealName());
-				virtual.setRealUserUsername(realUser.getUsername());
-			}
-		}
 
 		// 遍历所有的已选商品，生成虚拟订单
 		for (TdCartGoods cart : select_goods) {
@@ -1134,7 +1150,6 @@ public class TdCommonService {
 											orderGoods.setGoodsTitle(goods.getTitle());
 											orderGoods.setGoodsSubTitle(goods.getSubTitle());
 											orderGoods.setPrice(0.0);
-											orderGoods.setGiftPrice(priceListItem.getPrice());
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
@@ -1438,8 +1453,20 @@ public class TdCommonService {
 					order.setUnCashBalanceUsed(0.00);
 					order.setCashBalanceUsed(0.00);
 					order.setOtherPay(0.00);
-				} else {
-					Double point = price / totalPrice;
+				} 
+				else
+				{
+					//add MDJ
+					Double point;
+					if (totalPrice == 0) 
+					{
+						point =1.0;
+					}
+					else
+					{
+						point = price / totalPrice;
+					}
+					
 					if (null != point) {
 						DecimalFormat df = new DecimalFormat("#.00");
 						String scale2_uncash = df.format(unCashBalanceUsed * point);
@@ -1703,56 +1730,75 @@ public class TdCommonService {
 
 		System.out.println("MDJWS:INTER:Order:" + orderList.get(0).getMainOrderNumber());
 
-		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase("")) {
+		if (mainOrderNumber == null || mainOrderNumber.equalsIgnoreCase("")) 
+		{
 			return;
 		}
 		TdRequisition requisition = SaveRequisiton(orderList, mainOrderNumber);
 
 		Object[] objects = null;
-		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
-			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
+		if (requisition != null && null != requisition.getRequisiteGoodsList()) 
+		{
+			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) 
+			{
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
 				System.err.println("MDJWS:Detail:invoke" + mainOrderNumber);
-				try {
+				try 
+				{
 					objects = WMSClient.invoke(WMSName, "td_requisition_goods", "1", xmlGoodsEncode);
-				} catch (Exception e) {
+				} 
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 					System.out.println("MDJWMS: " + mainOrderNumber + " 发送失败");
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), e.getMessage());
 				}
 				String result = "";
-				if (objects != null) {
-					for (Object object : objects) {
+				if (objects != null) 
+				{
+					for (Object object : objects) 
+					{
 						result += object;
 					}
 				}
 				String errorMsg = chectResult1(result);
-				if (errorMsg != null) {
+				if (errorMsg != null) 
+				{
 					writeErrorLog(mainOrderNumber, requisitionGoods.getSubOrderNumber(), errorMsg);
 				}
 			}
 			String xmlEncode = XMLMakeAndEncode(requisition, 1);
 			System.err.println("MDJWS:Main:invoke" + mainOrderNumber);
-			try {
+			try
+			{
 				objects = WMSClient.invoke(WMSName, "td_requisition", "1", xmlEncode);
-			} catch (Exception e) {
+			} 
+			catch (Exception e) 
+			{
 				e.printStackTrace();
 				writeErrorLog(mainOrderNumber, "无", e.getMessage());
 				// return "发送异常";
 			}
 			String result = null;
-			if (objects != null) {
-				for (Object object : objects) {
+			if (objects != null)
+			{
+				for (Object object : objects)
+				{
 					result += object;
 				}
 			}
 			String errorMsg = chectResult1(result);
-			if (errorMsg != null) {
+			if (errorMsg != null) 
+			{
 				writeErrorLog(mainOrderNumber, "无", errorMsg);
-			} else {
+			} 
+			else 
+			{
 				// 根据乐易装的要求，当成功将信息发送至WMS时，保留提示信息
-				for (TdOrder subOrder : orderList) {
-					if (null != subOrder) {
+				for (TdOrder subOrder : orderList) 
+				{
+					if (null != subOrder) 
+					{
 						subOrder.setRemarkInfo("物流已受理");
 						tdOrderService.save(subOrder);
 					}
@@ -1825,13 +1871,15 @@ public class TdCommonService {
 	 * @return
 	 */
 	private TdRequisition SaveRequisiton(List<TdOrder> orderList, String mainOrderNumber) {
-		if (orderList.size() <= 0) {
+		if (orderList.size() <= 0) 
+		{
 			return null;
 		}
 		TdOrder order = orderList.get(0);
 
 		TdRequisition requisition = tdRequisitionService.findByOrderNumber(mainOrderNumber);
-		if (requisition == null) {
+		if (requisition == null) 
+		{
 			requisition = new TdRequisition();
 			requisition.setDiySiteId(order.getDiySiteId());
 			requisition.setDiyCode(order.getDiySiteCode());
@@ -1846,19 +1894,22 @@ public class TdCommonService {
 			requisition.setOrderTime(order.getOrderTime());
 
 			// add by Shawn
-			if (null == order.getAllTotalPay()) {
+			if (null == order.getAllTotalPay()) 
+			{
 				order.setAllTotalPay(0.0);
 			}
 
-			if (null == order.getAllActualPay()) {
+			if (null == order.getAllActualPay())
+			{
 				order.setAllActualPay(0.0);
 			}
-			if (null == order.getTotalPrice()) {
+			if (null == order.getTotalPrice()) 
+			{
 				order.setTotalPrice(0.0);
 			}
 
-			// Double left = order.getTotalPrice() - order.getAllActualPay();
-			// add MDJ totalPrice修改后，改变
+//			Double left = order.getTotalPrice() - order.getAllActualPay();
+			//add MDJ totalPrice修改后，改变
 			Double left = order.getAllTotalPay();
 
 			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
