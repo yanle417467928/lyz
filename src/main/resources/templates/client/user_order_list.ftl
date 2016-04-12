@@ -89,6 +89,12 @@
             });
         }
     </script>
+    <!--  <style type="text/css"> 
+    #slideDown{margin-top: 0;width: 100%;} 
+         #slideDown1,#slideDown2{width: 100%;height: 70px;;background: #e9f4f7;display: none;} 
+        #slideDown1{height: 20px;} 
+        #slideDown1>p,#slideDown2>p{margin: 20px auto;text-align:center;font-size: 14px;color: #37bbf5;} 
+    </style>  -->
     <body style="background: #f3f4f6;">
     <div class="turn_div">
         <form id="form1" action="/user/order/return" method="post">
@@ -123,7 +129,7 @@
         <#include "/client/common_wait.ftl">  
         <#-- 引入公共购物方式选择滑动窗口 -->
         <#include "/client/common_shopping_type.ftl">
-        <div>
+        <div id="content">
             <div class="sec_header">
                 <a class="back" href="javascript:history.go(-1);"></a>
                 <p>我的订单</p>             
@@ -207,7 +213,7 @@
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <a href="">物流详情</a>
-                                                    <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a>
+                                                    <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
@@ -290,7 +296,7 @@
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <a href="">物流详情</a>
-                                                    <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a>
+                                                    <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
@@ -373,7 +379,7 @@
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <a href="">物流详情</a>
-                                                    <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a>
+                                                    <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
@@ -456,7 +462,7 @@
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <a href="">物流详情</a>
-                                                    <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a>
+                                                    <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
@@ -487,6 +493,120 @@
             
             <div class="index_test_box02"></div>
             <#include "/client/common_footer.ftl">
-        </div>      
+        </div>  
+        <script type="text/javascript"> 
+        /*  //第一步：下拉过程 
+         function slideDownStep1(dist){  // dist 下滑的距离，用以拉长背景模拟拉伸效果 
+             var slideDown1 = document.getElementById("slideDown1"), 
+                 slideDown2 = document.getElementById("slideDown2"); 
+             slideDown2.style.display = "none"; 
+             slideDown1.style.display = "block"; 
+             slideDown1.style.height = (parseInt("20px") - dist) + "px"; 
+         } 
+         //第二步：下拉，然后松开， 
+         function slideDownStep2(){  
+             var slideDown1 = document.getElementById("slideDown1"), 
+                 slideDown2 = document.getElementById("slideDown2"); 
+             slideDown1.style.display = "none"; 
+             slideDown1.style.height = "20px"; 
+             slideDown2.style.display = "block"; 
+             //刷新数据 
+             //location.reload(); 
+         } 
+         //第三步：刷新完成，回归之前状态 
+         function slideDownStep3(){  
+             var slideDown1 = document.getElementById("slideDown1"), 
+                 slideDown2 = document.getElementById("slideDown2"); 
+             slideDown1.style.display = "none"; 
+             slideDown2.style.display = "none"; 
+         }  */
+        /*  //第一步：上划过程 
+         function slideUpStep1(dist){  // dist 下滑的距离，用以拉长背景模拟拉伸效果 
+             var slideDown1 = document.getElementById("slideDown1"), 
+                 slideDown2 = document.getElementById("slideDown2"); 
+             slideDown2.style.display = "none"; 
+             slideDown1.style.display = "block"; 
+             //slideDown1.style.height = (parseInt("50px") - dist) + "px"; 
+             slideDown1.style.height = 20 + "px";
+         } 
+         //第二步：上划，然后松开， 
+         function slideUpStep2(){  
+             var slideDown1 = document.getElementById("slideDown1"), 
+                 slideDown2 = document.getElementById("slideDown2"); 
+             slideDown1.style.display = "n; 
+             slideDown2.style.height = "20px"; 
+             slideDown2.style.display = "block"; 
+             //刷新数据 
+             //location.reload(); 
+         } 
+         //第三步：刷新完成，回归之前状态 
+         function slideUpStep3(){  
+             var slideDown1 = document.getElementById("slideDown1"), 
+                 slideDown2 = document.getElementById("slideDown2"); 
+             slideDown1.style.display = "none"; 
+             slideDown2.style.display = "none"; 
+             console.log('ajax');
+         } 
+          
+         //下滑刷新调用 
+         k_touch("all_orders","y"); 
+         //contentId表示对其进行事件绑定，way==>x表示水平方向的操作，y表示竖直方向的操作 
+         function k_touch(contentId,way){  
+             var _start = 0, 
+                 _end = 0, 
+                 _content = document.getElementById(contentId); 
+             _content.addEventListener("touchstart",touchStart,false); 
+             _content.addEventListener("touchmove",touchMove,false); 
+             _content.addEventListener("touchend",touchEnd,false); 
+             function touchStart(event){  
+                 //var touch = event.touches[0]; //这种获取也可以，但已不推荐使用 
+         
+                 var touch = event.targetTouches[0]; 
+                 if(way == "x"){  
+                     _start = touch.pageX; 
+                 }else{  
+                     _start = touch.pageY; 
+                 } 
+             } 
+             function touchMove(event){  
+                 var touch = event.targetTouches[0]; 
+                 if(way == "x"){  
+                     _end = (_start - touch.pageX); 
+                 }else{  
+                     _end = (_start - touch.pageY); 
+                     //下滑才执行操作 
+                     if(_end < 0){ 
+                        // slideDownStep1(_end); 
+                     } else{
+                        slideUpStep1(_end); 
+                     }
+                 } 
+         
+             } 
+             function touchEnd(event){  
+                 if(_end >0){  
+                     //console.log("左滑或上滑  "+(parseInt(_start)+parseInt(_end)));
+                     var totaliscoll=parseInt(_start)+parseInt(_end);
+                    slideUpStep2();
+                     //刷新成功则 
+                     //模拟刷新成功进入第三步 
+                     if(parseInt($("#"+contentId).height())<parseInt(totaliscoll)){
+                         slideUpStep3(); 
+                     }
+                      /* setTimeout(function(){  
+                         slideUpStep3(); 
+                     },2500);   */
+                 }else{  
+                     //console.log("右滑或下滑"+_end); 
+                     /* slideDownStep2(); 
+                     //刷新成功则 
+                     //模拟刷新成功进入第三步 
+                     setTimeout(function(){  
+                         slideDownStep3(); 
+                     },2500);  */
+                 } 
+             } 
+         }  */
+ </script>    
     </body>
 </html>
