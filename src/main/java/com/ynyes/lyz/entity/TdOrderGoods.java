@@ -113,6 +113,10 @@ public class TdOrderGoods {
 	@Column
 	private Long returnNumber;
 	
+	//促销赠品价格
+	@Column
+	private Double giftPrice;
+	
 	public Boolean getIsCommented() {
 		return isCommented;
 	}
@@ -303,6 +307,16 @@ public class TdOrderGoods {
 
 	public void setReturnNumber(Long returnNumber) {
 		this.returnNumber = returnNumber;
+	}
+	
+	
+
+	public Double getGiftPrice() {
+		return giftPrice;
+	}
+
+	public void setGiftPrice(Double giftPrice) {
+		this.giftPrice = giftPrice;
 	}
 
 	@Override

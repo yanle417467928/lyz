@@ -46,6 +46,10 @@
                                     <#case 5>待评价<#break>
                                     <#case 6>已完成<#break>
                                     <#case 7>已取消<#break>
+                                    <#case 9>退货中<#break>
+                                    <#case 10>退货确认<#break>
+                                    <#case 11>退货取消<#break>
+                                    <#case 12>退货完成<#break>
                                 </#switch>
                             </#if>
                         </div>
@@ -93,6 +97,7 @@
                         </#list>
                     </#if>
                     <li class="li5">支付方式：${order.payTypeTitle!''}<div class="div1">实付款：<p>￥<span><#if order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if></span></p></div></li>
+                    <li class="li5">是否代下单：<#if order.isSellerOrder??&&order.isSellerOrder>是<#else>否</#if></li>
                     <li class="li5" style="overflow: visible;height: auto;">订单备注：${order.remark!''}</li>
                     <li class="li5">服务导购：${order.sellerRealName!''}</li>
                     <li class="li5">使用现金券：<div class="div1">券金额：<p>￥<span><#if order.cashCoupon??>${order.cashCoupon?string("0.00")}<#else>0.00</#if></span></p></div></li>

@@ -12,22 +12,16 @@ var seller = {
 	getE : function(id) {
 		return document.getElementById(id);
 	},
-	// 检查购物车是否有商品的方法  type=1时 提示用户检查购物清单
-	checkCart : function(type) {
+	// 检查购物车是否有商品的方法
+	checkCart : function() {
 		var number = $("#select_num").html();
 		if (0 == number) {
 			warning("亲，请先选择商品");
 			return;
 		}
-		if(type==1){
-			win_yes('去结算选择是,检查已选商品选择否','seller.checkUser');
-			//window.location.href='/user/selected';
-		}else{
-			if (number > 0) {
-				this.checkUser();
-			}
+		if (number > 0) {
+			this.checkUser();
 		}
-		
 	},
 	// 判断当前登录用户是否是会员或者销顾的方法
 	checkUser : function() {
@@ -93,47 +87,52 @@ var seller = {
 		});
 	},
 	// 确定选择用户的方法
+	// selectInfo : function(id) {
+	// if (id) {
+	// wait();
+	// $.ajax({
+	// type : "post",
+	// url : "/order/seller/operation",
+	// timeout : 20000,
+	// data : {
+	// realUserId : id
+	// },
+	// error : function() {
+	// close(1);
+	// warning("亲，您的网速不给力啊");
+	// },
+	// success : function(res) {
+	// warning(res.message);
+	// if (0 === res.status) {
+	// win_no();
+	// var select_number_el = seller.getE("select_num");
+	// if (select_number_el) {
+	// select_number_el.innerHTML = "0";
+	// }
+	// var my_selected_el = seller.getE("my_selected");
+	// if (my_selected_el) {
+	// $.ajax({
+	// type : "post",
+	// url : "/goods/select/refresh",
+	// timeout : 10000,
+	// error:function(){
+	// close(1);
+	// warning("亲，您的网速不给力啊");
+	// },
+	// success:function(res){
+	// my_selected_el.innerHTML = res;
+	// }
+	// });
+	// }
+	// }
+	// close(1);
+	// }
+	// });
+	// }
+	// }
 	selectInfo : function(id) {
 		if (id) {
-			wait();
-			$.ajax({
-				type : "post",
-				url : "/order/seller/operation",
-				timeout : 20000,
-				data : {
-					realUserId : id
-				},
-				error : function() {
-					close(1);
-					warning("亲，您的网速不给力啊");
-				},
-				success : function(res) {
-					warning(res.message);
-					if (0 === res.status) {
-						win_no();
-						var select_number_el = seller.getE("select_num");
-						if (select_number_el) {
-							select_number_el.innerHTML = "0";
-						}
-						var my_selected_el = seller.getE("my_selected");
-						if (my_selected_el) {
-							$.ajax({
-								type : "post",
-								url : "/goods/select/refresh",
-								timeout : 10000,
-								error:function(){
-									close(1);
-									warning("亲，您的网速不给力啊");
-								},
-								success:function(res){
-									my_selected_el.innerHTML = res;
-								}
-							});
-						}
-					}
-					close(1);
-				}
-			});
+			window.location.href = "/order?realUserId=" + id;
 		}
 	}
 }
