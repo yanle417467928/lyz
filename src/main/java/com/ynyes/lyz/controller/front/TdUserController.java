@@ -502,7 +502,7 @@ public class TdUserController{
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/selected")
-	public String mySelected(HttpServletRequest req, ModelMap map) {
+	public String mySelected(HttpServletRequest req, ModelMap map,String history) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {
@@ -533,6 +533,7 @@ public class TdUserController{
 		map.addAttribute("all_selected", all_selected);
 		map.addAttribute("selected_number", tdCartGoodsService.countByUserId(user.getId()));
 		map.addAttribute("totalPrice", total_price);
+		map.addAttribute("history", history);
 
 		return "/client/user_selected";
 	}

@@ -25,7 +25,7 @@
         <#include "/client/order_user_list.ftl">
         <!-- 头部 -->
         <header>
-            <a class="back" href="javascript:history.go(-1);"></a>
+            <a class="back" href="<#if history??>${history }<#else> javascript:history.go(-1);</#if>"></a>
             <p>我的已选</p>
             <a id="info" class="btn-edit">编辑</a>
         </header>
