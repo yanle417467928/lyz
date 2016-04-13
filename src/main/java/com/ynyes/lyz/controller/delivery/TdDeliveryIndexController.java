@@ -44,6 +44,7 @@ import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
+import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.SiteMagConstant;
@@ -78,9 +79,12 @@ public class TdDeliveryIndexController {
 
 	@Autowired
 	private TdDeliveryInfoService tdDeliveryInfoService;
-	
+
 	@Autowired
 	private TdCommonService tdCommonService;
+
+	@Autowired
+	private TdPriceCountService tdPriceCountService;
 
 	@RequestMapping
 	public String deliveryIndex(HttpServletRequest req) {
@@ -89,14 +93,13 @@ public class TdDeliveryIndexController {
 		if (null == username) {
 			return "redirect:/login";
 		}
-		
+
 		return "/client/delivery_select_type";
 	}
 
-	
-	@RequestMapping(value="/return")
-	public String deliveryReturnIndex(String start, String end, Integer days,
-			Integer type, HttpServletRequest req, ModelMap map) {
+	@RequestMapping(value = "/return")
+	public String deliveryReturnIndex(String start, String end, Integer days, Integer type, HttpServletRequest req,
+			ModelMap map) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		if (null == username) {
@@ -165,47 +168,45 @@ public class TdDeliveryIndexController {
 		}
 
 		List<TdReturnNote> rnList = new ArrayList<TdReturnNote>();
-		
+
 		// type : 1: 待取货 2: 已取货 3: 已完成
-		if (null != startDate && null != user.getOpUser())
-		{
-			if (null != endDate) 
-			{
-				if (type.equals(1)) 
-				{
-					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),2L, startDate, endDate);
-				}
-				else if (type.equals(2)) 
-				{
-					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),3L, startDate, endDate);
-				}
-				else if (type.equals(3)) 
-				{
-					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),4L, startDate, endDate);
+		if (null != startDate && null != user.getOpUser()) {
+			if (null != endDate) {
+				if (type.equals(1)) {
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(), 2L,
+							startDate, endDate);
+				} else if (type.equals(2)) {
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(), 3L,
+							startDate, endDate);
+				} else if (type.equals(3)) {
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(), 4L,
+							startDate, endDate);
 				}
 
-				map.addAttribute("count_type_1",tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),2L, startDate, endDate));
-				map.addAttribute("count_type_2", tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),3L, startDate, endDate));
-				map.addAttribute("count_type_3", tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(),4L, startDate, endDate));
-			}
-			else
-			{
-				if (type.equals(1))
-				{
-					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),2L, startDate);
-				}
-				else if (type.equals(2))
-				{
-					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),3L, startDate);
-				}
-				else if (type.equals(3)) 
-				{
-					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),4L, startDate);
+				map.addAttribute("count_type_1", tdReturnNoteService
+						.countByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(), 2L, startDate, endDate));
+				map.addAttribute("count_type_2", tdReturnNoteService
+						.countByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(), 3L, startDate, endDate));
+				map.addAttribute("count_type_3", tdReturnNoteService
+						.countByDriverAndStatusIdAndOrderTimeBetween(user.getOpUser(), 4L, startDate, endDate));
+			} else {
+				if (type.equals(1)) {
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(), 2L,
+							startDate);
+				} else if (type.equals(2)) {
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(), 3L,
+							startDate);
+				} else if (type.equals(3)) {
+					rnList = tdReturnNoteService.findByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(), 4L,
+							startDate);
 				}
 
-				map.addAttribute("count_type_1",tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),2L, startDate));
-				map.addAttribute("count_type_2", tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),3L, startDate));
-				map.addAttribute("count_type_3", tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(),4L, startDate));
+				map.addAttribute("count_type_1",
+						tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(), 2L, startDate));
+				map.addAttribute("count_type_2",
+						tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(), 3L, startDate));
+				map.addAttribute("count_type_3",
+						tdReturnNoteService.countByDriverAndStatusIdAndOrderTimeAfter(user.getOpUser(), 4L, startDate));
 			}
 		}
 
@@ -213,6 +214,7 @@ public class TdDeliveryIndexController {
 
 		return "/client/return_list";
 	}
+
 	/**
 	 * 获取配送列表
 	 * 
@@ -228,9 +230,9 @@ public class TdDeliveryIndexController {
 	 * @param map
 	 * @return
 	 */
-	@RequestMapping(value="/order")
-	public String deliveryIndex(String start, String end, Integer days,
-			Integer type, HttpServletRequest req, ModelMap map) {
+	@RequestMapping(value = "/order")
+	public String deliveryIndex(String start, String end, Integer days, Integer type, HttpServletRequest req,
+			ModelMap map) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		if (null == username) {
@@ -302,8 +304,7 @@ public class TdDeliveryIndexController {
 		List<String> orderNumberList = new ArrayList<String>();
 
 		// 根据快递员编号找task_no
-		List<TdDeliveryInfo> deliveryInfoList = tdDeliveryInfoService
-				.findDistinctTaskNoByDriver(user.getOpUser());
+		List<TdDeliveryInfo> deliveryInfoList = tdDeliveryInfoService.findDistinctTaskNoByDriver(user.getOpUser());
 
 		if (null != deliveryInfoList && deliveryInfoList.size() > 0) {
 			List<String> taskNoList = new ArrayList<String>();
@@ -320,8 +321,7 @@ public class TdDeliveryIndexController {
 
 				if (null != detailList && detailList.size() > 0) {
 					for (TdDeliveryInfoDetail detail : detailList) {
-						if (null != detail.getSubOrderNumber() && !detail.getSubOrderNumber().isEmpty())
-						{
+						if (null != detail.getSubOrderNumber() && !detail.getSubOrderNumber().isEmpty()) {
 							orderNumberList.add(detail.getSubOrderNumber());
 						}
 					}
@@ -334,64 +334,47 @@ public class TdDeliveryIndexController {
 		if (null != startDate && orderNumberList.size() > 0) {
 			if (null != endDate) {
 				if (type.equals(1)) {
-					orderList = tdOrderService
-							.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(
-									5L, 6L, orderNumberList, startDate, endDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(5L, 6L,
+							orderNumberList, startDate, endDate);
 				} else if (type.equals(2)) {
-					orderList = tdOrderService
-							.findByStatusIdAndOrderTimeBetween(4L,
-									orderNumberList, startDate, endDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeBetween(4L, orderNumberList, startDate,
+							endDate);
 				} else if (type.equals(3)) {
-					orderList = tdOrderService
-							.findByStatusIdAndOrderTimeBetween(3L,
-									orderNumberList, startDate, endDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeBetween(3L, orderNumberList, startDate,
+							endDate);
 				}
 
-				map.addAttribute(
-						"count_type_1",
-						tdOrderService
-								.countByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(
-										5L, 6L, orderNumberList, startDate,
-										endDate));
-				map.addAttribute("count_type_2", tdOrderService
-						.countByStatusIdAndOrderTimeBetween(4L,
+				map.addAttribute("count_type_1",
+						tdOrderService.countByStatusIdAndOrderTimeBetweenOrStatusIdAndOrderTimeBetween(5L, 6L,
 								orderNumberList, startDate, endDate));
-				map.addAttribute("count_type_3", tdOrderService
-						.countByStatusIdAndOrderTimeBetween(3L,
-								orderNumberList, startDate, endDate));
+				map.addAttribute("count_type_2",
+						tdOrderService.countByStatusIdAndOrderTimeBetween(4L, orderNumberList, startDate, endDate));
+				map.addAttribute("count_type_3",
+						tdOrderService.countByStatusIdAndOrderTimeBetween(3L, orderNumberList, startDate, endDate));
 			} else {
 				if (type.equals(1)) {
-					orderList = tdOrderService
-							.findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(
-									5L, 6L, orderNumberList, startDate);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(5L, 6L,
+							orderNumberList, startDate);
 				} else if (type.equals(2)) {
-					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(
-							4L, startDate, orderNumberList);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(4L, startDate, orderNumberList);
 				} else if (type.equals(3)) {
-					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(
-							3L, startDate, orderNumberList);
+					orderList = tdOrderService.findByStatusIdAndOrderTimeAfter(3L, startDate, orderNumberList);
 				}
 
-				map.addAttribute(
-						"count_type_1",
-						tdOrderService
-								.countByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(
-										5L, 6L, orderNumberList, startDate));
-				map.addAttribute("count_type_2", tdOrderService
-						.countByStatusIdAndOrderTimeAfter(4L, startDate,
-								orderNumberList));
-				map.addAttribute("count_type_3", tdOrderService
-						.countByStatusIdAndOrderTimeAfter(3L, startDate,
-								orderNumberList));
+				map.addAttribute("count_type_1",
+						tdOrderService.countByStatusIdAndOrderTimeAfterOrStatusIdAndOrderTimeAfter(5L, 6L,
+								orderNumberList, startDate));
+				map.addAttribute("count_type_2",
+						tdOrderService.countByStatusIdAndOrderTimeAfter(4L, startDate, orderNumberList));
+				map.addAttribute("count_type_3",
+						tdOrderService.countByStatusIdAndOrderTimeAfter(3L, startDate, orderNumberList));
 			}
 		}
 
 		map.addAttribute("order_list", orderList);
 
-		
-
 		map.addAttribute("order_list", orderList);
-		
+
 		return "/client/delivery_list";
 	}
 
@@ -405,8 +388,7 @@ public class TdDeliveryIndexController {
 	 * @return
 	 */
 	@RequestMapping(value = "/detail/{id}", method = RequestMethod.GET)
-	public String detail(@PathVariable Long id, HttpServletRequest req,
-			ModelMap map, Long msg) {
+	public String detail(@PathVariable Long id, HttpServletRequest req, ModelMap map, Long msg) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		if (null == username) {
@@ -420,22 +402,20 @@ public class TdDeliveryIndexController {
 		}
 
 		if (null != id) {
-			
+
 			TdOrder order = tdOrderService.findOne(id);
-			
-			if (null != order && null != order.getMainOrderNumber())
-			{
+
+			if (null != order && null != order.getMainOrderNumber()) {
 				List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
-				
+
 				map.addAttribute("sub_order_list", orderList);
 			}
-			if (null != order && null != order.getOrderNumber())
-			{
-				List<TdOwnMoneyRecord> records = tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(order.getOrderNumber());
-				if (records != null && records.size() > 0)
-				{
+			if (null != order && null != order.getOrderNumber()) {
+				List<TdOwnMoneyRecord> records = tdOwnMoneyRecordService
+						.findByOrderNumberIgnoreCase(order.getOrderNumber());
+				if (records != null && records.size() > 0) {
 					TdOwnMoneyRecord record = records.get(0);
-					map.addAttribute("ownrecord",record);
+					map.addAttribute("ownrecord", record);
 				}
 			}
 			map.addAttribute("td_order", order);
@@ -445,10 +425,9 @@ public class TdDeliveryIndexController {
 		map.addAttribute("msg", msg);
 		return "/client/delivery_detail";
 	}
-	
+
 	@RequestMapping(value = "/return/detail/{id}", method = RequestMethod.GET)
-	public String returnDetail(@PathVariable Long id, HttpServletRequest req,
-			ModelMap map, Long msg) {
+	public String returnDetail(@PathVariable Long id, HttpServletRequest req, ModelMap map, Long msg) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		if (null == username) {
@@ -480,8 +459,7 @@ public class TdDeliveryIndexController {
 	 */
 	@RequestMapping(value = "/submitDelivery", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submit(Long id, HttpServletRequest req,
-			ModelMap map) {
+	public Map<String, Object> submit(Long id, HttpServletRequest req, ModelMap map) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
@@ -496,16 +474,13 @@ public class TdDeliveryIndexController {
 			res.put("message", "订单不存在");
 			return res;
 		}
-		
+
 		// 所有子单都处理
-		if (null != order.getMainOrderNumber())
-		{
+		if (null != order.getMainOrderNumber()) {
 			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
-			
-			if (null != orderList)
-			{
-				for (TdOrder subOrder : orderList)
-				{
+
+			if (null != orderList) {
+				for (TdOrder subOrder : orderList) {
 					subOrder.setStatusId(5L);
 					subOrder.setDeliveryTime(new Date());
 
@@ -518,9 +493,10 @@ public class TdDeliveryIndexController {
 
 		return res;
 	}
-	
+
 	/**
 	 * 确认收货
+	 * 
 	 * @param id
 	 * @param req
 	 * @param map
@@ -528,8 +504,7 @@ public class TdDeliveryIndexController {
 	 */
 	@RequestMapping(value = "/return/recv", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submitReturnRecv(Long id, HttpServletRequest req,
-			ModelMap map) {
+	public Map<String, Object> submitReturnRecv(Long id, HttpServletRequest req, ModelMap map) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
@@ -554,10 +529,18 @@ public class TdDeliveryIndexController {
 		returnNote.setRecvTime(new Date());
 
 		returnNote = tdReturnNoteService.save(returnNote);
-		
+
+		// 获取主单id
+		String orderNumber = returnNote.getOrderNumber();
+		TdOrder order = tdOrderService.findByOrderNumber(orderNumber);
+
 		// 自动通知WMS
 		tdCommonService.sendBackMsgToWMS(returnNote);
-
+		
+		//退还钱/券
+		if (null != order) {
+			tdPriceCountService.actAccordingWMS(returnNote, order.getId());
+		}
 		res.put("code", 0);
 
 		return res;
@@ -573,8 +556,7 @@ public class TdDeliveryIndexController {
 	 */
 	@RequestMapping(value = "/submitReturn", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submitReturn(Long id, HttpServletRequest req,
-			ModelMap map) {
+	public Map<String, Object> submitReturn(Long id, HttpServletRequest req, ModelMap map) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
@@ -582,7 +564,7 @@ public class TdDeliveryIndexController {
 			res.put("message", "ID不能为空");
 			return res;
 		}
-		
+
 		String username = (String) req.getSession().getAttribute("username");
 
 		if (null == username) {
@@ -605,19 +587,16 @@ public class TdDeliveryIndexController {
 		}
 
 		// 所有子单都确认收货
-		if (null != order.getMainOrderNumber())
-		{
+		if (null != order.getMainOrderNumber()) {
 			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
-			
-			if (null != orderList)
-			{
-				for (TdOrder subOrder : orderList)
-				{
+
+			if (null != orderList) {
+				for (TdOrder subOrder : orderList) {
 					subOrder.setStatusId(5L);
 					subOrder.setDeliveryTime(new Date());
 
 					subOrder = tdOrderService.save(subOrder);
-					
+
 					// 生成退货单
 					if (null != subOrder) {
 						TdReturnNote returnNote = new TdReturnNote();
@@ -628,24 +607,23 @@ public class TdDeliveryIndexController {
 						String curStr = sdf.format(current);
 						Random random = new Random();
 
-						returnNote.setReturnNumber("T" + curStr
-								+ leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+						returnNote
+								.setReturnNumber("T" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
 
 						// 添加订单信息
 						returnNote.setOrderNumber(subOrder.getOrderNumber());
-						
-						//add MDJ
+
+						// add MDJ
 						returnNote.setShoppingAddress(order.getShippingAddress());
 						returnNote.setSellerRealName(order.getSellerRealName());
-						//end add MDJ
-						
+						// end add MDJ
+
 						// 支付方式
 						returnNote.setPayTypeId(subOrder.getPayTypeId());
 						returnNote.setPayTypeTitle(subOrder.getPayTypeTitle());
 						// 门店信息
 						if (null != subOrder.getDiySiteId()) {
-							TdDiySite diySite = tdDiySiteService.findOne(subOrder
-									.getDiySiteId());
+							TdDiySite diySite = tdDiySiteService.findOne(subOrder.getDiySiteId());
 							returnNote.setDiySiteId(subOrder.getDiySiteId());
 							returnNote.setDiySiteTel(diySite.getServiceTele());
 							returnNote.setDiySiteTitle(diySite.getTitle());
@@ -658,10 +636,10 @@ public class TdDeliveryIndexController {
 
 						// 退货方式 物流取货
 						returnNote.setTurnType(2L);
-						
+
 						// 快递员为自己
 						returnNote.setDriver(user.getOpUser());
-						
+
 						// 待取货
 						returnNote.setStatusId(2L);
 
@@ -679,8 +657,7 @@ public class TdDeliveryIndexController {
 								orderGoods.setGoodsId(oGoods.getGoodsId());
 								orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
 								orderGoods.setSku(oGoods.getSku());
-								orderGoods.setGoodsCoverImageUri(oGoods
-										.getGoodsCoverImageUri());
+								orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
 								orderGoods.setGoodsColor(oGoods.getGoodsColor());
 								orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
 								orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
@@ -690,8 +667,7 @@ public class TdDeliveryIndexController {
 								orderGoods.setPrice(oGoods.getPrice());
 								orderGoods.setQuantity(oGoods.getQuantity());
 
-								orderGoods.setDeliveredQuantity(oGoods
-										.getDeliveredQuantity());
+								orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
 								orderGoods.setPoints(oGoods.getPoints());
 								// tdOrderGoodsService.save(orderGoods);
 								// 添加商品信息
@@ -716,22 +692,20 @@ public class TdDeliveryIndexController {
 				}
 			}
 		}
-		
+
 		res.put("code", 0);
 
 		return res;
 	}
 
-	
-	
 	/*
 	 * 申请欠款
 	 * 
 	 */
 	@RequestMapping(value = "/submitOwnMoney/{id}", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submitMoney(@PathVariable Long id, Double payed,
-			Double owned, HttpServletRequest req, ModelMap map) {
+	public Map<String, Object> submitMoney(@PathVariable Long id, Double payed, Double owned, HttpServletRequest req,
+			ModelMap map) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
@@ -746,26 +720,23 @@ public class TdDeliveryIndexController {
 			res.put("message", "订单不存在");
 			return res;
 		}
-		
+
 		// 所有子单都确认收货
-		if (null != order.getMainOrderNumber())
-		{
+		if (null != order.getMainOrderNumber()) {
 			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
-			
-			if (null != orderList)
-			{
-				for (TdOrder subOrder : orderList)
-				{
+
+			if (null != orderList) {
+				for (TdOrder subOrder : orderList) {
 					List<TdOwnMoneyRecord> recList = tdOwnMoneyRecordService
 							.findByOrderNumberIgnoreCase(subOrder.getOrderNumber());
-			
+
 					if (null != recList && recList.size() > 0) {
 						continue;
 					}
-					
+
 					subOrder.setActualPay(subOrder.getActualPay() + payed);
 					subOrder = tdOrderService.save(subOrder);
-			
+
 					TdOwnMoneyRecord rec = new TdOwnMoneyRecord();
 					rec.setCreateTime(new Date());
 					rec.setOrderNumber(subOrder.getOrderNumber());
@@ -776,7 +747,7 @@ public class TdDeliveryIndexController {
 					rec.setIsEnable(false);
 					rec.setIsPayed(false);
 					rec.setSortId(99L);
-			
+
 					rec = tdOwnMoneyRecordService.save(rec);
 				}
 			}
@@ -789,8 +760,7 @@ public class TdDeliveryIndexController {
 
 	@RequestMapping(value = "/geo/submit", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> submitMoney(TdGeoInfo geoInfo,
-			HttpServletRequest req, ModelMap map) {
+	public Map<String, Object> submitMoney(TdGeoInfo geoInfo, HttpServletRequest req, ModelMap map) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
@@ -825,8 +795,7 @@ public class TdDeliveryIndexController {
 	}
 
 	@RequestMapping(value = "/img", method = RequestMethod.POST)
-	public String uploadImg(@RequestParam MultipartFile Filedata,
-			HttpServletRequest req, String orderNumber, Long id) {
+	public String uploadImg(@RequestParam MultipartFile Filedata, HttpServletRequest req, String orderNumber, Long id) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsername(username);
 		if (null == user) {
@@ -852,23 +821,20 @@ public class TdDeliveryIndexController {
 
 			File file = new File(uri);
 
-			BufferedOutputStream stream = new BufferedOutputStream(
-					new FileOutputStream(file));
+			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(file));
 			stream.write(bytes);
 			stream.close();
 
 			TdOrder order = tdOrderService.findByOrderNumber(orderNumber);
 			if (null != order) {
-				
+
 				// 所有子单都确认收货
-				if (null != order.getMainOrderNumber())
-				{
-					List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
-					
-					if (null != orderList)
-					{
-						for (TdOrder subOrder : orderList)
-						{
+				if (null != order.getMainOrderNumber()) {
+					List<TdOrder> orderList = tdOrderService
+							.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
+
+					if (null != orderList) {
+						for (TdOrder subOrder : orderList) {
 							subOrder.setPhoto("/images/" + fileName);
 							subOrder = tdOrderService.save(subOrder);
 						}
