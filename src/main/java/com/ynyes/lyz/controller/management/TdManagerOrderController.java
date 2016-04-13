@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ibm.icu.util.Calendar;
 import com.ynyes.lyz.entity.TdAgencyFund;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryType;
@@ -699,6 +698,9 @@ public class TdManagerOrderController {
         cell = row.createCell(20);
         cell.setCellValue("实际配送时间");
         cell.setCellStyle(style);
+        cell = row.createCell(21);
+        cell.setCellValue("配送方式");
+        cell.setCellStyle(style);
         
         // 第五步，设置值  
         /*List<TdOrder> orders = null;
@@ -848,9 +850,36 @@ public class TdManagerOrderController {
         List<TdAgencyFund> agencyFundList = tdAgencyFundService.searchAgencyFund(date1, date2, city, diyCode);
         
         Integer i = 0;
+        String mainOrderNumber=""; //主单号
+        Double cashBalanceUsed=0.0;
+        Double unCashBalanceUsed=0.0;
         for (TdAgencyFund agencyFund : agencyFundList)
         {
+        	if("门店自提".equals(agencyFund.getDeliverTypeTitle())){//不显示门店自提的订单
+        		continue; 
+        	}
+        	//主单号和上一张订单的主单号相同 判断为同一张订单 跳过
+        	if(mainOrderNumber != null && mainOrderNumber.equals(agencyFund.getMainOrderNumber())){
+        		if (null != agencyFund.getCashBalanceUsed()) //累计使用预存款
+            	{
+        			cashBalanceUsed+=agencyFund.getCashBalanceUsed();
+                	row.createCell(4).setCellValue(cashBalanceUsed);
+                	
+        		}
+            	if (null != agencyFund.getUnCashBalanceUsed())
+            	{
+            		unCashBalanceUsed+=agencyFund.getUnCashBalanceUsed();
+                	row.createCell(5).setCellValue(unCashBalanceUsed);
+                	
+        		}
+        		continue; 
+        	}else{//清空累计预存款
+        		 cashBalanceUsed=0.0;
+        	     unCashBalanceUsed=0.0;
+        	}
+        	
         	row = sheet.createRow((int) i + 1);
+        	
         	if (null != agencyFund.getDiySiteName())
         	{
             	row.createCell(0).setCellValue(agencyFund.getDiySiteName());
@@ -876,10 +905,12 @@ public class TdManagerOrderController {
         	if (null != agencyFund.getCashBalanceUsed())
         	{
             	row.createCell(4).setCellValue(agencyFund.getCashBalanceUsed());
+            	cashBalanceUsed=agencyFund.getCashBalanceUsed();
     		}
         	if (null != agencyFund.getUnCashBalanceUsed())
         	{
             	row.createCell(5).setCellValue(agencyFund.getUnCashBalanceUsed());
+            	unCashBalanceUsed=agencyFund.getUnCashBalanceUsed();
     		}
         	
         	if (null != agencyFund.getPayPrice())
@@ -907,18 +938,20 @@ public class TdManagerOrderController {
         	{
             	row.createCell(10).setCellValue(agencyFund.getUsername());
     		}
-        	if (null != agencyFund.getShippingName())
-        	{
-            	row.createCell(11).setCellValue(agencyFund.getShippingName());
-    		}
-        	if (null != agencyFund.getShippingPhone())
-        	{
-            	row.createCell(12).setCellValue(agencyFund.getShippingPhone());
-    		}
-        	if (null != agencyFund.getShippingAddress())
-        	{
-            	row.createCell(13).setCellValue(agencyFund.getShippingAddress());
-    		}
+        	if(null != agencyFund.getDeliverTypeTitle() && !"门店自提".equals(agencyFund.getDeliverTypeTitle())){
+        		if (null != agencyFund.getShippingName())
+            	{
+                	row.createCell(11).setCellValue(agencyFund.getShippingName());
+        		}
+            	if (null != agencyFund.getShippingPhone())
+            	{
+                	row.createCell(12).setCellValue(agencyFund.getShippingPhone());
+        		}
+            	if (null != agencyFund.getShippingAddress())
+            	{
+                	row.createCell(13).setCellValue(agencyFund.getShippingAddress());
+        		}
+        	}
         	if (null != agencyFund.getRemark())
         	{
             	row.createCell(14).setCellValue(agencyFund.getRemark());
@@ -946,7 +979,10 @@ public class TdManagerOrderController {
         	{
 				row.createCell(20).setCellValue(agencyFund.getDeliveryTime().toString());
 			}
-        	
+        	if(null != agencyFund.getDeliverTypeTitle()){
+        		row.createCell(21).setCellValue(agencyFund.getDeliverTypeTitle());
+        	}
+        	mainOrderNumber=agencyFund.getMainOrderNumber();
         	i++;
 		}
         
@@ -2107,79 +2143,6 @@ public class TdManagerOrderController {
 
 		return map;
 	}
-	/**
-	 * 判断是否按条件查询
-	 * @return 
-	 */
-	/*private Boolean judgeSearchCondition(String keywords,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
-			String deliveryTime,String userPhone,String shippingName,String sendTime){
-		Boolean searchCondition=false;
-		if(null != keywords && !keywords.equalsIgnoreCase("")){
-			searchCondition=true;
-		}
-		if(null !=orderStartTime && !orderStartTime.equals("")){
-			searchCondition=true;
-			
-		}
-		if(null !=orderEndTime && !orderEndTime.equals("")){
-			searchCondition=true;
-		}
-		
-		if(null !=userPhone && !"".equals(userPhone)){
-				searchCondition=true;
-		}
-		if(null !=shippingName && !"".equals(shippingName)){
-			searchCondition=true;
-		}
-		if(null !=shippingPhone && !"".equals(shippingPhone)){
-			searchCondition=true;
-		}
-		if(null !=shippingAddress && !"".equals(shippingAddress)){
-			searchCondition=true;
-		}
-		
-		if(null !=realName && !"".equals(realName)){	
-				searchCondition=true;
-		}
-		
-//		if(null !=orderStatusId && orderStatusId !=0 ){
-//			if(searchCondition==2){
-//				searchCondition=4;
-//			}else{
-//				searchCondition=3;
-//			}
-//		}
-		
-		if(null !=deliveryTime && !deliveryTime.equals("")){
-			searchCondition=true;
-			
-		}
-		if(null !=sendTime && !sendTime.equals("")){
-				searchCondition=true;
-		}
-		if(null !=sellerRealName  && !"".equals(sellerRealName )){
-			searchCondition=true;
-		}
-		return searchCondition;
-	}*/
-	
-	private Date getStartTime(){  
-        Calendar todayStart = Calendar.getInstance();  
-        todayStart.set(Calendar.HOUR, 0);  
-        todayStart.set(Calendar.MINUTE, 0);  
-        todayStart.set(Calendar.SECOND, 0);  
-        todayStart.set(Calendar.MILLISECOND, 0);  
-        return todayStart.getTime();  
-    }  
-      
-    private Date getEndTime(){  
-        Calendar todayEnd = Calendar.getInstance();  
-        todayEnd.set(Calendar.HOUR, 23);  
-        todayEnd.set(Calendar.MINUTE, 59);  
-        todayEnd.set(Calendar.SECOND, 59);  
-        todayEnd.set(Calendar.MILLISECOND, 999);  
-        return todayEnd.getTime();  
-    }  
     
     /*
 	 * 收款报表
@@ -2345,7 +2308,7 @@ public class TdManagerOrderController {
         // 第五步，设置值  
        
         try {//调用存储过程 报错
-            tdGatheringService.callInsertGathering(getStartTime(), getEndTime());
+            tdGatheringService.callInsertGathering(date1, date2);
     	} catch (Exception e) {
     		System.out.println(e);
     	}
@@ -2451,17 +2414,20 @@ public class TdManagerOrderController {
         	if(gathering.getUsername() != null){ //配送人员姓名 和电话
         		row.createCell(18).setCellValue(gathering.getUsername());
         	}
-        	if (null != gathering.getShippingName())
-        	{//收货人姓名
-            	row.createCell(19).setCellValue(gathering.getShippingName());
-    		}
-        	if (null != gathering.getShippingPhone())
-        	{//收获人电话
-            	row.createCell(20).setCellValue(gathering.getShippingPhone());
-    		}
-        	if (null != gathering.getShippingAddress())
-        	{//收货人地址
-            	row.createCell(21).setCellValue(gathering.getShippingAddress());
+        	if (!"门店自提".equals(gathering.getDeliverTypeTitle()))
+        	{
+        		if (null != gathering.getShippingName())
+            	{//收货人姓名
+                	row.createCell(19).setCellValue(gathering.getShippingName());
+        		}
+            	if (null != gathering.getShippingPhone())
+            	{//收获人电话
+                	row.createCell(20).setCellValue(gathering.getShippingPhone());
+        		}
+            	if (null != gathering.getShippingAddress())
+            	{//收货人地址
+                	row.createCell(21).setCellValue(gathering.getShippingAddress());
+        		}
     		}
         	if (null != gathering.getRemark())
         	{//备注信息

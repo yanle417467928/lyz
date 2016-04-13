@@ -91,6 +91,9 @@ public class TdAgencyFund {
 	// 配送门店id
 	@Column
 	private String diySiteCode;
+	// 配送方式名称
+	@Column
+	private String deliverTypeTitle;
 	
 	public Long getId() {
 		return id;
@@ -242,5 +245,12 @@ public class TdAgencyFund {
 	public void setDiySiteCode(String diySiteCode) {
 		this.diySiteCode = diySiteCode;
 	}
+	public String getDeliverTypeTitle() {
+		return deliverTypeTitle;
+	}
+	public void setDeliverTypeTitle(String deliverTypeTitle) {
+		this.deliverTypeTitle = deliverTypeTitle;
+	}
+	
 	
 }
