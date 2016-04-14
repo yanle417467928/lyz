@@ -279,7 +279,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				if (returnNote.getTurnType() == 2) {
 
 					// 生成收货通知
-					tdCommonService.sendBackMsgToWMS(returnNote);
+					tdCommonService.sendBackToWMS(returnNote);
 
 				}
 

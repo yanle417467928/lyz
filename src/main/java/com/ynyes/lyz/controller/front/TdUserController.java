@@ -1909,7 +1909,7 @@ public class TdUserController {
 			order.setIsRefund(true);
 			tdOrderService.save(order);
 			tdReturnNoteService.save(returnNote);
-			tdCommonService.sendBackToWMS(returnNote);
+//			tdCommonService.sendBackToWMS(returnNote);
 		}
 
 		res.put("status", 0);
