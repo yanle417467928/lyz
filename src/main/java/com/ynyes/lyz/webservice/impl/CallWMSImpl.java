@@ -96,7 +96,7 @@ public class CallWMSImpl implements ICallWMS {
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
-		System.out.println("getWMSInfo called：" + STRTABLE);
+		System.out.println("MDJ:WMSInfo called：" + STRTABLE);
 
 		if (null == STRTABLE || STRTABLE.isEmpty() || STRTABLE.equals("?"))
 		{
