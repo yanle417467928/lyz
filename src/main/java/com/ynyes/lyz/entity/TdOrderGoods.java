@@ -117,6 +117,30 @@ public class TdOrderGoods {
 	@Column
 	private Double giftPrice;
 	
+	//退货单号
+	@Column
+	private String returnNoteNumber;
+	
+	//分单号
+	@Column
+	private String subOrderNumber;
+	
+	public String getSubOrderNumber() {
+		return subOrderNumber;
+	}
+
+	public void setSubOrderNumber(String subOrderNumber) {
+		this.subOrderNumber = subOrderNumber;
+	}
+
+	public String getReturnNoteNumber() {
+		return returnNoteNumber;
+	}
+
+	public void setReturnNoteNumber(String returnNoteNumber) {
+		this.returnNoteNumber = returnNoteNumber;
+	}
+
 	public Boolean getIsCommented() {
 		return isCommented;
 	}

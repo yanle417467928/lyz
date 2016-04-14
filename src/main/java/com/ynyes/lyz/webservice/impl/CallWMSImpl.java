@@ -96,7 +96,7 @@ public class CallWMSImpl implements ICallWMS {
 
 	public String GetWMSInfo(String STRTABLE, String STRTYPE, String XML)
 	{
-		System.out.println("getWMSInfo called：");
+		System.out.println("getWMSInfo called：" + STRTABLE);
 
 		if (null == STRTABLE || STRTABLE.isEmpty() || STRTABLE.equals("?"))
 		{
@@ -108,24 +108,7 @@ public class CallWMSImpl implements ICallWMS {
 			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
 		}
 		
-		
-//		String XMLStr = XML.trim();
-		
 		String XMLStr = XML.replace("\n", "");
-		
-//		decodedXML = decodedXML.
-//		StringBuffer sb = new StringBuffer();  
-//		sb.append(XML);  
-//		String xmString = "";  
-//		String xmlUTF8="";  
-//		try {  
-//			xmString = new String(sb.toString().getBytes("UTF-8"));  
-//			xmlUTF8 = URLEncoder.encode(xmString, "UTF-8");  
-//			System.out.println("utf-8 编码：" + xmlUTF8) ;  
-//		} catch (UnsupportedEncodingException e) {  
-//			// TODO Auto-generated catch block  
-//			e.printStackTrace();  
-//		}  
 		
 		byte[] decoded = Base64.decode(XMLStr);
 

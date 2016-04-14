@@ -2051,7 +2051,9 @@ public class TdCommonService {
 				System.err.println("MDJ_WMS:XML 编码出错!");
 				return "FAILED";
 			}
-		} else if (type == 2) {
+		}
+		else if (type == 2)
+		{
 			TdRequisitionGoods requisitionGoods = (TdRequisitionGoods) object;
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + requisitionGoods.getId() + "</id>" + "<goods_code>"
 					+ requisitionGoods.getGoodsCode() + "</goods_code>" + "<goods_title>"
@@ -2153,6 +2155,75 @@ public class TdCommonService {
 				return "FAILED";
 			}
 		}
+		else if (type == 4) //单品退货表头
+		{
+			TdReturnNote returnNote = (TdReturnNote) object;
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+			String date = sdf.format(returnNote.getOrderTime());
+			String xmlStr = "<ERP>"
+					+ "<TABLE>"
+					+ "<id>" + returnNote.getId() + "</id>"
+					+ "<cancel_time>" + returnNote.getCancelTime() + "</cancel_time>"
+					+ "<check_time>" + returnNote.getCheckTime() + "</check_time>"
+					+ "<diy_site_address>" + returnNote.getDiySiteAddress() + "</diy_site_address>"
+					+ "<diy_site_id>" + returnNote.getDiySiteId() + "</diy_site_id>"
+					+ "<diy_site_tel>" + returnNote.getDiySiteTel() + "</diy_site_tel>"
+					+ "<diy_site_title>" + returnNote.getDiySiteTitle() + "</diy_site_title>" 
+					+ "<manager_remark_info>" + returnNote.getManagerRemarkInfo() + "</manager_remark_info>"
+					+ "<order_number>" + returnNote.getOrderNumber() + "</order_number>"
+					+ "<order_time>" + date + "</order_time>"
+					+ "<pay_type_id>" + returnNote.getPayTypeId() + "</pay_type_id>"
+					+ "<pay_type_title>" + returnNote.getPayTypeTitle() + "</pay_type_title>"
+					+ "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>"
+					+ "<return_number>" + returnNote.getReturnNumber() + "</return_number>"
+					+ "<return_time>" + returnNote.getReturnTime() + "</return_time>"
+					+ "<sort_id>" + returnNote.getSortId() + "</sort_id>"
+					+ "<status_id>" + returnNote.getStatusId() + "</status_id>"
+					+ "<username>" + returnNote.getUsername() + "</username>"
+					+ "<deliver_type_title>" + returnNote.getDeliverTypeTitle() + "</deliver_type_title>"
+					+ "<turn_price>" + returnNote.getTurnPrice() + "</turn_price>"
+					+ "<turn_type>" + returnNote.getTurnType() + "</turn_type>"
+					+ "<shopping_address>" + returnNote.getShoppingAddress() + "</shopping_address>" 
+					+ "<seller_real_name>" + returnNote.getSellerRealName() + "</seller_real_name>" 
+					+ "</TABLE>"
+					+ "</ERP>";
+
+			xmlStr = xmlStr.replace("null", "");
+			byte[] bs = xmlStr.getBytes();
+			byte[] encodeByte = Base64.encode(bs);
+			try {
+				encodeXML = new String(encodeByte, "UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				System.err.println("MDJ_WMS:XML 编码出错!");
+				return "FAILED";
+			}
+		}
+		else if (type == 5) //单品退货：明细
+		{
+			TdOrderGoods requisitionGoods = (TdOrderGoods) object;
+			String xmlStr = "<ERP>"
+					+ "<TABLE>"
+					+ "<id>" + requisitionGoods.getId() + "</id>"
+					+ "<goods_code>" + requisitionGoods.getSku() + "</goods_code>"
+					+ "<goods_title>" + requisitionGoods.getGoodsTitle() + "</goods_title>"
+					+ "<price>" + requisitionGoods.getPrice() + "</price>"
+					+ "<quantity>" + requisitionGoods.getQuantity() + "</quantity>"
+					+ "<td_requisition_id></td_requisition_id>"
+					+ "<order_number>" + requisitionGoods.getReturnNoteNumber() + "</order_number>"
+					+ "<sub_order_number>" + requisitionGoods.getSubOrderNumber() + "</sub_order_number>"
+					+ "</TABLE>"
+					+ "</ERP>";
+
+			byte[] bs = xmlStr.getBytes();
+			byte[] encodeByte = Base64.encode(bs);
+			try {
+				encodeXML = new String(encodeByte, "UTF-8");
+			} catch (UnsupportedEncodingException e1) {
+				System.err.println("MDJ_WMS:XML 编码出错!");
+				return "FAILED";
+			}
+		}
 		return encodeXML;
 	}
 
@@ -2226,6 +2297,67 @@ public class TdCommonService {
 
 		if (errorMsg != null) {
 			writeErrorLog(note.getOrderNumber(), "退货单", errorMsg);
+		}
+	}
+	public void sendBackToWMS(TdReturnNote note) {
+		if (null == note) {
+			return;
+		}
+		Object[] objects = null;
+
+		if (note != null && note.getReturnGoodsList() != null)
+		{
+			for (TdOrderGoods orderGoods : note.getReturnGoodsList()) 
+			{
+				String xmlReturnGoodsEncode = XMLMakeAndEncode(orderGoods, 5);
+				try 
+				{
+					objects = WMSClient.invoke(WMSName, "td_requisition_goods_return", "1", xmlReturnGoodsEncode);
+				} 
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					writeErrorLog(note.getReturnNumber() + ":" + orderGoods.getSku(), "退货单", e.getMessage());
+				}
+				String result = "";
+				if (objects != null)
+				{
+					for (Object object : objects)
+					{
+						result += object;
+					}
+				}
+				String errorMsg = chectResult1(result);
+				
+				if (errorMsg != null)
+				{
+					writeErrorLog(note.getReturnNumber() + ":" + orderGoods.getSku(), "退货单", errorMsg);
+				}
+			}
+			String xmlReturnEncode = XMLMakeAndEncode(note, 4);
+			try 
+			{
+				objects = WMSClient.invoke(WMSName, "td_return_note_return", "1", xmlReturnEncode);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				writeErrorLog(note.getReturnNumber(), "退货单", e.getMessage());
+			}
+			String result = "";
+			if (objects != null) 
+			{
+				for (Object object : objects)
+				{
+					result += object;
+				}
+			}
+			String errorMsg = chectResult1(result);
+			
+			if (errorMsg != null) 
+			{
+				writeErrorLog(note.getOrderNumber(), "退货单", errorMsg);
+			}
 		}
 	}
 

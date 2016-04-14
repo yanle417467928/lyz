@@ -1871,6 +1871,8 @@ public class TdUserController {
 										orderGoods.setGoodsTitle(oGoods.getTitle());
 										orderGoods.setPrice(unit);
 										orderGoods.setQuantity(quantity);
+										orderGoods.setReturnNoteNumber(returnNote.getReturnNumber());
+										orderGoods.setSubOrderNumber(order.getOrderNumber());
 
 										// orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
 										// orderGoods.setPoints(oGoods.getPoints());
@@ -1907,7 +1909,7 @@ public class TdUserController {
 			order.setIsRefund(true);
 			tdOrderService.save(order);
 			tdReturnNoteService.save(returnNote);
-			tdCommonService.sendBackMsgToWMS(returnNote);
+			tdCommonService.sendBackToWMS(returnNote);
 		}
 
 		res.put("status", 0);
