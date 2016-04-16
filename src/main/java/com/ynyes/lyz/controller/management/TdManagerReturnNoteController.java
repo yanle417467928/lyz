@@ -486,155 +486,24 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
         sheet.setColumnWidth(13 , 13*256);//退货数量
         sheet.setColumnWidth(14 , 13*256);//退货单价
         sheet.setColumnWidth(15 , 13*256);//退货金额
-        sheet.setColumnWidth(16 , 13*256);//退现金卷金额
-        sheet.setColumnWidth(17 , 13*256);//退产品卷金额
-        sheet.setColumnWidth(18 , 13*256);//客户备注
-        sheet.setColumnWidth(19 , 13*256);//中转仓
-        sheet.setColumnWidth(20 , 13*256);//配送人员
-        sheet.setColumnWidth(21 , 13*256);//配送人电话
-        sheet.setColumnWidth(22 , 13*256);//退货地址
+//        sheet.setColumnWidth(16 , 13*256);//退现金卷金额
+//        sheet.setColumnWidth(17 , 13*256);//退产品卷金额
+        sheet.setColumnWidth(16 , 13*256);//客户备注
+        sheet.setColumnWidth(17 , 13*256);//中转仓
+        sheet.setColumnWidth(18 , 13*256);//配送人员
+        sheet.setColumnWidth(19 , 13*256);//配送人电话
+        sheet.setColumnWidth(20 , 13*256);//退货地址
         
 		HSSFRow row = sheet.createRow(0);
 		String[] cellValues={"退货门店","原订单号","退货单号","退货单状态","品牌","商品类别","导购","订单日期","退货日期","客户名称",
-				"客户电话","产品编号","产品名称","退货数量","退货单价","退货金额","退现金卷金额","退产品卷金额","客户备注","中转仓",
-				"配送人员","配送人电话","退货地址"};
+				"客户电话","产品编号","产品名称","退货数量","退货单价","退货金额","客户备注","中转仓","配送人员","配送人电话",
+				"退货地址"};
 		cellDates(cellValues, style, row);
 		
 		Date begin = stringToDate(begindata,null);
 		Date end = stringToDate(enddata,null);
 		
-//		String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
-//		List<TdReturnNote> returnList = tdReturnNoteService.findByOrderTimeOrderByOrderTimeDesc(begin, end,siteName);
-//		
-		/*List<TdReturnNote> returnList = null;
-       
-        
-        	if(tdManagerRole.getTitle().equalsIgnoreCase("超级管理组") &&  null != city && !city.equals(0L)){
-        		List<TdDiySite> siteList =tdDiySiteService.findByCityId(city);
-        		List<String> siteNamesList=new ArrayList<String>();
-        		if(null != siteList){
-        			for (TdDiySite site : siteList) {
-            			siteNamesList.add(site.getTitle());
-    				}
-        		}
-        		returnList =tdReturnNoteService.findByOrderTimeOrderByOrderTimeDesc(begin, end,null,siteNamesList);
-        		
-        	}else{
-        		String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
-        		returnList = tdReturnNoteService.findByOrderTimeOrderByOrderTimeDesc(begin, end,siteName,null);
-        	}
-        
-		
-		
-		if (returnList != null && returnList.size()>0)
-		{
-			Integer i = 1;
-			for (TdReturnNote returnNote : returnList) {
-				if(null!= returnNote.getReturnGoodsList() && returnNote.getReturnGoodsList().size()>0){
-					for(TdOrderGoods good:returnNote.getReturnGoodsList()){
-						row = sheet.createRow(i);
-						if (returnNote.getDiySiteTitle() != null)
-						{//退货门店
-							row.createCell(0).setCellValue(returnNote.getDiySiteTitle());
-						}
-						if (returnNote.getOrderNumber() != null)
-						{//原订单号
-							row.createCell(1).setCellValue(returnNote.getOrderNumber());
-							TdOrder order= tdOrderService.findByOrderNumber(returnNote.getOrderNumber());
-							if(null != order){
-								TdUser user= tdUserSerrvice.findByUsername(order.getUsername());
-								if(user!=null){
-									row.createCell(9).setCellValue(user.getRealName());//客户名称 
-								}
-								row.createCell(10).setCellValue(order.getUsername());// 客户电话
-								row.createCell(6).setCellValue(order.getSellerRealName());//导购
-					        	row.createCell(16).setCellValue(order.getCashCoupon());//退现金卷金额
-					            row.createCell(17).setCellValue(order.getProductCoupon());//退产品卷金额
-					        	row.createCell(22).setCellValue(order.getShippingAddress());//退货地址
-							}
-							if(StringUtils.isNotBlank(order.getMainOrderNumber())){
-								TdUser user= tdUserSerrvice.searchDriverByMainOrderNumber(order.getMainOrderNumber());
-								if(user!=null){
-									row.createCell(20).setCellValue(user.getRealName());//配送人员
-						        	row.createCell(21).setCellValue(user.getUsername());//配送人员电话
-								}
-							}
-							
-						}
-						if (returnNote.getReturnNumber() != null)
-						{//退货单号
-							row.createCell(2).setCellValue(returnNote.getReturnNumber());
-						}
-						if (returnNote.getStatusId() != null)
-						{//退货单状态
-							if(returnNote.getStatusId().equals(1L)){
-								row.createCell(3).setCellValue("确认退货单");
-							}
-							if(returnNote.getStatusId().equals(2L)){
-								row.createCell(3).setCellValue("通知物流");
-							}
-							if(returnNote.getStatusId().equals(3L)){
-								row.createCell(3).setCellValue("验货确认");
-							}
-							if(returnNote.getStatusId().equals(4L)){
-								row.createCell(3).setCellValue("确认退款");
-							}
-							if(returnNote.getStatusId().equals(1L)){
-								row.createCell(3).setCellValue("已完成");
-							}
-						}
-						if (good.getBrandTitle() != null)
-						{//品牌
-							row.createCell(4).setCellValue(good.getBrandTitle());
-						}
-						if (good.getGoodsId() != null)
-						{//商品类别
-							TdGoods g= tdGoodsService.findOne(good.getGoodsId());
-							if(null != g && null != g.getCategoryTitle())
-							row.createCell(5).setCellValue(g.getCategoryTitle());
-						}
-						if (returnNote.getOrderTime() != null)
-						{//订单日期
-							row.createCell(7).setCellValue(returnNote.getOrderTime().toString());
-						}
-						if (returnNote.getCancelTime() != null)
-						{//退货日期
-							row.createCell(8).setCellValue(returnNote.getCancelTime().toString());
-						}
-						if (good.getSku() != null)
-						{//产品编号
-							row.createCell(11).setCellValue(good.getSku());
-						}
-						if (good.getGoodsTitle() != null)
-			        	{//产品名称
-			            	row.createCell(12).setCellValue(good.getGoodsTitle());
-			    		}
-			        	if (good.getQuantity() != null)
-			        	{//退货数量
-			            	row.createCell(13).setCellValue(good.getQuantity());
-			    		}
-						if (good.getPrice() != null)
-						{//退货单价
-							row.createCell(14).setCellValue(good.getPrice());
-						}
-						
-			        	if (returnNote.getTurnPrice() != null)
-			        	{//退货总价
-			        		row.createCell(15).setCellValue(returnNote.getTurnPrice());
-						}
-			        	
-			        	if(returnNote.getRemarkInfo() != null){//客户备注
-			        		row.createCell(18).setCellValue(returnNote.getRemarkInfo());
-			        	}
-			        	if(returnNote.getRemarkInfo() != null){//中转仓
-			        		row.createCell(19).setCellValue(returnNote.getRemarkInfo());
-			        	}
-			        	
-						i++;
-					}
-				}
-			}
-		}*/
+
 		if(null==begin){
 			begin=getStartTime();
 		}
@@ -669,11 +538,11 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 									row.createCell(9).setCellValue(returnReport.getRealName());//客户名称 
 								row.createCell(10).setCellValue(returnReport.getUsername());// 客户电话
 								row.createCell(6).setCellValue(returnReport.getSellerRealName());//导购
-					        	row.createCell(16).setCellValue(returnReport.getCashCoupon());//退现金卷金额
-					            row.createCell(17).setCellValue(returnReport.getProductCoupon());//退产品卷金额
-					        	row.createCell(22).setCellValue(returnReport.getShippingAddress());//退货地址
-									row.createCell(20).setCellValue(returnReport.getDeliverRealName());//配送人员
-						        	row.createCell(21).setCellValue(returnReport.getDeliverUsername());//配送人员电话
+//					        	row.createCell(16).setCellValue(returnReport.getCashCoupon());//退现金卷金额
+//					            row.createCell(17).setCellValue(returnReport.getProductCoupon());//退产品卷金额
+					        	row.createCell(20).setCellValue(returnReport.getShippingAddress());//退货地址
+									row.createCell(18).setCellValue(returnReport.getDeliverRealName());//配送人员
+						        	row.createCell(19).setCellValue(returnReport.getDeliverUsername());//配送人员电话
 							
 						}
 						if (returnReport.getReturnNumber() != null)
@@ -731,16 +600,16 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 							row.createCell(14).setCellValue(returnReport.getPrice());
 						}
 						
-			        	if (returnReport.getTurnPrice() != null)
+			        	if (returnReport.getQuantity() != null && returnReport.getPrice() != null)
 			        	{//退货总价
-			        		row.createCell(15).setCellValue(returnReport.getTurnPrice());
+			        		row.createCell(15).setCellValue(returnReport.getQuantity()*returnReport.getPrice());
 						}
 			        	
 			        	if(returnReport.getRemarkInfo() != null){//客户备注
-			        		row.createCell(18).setCellValue(returnReport.getRemarkInfo());
+			        		row.createCell(16).setCellValue(returnReport.getRemarkInfo());
 			        	}
 			        	if(returnReport.getWhNo() != null){//中转仓
-			        		row.createCell(19).setCellValue(tdCommonService.changeName(returnReport.getWhNo()));
+			        		row.createCell(17).setCellValue(tdCommonService.changeName(returnReport.getWhNo()));
 			        	}
 			        	
 						i++;
