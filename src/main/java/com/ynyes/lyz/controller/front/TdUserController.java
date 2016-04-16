@@ -1793,6 +1793,7 @@ public class TdUserController {
 			if (null != order.getDiySiteId()) {
 				TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
 				returnNote.setDiySiteId(order.getDiySiteId());
+				returnNote.setDiyCode(diySite.getStoreCode());
 				returnNote.setDiySiteTel(diySite.getServiceTele());
 				returnNote.setDiySiteTitle(diySite.getTitle());
 				returnNote.setDiySiteAddress(diySite.getAddress());
@@ -1814,13 +1815,13 @@ public class TdUserController {
 			// 原订单配送方式
 			if ("门店自提".equals(order.getDeliverTypeTitle())) {
 				if (turnType == 1) {
-					returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
+					returnNote.setStatusId(2L); // 门店自提单-门店到店退货 待验货
 				} else {
 					returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
 				}
 			} else {
 				if (turnType == 1) {
-					returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
+					returnNote.setStatusId(2L); // 送货上门单 门店到店退货 待验货
 				} else {
 					returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
 				}

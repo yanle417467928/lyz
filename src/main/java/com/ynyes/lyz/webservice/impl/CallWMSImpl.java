@@ -789,19 +789,21 @@ public class CallWMSImpl implements ICallWMS {
 				TdReturnNote tdReturnNote = tdReturnNoteService.findByReturnNumber(c_po_no);
 				if (tdReturnNote != null) 
 				{
-					tdReturnNote.setStatusId(5L);
-					
-					TdOrder order = tdOrderService.findByOrderNumber(tdReturnNote.getOrderNumber());
-					if (order != null)
-					{
-						if (order.getStatusId() == 9 || order.getStatusId() == 10 || order.getStatusId() == 11 || order.getStatusId() == 12)
-						{
-							order.setStatusId(12L);
-							tdOrderService.save(order);
-						}
-						TdUser tdUser = tdUserService.findByUsername(order.getUsername());
-						tdPriceCountService.cashAndCouponBack(order, tdUser);
-					}
+//					tdReturnNote.setStatusId(5L);
+//					
+//					TdOrder order = tdOrderService.findByOrderNumber(tdReturnNote.getOrderNumber());
+//					if (order != null)
+//					{
+//						if (order.getStatusId() == 9 || order.getStatusId() == 10 || order.getStatusId() == 11 || order.getStatusId() == 12)
+//						{
+//							order.setStatusId(12L);
+//							tdOrderService.save(order);
+//						}
+//						TdUser tdUser = tdUserService.findByUsername(order.getUsername());
+//						tdPriceCountService.cashAndCouponBack(order, tdUser);
+//					}
+					tdReturnNote.setDriver(driver);
+					tdReturnNoteService.save(tdReturnNote);
 				}
 				
 //				if (c_reserved1 != null) 

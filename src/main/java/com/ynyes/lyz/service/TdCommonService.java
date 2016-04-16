@@ -210,6 +210,7 @@ public class TdCommonService {
 		if (null != order.getDiySiteId()) {
 			TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
 			returnNote.setDiySiteId(order.getDiySiteId());
+			returnNote.setDiyCode(diySite.getStoreCode());
 			returnNote.setDiySiteTel(diySite.getServiceTele());
 			returnNote.setDiySiteTitle(diySite.getTitle());
 			returnNote.setDiySiteAddress(diySite.getAddress());
@@ -2191,7 +2192,7 @@ public class TdCommonService {
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + returnNote.getId() + "</id>" + "<cancel_time>"
 					+ returnNote.getCancelTime() + "</cancel_time>" + "<check_time>" + returnNote.getCheckTime()
 					+ "</check_time>" + "<diy_site_address>" + returnNote.getDiySiteAddress() + "</diy_site_address>"
-					+ "<diy_site_id>" + returnNote.getDiySiteId() + "</diy_site_id>" + "<diy_site_tel>"
+					+ "<diy_site_id>" + returnNote.getDiyCode() + "</diy_site_id>" + "<diy_site_tel>"
 					+ returnNote.getDiySiteTel() + "</diy_site_tel>" + "<diy_site_title>" + returnNote.getDiySiteTitle()
 					+ "</diy_site_title>" + "<manager_remark_info>" + returnNote.getManagerRemarkInfo()
 					+ "</manager_remark_info>" + "<order_number>" + returnNote.getOrderNumber() + "</order_number>"
