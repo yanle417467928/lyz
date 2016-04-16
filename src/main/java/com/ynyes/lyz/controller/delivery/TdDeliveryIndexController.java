@@ -495,7 +495,7 @@ public class TdDeliveryIndexController {
 	}
 
 	/**
-	 * 确认收货
+	 * 确认从门店取货
 	 * 
 	 * @param id
 	 * @param req
@@ -529,18 +529,18 @@ public class TdDeliveryIndexController {
 		returnNote.setRecvTime(new Date());
 
 		returnNote = tdReturnNoteService.save(returnNote);
-
-		// 获取主单id
-		String orderNumber = returnNote.getOrderNumber();
-		TdOrder order = tdOrderService.findByOrderNumber(orderNumber);
-
-		// 自动通知WMS
-		tdCommonService.sendBackMsgToWMS(returnNote);
 		
+//		 自动通知WMS
+//		tdCommonService.sendBackMsgToWMS(returnNote);
+		
+		// 获取主单id
+//		String orderNumber = returnNote.getOrderNumber();
+		
+//		TdOrder order = tdOrderService.findByOrderNumber(orderNumber);
 		//退还钱/券
-		if (null != order) {
-			tdPriceCountService.actAccordingWMS(returnNote, order.getId());
-		}
+//		if (null != order) {
+//			tdPriceCountService.actAccordingWMS(returnNote, order.getId());
+//		}
 		res.put("code", 0);
 
 		return res;
