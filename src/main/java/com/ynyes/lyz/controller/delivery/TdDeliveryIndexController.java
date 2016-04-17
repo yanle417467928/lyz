@@ -641,7 +641,7 @@ public class TdDeliveryIndexController {
 						returnNote.setDriver(user.getOpUser());
 
 						// 待取货
-						returnNote.setStatusId(2L);
+						returnNote.setStatusId(1L);
 
 						returnNote.setDeliverTypeTitle(subOrder.getDeliverTypeTitle());
 						returnNote.setOrderTime(new Date());
