@@ -743,8 +743,8 @@ public class TdPriceCountService {
 		TdUser user = tdUserService.findOne(userId);
 		String cityName = user.getCityName();
 		TdCity city = tdCityService.findByCityName(cityName);
-		if (null != order && null != params && !"".equals(params)
-				&& !(null != order.getIsRefund() && order.getIsRefund())) {
+		if (null != order && null != params && !"".equals(params) && (null != order.getIsRefund() && order.getIsRefund())) 
+		{
 			Map<String, Object> result = this.countCouponCondition(orderId);
 
 			Boolean useProCashCoupon = (Boolean) result.get("useProCashCoupon");
