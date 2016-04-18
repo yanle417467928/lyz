@@ -19,6 +19,14 @@ public class TdDiySiteInventory {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	// 城市编码
+	@Column
+	private String regionId;
+	
+	// 城市名
+	@Column
+	private String regionName;
+	
 	// 门店id
 	@Column
 	private Long diySiteId;
