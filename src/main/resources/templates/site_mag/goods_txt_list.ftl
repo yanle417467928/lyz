@@ -174,8 +174,8 @@ function __doPostBack(eventTarget, eventArgument) {
         <th align="left">商品名称</th>
         <th align="left" width="15%">商品编码</th>
         <th align="left" width="12%">所属类别</th>
-        <th align="left" width="16%">上架时间</th>
-        <th align="left" width="65">排序</th>
+        <th align="left" width="12%">上架时间</th>
+        <th align="left" width="1%">排序</th>
         <#--<th align="left" width="110">属性</th>-->
         <th width="8%">操作</th>
     </tr>
