@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +65,7 @@ public class TdAgencyFundService {
 	 * 根据时间,城市,门店查询代销售报表
 	 * @return
 	 */
-	public List<TdAgencyFund> searchAgencyFund(Date begin,Date end,String cityName,String diySiteCode){
+	public List<TdAgencyFund> searchAgencyFund(Date begin,Date end,String cityName,String diySiteCode,String username){
 		Criteria<TdAgencyFund> c = new Criteria<TdAgencyFund>();
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
@@ -71,10 +73,13 @@ public class TdAgencyFundService {
 			c.add(Restrictions.lte("orderTime", end, true));
 		}
 		if(StringUtils.isNotBlank(cityName)){
-			c.add( Restrictions.eq("city", cityName, true));
+			c.add( Restrictions.eq("cityName", cityName, true));
 		}
 		if(StringUtils.isNotBlank(diySiteCode)){
 			c.add( Restrictions.eq("diySiteCode", diySiteCode, true));
+		}
+		if(StringUtils.isNotBlank(username)){
+			c.add( Restrictions.eq("createUsername", username, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
@@ -84,7 +89,34 @@ public class TdAgencyFundService {
 	 * @return 
 	 * @return
 	 */
-	public void callInsertAgencyFund(Date start,Date end){
-		repository.callInsertAgencyFund(start, end);
+	public void callInsertAgencyFund(Date start,Date end,String username){
+		repository.callInsertAgencyFund(start, end,username);
+	}
+	/**
+	 * 根据时间,城市,门店查询代销售报表
+	 * @return
+	 */
+	public Page<TdAgencyFund> searchList(String keywords,Date begin,Date end,String cityName,String diySiteCode,String username,int size,int page){
+		PageRequest pageRequest = new PageRequest(page, size);
+		Criteria<TdAgencyFund> c = new Criteria<TdAgencyFund>();
+		if (null != keywords && !keywords.equalsIgnoreCase("")) {
+			c.add(Restrictions.like("orderNumber", keywords, true));
+		}
+		if(null!=begin){
+			c.add(Restrictions.gte("orderTime", begin, true));
+		}if(null!=end){
+			c.add(Restrictions.lte("orderTime", end, true));
+		}
+		if(StringUtils.isNotBlank(cityName)){
+			c.add( Restrictions.eq("cityName", cityName, true));
+		}
+		if(StringUtils.isNotBlank(diySiteCode)){
+			c.add( Restrictions.eq("diySiteCode", diySiteCode, true));
+		}
+		if(StringUtils.isNotBlank(username)){
+			c.add( Restrictions.eq("createUsername", username, true));
+		}
+		c.setOrderByDesc("orderTime");
+		return repository.findAll(c,pageRequest);
 	}
 }

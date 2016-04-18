@@ -67,7 +67,7 @@ public interface TdAgencyFundRepo extends PagingAndSortingRepository<TdAgencyFun
 	 * 调用存储过程
 	 * @return
 	 */
-	@Query(value = "{call insertAgencyFund_initial(?1,?2)}",nativeQuery = true)
-	void callInsertAgencyFund(Date start,Date end);
+	@Query(value = "{call insertAgencyFund_initial(?1,?2,?3)}",nativeQuery = true)
+	void callInsertAgencyFund(Date start,Date end,String username);
 	
 }

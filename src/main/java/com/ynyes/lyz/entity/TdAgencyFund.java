@@ -87,13 +87,16 @@ public class TdAgencyFund {
 	private Date deliveryTime;
 	// 城市
 	@Column
-	private String city;
+	private String cityName;
 	// 配送门店id
 	@Column
 	private String diySiteCode;
 	// 配送方式名称
 	@Column
 	private String deliverTypeTitle;
+	//创建人
+	private String createUsername;
+	
 	
 	public Long getId() {
 		return id;
@@ -233,11 +236,11 @@ public class TdAgencyFund {
 	public void setDeliveryTime(Date deliveryTime) {
 		this.deliveryTime = deliveryTime;
 	}
-	public String getCity() {
-		return city;
+	public String getCityName() {
+		return cityName;
 	}
-	public void setCity(String city) {
-		this.city = city;
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
 	}
 	public String getDiySiteCode() {
 		return diySiteCode;
@@ -250,6 +253,12 @@ public class TdAgencyFund {
 	}
 	public void setDeliverTypeTitle(String deliverTypeTitle) {
 		this.deliverTypeTitle = deliverTypeTitle;
+	}
+	public String getCreateUsername() {
+		return createUsername;
+	}
+	public void setCreateUsername(String createUsername) {
+		this.createUsername = createUsername;
 	}
 	
 	

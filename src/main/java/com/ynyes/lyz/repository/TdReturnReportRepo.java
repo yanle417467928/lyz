@@ -22,6 +22,6 @@ public interface TdReturnReportRepo extends PagingAndSortingRepository<TdReturnR
 	 * 调用存储过程
 	 * @return
 	 */
-	@Query(value = "{call insertReturnReport_initial(?1,?2)}",nativeQuery = true)
-	void callInsertReturnReport(Date start,Date end);
+	@Query(value = "{call insertReturnReport_initial(?1,?2,?3)}",nativeQuery = true)
+	void callInsertReturnReport(Date start,Date end,String username);
 }

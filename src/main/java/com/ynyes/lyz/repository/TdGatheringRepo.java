@@ -22,7 +22,7 @@ public interface TdGatheringRepo extends PagingAndSortingRepository<TdGathering,
 	 * 调用存储过程
 	 * @return
 	 */
-	@Query(value = "{call insertGathering_initial(?1,?2)}",nativeQuery = true)
-	void callInsertGathering(Date start,Date end);
+	@Query(value = "{call insertGathering_initial(?1,?2,?3)}",nativeQuery = true)
+	void callInsertGathering(Date start,Date end,String username);
 	
 }

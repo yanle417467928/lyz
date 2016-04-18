@@ -5,18 +5,12 @@ import static org.apache.commons.lang3.StringUtils.leftPad;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,14 +22,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ibm.icu.util.Calendar;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdReturnNote;
-import com.ynyes.lyz.entity.TdReturnReport;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserTurnRecord;
 import com.ynyes.lyz.service.TdCityService;
@@ -425,182 +417,6 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 		return "redirect:/Verwalter/returnNote/returnNote/list";
 	}
 	
-	@RequestMapping(value = "/downdatareturnorder")
-	@ResponseBody
-	public String downdatareturnorder(HttpServletRequest req,ModelMap map,String begindata,String enddata,HttpServletResponse response,String diyCode,String city)
-	{
-		String username = (String) req.getSession().getAttribute("manager");
-		if (null == username)
-		{
-			return "redirect:/Verwalter/login";
-		}
-		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
-		TdManagerRole tdManagerRole = null;
-		if (tdManager != null && tdManager.getRoleId() != null)
-		{
-			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
-		}
-		if (tdManagerRole == null)
-		{
-			return "redirect:/Verwalter/login";
-		}
-		
-		HSSFWorkbook workbook = new HSSFWorkbook();
-		HSSFCellStyle style = workbook.createCellStyle();
-		style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-		style.setWrapText(true);
-		
-		HSSFSheet sheet = workbook.createSheet("退货报表");
-		//列宽
-		sheet.setColumnWidth(0 , 10*256);//退货门店
-        sheet.setColumnWidth(1 , 25*256);//原订单号
-        sheet.setColumnWidth(2 , 20*256);//退货单号
-        sheet.setColumnWidth(3 , 13*256);//退货单状态
-        sheet.setColumnWidth(4 , 13*256);//品牌
-        sheet.setColumnWidth(5 , 13*256);//商品类别
-        sheet.setColumnWidth(6 , 13*256);//导购
-        sheet.setColumnWidth(7 , 13*256);//订单日期
-        sheet.setColumnWidth(8 , 13*256);//退货日期
-        sheet.setColumnWidth(9 , 13*256);//客户名称
-        sheet.setColumnWidth(10 , 13*256);//客户电话
-        sheet.setColumnWidth(11 , 13*256);//产品编号
-        sheet.setColumnWidth(12 , 26*256);//产品名称
-        sheet.setColumnWidth(13 , 13*256);//退货数量
-        sheet.setColumnWidth(14 , 13*256);//退货单价
-        sheet.setColumnWidth(15 , 13*256);//退货金额
-//        sheet.setColumnWidth(16 , 13*256);//退现金卷金额
-//        sheet.setColumnWidth(17 , 13*256);//退产品卷金额
-        sheet.setColumnWidth(16 , 13*256);//客户备注
-        sheet.setColumnWidth(17 , 13*256);//中转仓
-        sheet.setColumnWidth(18 , 13*256);//配送人员
-        sheet.setColumnWidth(19 , 13*256);//配送人电话
-        sheet.setColumnWidth(20 , 13*256);//退货地址
-        
-		HSSFRow row = sheet.createRow(0);
-		String[] cellValues={"退货门店","原订单号","退货单号","退货单状态","品牌","商品类别","导购","订单日期","退货日期","客户名称",
-				"客户电话","产品编号","产品名称","退货数量","退货单价","退货金额","客户备注","中转仓","配送人员","配送人电话",
-				"退货地址"};
-		cellDates(cellValues, style, row);
-		
-		Date begin = stringToDate(begindata,null);
-		Date end = stringToDate(enddata,null);
-		
-
-		if(null==begin){
-			begin=getStartTime();
-		}
-		if(null==end){
-			end=getEndTime();
-		}
-        try {//调用存储过程 报错
-        	tdReturnReportService.callInsertReturnReport(begin, end);
-    	} catch (Exception e) {
-    		System.out.println(e);
-    	}
-        
-    	if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
-		{
-        	diyCode=tdManager.getDiyCode();
-        	city=null;
-		}
-        List<TdReturnReport> returnReportList = tdReturnReportService.searchReturnReport(begin,end, city, diyCode);
-	
-		if (returnReportList != null && returnReportList.size()>0)
-		{
-			Integer i = 1;
-			for (TdReturnReport returnReport : returnReportList) {
-						row = sheet.createRow(i);
-						if (returnReport.getDiySiteName() != null)
-						{//退货门店
-							row.createCell(0).setCellValue(returnReport.getDiySiteName());
-						}
-						if (returnReport.getOrderNumber() != null)
-						{//原订单号
-							row.createCell(1).setCellValue(returnReport.getOrderNumber());
-									row.createCell(9).setCellValue(returnReport.getRealName());//客户名称 
-								row.createCell(10).setCellValue(returnReport.getUsername());// 客户电话
-								row.createCell(6).setCellValue(returnReport.getSellerRealName());//导购
-//					        	row.createCell(16).setCellValue(returnReport.getCashCoupon());//退现金卷金额
-//					            row.createCell(17).setCellValue(returnReport.getProductCoupon());//退产品卷金额
-					        	row.createCell(20).setCellValue(returnReport.getShippingAddress());//退货地址
-									row.createCell(18).setCellValue(returnReport.getDeliverRealName());//配送人员
-						        	row.createCell(19).setCellValue(returnReport.getDeliverUsername());//配送人员电话
-							
-						}
-						if (returnReport.getReturnNumber() != null)
-						{//退货单号
-							row.createCell(2).setCellValue(returnReport.getReturnNumber());
-						}
-						if (returnReport.getStatusId() != null)
-						{//退货单状态
-							if(returnReport.getStatusId().equals(1L)){
-								row.createCell(3).setCellValue("确认退货单");
-							}
-							if(returnReport.getStatusId().equals(2L)){
-								row.createCell(3).setCellValue("通知物流");
-							}
-							if(returnReport.getStatusId().equals(3L)){
-								row.createCell(3).setCellValue("验货确认");
-							}
-							if(returnReport.getStatusId().equals(4L)){
-								row.createCell(3).setCellValue("确认退款");
-							}
-							if(returnReport.getStatusId().equals(1L)){
-								row.createCell(3).setCellValue("已完成");
-							}
-						}
-						if (returnReport.getBrandTitle() != null)
-						{//品牌
-							row.createCell(4).setCellValue(returnReport.getBrandTitle());
-						}
-						if (returnReport.getCategoryTitle() != null)
-						{//商品类别
-							row.createCell(5).setCellValue(returnReport.getCategoryTitle());
-						}
-						if (returnReport.getOrderTime() != null)
-						{//订单日期
-							row.createCell(7).setCellValue(returnReport.getOrderTime().toString());
-						}
-						if (returnReport.getCancelTime() != null)
-						{//退货日期
-							row.createCell(8).setCellValue(returnReport.getCancelTime().toString());
-						}
-						if (returnReport.getSku() != null)
-						{//产品编号
-							row.createCell(11).setCellValue(returnReport.getSku());
-						}
-						if (returnReport.getGoodsTitle() != null)
-			        	{//产品名称
-			            	row.createCell(12).setCellValue(returnReport.getGoodsTitle());
-			    		}
-			        	if (returnReport.getQuantity() != null)
-			        	{//退货数量
-			            	row.createCell(13).setCellValue(returnReport.getQuantity());
-			    		}
-						if (returnReport.getPrice() != null)
-						{//退货单价
-							row.createCell(14).setCellValue(returnReport.getPrice());
-						}
-						
-			        	if (returnReport.getQuantity() != null && returnReport.getPrice() != null)
-			        	{//退货总价
-			        		row.createCell(15).setCellValue(returnReport.getQuantity()*returnReport.getPrice());
-						}
-			        	
-			        	if(returnReport.getRemarkInfo() != null){//客户备注
-			        		row.createCell(16).setCellValue(returnReport.getRemarkInfo());
-			        	}
-			        	if(returnReport.getWhNo() != null){//中转仓
-			        		row.createCell(17).setCellValue(tdCommonService.changeName(returnReport.getWhNo()));
-			        	}
-			        	
-						i++;
-					}
-		}
-		
-		download(workbook, "1", response,"退货报表");
-		return "";
-	}
 
 	@ModelAttribute
 	public void getModel(@RequestParam(value = "returnNoteId", required = false) Long returnNoteId, Model model) {
@@ -631,47 +447,4 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 		}
 	}
 
-	private void btnSave(String type, Long[] ids, Double[] sortIds) {
-		if (null == type || type.isEmpty()) {
-			return;
-		}
-
-		if (null == ids || null == sortIds || ids.length < 1 || sortIds.length < 1) {
-			return;
-		}
-
-		for (int i = 0; i < ids.length; i++) {
-			Long id = ids[i];
-
-			if (type.equalsIgnoreCase("returnNote")) {
-				TdReturnNote e = tdReturnNoteService.findOne(id);
-
-				if (null != e) {
-					if (sortIds.length > i) {
-						e.setSortId(new Double(sortIds[i]));
-						tdReturnNoteService.save(e);
-					}
-				}
-			}
-
-		}
-	}
-	private Date getStartTime(){  
-        Calendar todayStart = Calendar.getInstance();
-        todayStart.set(2016, 0, 0);
-        todayStart.set(Calendar.HOUR, 0);  
-        todayStart.set(Calendar.MINUTE, 0);  
-        todayStart.set(Calendar.SECOND, 0);  
-        todayStart.set(Calendar.MILLISECOND, 0);  
-        return todayStart.getTime();  
-    }  
-      
-    private Date getEndTime(){  
-        Calendar todayEnd = Calendar.getInstance();  
-        todayEnd.set(Calendar.HOUR, 23);  
-        todayEnd.set(Calendar.MINUTE, 59);  
-        todayEnd.set(Calendar.SECOND, 59);  
-        todayEnd.set(Calendar.MILLISECOND, 999);  
-        return todayEnd.getTime();  
-    }
 }
