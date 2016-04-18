@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -1095,7 +1096,7 @@ public class TdManagerGoodsController {
 	 * @return
 	 */
 	@RequestMapping(value = "/inventory/list")
-	public String inventoryList(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,String __EVENTARGUMENT, String __VIEWSTATE, Long regionId, Long siteId, Long[] listId, Integer[] listChkId) {
+	public String inventoryList(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,String __EVENTARGUMENT, String __VIEWSTATE, String keywords,Long regionId, Long siteId, Long[] listId, Integer[] listChkId) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username)
 		{
@@ -1144,8 +1145,22 @@ public class TdManagerGoodsController {
 		{
 			diysite_list = tdDiySiteService.findAll();
 		}
+		
+		
 		map.addAttribute("site_list", diysite_list);
 		map.addAttribute("inventory_page", tdDiySiteInventoryService.findAll(page,size));
+		if (StringUtils.isNotBlank(keywords)) 
+		{
+			if (regionId != null)
+			{
+				
+			}
+			else if (siteId != null)
+			{
+				
+			}
+		}
+		
 //		map.addAttribute("log_page", tdInventoryLogService.findAll(page, size));
 
 		return "site_mag/inventory_list";
