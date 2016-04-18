@@ -1,12 +1,8 @@
 package com.ynyes.lyz.controller.management;
 
-import static org.apache.commons.lang3.StringUtils.leftPad;
-
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,14 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
-import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdReturnNote;
-import com.ynyes.lyz.entity.TdUser;
-import com.ynyes.lyz.entity.TdUserTurnRecord;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
