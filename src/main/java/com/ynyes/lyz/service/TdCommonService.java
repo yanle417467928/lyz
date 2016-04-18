@@ -32,6 +32,7 @@ import com.ynyes.lyz.entity.TdActivityGiftList;
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
+import com.ynyes.lyz.entity.TdCategoryLimit;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
@@ -57,7 +58,8 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+	// static String wmsUrl =
+	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -128,6 +130,9 @@ public class TdCommonService {
 
 	@Autowired
 	private TdCityService tdCityService;
+
+	@Autowired
+	private TdCategoryLimitService tdCategoryLimitService;
 
 	/**
 	 * 根据仓库编号获取仓库名
@@ -459,7 +464,38 @@ public class TdCommonService {
 			List<TdProductCategory> level_two_categories = tdProductCategoryService
 					.findByParentIdOrderBySortIdAsc(one_category.getId());
 			map.addAttribute("level_two_categories" + i, level_two_categories);
-			
+
+		}
+	}
+
+	/**
+	 * 第三次修改，获取二级分类
+	 * 
+	 * @author DengXiao
+	 */
+	public void thirdGetCategory(HttpServletRequest req, ModelMap map) {
+		// 获取用户城市编号
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsername(username);
+		Long sobId = 0L;
+		if (null != user) {
+			sobId = user.getCityId();
+		}
+
+		// 查找指定的一级分类
+		List<TdCategoryLimit> level_one_categories = tdCategoryLimitService
+				.findBySobIdAndParentIdIsNullOrderBySortIdAsc(sobId);
+		map.addAttribute("level_one_categories", level_one_categories);
+
+		if (null != level_one_categories && level_one_categories.size() > 0) {
+			for (int i = 0; i < level_one_categories.size(); i++) {
+				TdCategoryLimit one = level_one_categories.get(i);
+				if (null != one) {
+					List<TdCategoryLimit> level_two_categories = tdCategoryLimitService
+							.findBySobIdAndParentIdOrderBySortIdAsc(sobId, one.getCategoryId());
+					map.addAttribute("level_two_categories" + i, level_two_categories);
+				}
+			}
 		}
 	}
 

@@ -82,7 +82,8 @@ public class TdGoodsController {
 		tdCommonService.setHeader(req, map);
 		// tdCommonService.getCategory(req, map);
 		// 新的方法查找三级菜单
-		tdCommonService.getCategoryTemp(req, map);
+		// tdCommonService.getCategoryTemp(req, map);
+		tdCommonService.thirdGetCategory(req, map);
 		Long number = tdCartGoodsService.countByUserId(user.getId());
 		// 将已选商品的数量（包括调色包）添加到ModelMap中
 		map.addAttribute("selected_number", number);
