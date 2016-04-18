@@ -147,6 +147,7 @@ function confirmCopy(id)
         <div class="rule-single-select">
             <select name="categoryId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
                 <option <#if categoryId??><#else>selected="selected"</#if> value="">所有类别</option>
+                <Option value="-1" <#if categoryId?? && categoryId==-1>selected="selected"</#if> >未绑定类别</option>
                 <#if category_list??>
                     <#list category_list as c>
                         <option value="${c.id!""}" <#if categoryId?? && c.id==categoryId>selected="selected"</#if> ><#if c.layerCount?? && c.layerCount gt 1><#list 1..(c.layerCount-1) as a>　</#list>├ </#if>${c.title!""}</option>
@@ -161,7 +162,7 @@ function confirmCopy(id)
                 <option value="isNotOnSale" <#if property?? && property=="isNotOnSale">selected="selected"</#if>>已下架</option>
             </select>
         </div>
-    <#--    <div class="rule-single-select">
+        <#--<div class="rule-single-select">
             <select name="saleType" onchange="javascript:setTimeout(__doPostBack('saleType',''), 0)">
                 <option value="">所有</option>
                 <option value="flashSale" <#if saleType?? && saleType=="flashSale">selected="selected"</#if>>抢拍</option>
@@ -209,10 +210,10 @@ function confirmCopy(id)
             <div class="remark">${content.subTitle!""}</div>
             <div class="tools">
                 
-                <a title="上架/下架" class="hot <#if content.isOnSale?? && content.isOnSale>selected</#if>" href="javascript:__doPostBack('btnOnSale','${content.id?c!''}')"></a>
+                <#--<a title="上架/下架" class="hot <#if content.isOnSale?? && content.isOnSale>selected</#if>" href="javascript:__doPostBack('btnOnSale','${content.id?c!''}')"></a>-->
                 <#--><a title="改价" class="change" href="javascript:showDialogChangePrice('${content.id!""}')"></a>
                 <a title="改价记录" class="record" href="javascript:showDialogPriceLog('${content.id!""}')"></a> -->
-                <input name="listSortId" type="text"  disabled="" value="${content.sortId!""}" class="sort" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)));">
+                <input name="listSortId" type="text" value="${content.sortId!""}" class="sort" onkeypress="return (/[\d]/.test(String.fromCharCode(event.keyCode)));">
               
               <#--
               <a title="设置评论" class="msg selected" href="javascript:__doPostBack('rptList2$ctl01$lbtnIsMsg','')"></a>

@@ -30,11 +30,11 @@
             });
         }
         
-        // 确认退货单
+        // 确认取货
         function OrderConfirm() {
-            var dialog = $.dialog.confirm('该步骤将确认退货单，确认要继续吗？', function () {
+            var dialog = $.dialog.confirm('该步骤将确认退货单取货(该由配送员点击)，确认要继续吗？', function () {
                 var returnNumber = $.trim($("#returnNumber").text());
-                var postData = { "returnNumber": returnNumber, "type": "confirm" };
+                var postData = { "returnNumber": returnNumber, "type": "btnConfirm" };
                 //发送AJAX请求
                 sendAjaxUrl(dialog, postData, "/Verwalter/returnNote/param/edit");
                 return false;
@@ -405,13 +405,14 @@
         <div class="btn-list">
             <#if returnNote.statusId??>
                 <#if returnNote.statusId==1>
-                    <input type="button" id="btnConfirm" value="确认退货单" class="btn">
-                <#elseif returnNote.statusId==2>
+                   <#-- <input type="button" id="btnConfirm" value="确认退货单" class="btn">-->
                         <input type="button" id="btnPayment" value="通知物流" class="btn">
+                <#elseif returnNote.statusId==2>
+                    <input type="button" id="btnConfirm" value="确认收货" class="btn">
                 <#elseif returnNote.statusId==3>
-                    <input type="button" id="btnOrderExpress" value="验货确认" class="btn">
-                <#elseif returnNote.statusId==4>
                     <input type="button" id="btnOrderReceive" value="确认退款" class="btn green">
+                <#elseif returnNote.statusId==4>
+                    <input type="button" id="btnOrderExpress" value="验货确认" class="btn">
                 <#elseif returnNote.statusId==5>
                     <input type="button"  value="已完成" class="btn">
                 </#if>

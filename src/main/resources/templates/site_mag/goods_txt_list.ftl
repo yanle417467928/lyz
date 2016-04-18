@@ -130,12 +130,14 @@ function __doPostBack(eventTarget, eventArgument) {
         <li><a class="add" href="/Verwalter/goods/edit?__VIEWSTATE=${__VIEWSTATE!""}"><i></i><span>导入</span></a></li>
         <li><a id="btnSave" class="save" href="javascript:__doPostBack('btnSave','')"><i></i><span>保存</span></a></li>
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
+        <li><a class="all" href="/Verwalter/goods/refresh" ><i></i><span>刷新关联分类</span></a></li>
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除</span></a></li>
       </ul>
       <div class="menu-list">
         <div class="rule-single-select">
             <select name="categoryId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
                 <option <#if categoryId??><#else>selected="selected"</#if> value="">所有类别</option>
+                <Option value="-1" <#if categoryId?? && categoryId==-1>selected="selected"</#if> >未绑定类别</option>
                 <#if category_list??>
                     <#list category_list as c>
                         <option value="${c.id!""}" <#if categoryId?? && c.id==categoryId>selected="selected"</#if> ><#if c.layerCount?? && c.layerCount gt 1><#list 1..(c.layerCount-1) as a>　</#list>├ </#if>${c.title!""}</option>
@@ -147,6 +149,7 @@ function __doPostBack(eventTarget, eventArgument) {
             <select name="property" onchange="javascript:setTimeout(__doPostBack('property',''), 0)">
                 <option value="">所有属性</option>
                 <option value="isOnSale" <#if property?? && property=="isOnSale">selected="selected"</#if>>已上架</option>
+                <option value="isNotOnSale" <#if property?? && property=="isNotOnSale">selected="selected"</#if>>已下架</option>
             </select>
         </div>
       </div>
@@ -168,11 +171,12 @@ function __doPostBack(eventTarget, eventArgument) {
     <tr class="odd_bg">
         <th width="6%">选择</th>
         <th align="left">序号</th>
-        <th align="left">标题</th>
+        <th align="left">商品名称</th>
+        <th align="left" width="15%">商品编码</th>
         <th align="left" width="12%">所属类别</th>
-        <th align="left" width="16%">上架时间</th>
-        <th align="left" width="65">排序</th>
-        <th align="left" width="110">属性</th>
+        <th align="left" width="12%">上架时间</th>
+        <th align="left" width="1%">排序</th>
+        <#--<th align="left" width="110">属性</th>-->
         <th width="8%">操作</th>
     </tr>
     
@@ -186,36 +190,41 @@ function __doPostBack(eventTarget, eventArgument) {
                 <input type="hidden" name="listId" id="listId" value="${content.id?c}">
             </td>
             <td>${content.id?c}</td>
-            <td><a href="/Verwalter/goods/edit?__VIEWSTATE=${__VIEWSTATE!""}">${content.title!""}${content.code!""}</a></td>
+            <td><a href="/Verwalter/goods/edit?cid=${cid!""}&mid=${mid!""}&id=<#if content.id??>${content.id?c}</#if>&__VIEWSTATE=${__VIEWSTATE!""}">${content.title!""}</a></td>
+            <td>${content.code!""}</td>
             <td>
+            
+            <#assign curPage=1>
                 <#if category_list?? && content.categoryId??>
                     <#list category_list as cat>
                         <#if cat.id == content.categoryId>
                             ${cat.title!""}
+                            <#assign curPage=2 >
                             <#break>
                         </#if>
                     </#list>
                 </#if>
+            <#if curPage?? && curPage == 1>
+            没绑定类别
+            </#if>
             </td>
             <td><#if content.onSaleTime??>${content.onSaleTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
             <td>
-                <input name="listSortId" type="text" disabled="" value="${content.sortId!""}" id="listSortId" class="sort" onkeydown="return checkNumber(event);">
+                <input name="listSortId" type="text" value="${content.sortId!""}" id="listSortId" class="sort" onkeydown="return checkNumber(event);">
             </td>
-            <td>
+            <#--<td>
               <div class="btn-tools">
                 <a title="上架/下架" class="hot <#if content.isOnSale?? && content.isOnSale>selected</#if>" href="javascript:__doPostBack('btnOnSale','${content.id?c!''}')"></a>
                 <a title="改价" class="change" href="javascript:showDialogChangePrice('${content.id!""}')"></a>
                 <a title="改价记录" class="record" href="javascript:showDialogPriceLog('${content.id!""}')"></a>
-                <#--
                 <a id="rptList1_ctl01_lbtnIsTop" title="设置置顶" class="top" href="javascript:__doPostBack('rptList1$ctl01$lbtnIsTop','')"></a>
                 <a id="rptList1_ctl01_lbtnIsRed" title="设置推荐" class="red" href="javascript:__doPostBack('rptList1$ctl01$lbtnIsRed','')"></a>
                 <a id="rptList1_ctl01_lbtnIsHot" title="设置热门" class="hot" href="javascript:__doPostBack('rptList1$ctl01$lbtnIsHot','')"></a>
                 <a id="rptList1_ctl01_lbtnIsSlide" title="设置幻灯片" class="pic" href="javascript:__doPostBack('rptList1$ctl01$lbtnIsSlide','')"></a>
-                -->
               </div>
-            </td>
+            </td>-->
             <td align="center">
-                <a href="/Verwalter/goods/edit?__VIEWSTATE=${__VIEWSTATE!""}">修改</a>
+                <a href="/Verwalter/goods/edit?cid=${cid!""}&mid=${mid!""}&id=<#if content.id??>${content.id?c}</#if>&__VIEWSTATE=${__VIEWSTATE!""}">修改</a>
             </td>
         </tr>
     </#list>

@@ -5,6 +5,8 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.ynyes.lyz.entity.TdDiySiteInventory;
@@ -39,6 +41,12 @@ public class TdDiySiteInventoryService {
 
 	public List<TdDiySiteInventory> findAll() {
 		return (List<TdDiySiteInventory>) repository.findAll();
+	}
+	
+	public Page<TdDiySiteInventory> findAll(int page,int size)
+	{
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findAll(pageRequest);
 	}
 
 }

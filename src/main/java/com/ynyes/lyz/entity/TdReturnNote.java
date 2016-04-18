@@ -33,7 +33,7 @@ public class TdReturnNote {
 	@Column
 	private String orderNumber;
 
-	// 退货单状态 1:生成单据 2: 待取货     3: 待验货确认    4 待退款（物流确认） 5 已完成
+	// 退货单状态 1:待通知物流 2:待取货  3: 待确认确认收货  4 待退款（物流确认） 5 已完成
 	@Column
 	private Long statusId;
 
@@ -79,7 +79,7 @@ public class TdReturnNote {
 	private Date orderTime;
 
 
-	// 取货时间
+	// 从门店取到货的时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date recvTime;

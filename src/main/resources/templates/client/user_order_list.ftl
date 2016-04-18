@@ -596,7 +596,7 @@
                       /* setTimeout(function(){  
                          slideUpStep3(); 
                      },2500);   */
-                 }else{  
+               //  }else{  
                      //console.log("右滑或下滑"+_end); 
                      /* slideDownStep2(); 
                      //刷新成功则 
@@ -604,9 +604,9 @@
                      setTimeout(function(){  
                          slideDownStep3(); 
                      },2500);  */
-                 } 
-             } 
-         }  */
+                // } 
+            // } 
+        // }  */
  </script>    
     </body>
 </html>

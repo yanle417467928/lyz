@@ -1643,15 +1643,15 @@ public class TdUserController {
 				// 原订单配送方式
 				if ("门店自提".equals(order.getDeliverTypeTitle())) {
 					if (turnType == 1) {
-						returnNote.setStatusId(3L); // 门店自提单-门店到店退货 待验货
+						returnNote.setStatusId(1L); // 门店自提单-门店到店退货 待验货
 					} else {
-						returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
+						returnNote.setStatusId(1L); // 门店自提单-物流取货 待取货
 					}
 				} else {
 					if (turnType == 1) {
-						returnNote.setStatusId(3L); // 送货上门单 门店到店退货 待验货
+						returnNote.setStatusId(1L); // 送货上门单 门店到店退货 待验货
 					} else {
-						returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
+						returnNote.setStatusId(1L); // 送货上门单 物流取货 待取货
 					}
 				}
 
@@ -1815,15 +1815,15 @@ public class TdUserController {
 			// 原订单配送方式
 			if ("门店自提".equals(order.getDeliverTypeTitle())) {
 				if (turnType == 1) {
-					returnNote.setStatusId(2L); // 门店自提单-门店到店退货 待验货
+					returnNote.setStatusId(1L); // 门店自提单-门店到店退货 待验货
 				} else {
-					returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
+					returnNote.setStatusId(1L); // 门店自提单-物流取货 待取货
 				}
 			} else {
 				if (turnType == 1) {
-					returnNote.setStatusId(2L); // 送货上门单 门店到店退货 待验货
+					returnNote.setStatusId(1L); // 送货上门单 门店到店退货 待验货
 				} else {
-					returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
+					returnNote.setStatusId(1L); // 送货上门单 物流取货 待取货
 				}
 			}
 

@@ -119,8 +119,8 @@
                             <#-- 遍历二级分类 -->
                             <#list ("level_two_categories"+level_one_index)?eval as level_two>
                                 <div class="lei_box01">
-                                    <div class="box01_title" onclick="getGoods(${level_two.id?c});">${level_two.title!''}</div>
-                                    <div id="${level_two.id?c}div" class="empty">
+                                    <div class="box01_title" onclick="getGoods(${level_two.categoryId?c});">${level_two.title!''}</div>
+                                    <div id="${level_two.categoryId?c}div" class="empty">
                                     </div>
                                 </div>
                             </#list>

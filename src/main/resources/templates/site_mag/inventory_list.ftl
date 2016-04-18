@@ -46,10 +46,35 @@ var theForm = document.forms['form1'];
 <div class="toolbar-wrap">
   <div id="floatHead" class="toolbar" style="position: static; top: 42px;">
     <div class="l-list">
-      <ul class="icon-list">
-        <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
-        <#--<li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除日志</span></a></li>-->
-      </ul>
+        <ul class="icon-list">
+          <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
+        </ul>
+        <div class="menu-list">
+            <div class="rule-single-select">
+                <select name="regionId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
+                    <option <#if !regionId??>selected="selected"</#if> value="" >所有城市</option>
+                    <#if city_list??>
+                        <#list city_list as c>
+                            <option value='${c.sobIdCity?c}' <#if regionId?? && c.sobIdCity==regionId>selected="selected"</#if> >${c.cityName!""}</option>
+                        </#list>
+                    </#if>
+                </select>
+            </div>
+            <div class="rule-single-select">
+                <select name="siteId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
+                    <option <#if !siteId??>selected="selected"</#if> value="" >所有门店</option>
+                    <#if site_list??>
+                        <#list site_list as site>
+                            <option value='${site.id?c}' <#if siteId?? && site.id==siteId>selected="selected"</#if> >${site.title!""}</option>
+                        </#list>
+                    </#if>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="r-list">
+      <input name="keywords" type="text" class="keyword" value="${keywords!''}">
+      <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('lbtnSearch','')">查询</a>
     </div>
   </div>
 </div>
@@ -60,28 +85,28 @@ var theForm = document.forms['form1'];
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ltable">
   <tbody>
   <tr class="odd_bg">
-    <th width="8%">选择</th>
-    <th align="center" width="15%">用户名</th>
-    <th align="center" width="15%">类型</th>
-    <th>所属门店</th>
-    <th align="center" width="15%">产品名</th>
-    <th align="center" width="15%">改变时间</th>
+    <th width="6%">选择</th>
+    <th align="left">商品名称</th>
+    <th align="left" width="15%">商品编码</th>
+    <th align="left" width="15%">所属门店</th>
+    <th align="left" width="15%">所属城市</th>
+    <th align="center" width="15%">剩余库存</th>
   </tr>
 
-    <#if log_page??>
-        <#list log_page.content as item>
+    <#if inventory_page??>
+        <#list inventory_page.content as item>
             <tr>
-                <td align="center">
+                <td align="left">
                     <span class="checkall" style="vertical-align:middle;">
                         <input id="listChkId" type="checkbox" name="listChkId" value="${item_index}" >
                     </span>
                     <input type="hidden" name="listId" id="listId" value="${item.id?c}">
                 </td>
-                <td align="center">${item.username!""}</td>
-                <td align="center"><#if item.isManager == true >管理员<#else>用户购买</#if></td>
-                <td align="center">${item.cityName!''}，${item.siteName!''}</td>
-                <td align="center">${item.goodsTitle!""}</td>
-                <td align="center"><#if item.updateTime??>${item.updateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
+                <td align="left">${item.goodsTitle!""}</td>
+                <td align="left">${itme.goodsCode!""}</td>
+                <td align="left">${item.diySiteName!""}</td>
+                <td align="left">${item.regionName!""}</td>
+                <td align="left"><#if item.inventory??>${item.inventory?c}</#if></td>
             </tr>
         </#list>
     </#if>
@@ -91,7 +116,7 @@ var theForm = document.forms['form1'];
 <!--/列表-->
 
 <!--内容底部-->
-<#assign PAGE_DATA=log_page />
+<#assign PAGE_DATA=inventory_page />
 <#include "/site_mag/list_footer.ftl" />
 <!--/内容底部-->
 </form>

@@ -274,7 +274,7 @@ function del_goods_comb(obj) {
 <input name="id" type="text" value='<#if goods??>${goods.id?c}</#if>' style="display:none">
 <!--导航栏-->
 <div class="location">
-    <a href="/Verwalter/goods/list" class="back"><i></i><span>
+    <a href="/Verwalter/goods/list?__VIEWSTATE=${__VIEWSTATE!""}" class="back"><i></i><span>
         返回列表页</span></a> 
     <a href="/Verwalter/center" class="home">
     <i></i><span>首页</span></a>

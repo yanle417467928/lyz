@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdManager;
@@ -29,7 +31,9 @@ import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBrandService;
+import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdDiySiteInventoryService;
+import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdInventoryLogService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -91,12 +95,19 @@ public class TdManagerGoodsController {
 	
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
+	
+	@Autowired
+	private TdCityService tdCityService;
+	
+	@Autowired
+	private TdDiySiteService tdDiySiteService;
 
 	@RequestMapping(value = "/refresh")
-	public String refreshCategorg() {
-		List<TdProductCategory> parentIdIsNullCategory = tdProductCategoryService
-				.findByParentIdNotNullOrderBySortIdAsc();
-		for (TdProductCategory tdProductCategory : parentIdIsNullCategory) {
+	public String refreshCategorg() 
+	{
+		List<TdProductCategory> parentIdIsNullCategory = tdProductCategoryService.findByParentIdNotNullOrderBySortIdAsc();
+		for (TdProductCategory tdProductCategory : parentIdIsNullCategory) 
+		{
 			List<TdGoods> tdGood_list = tdGoodsService.findByInvCategoryId(tdProductCategory.getInvCategoryId());
 			if (tdGood_list == null || tdGood_list.size() <= 0) {
 				continue;
@@ -348,13 +359,13 @@ public class TdManagerGoodsController {
 		List<TdGoods> findByCategoryIdIsNull = tdGoodsService.findByCategoryIdIsNull();
 		map.addAttribute("left_goods", findByCategoryIdIsNull.size());
 
-		// 文字列表模式
-		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewTxt")) {
-			return "/site_mag/goods_txt_list";
+		// 图片列表模式
+		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewImg")) {
+			return "/site_mag/goods_pic_list";
 		}
 
-		// 图片列表模式
-		return "/site_mag/goods_pic_list";
+		// 文字列表模式
+		return "/site_mag/goods_txt_list";
 	}
 	
 	/**
@@ -647,13 +658,13 @@ public class TdManagerGoodsController {
 		map.addAttribute("categoryId", categoryId);
 		map.addAttribute("property", property);
 
-		// 文字列表模式
-		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewTxt")) {
-			return "/site_mag/goods_txt_list";
+		// 图片列表模式
+		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewImg")) {
+			return "/site_mag/goods_pic_list";
 		}
 
-		// 图片列表模式
-		return "/site_mag/goods_pic_list";
+		// 文字列表模式
+		return "/site_mag/goods_txt_list";
 	}
 
 	@RequestMapping(value = "/list/dialog/{type}")
@@ -1071,7 +1082,7 @@ public class TdManagerGoodsController {
 		return "site_mag/inventory_log";
 	}
 	/**
-	 *  库存日志列表
+	 *  库存列表
 	 * @param req
 	 * @param map
 	 * @param page
@@ -1085,40 +1096,72 @@ public class TdManagerGoodsController {
 	 * @return
 	 */
 	@RequestMapping(value = "/inventory/list")
-	public String inventoryList(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,
-			String __EVENTARGUMENT, String __VIEWSTATE, String action, Long[] listId, Integer[] listChkId) {
+	public String inventoryList(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,String __EVENTARGUMENT, String __VIEWSTATE, String keywords,Long regionId, Long siteId, Long[] listId, Integer[] listChkId) {
 		String username = (String) req.getSession().getAttribute("manager");
-		if (null == username) {
+		if (null == username)
+		{
 			return "redirect:/Verwalter/login";
 		}
-		if (null != __EVENTTARGET) {
-			if (__EVENTTARGET.equalsIgnoreCase("btnDelete")) {
+		if (null != __EVENTTARGET) 
+		{
+			if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
+			{
 				btnDeleteLog(listId, listChkId);
 				tdManagerLogService.addLog("delete", "删除管理日志", req);
-			} else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
-				if (null != __EVENTARGUMENT) {
+			} 
+			else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
+			{
+				if (null != __EVENTARGUMENT) 
+				{
 					page = Integer.parseInt(__EVENTARGUMENT);
 				}
 			}
 		}
 
-		if (null == page || page < 0) {
+		if (null == page || page < 0) 
+		{
 			page = 0;
 		}
 
-		if (null == size || size <= 0) {
+		if (null == size || size <= 0) 
+		{
 			size = SiteMagConstant.pageSize;
-			;
 		}
 
 		map.addAttribute("page", page);
 		map.addAttribute("size", size);
-		map.addAttribute("action", action);
+		map.addAttribute("regionId",regionId);
+		map.addAttribute("siteId", siteId);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
-		tdGoodsService.findAll(page, size);
-		map.addAttribute("log_page", tdInventoryLogService.findAll(page, size));
+		map.addAttribute("city_list", tdCityService.findAll());
+		List<TdDiySite> diysite_list = new ArrayList<>();
+		if (regionId != null)
+		{
+			diysite_list = tdDiySiteService.findByRegionIdAndIsEnableOrderBySortIdAsc(regionId);
+		}
+		else
+		{
+			diysite_list = tdDiySiteService.findAll();
+		}
+		
+		
+		map.addAttribute("site_list", diysite_list);
+		map.addAttribute("inventory_page", tdDiySiteInventoryService.findAll(page,size));
+		if (StringUtils.isNotBlank(keywords)) 
+		{
+			if (regionId != null)
+			{
+				
+			}
+			else if (siteId != null)
+			{
+				
+			}
+		}
+		
+//		map.addAttribute("log_page", tdInventoryLogService.findAll(page, size));
 
 		return "site_mag/inventory_list";
 	}

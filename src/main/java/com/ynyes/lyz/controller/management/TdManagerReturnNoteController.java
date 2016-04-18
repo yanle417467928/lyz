@@ -40,6 +40,7 @@ import com.ynyes.lyz.service.TdManagerRoleService;
 import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
+import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdReturnReportService;
 import com.ynyes.lyz.service.TdUserService;
@@ -94,6 +95,9 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	
 	@Autowired
 	private TdReturnReportService tdReturnReportService;
+	
+	@Autowired
+	private TdPriceCountService tdPriceCountService;
 	
 	// 列表
 	@RequestMapping(value = "/{type}/list")
@@ -255,29 +259,28 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 		if (null != returnNumber && !returnNumber.isEmpty() && null != type && !type.isEmpty()) {
 			TdReturnNote returnNote = tdReturnNoteService.findByReturnNumber(returnNumber);
 
-			// 修改备注
-			if ("editMark".equalsIgnoreCase(type)) {
-				returnNote.setManagerRemarkInfo(data);
-			}
-			// 确认退货单
-			else if ("confirm".equalsIgnoreCase(type)) {
-				if (returnNote.getStatusId() == 1) {
-					returnNote.setStatusId(2L);
-				}
-			}
 			// 通知物流
-			else if ("informDiy".equalsIgnoreCase(type)) {
+			if ("informDiy".equalsIgnoreCase(type)) 
+			{
 				// 配送单——到店退
-				if (returnNote.getTurnType() == 2) {
-
+				if (returnNote.getTurnType() == 2 && returnNote.getStatusId() != null && returnNote.getStatusId() == 1) 
+				{
 					// 生成收货通知
 					tdCommonService.sendBackToWMS(returnNote);
-
+					if (returnNote.getStatusId() == 1) 
+					{
+						returnNote.setStatusId(2L);
+					}
 				}
-
-				if (returnNote.getStatusId().equals(2L)) {
-					returnNote.setStatusId(3L);
-				}
+			}
+			//确认收货
+			else if("btnConfirm".equalsIgnoreCase(type))
+			{
+				 returnNote.setManagerRemarkInfo(returnNote.getManagerRemarkInfo() + "后台确认收货("+username+"");
+				 if (returnNote.getStatusId() != null && returnNote.getStatusId() == 2L) 
+				 {
+					 returnNote.setStatusId(3L);
+				 }
 			}
 			// 确认验货
 			else if ("examineReturn".equalsIgnoreCase(type)) {
@@ -287,104 +290,119 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				}
 			}
 			// 确认退款
-			else if ("refund".equals(type)) {
-				if (returnNote.getStatusId().equals(4L)) {
+			else if ("refund".equals(type)) 
+			{
+				if (returnNote.getStatusId().equals(3L)) 
+				{
 					// 查找订单
 					TdOrder order = tdOrderService.findByOrderNumber(returnNote.getOrderNumber());
-
-					// 查找会员
-					TdUser user = tdUserSerrvice.findByUsernameAndIsEnableTrue(returnNote.getUsername());
-
-					// 查找门店
-					TdDiySite diySite = tdDisSiteService.findOne(returnNote.getDiySiteId());
-
-					// 查看支付方式
-					TdPayType payType = tdPayTypeService.findOne(order.getPayTypeId());
-
-					Date current = new Date();
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHH");
-					String curStr = sdf.format(current);
-					Random random = new Random();
-
-					TdUserTurnRecord record = new TdUserTurnRecord();
-					record.setOrderNumber(order.getOrderNumber());
-					record.setTurnNumber(returnNote.getReturnNumber());
-					record.setUsername(username);
-					record.setRecordTime(new Date());
-					record.setCashBalance(order.getCashBalanceUsed());
-					record.setUnCashBalance(order.getUnCashBalanceUsed());
-					record.setTurnPrice(order.getTotalPrice());
-
-					record.setRecordNumber("J" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
-					// 保存退款记录
-					tdUserTurnRecordService.save(record);
-
-					// 自提单
-					if ("门店自提".equals(order.getDeliverTypeTitle())) {
-						// 直营
-						if (diySite.getStatus() == 0L) {
-							// 线上支付
-							if (payType.getIsOnlinePay()) {
-								// 线上退款 生成退款记录
-								// 退回用户可提现金额
-								if (null != order.getCashBalanceUsed()) {
-									user.setCashBalance(user.getCashBalance() + order.getCashBalanceUsed());
-								}
-
-								// 退回用户不可提现金额
-								if (null != order.getUnCashBalanceUsed()) {
-									user.setUnCashBalance(user.getUnCashBalance() + order.getUnCashBalanceUsed());
-								}
-							}
-							// 退货单退款信息EBS
-
-						}
-						// 加盟
-						else if (diySite.getStatus() == 1L) {
-							// 线上支付
-							if (payType.getIsOnlinePay()) {
-								// 线上退款 生成退款记录
-								// 退回用户可提现金额
-								if (null != order.getCashBalanceUsed()) {
-									user.setCashBalance(user.getCashBalance() + order.getCashBalanceUsed());
-								}
-
-								// 退回用户不可提现金额
-								if (null != order.getUnCashBalanceUsed()) {
-									user.setUnCashBalance(user.getUnCashBalance() + order.getUnCashBalanceUsed());
-								}
-
-								// 款项传入EBS
-
-							}
-						}
+					if (order != null && order.getStatusId() != null && order.getStatusId() == 9L)
+					{
+						// 查找会员
+//						TdUser user = tdUserSerrvice.findByUsernameAndIsEnableTrue(returnNote.getUsername());
+//						// 查找门店
+//						TdDiySite diySite = tdDisSiteService.findOne(returnNote.getDiySiteId());
+//						// 查看支付方式
+//						TdPayType payType = tdPayTypeService.findOne(order.getPayTypeId());
+//						Date current = new Date();
+//						SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHH");
+//						String curStr = sdf.format(current);
+//						Random random = new Random();
+//
+//						TdUserTurnRecord record = new TdUserTurnRecord();
+//						record.setOrderNumber(order.getOrderNumber());
+//						record.setTurnNumber(returnNote.getReturnNumber());
+//						record.setUsername(username);
+//						record.setRecordTime(new Date());
+//						record.setCashBalance(order.getCashBalanceUsed());
+//						record.setUnCashBalance(order.getUnCashBalanceUsed());
+//						record.setTurnPrice(order.getTotalPrice());
+//
+//						record.setRecordNumber("J" + curStr + leftPad(Integer.toString(random.nextInt(999)), 3, "0"));
+//						// 保存退款记录
+//						tdUserTurnRecordService.save(record);
+//
+//						// 自提单
+//						if ("门店自提".equals(order.getDeliverTypeTitle())) 
+//						{
+//							// 直营
+//							if (diySite.getStatus() == 0L)
+//							{
+//								// 线上支付
+//								if (payType.getIsOnlinePay()) 
+//								{
+//									// 线上退款 生成退款记录
+//									// 退回用户可提现金额
+//									if (null != order.getCashBalanceUsed()) 
+//									{
+//										user.setCashBalance(user.getCashBalance() + order.getCashBalanceUsed());
+//									}
+//
+//									// 退回用户不可提现金额
+//									if (null != order.getUnCashBalanceUsed()) 
+//									{
+//										user.setUnCashBalance(user.getUnCashBalance() + order.getUnCashBalanceUsed());
+//									}
+//								}
+//								// 退货单退款信息EBS
+//
+//							}
+//							// 加盟
+//							else if (diySite.getStatus() == 1L) 
+//							{
+//								// 线上支付
+//								if (payType.getIsOnlinePay()) 
+//								{
+//									// 线上退款 生成退款记录
+//									// 退回用户可提现金额
+//									if (null != order.getCashBalanceUsed()) 
+//									{
+//										user.setCashBalance(user.getCashBalance() + order.getCashBalanceUsed());
+//									}
+//
+//									// 退回用户不可提现金额
+//									if (null != order.getUnCashBalanceUsed()) 
+//									{
+//										user.setUnCashBalance(user.getUnCashBalance() + order.getUnCashBalanceUsed());
+//									}
+//									// 款项传入EBS
+//								}
+//							}
+//						}
+//						// 配送单
+//						else if ("送货上门".equals(order.getDeliverTypeTitle())) 
+//						{
+//							// 线上退款 生成退款记录
+//							// 线上支付 退回提现和不可提现金额
+//							if (payType.getIsOnlinePay()) 
+//							{
+//								// 退回用户可提现金额
+//								if (null != order.getCashBalanceUsed()) 
+//								{
+//									user.setCashBalance(user.getCashBalance() + order.getCashBalanceUsed());
+//								}
+//
+//								// 退回用户不可提现金额
+//								if (null != order.getUnCashBalanceUsed()) 
+//								{
+//									user.setUnCashBalance(user.getUnCashBalance() + order.getUnCashBalanceUsed());
+//								}
+//							} 
+//							else 
+//							{
+//								// 货到付款退总额
+//								user.setCashBalance(user.getCashBalance() + order.getTotalPrice());
+//							}
+//							// 款项传入EBS
+//						}
+//						// 更新用户金额
+//						tdUserSerrvice.save(user);
+						tdPriceCountService.actAccordingWMS(returnNote, order.getId());
+						order.setStatusId(12L);
+						tdOrderService.save(order);
+						
 					}
-					// 配送单
-					else if ("送货上门".equals(order.getDeliverTypeTitle())) {
-						// 线上退款 生成退款记录
-						// 线上支付 退回提现和不可提现金额
-						if (payType.getIsOnlinePay()) {
-							// 退回用户可提现金额
-							if (null != order.getCashBalanceUsed()) {
-								user.setCashBalance(user.getCashBalance() + order.getCashBalanceUsed());
-							}
-
-							// 退回用户不可提现金额
-							if (null != order.getUnCashBalanceUsed()) {
-								user.setUnCashBalance(user.getUnCashBalance() + order.getUnCashBalanceUsed());
-							}
-						} else {
-							// 货到付款退总额
-							user.setCashBalance(user.getCashBalance() + order.getTotalPrice());
-						}
-
-						// 款项传入EBS
-
-					}
-
-					// 更新用户金额
-					tdUserSerrvice.save(user);
-
+					returnNote.setReturnTime(new Date());
 					returnNote.setStatusId(5L);// 退货单设置已完成
 				}
 			}
