@@ -1095,7 +1095,7 @@ public class TdManagerGoodsController {
 	 * @return
 	 */
 	@RequestMapping(value = "/inventory/list")
-	public String inventoryList(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,String __EVENTARGUMENT, String __VIEWSTATE, Long cityId, Long siteId, Long[] listId, Integer[] listChkId) {
+	public String inventoryList(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,String __EVENTARGUMENT, String __VIEWSTATE, Long regionId, Long siteId, Long[] listId, Integer[] listChkId) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username)
 		{
@@ -1129,16 +1129,20 @@ public class TdManagerGoodsController {
 
 		map.addAttribute("page", page);
 		map.addAttribute("size", size);
-		map.addAttribute("cityId",cityId);
+		map.addAttribute("regionId",regionId);
 		map.addAttribute("siteId", siteId);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("city_list", tdCityService.findAll());
 		List<TdDiySite> diysite_list = new ArrayList<>();
-		if (cityId != null)
+		if (regionId != null)
 		{
-			diysite_list = tdDiySiteService.findByCityId(cityId);
+			diysite_list = tdDiySiteService.findByRegionIdAndIsEnableOrderBySortIdAsc(regionId);
+		}
+		else
+		{
+			diysite_list = tdDiySiteService.findAll();
 		}
 		map.addAttribute("site_list", diysite_list);
 		map.addAttribute("inventory_page", tdDiySiteInventoryService.findAll(page,size));

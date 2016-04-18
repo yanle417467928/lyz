@@ -51,11 +51,11 @@ var theForm = document.forms['form1'];
         </ul>
         <div class="menu-list">
             <div class="rule-single-select">
-                <select name="cityId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
-                    <option <#if !cityId??>selected="selected"</#if> value="" >所有城市</option>
+                <select name="regionId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
+                    <option <#if !regionId??>selected="selected"</#if> value="" >所有城市</option>
                     <#if city_list??>
                         <#list city_list as c>
-                            <option value='${c.sobIdCity?c}' <#if cityId?? && c.sobIdCity==cityId>selected="selected"</#if> >${c.cityName!""}</option>
+                            <option value='${c.sobIdCity?c}' <#if regionId?? && c.sobIdCity==regionId>selected="selected"</#if> >${c.cityName!""}</option>
                         </#list>
                     </#if>
                 </select>
@@ -65,12 +65,16 @@ var theForm = document.forms['form1'];
                     <option <#if !siteId??>selected="selected"</#if> value="" >所有门店</option>
                     <#if site_list??>
                         <#list site_list as site>
-                            <option value='${site.sobIdCity?c}' <#if cityId?? && site.sobIdCity==cityId>selected="selected"</#if> >${site.cityName!""}</option>
+                            <option value='${site.id?c}' <#if siteId?? && site.id==siteId>selected="selected"</#if> >${site.title!""}</option>
                         </#list>
                     </#if>
                 </select>
             </div>
         </div>
+    </div>
+    <div class="r-list">
+      <input name="keywords" type="text" class="keyword" value="${keywords!''}">
+      <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('lbtnSearch','')">查询</a>
     </div>
   </div>
 </div>
