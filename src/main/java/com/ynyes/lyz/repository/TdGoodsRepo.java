@@ -68,6 +68,8 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	List<TdGoods> findByIdAndIsOnSaleTrue(Iterable<Long> ids);
 
 	Page<TdGoods> findByCategoryIdTreeContainingOrderBySortIdAsc(String catId, Pageable page);
+	
+	Page<TdGoods> findByCategoryIdIsNullOrderBySortIdAsc(Pageable page);
 
 	Page<TdGoods> findByCategoryIdTreeContainingAndIsOnSaleTrueOrderBySortIdAsc(String catId, Pageable page);
 
@@ -82,6 +84,8 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	Page<TdGoods> findByCategoryIdTreeContainingAndTitleContainingOrCategoryIdTreeContainingAndSubTitleContainingOrCategoryIdTreeContainingAndDetailContainingOrCategoryIdTreeContainingAndCodeContainingOrderBySortIdAsc(
 			String catId1, String keywords1, String catId2, String keywords2, String catId3, String keywords3,String catId4, String keyword4,
 			Pageable page);
+	
+	Page<TdGoods> findByCategoryIdIsNullAndTitleContainingOrCategoryIdIsNullAndSubTitleContainingOrCategoryIdIsNullAndDetailContainingOrCategoryIdIsNullAndCodeContainingOrderBySortIdAsc( String keywords1, String keywords2, String keywords3,String keyword4,Pageable page);
 
 	Page<TdGoods> findByCategoryIdTreeContainingAndTitleContainingAndIsOnSaleTrueOrCategoryIdTreeContainingAndSubTitleContainingAndIsOnSaleTrueOrCategoryIdTreeContainingAndDetailContainingAndIsOnSaleTrueOrderBySortIdAsc(
 			String catId1, String keywords1, String catId2, String keywords2, String catId3, String keywords3,

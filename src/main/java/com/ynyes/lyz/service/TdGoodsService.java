@@ -270,6 +270,11 @@ public class TdGoodsService {
 	public Page<TdGoods> searchAndFindByCategoryIdOrderBySortIdAsc(String keywords, Long categoryId, int page,
 			int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
+		
+		if (categoryId == -1)
+		{
+			return repository.findByCategoryIdIsNullAndTitleContainingOrCategoryIdIsNullAndSubTitleContainingOrCategoryIdIsNullAndDetailContainingOrCategoryIdIsNullAndCodeContainingOrderBySortIdAsc(keywords, keywords, keywords, keywords, pageRequest);
+		}
 
 		String catIdStr = "[" + categoryId + "]";
 
@@ -456,6 +461,10 @@ public class TdGoodsService {
 	// 查找制定类别的所有商品并按序号排序
 	public Page<TdGoods> findByCategoryIdTreeContainingOrderBySortIdAsc(Long catId, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
+		if (catId == -1)
+		{
+			return repository.findByCategoryIdIsNullOrderBySortIdAsc(pageRequest);
+		}
 
 		String catIdStr = "[" + catId + "]";
 

@@ -93,10 +93,11 @@ public class TdManagerGoodsController {
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	@RequestMapping(value = "/refresh")
-	public String refreshCategorg() {
-		List<TdProductCategory> parentIdIsNullCategory = tdProductCategoryService
-				.findByParentIdNotNullOrderBySortIdAsc();
-		for (TdProductCategory tdProductCategory : parentIdIsNullCategory) {
+	public String refreshCategorg() 
+	{
+		List<TdProductCategory> parentIdIsNullCategory = tdProductCategoryService.findByParentIdNotNullOrderBySortIdAsc();
+		for (TdProductCategory tdProductCategory : parentIdIsNullCategory) 
+		{
 			List<TdGoods> tdGood_list = tdGoodsService.findByInvCategoryId(tdProductCategory.getInvCategoryId());
 			if (tdGood_list == null || tdGood_list.size() <= 0) {
 				continue;
@@ -348,13 +349,13 @@ public class TdManagerGoodsController {
 		List<TdGoods> findByCategoryIdIsNull = tdGoodsService.findByCategoryIdIsNull();
 		map.addAttribute("left_goods", findByCategoryIdIsNull.size());
 
-		// 文字列表模式
-		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewTxt")) {
-			return "/site_mag/goods_txt_list";
+		// 图片列表模式
+		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewImg")) {
+			return "/site_mag/goods_pic_list";
 		}
 
-		// 图片列表模式
-		return "/site_mag/goods_pic_list";
+		// 文字列表模式
+		return "/site_mag/goods_txt_list";
 	}
 	
 	/**
@@ -647,13 +648,13 @@ public class TdManagerGoodsController {
 		map.addAttribute("categoryId", categoryId);
 		map.addAttribute("property", property);
 
-		// 文字列表模式
-		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewTxt")) {
-			return "/site_mag/goods_txt_list";
+		// 图片列表模式
+		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewImg")) {
+			return "/site_mag/goods_pic_list";
 		}
 
-		// 图片列表模式
-		return "/site_mag/goods_pic_list";
+		// 文字列表模式
+		return "/site_mag/goods_txt_list";
 	}
 
 	@RequestMapping(value = "/list/dialog/{type}")
