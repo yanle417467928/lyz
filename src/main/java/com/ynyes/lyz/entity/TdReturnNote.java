@@ -33,7 +33,7 @@ public class TdReturnNote {
 	@Column
 	private String orderNumber;
 
-	// 退货单状态 1:待通知物流 2:待取货  3: 待确认确认收货  4 待退款（物流确认） 5 已完成
+	// 退货单状态 1:待通知物流 2:待取货 3: 待确认确认收货  4 待退款（物流确认） 5 已完成
 	@Column
 	private Long statusId;
 

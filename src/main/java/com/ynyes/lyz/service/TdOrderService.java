@@ -671,8 +671,7 @@ public class TdOrderService {
 		if (null == keywords || null == username) {
 			return null;
 		}
-		return repository.findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(
-				keywords, username, keywords, username);
+		return repository.findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrSellerUsernameContainingAndUsernameOrShippingNameContainingAndUsernameOrShippingAddressContainingAndUsernameOrderByOrderTimeDesc(keywords, username, keywords, username, keywords, username, keywords, username);
 	}
 
 	/**
@@ -685,8 +684,7 @@ public class TdOrderService {
 		if (null == keywords || null == sellerId) {
 			return null;
 		}
-		return repository.findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrderByOrderTimeDesc(
-				keywords, sellerId, keywords, sellerId);
+		return repository.findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrShippingNameContainingAndSellerIdOrShippingAddressContainingAndSellerIdOrderByOrderTimeDesc(keywords, sellerId, keywords, sellerId, keywords, sellerId, keywords, sellerId);
 	}
 
 	/**
@@ -699,8 +697,7 @@ public class TdOrderService {
 		if (null == keywords || null == diySiteId) {
 			return null;
 		}
-		return repository.findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrderByOrderTimeDesc(
-				keywords, diySiteId, keywords, diySiteId);
+		return repository.findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrShippingNameContainingAndDiySiteIdOrShippingAddressContainingAndDiySiteIdOrderByOrderTimeDesc(keywords, diySiteId, keywords, diySiteId, keywords, diySiteId, keywords, diySiteId);
 	}
 	
 	/**
