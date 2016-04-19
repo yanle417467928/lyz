@@ -21,8 +21,8 @@
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
         <#include "/client/common_wait.ftl">
-        <#-- 引入会员用户信息列表 -->
-        <#include "/client/order_user_list.ftl">
+        <#-- 引入赠品列表 -->
+        <#include "/client/gift_list.ftl">
         <!-- 头部 -->
         <header>
             <a class="back" href="<#if history??>${history }<#else> javascript:history.go(-1);</#if>"></a>
@@ -39,7 +39,7 @@
         <div class="clear h50"></div>
         <!-- 底部 -->
         <footer>
-        	<a class="btn-clearing" href="javascript:void(0);" style="width:50%;float:left;background:#ffaa00">查看赠品</a>
+        	<a class="btn-clearing" href="javascript:win_yes();" style="width:50%;float:left;background:#ffaa00">查看赠品</a>
             <a class="btn-clearing" href="javascript:seller.checkCart();" style="width:50%;float:left;">去结算</a>
         </footer>
         <!-- 底部 END -->

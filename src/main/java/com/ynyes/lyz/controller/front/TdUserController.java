@@ -5,6 +5,7 @@ import static org.apache.commons.lang3.StringUtils.leftPad;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdActivity;
+import com.ynyes.lyz.entity.TdActivityGift;
+import com.ynyes.lyz.entity.TdActivityGiftList;
 import com.ynyes.lyz.entity.TdArticle;
 import com.ynyes.lyz.entity.TdArticleCategory;
 import com.ynyes.lyz.entity.TdBalanceLog;
@@ -48,6 +52,7 @@ import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdUserSuggestion;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
 import com.ynyes.lyz.entity.TdWareHouse;
+import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdArticleCategoryService;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBalanceLogService;
@@ -167,6 +172,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdWareHouseService TdWareHouseService;
+
+	@Autowired
+	private TdActivityService tdActivityService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1916,5 +1924,205 @@ public class TdUserController {
 
 		res.put("status", 0);
 		return res;
+	}
+
+	/**
+	 * 根据已选查看赠品和小辅料的方法
+	 * 
+	 * @author DengXiao
+	 */
+	@RequestMapping(value = "/show/gift")
+	public String showGift(HttpServletRequest req, ModelMap map) {
+		// 获取登录的用户
+		String username = (String) req.getSession().getAttribute("username");
+
+		// 获取用户所有的已选商品
+		List<TdCartGoods> all_selected = tdCartGoodsService.findByUsername(username);
+
+		// 获取促销赠品
+		List<TdOrderGoods> present = this.getPresent(all_selected, req);
+		map.addAttribute("present", present);
+
+		// 获取小辅料赠品
+		List<TdOrderGoods> gift = this.getGift(req, all_selected);
+		map.addAttribute("gift", gift);
+
+		return "/client/gift_list";
+	}
+
+	/**
+	 * 根据已选获取赠品的方法
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdOrderGoods> getPresent(List<TdCartGoods> all_selected, HttpServletRequest req) {
+		List<TdOrderGoods> presentList = new ArrayList<>();
+		// 为了避免脏数据刷新，创建一个map用于存储已选【id：数量】
+		Map<Long, Long> selected_map = new HashMap<>();
+
+		for (TdCartGoods cartGoods : all_selected) {
+			Long id = cartGoods.getGoodsId();
+			Long quantity = cartGoods.getQuantity();
+
+			selected_map.put(id, quantity);
+		}
+
+		// 获取用户的门店
+		TdDiySite diySite = tdCommonService.getDiySite(req);
+		// 获取用户门店所能参加的活动
+		List<TdActivity> activity_list = tdActivityService
+				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySite.getId() + "",
+						new Date());
+		for (TdActivity activity : activity_list) {
+			// 创建一个布尔变量表示已选商品能否参加指定的活动
+			Boolean isJoin = true;
+			// 获取该活动所需要的商品及其数量的列表
+			Map<Long, Long> cost = new HashMap<>();
+			String goodsAndNumber = activity.getGoodsNumber();
+			if (null != goodsAndNumber) {
+				// 拆分列表，使其成为【商品id_数量】的个体
+				String[] item = goodsAndNumber.split(",");
+				if (null != item) {
+					for (String each_item : item) {
+						if (null != each_item) {
+							// 拆分个体以获取id和数量的属性
+							String[] param = each_item.split("_");
+							// 当个体不为空且长度为2的时候才是正确的数据
+							if (null != param && param.length == 2) {
+								Long id = Long.parseLong(param[0]);
+								Long quantity = Long.parseLong(param[1]);
+								cost.put(id, quantity);
+								if (null == selected_map.get(id) || selected_map.get(id) < quantity) {
+									isJoin = false;
+									break;
+								}
+							}
+						}
+					}
+
+					if (isJoin) {
+						// 判断参与促销的倍数（表示同一个活动可以参加几次）
+						List<Long> mutipuls = new ArrayList<>();
+						// 获取倍数关系
+						for (Long goodsId : cost.keySet()) {
+							Long quantity = cost.get(goodsId);
+							Long goods_quantity = selected_map.get(goodsId);
+							Long mutiplu = goods_quantity / quantity;
+							mutipuls.add(mutiplu);
+						}
+
+						// 集合中最小的数字即为倍数
+						Long min = Collections.min(mutipuls);
+
+						// 改变剩下的商品的数量
+						for (Long goodsId : cost.keySet()) {
+							Long quantity = cost.get(goodsId);
+							Long leftNum = selected_map.get(goodsId) - (quantity * min);
+							selected_map.put(goodsId, leftNum);
+						}
+
+						// 获取赠品队列
+						String giftNumber = activity.getGiftNumber();
+						if (null != giftNumber) {
+							String[] group = giftNumber.split(",");
+							if (null != group) {
+								for (String each_item : group) {
+									if (null != each_item) {
+										// 拆分个体以获取id和数量的属性
+										String[] param = each_item.split("_");
+										// 当个体不为空且长度为2的时候才是正确的数据
+										if (null != param && param.length == 2) {
+											Long id = Long.parseLong(param[0]);
+											Long quantity = Long.parseLong(param[1]);
+											// 查找到指定id的商品
+											TdGoods goods = tdGoodsService.findOne(id);
+											// 查找指定商品的价格
+											TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
+											TdOrderGoods orderGoods = new TdOrderGoods();
+											orderGoods.setBrandId(goods.getBrandId());
+											orderGoods.setBrandTitle(goods.getBrandTitle());
+											orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
+											orderGoods.setGoodsId(goods.getId());
+											orderGoods.setGoodsTitle(goods.getTitle());
+											orderGoods.setGoodsSubTitle(goods.getSubTitle());
+											orderGoods.setPrice(0.0);
+											orderGoods.setGiftPrice(priceListItem.getPrice());
+											orderGoods.setQuantity(quantity * min);
+											orderGoods.setSku(goods.getCode());
+											// 创建一个布尔变量用于表示赠品是否已经在队列中
+											Boolean isHave = false;
+											for (TdOrderGoods single : presentList) {
+												if (null != single && null != single.getGoodsId()
+														&& single.getGoodsId() == orderGoods.getGoodsId()) {
+													isHave = true;
+													single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
+												}
+											}
+
+											if (!isHave) {
+												presentList.add(orderGoods);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return presentList;
+	}
+
+	/**
+	 * 根据已选获取小辅料
+	 * 
+	 * @author DengXiao
+	 */
+	public List<TdOrderGoods> getGift(HttpServletRequest req, List<TdCartGoods> all_selected) {
+		List<TdOrderGoods> giftGoodsList = new ArrayList<>();
+		// 获取已选【分类：数量】组
+		Map<Long, Long> group = tdCommonService.getGroup(req);
+		// 获取已选能够参加的活动
+		List<TdActivityGift> activities = tdCommonService.getActivityGiftBySelected(req);
+		for (TdActivityGift activity : activities) {
+			Long categoryId = activity.getCategoryId();
+			Long quantity = activity.getBuyNumber();
+			// 判断是否满足条件
+			if (null != group.get(categoryId) && group.get(categoryId) >= quantity) {
+
+				// 添加小辅料赠品
+				List<TdActivityGiftList> giftList = activity.getGiftList();
+				if (null != giftList) {
+					for (int i = 0; i < giftList.size(); i++) {
+						TdActivityGiftList gift = giftList.get(i);
+						TdGoods tdGoods = tdGoodsService.findOne(gift.getGoodsId());
+						TdOrderGoods goods = new TdOrderGoods();
+						goods.setBrandId(tdGoods.getBrandId());
+						goods.setBrandTitle(tdGoods.getBrandTitle());
+						goods.setPrice(0.00);
+						goods.setQuantity(gift.getNumber());
+						goods.setGoodsTitle(tdGoods.getTitle());
+						goods.setGoodsSubTitle(tdGoods.getSubTitle());
+						goods.setGoodsId(tdGoods.getId());
+						goods.setGoodsCoverImageUri(tdGoods.getCoverImageUri());
+						goods.setSku(tdGoods.getCode());
+						// 创建一个布尔变量用于判断此件商品是否已经加入了小辅料
+						Boolean isHave = false;
+						for (TdOrderGoods orderGoods : giftGoodsList) {
+							if (null != orderGoods && null != orderGoods.getGoodsId()
+									&& orderGoods.getGoodsId() == gift.getGoodsId()) {
+								isHave = true;
+								orderGoods.setQuantity(orderGoods.getQuantity() + goods.getQuantity());
+							}
+						}
+						if (!isHave) {
+							giftGoodsList.add(goods);
+						}
+					}
+				}
+			}
+		}
+		return giftGoodsList;
 	}
 }
