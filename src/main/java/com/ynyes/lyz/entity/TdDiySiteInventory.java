@@ -21,7 +21,7 @@ public class TdDiySiteInventory {
 
 	// 城市编码
 	@Column
-	private String regionId;
+	private Long regionId;
 	
 	// 城市名
 	@Column
@@ -74,6 +74,22 @@ public class TdDiySiteInventory {
 	// 管理员id
 	@Column
 	private Long managerId;
+	
+	public Long getRegionId() {
+		return regionId;
+	}
+
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
+	}
+
+	public String getRegionName() {
+		return regionName;
+	}
+
+	public void setRegionName(String regionName) {
+		this.regionName = regionName;
+	}
 
 	public Long getManagerId() {
 		return managerId;

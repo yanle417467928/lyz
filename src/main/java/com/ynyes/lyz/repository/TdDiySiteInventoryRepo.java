@@ -1,5 +1,7 @@
 package com.ynyes.lyz.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -12,6 +14,13 @@ public interface TdDiySiteInventoryRepo
 
 	Page<TdDiySiteInventory> findByGoodsCodeContainingOrGoodsTitleContainingOrderByIdAsc(String code,String title,Pageable pageable);
 	
-	Page<TdDiySiteInventory> findByRegionIdAndGoodsCodeContainingOrRegionIdAndGoodsTitleContainingOrderByIdAsc(String code,String title,Pageable pageable);
+	Page<TdDiySiteInventory> findByRegionIdAndGoodsCodeContainingOrRegionIdAndGoodsTitleContainingOrderByIdAsc(Long regionId,String code,Long regionid,String title,Pageable pageable);
 	
+	Page<TdDiySiteInventory> findByDiySiteIdAndGoodsCodeContainingOrDiySiteIdAndGoodsTitleContainingOrderByIdAsc(Long siteId,String code,Long siteid,String title,Pageable pageable);
+	
+	List<TdDiySiteInventory> findByDiySiteId(Long siteId);
+	
+	Page<TdDiySiteInventory> findByDiySiteId(Long siteId,Pageable pageable);
+	
+	Page<TdDiySiteInventory> findByRegionIdOrderByIdAsc(Long regionId,Pageable pageable);
 }

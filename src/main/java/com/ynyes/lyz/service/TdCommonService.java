@@ -35,6 +35,7 @@ import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdInterfaceErrorLog;
 import com.ynyes.lyz.entity.TdOrder;
@@ -128,6 +129,9 @@ public class TdCommonService {
 
 	@Autowired
 	private TdCityService tdCityService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	/**
 	 * 根据仓库编号获取仓库名
@@ -469,6 +473,16 @@ public class TdCommonService {
 	 * @author dengxiao
 	 */
 	public void getGoodsAndPrice(HttpServletRequest req, ModelMap map, Long cateGoryId) {
+		
+		// 获取门店
+		String username = (String)req.getSession().getAttribute("username");
+		TdUser tdUser = tdUserService.findByUsername(username);
+		Long siteId = 0L;
+		if (tdUser != null)
+		{
+			siteId = tdUser.getUpperDiySiteId();
+		}
+		
 		// 创建一个集合存储有价格的商品
 		List<TdGoods> actual_goods = new ArrayList<>();
 		// 查找指定二级分类下的所有商品
@@ -483,7 +497,18 @@ public class TdCommonService {
 					// 开始判断此件商品是否参加活动
 					priceListItem.setIsPromotion(this.isJoinActivity(req, goods));
 					map.addAttribute("priceListItem" + i, priceListItem);
-				} else {
+					List<TdDiySiteInventory> inventories = tdDiySiteInventoryService.findByDiySiteId(siteId);
+					if (inventories.size() == 1)
+					{
+						map.addAttribute("goodInventory" + i,inventories.get(0).getInventory());
+					}
+					else
+					{
+						map.addAttribute("goodInventory" + i,0);
+					}
+				} 
+				else 
+				{
 					actual_goods.add(null);
 				}
 			}

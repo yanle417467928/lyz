@@ -412,6 +412,43 @@ public class TdManagerGoodsController {
 		}
 	}
 
+	@RequestMapping(value = "/setting/goodsleft/numbers")
+	@ResponseBody
+	public String setGoodsLeftNumbers(Integer page)
+	{
+		List<TdDiySite> diySites = tdDiySiteService.findAll();
+		if (page == null)
+		{
+			page = 0;
+		}
+		for (TdDiySite tdDiySite : diySites) 
+		{
+			setInventoryByDiySite(tdDiySite,page);
+		}
+		return "yes";
+	}
+	
+	public void setInventoryByDiySite(TdDiySite site,int page)
+	{
+		Page<TdGoods> goods = tdGoodsService.findAll(page, 1000000);
+		for (TdGoods tdGoods : goods) 
+		{
+			TdDiySiteInventory inventory = new TdDiySiteInventory();
+			inventory.setInventory(0L);
+			inventory.setDiySiteId(site.getId());
+			inventory.setDiySiteName(site.getTitle());
+			inventory.setGoodsCode(tdGoods.getCode());
+			inventory.setGoodsId(tdGoods.getId());
+			inventory.setCategoryId(tdGoods.getCategoryId());
+			inventory.setCategoryIdTree(tdGoods.getCategoryIdTree());
+			inventory.setCategoryTitle(tdGoods.getCategoryTitle());
+			inventory.setDiyCode(site.getStoreCode());
+			inventory.setGoodsTitle(tdGoods.getTitle());
+			inventory.setRegionId(site.getCityId());
+			tdDiySiteInventoryService.save(inventory);
+		}
+	}
+	
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
 	public String goodsListPost(Integer page, Integer size, Long categoryId, String property, String saleType,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, String keywords, Long[] listId,
@@ -1132,6 +1169,7 @@ public class TdManagerGoodsController {
 		map.addAttribute("size", size);
 		map.addAttribute("regionId",regionId);
 		map.addAttribute("siteId", siteId);
+		map.addAttribute("keywords",keywords);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
@@ -1139,7 +1177,7 @@ public class TdManagerGoodsController {
 		List<TdDiySite> diysite_list = new ArrayList<>();
 		if (regionId != null)
 		{
-			diysite_list = tdDiySiteService.findByRegionIdAndIsEnableOrderBySortIdAsc(regionId);
+			diysite_list = tdDiySiteService.findByCityId(regionId);
 		}
 		else
 		{
@@ -1148,21 +1186,19 @@ public class TdManagerGoodsController {
 		
 		
 		map.addAttribute("site_list", diysite_list);
-		map.addAttribute("inventory_page", tdDiySiteInventoryService.findAll(page,size));
-		if (StringUtils.isNotBlank(keywords)) 
+		if (siteId != null)
 		{
-			if (regionId != null)
-			{
-				
-			}
-			else if (siteId != null)
-			{
-				
-			}
+			map.addAttribute("inventory_page", tdDiySiteInventoryService.findBySiteIdAndKeywords(siteId, keywords, page, size));
+		}
+		else if (regionId !=null)
+		{
+			map.addAttribute("inventory_page", tdDiySiteInventoryService.findByRegionIdAndKeywords(regionId,keywords, page, size));
+		}
+		else
+		{
+			map.addAttribute("inventory_page", tdDiySiteInventoryService.findAll(keywords, page,size));
 		}
 		
-//		map.addAttribute("log_page", tdInventoryLogService.findAll(page, size));
-
 		return "site_mag/inventory_list";
 	}
 	/**

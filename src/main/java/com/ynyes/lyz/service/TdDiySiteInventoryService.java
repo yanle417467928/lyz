@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,10 +44,48 @@ public class TdDiySiteInventoryService {
 		return (List<TdDiySiteInventory>) repository.findAll();
 	}
 	
-	public Page<TdDiySiteInventory> findAll(int page,int size)
+	public Page<TdDiySiteInventory> findAll(String keywords,int page,int size)
 	{
 		PageRequest pageRequest = new PageRequest(page, size);
+		if (StringUtils.isNotBlank(keywords)) 
+			return repository.findByGoodsCodeContainingOrGoodsTitleContainingOrderByIdAsc(keywords, keywords, pageRequest);
 		return repository.findAll(pageRequest);
 	}
+	
+	public Page<TdDiySiteInventory> findByGoodsCodeContainingOrGoodsTitleContainingOrderByIdAsc(String keywords,int page,int size)
+	{
+		PageRequest pageRequest = new PageRequest(page, size);
+		return repository.findByGoodsCodeContainingOrGoodsTitleContainingOrderByIdAsc(keywords, keywords, pageRequest);
+	}
+	
+	public Page<TdDiySiteInventory> findByRegionIdAndGoodsCodeContainingOrRegionIdAndGoodsTitleContainingOrderByIdAsc(Long regionId,String keywords,int page,int size)
+	{
+		PageRequest pageRequest = new PageRequest(page, size);
+		if (StringUtils.isBlank(keywords))
+			return repository.findByRegionIdOrderByIdAsc(regionId, pageRequest);
+		return repository.findByRegionIdAndGoodsCodeContainingOrRegionIdAndGoodsTitleContainingOrderByIdAsc(regionId, keywords, regionId, keywords, pageRequest);
+	}
+	
+	public Page<TdDiySiteInventory> findBySiteIdAndKeywords(Long siteId,String keywords,int page,int size)
+	{
+		PageRequest pageable = new PageRequest(page, size);
+		if (StringUtils.isBlank(keywords))
+			return repository.findByDiySiteId(siteId, pageable);
+		return repository.findByDiySiteIdAndGoodsCodeContainingOrDiySiteIdAndGoodsTitleContainingOrderByIdAsc(siteId, keywords, siteId, keywords, pageable);
+	}
+	
+	public Page<TdDiySiteInventory> findByRegionIdAndKeywords(Long regionId,String keywords,int page,int size) 
+	{
+		PageRequest pageable = new PageRequest(page, size);
+		if (StringUtils.isBlank(keywords)) 
+			return repository.findByRegionIdOrderByIdAsc(regionId, pageable);
+		return repository.findByRegionIdAndGoodsCodeContainingOrRegionIdAndGoodsTitleContainingOrderByIdAsc(regionId, keywords, regionId, keywords, pageable);
+	}
+	
+	public List<TdDiySiteInventory> findByDiySiteId(Long code)
+	{
+		return repository.findByDiySiteId(code);
+	}
+	
 
 }
