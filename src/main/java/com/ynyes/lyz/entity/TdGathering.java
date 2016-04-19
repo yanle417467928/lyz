@@ -109,10 +109,13 @@ public class TdGathering {
 	private Date deliveryTime;
 	// 城市
 	@Column
-	private String city;
+	private String cityName;
 	// 配送门店编号
 	@Column
 	private String diySiteCode;
+	//创建人
+	private String createUsername;
+	
 	public Long getId() {
 		return id;
 	}
@@ -284,12 +287,6 @@ public class TdGathering {
 	public void setDeliveryTime(Date deliveryTime) {
 		this.deliveryTime = deliveryTime;
 	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
 	public String getDiySiteCode() {
 		return diySiteCode;
 	}
@@ -304,6 +301,18 @@ public class TdGathering {
 	}
 	public void setOrderNumber(String orderNumber) {
 		this.orderNumber = orderNumber;
+	}
+	public String getCityName() {
+		return cityName;
+	}
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+	public String getCreateUsername() {
+		return createUsername;
+	}
+	public void setCreateUsername(String createUsername) {
+		this.createUsername = createUsername;
 	}
 	
 }

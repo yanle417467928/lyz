@@ -10,30 +10,31 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ynyes.lyz.entity.TdReturnReport;
-import com.ynyes.lyz.repository.TdReturnReportRepo;
+import com.ynyes.lyz.entity.TdGoodsInOut;
+import com.ynyes.lyz.repository.TdGoodsINOutRepo;
 import com.ynyes.lyz.util.Criteria;
 import com.ynyes.lyz.util.Restrictions;
 
 /**
- * TdReturnReport 服务类
+ * TdGoodsINOutRepo 服务类
  * 
- * @author Sharon
+ * @author
  *
  */
 
 @Service
 @Transactional
-public class TdReturnReportService {
+public class TdGoodsInOutService {
+	
 	@Autowired
-	TdReturnReportRepo repository;
+	TdGoodsINOutRepo repository;
 	
 	/**
-	 * 根据时间,城市,门店查询退货报表
+	 * 根据时间,城市,门店查询进出货报表
 	 * @return
 	 */
-	public List<TdReturnReport> searchReturnReport(Date begin,Date end,String cityName,String diySiteCode,String username){
-		Criteria<TdReturnReport> c = new Criteria<TdReturnReport>();
+	public List<TdGoodsInOut> searchGoodsInOut(Date begin,Date end,String cityName,String diySiteCode,String username){
+		Criteria<TdGoodsInOut> c = new Criteria<TdGoodsInOut>();
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
 		}if(null!=end){
@@ -56,31 +57,37 @@ public class TdReturnReportService {
 	 * @return 
 	 * @return
 	 */
-	public void callInsertReturnReport(Date start,Date end,String username){
-		repository.callInsertReturnReport(start, end,username);
+	public void callinsertGoodsInOutInitial(Date start,Date end,String username){
+		repository.callinsertGoodsInOutInitial(start, end,username);
 	}
+	
 	/**
-	 * 根据时间,城市,门店查询退货报表
+	 * 分页条件查询 
+	 * 
 	 * @return
 	 */
-	public Page<TdReturnReport> searchList(String keywords,Date begin,Date end,String cityName,String diySiteCode,String username,int size ,int page){
+	public Page<TdGoodsInOut> searchList(String keywords, Date orderStartTime, Date orderEndTime, String diyCode,String city,String username, int size, int page) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		Criteria<TdReturnReport> c = new Criteria<TdReturnReport>();
-		if(null!=begin){
-			c.add(Restrictions.gte("orderTime", begin, true));
-		}if(null!=end){
-			c.add(Restrictions.lte("orderTime", end, true));
+		Criteria<TdGoodsInOut> c = new Criteria<TdGoodsInOut>();
+		if (null != keywords && !keywords.equalsIgnoreCase("")) {
+			c.add(Restrictions.like("orderNumber", keywords, true));
 		}
-		if(StringUtils.isNotBlank(cityName)){
-			c.add( Restrictions.eq("cityName", cityName, true));
+		if(null!=orderStartTime){
+			c.add(Restrictions.gte("orderTime", orderStartTime, true));
+		}if(null!=orderEndTime){
+			c.add(Restrictions.lte("orderTime", orderEndTime, true));
 		}
-		if(StringUtils.isNotBlank(diySiteCode)){
-			c.add( Restrictions.eq("diySiteCode", diySiteCode, true));
+		if (null != diyCode && !"".equals(diyCode)) {
+			c.add(Restrictions.eq("diySiteCode", diyCode, true));
+		}
+		if (null != city && !"".equals(city)) {
+			c.add(Restrictions.eq("cityName", city, true));
 		}
 		if(StringUtils.isNotBlank(username)){
 			c.add( Restrictions.eq("createUsername", username, true));
 		}
 		c.setOrderByDesc("orderTime");
-		return repository.findAll(c,pageRequest);
+		return repository.findAll(c, pageRequest);
 	}
+	
 }

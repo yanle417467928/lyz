@@ -9,12 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * 销售明细报表
+ * 出退货明细报表
  * @author zp
  *
  */
 @Entity
-public class TdSalesDetail {
+public class TdGoodsInOut {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,27 +22,39 @@ public class TdSalesDetail {
 	//门店名称
 	@Column
 	private String diySiteName;
-	//主单号
+	//主单号（订单显示XN开头，退单显示T开头）
 	@Column
 	private String mainOrderNumber;
 	//分单号
 	@Column
 	private String orderNumber;
-	//下单时间
-	@Column
-	private Date orderTime;
 	//订单状态
 	@Column
 	private Long statusId;
-	//会员电话
+	//订单日期（下单日期）
 	@Column
-	private String username;
+	private Date orderTime;
+	//销售日期（订单为出货日期，退单为验货确认日期）
+	@Column
+	private Date salesTime;
 	//客户名称
 	@Column
 	private String realName;
-	//收货人
+	//客户电话
 	@Column
-	private String shippingName;
+	private String username;
+	//品牌
+	@Column
+	private String brandTitle;
+	//商品类别
+	@Column
+	private String categoryTitle;
+	//导购
+	@Column
+	private String sellerRealName;
+	//配送方式
+	@Column
+	private String deliverTypeTitle;
 	//产品编号
 	@Column
 	private String sku;
@@ -58,43 +70,29 @@ public class TdSalesDetail {
 	//总价
 	@Column
 	private Double totalPrice;
-	//使用可提现金额
-	@Column
-	private Double cashBalanceUsed;
-	//使用不可体现金额
-	@Column
-	private Double unCashBalanceUsed;
-	//备注
-	@Column
-	private String remark;
 	//中转仓
 	@Column
 	private String whNo;
 	//配送人员
 	@Column
 	private String deliverRealName;
-	//配送人员电话
+	//配送人电话
 	@Column
 	private String deliverUsername;
-	//导购姓名
-	@Column
-	private String sellerRealName;
-	//商品类型
-	@Column
-	private String title;
-	//配送方式
-	@Column
-	private String deliverTypeTitle;
-	//收货人地址
+	//退货地址
 	@Column
 	private String shippingAddress;
-	// 城市
+	//客户备注
 	@Column
-	private String cityName;
-	// 配送门店id
+	private String remarkInfo;
+	//门店code
 	@Column
 	private String diySiteCode;
-	//创建人
+	//城市名称
+	@Column
+	private String cityName;
+	//创建用户
+	@Column
 	private String createUsername;
 	
 	public Long getId() {
@@ -121,17 +119,29 @@ public class TdSalesDetail {
 	public void setOrderNumber(String orderNumber) {
 		this.orderNumber = orderNumber;
 	}
+	public Long getStatusId() {
+		return statusId;
+	}
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
+	}
 	public Date getOrderTime() {
 		return orderTime;
 	}
 	public void setOrderTime(Date orderTime) {
 		this.orderTime = orderTime;
 	}
-	public Long getStatusId() {
-		return statusId;
+	public Date getSalesTime() {
+		return salesTime;
 	}
-	public void setStatusId(Long statusId) {
-		this.statusId = statusId;
+	public void setSalesTime(Date salesTime) {
+		this.salesTime = salesTime;
+	}
+	public String getRealName() {
+		return realName;
+	}
+	public void setRealName(String realName) {
+		this.realName = realName;
 	}
 	public String getUsername() {
 		return username;
@@ -139,11 +149,29 @@ public class TdSalesDetail {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	public String getRealName() {
-		return realName;
+	public String getBrandTitle() {
+		return brandTitle;
 	}
-	public void setRealName(String realName) {
-		this.realName = realName;
+	public void setBrandTitle(String brandTitle) {
+		this.brandTitle = brandTitle;
+	}
+	public String getCategoryTitle() {
+		return categoryTitle;
+	}
+	public void setCategoryTitle(String categoryTitle) {
+		this.categoryTitle = categoryTitle;
+	}
+	public String getSellerRealName() {
+		return sellerRealName;
+	}
+	public void setSellerRealName(String sellerRealName) {
+		this.sellerRealName = sellerRealName;
+	}
+	public String getDeliverTypeTitle() {
+		return deliverTypeTitle;
+	}
+	public void setDeliverTypeTitle(String deliverTypeTitle) {
+		this.deliverTypeTitle = deliverTypeTitle;
 	}
 	public String getSku() {
 		return sku;
@@ -175,24 +203,6 @@ public class TdSalesDetail {
 	public void setTotalPrice(Double totalPrice) {
 		this.totalPrice = totalPrice;
 	}
-	public Double getCashBalanceUsed() {
-		return cashBalanceUsed;
-	}
-	public void setCashBalanceUsed(Double cashBalanceUsed) {
-		this.cashBalanceUsed = cashBalanceUsed;
-	}
-	public Double getUnCashBalanceUsed() {
-		return unCashBalanceUsed;
-	}
-	public void setUnCashBalanceUsed(Double unCashBalanceUsed) {
-		this.unCashBalanceUsed = unCashBalanceUsed;
-	}
-	public String getRemark() {
-		return remark;
-	}
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
 	public String getWhNo() {
 		return whNo;
 	}
@@ -211,41 +221,23 @@ public class TdSalesDetail {
 	public void setDeliverUsername(String deliverUsername) {
 		this.deliverUsername = deliverUsername;
 	}
-	public String getSellerRealName() {
-		return sellerRealName;
-	}
-	public void setSellerRealName(String sellerRealName) {
-		this.sellerRealName = sellerRealName;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public String getDeliverTypeTitle() {
-		return deliverTypeTitle;
-	}
-	public void setDeliverTypeTitle(String deliverTypeTitle) {
-		this.deliverTypeTitle = deliverTypeTitle;
-	}
 	public String getShippingAddress() {
 		return shippingAddress;
 	}
 	public void setShippingAddress(String shippingAddress) {
 		this.shippingAddress = shippingAddress;
 	}
+	public String getRemarkInfo() {
+		return remarkInfo;
+	}
+	public void setRemarkInfo(String remarkInfo) {
+		this.remarkInfo = remarkInfo;
+	}
 	public String getDiySiteCode() {
 		return diySiteCode;
 	}
 	public void setDiySiteCode(String diySiteCode) {
 		this.diySiteCode = diySiteCode;
-	}
-	public String getShippingName() {
-		return shippingName;
-	}
-	public void setShippingName(String shippingName) {
-		this.shippingName = shippingName;
 	}
 	public String getCityName() {
 		return cityName;
@@ -259,6 +251,5 @@ public class TdSalesDetail {
 	public void setCreateUsername(String createUsername) {
 		this.createUsername = createUsername;
 	}
-	
 	
 }
