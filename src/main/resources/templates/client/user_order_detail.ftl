@@ -150,5 +150,8 @@
             </article>
             <!-- 配送信息 END -->
         </#if>
+        <footer>
+        	<a class="btn-clearing" href="/goods/again?orderId=${orderId?c}">再来一单</a>
+        </footer>
     </body>
 </html>

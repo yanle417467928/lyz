@@ -112,19 +112,23 @@ public class TdOrderGoods {
 	// 退货数量
 	@Column
 	private Long returnNumber;
-	
-	//促销赠品价格
+
+	// 促销赠品价格
 	@Column
 	private Double giftPrice;
-	
-	//退货单号
+
+	// 退货单号
 	@Column
 	private String returnNoteNumber;
-	
-	//分单号
+
+	// 分单号
 	@Column
 	private String subOrderNumber;
-	
+
+	// 表示已选类型（目前：0. 代表商品；1. 代表产品券）
+	@Column
+	private Long type;
+
 	public String getSubOrderNumber() {
 		return subOrderNumber;
 	}
@@ -332,8 +336,6 @@ public class TdOrderGoods {
 	public void setReturnNumber(Long returnNumber) {
 		this.returnNumber = returnNumber;
 	}
-	
-	
 
 	public Double getGiftPrice() {
 		return giftPrice;
@@ -341,6 +343,14 @@ public class TdOrderGoods {
 
 	public void setGiftPrice(Double giftPrice) {
 		this.giftPrice = giftPrice;
+	}
+
+	public Long getType() {
+		return type;
+	}
+
+	public void setType(Long type) {
+		this.type = type;
 	}
 
 	@Override

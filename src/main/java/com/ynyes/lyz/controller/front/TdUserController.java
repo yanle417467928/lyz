@@ -502,7 +502,7 @@ public class TdUserController {
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/selected")
-	public String mySelected(HttpServletRequest req, ModelMap map,String history) {
+	public String mySelected(HttpServletRequest req, ModelMap map, String history) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {
@@ -534,7 +534,7 @@ public class TdUserController {
 		map.addAttribute("selected_number", tdCartGoodsService.countByUserId(user.getId()));
 		map.addAttribute("totalPrice", total_price);
 		map.addAttribute("history", history);
-		
+
 		return "/client/user_selected";
 	}
 
@@ -1450,6 +1450,7 @@ public class TdUserController {
 			}
 		}
 
+		map.addAttribute("orderId", id);
 		return "/client/user_order_detail";
 	}
 
@@ -1910,7 +1911,7 @@ public class TdUserController {
 			order.setIsRefund(true);
 			tdOrderService.save(order);
 			tdReturnNoteService.save(returnNote);
-//			tdCommonService.sendBackToWMS(returnNote);
+			// tdCommonService.sendBackToWMS(returnNote);
 		}
 
 		res.put("status", 0);

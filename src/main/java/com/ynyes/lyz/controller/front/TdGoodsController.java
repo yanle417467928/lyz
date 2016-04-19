@@ -20,6 +20,8 @@ import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGoods;
+import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdSetting;
 import com.ynyes.lyz.entity.TdUser;
@@ -29,6 +31,7 @@ import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdGoodsService;
+import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdUserCollectService;
 import com.ynyes.lyz.service.TdUserCommentService;
@@ -61,6 +64,9 @@ public class TdGoodsController {
 
 	@Autowired
 	private TdCartGoodsService tdCartGoodsService;
+
+	@Autowired
+	private TdOrderService tdOrderService;
 
 	/*
 	 *********************************** 普通下单模式的控制器和方法********************************************
@@ -681,6 +687,77 @@ public class TdGoodsController {
 			cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
 			cartGoods.setRealTotalPrice(cartGoods.getRealPrice() * cartGoods.getQuantity());
 			tdCartGoodsService.save(cartGoods);
+		}
+
+		return "redirect:/user/selected";
+	}
+
+	@RequestMapping(value = "/again")
+	public String getGoodsAgain(HttpServletRequest req, ModelMap map, Long orderId) {
+		// 判断用户是否登录
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
+
+		// 获取订单中所有的商品
+		TdOrder order = tdOrderService.findOne(orderId);
+		if (null != order) {
+			// 获取订单的订单商品
+			List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+			if (null != goodsList && goodsList.size() > 0) {
+				for (TdOrderGoods orderGoods : goodsList) {
+					if (null != orderGoods) {
+						// 获取指定商品
+						TdGoods goods = tdGoodsService.findOne(orderGoods.getGoodsId());
+
+						// 获取价目表信息
+						TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
+
+						// 判断用户的购物车中是否已经存在该件商品
+						TdCartGoods existCart = tdCartGoodsService.findByUsernameAndGoodsId(username,
+								orderGoods.getGoodsId());
+
+						if (null == existCart) {
+							// 生成已选项
+							TdCartGoods cart = new TdCartGoods();
+
+							cart.setUsername(username);
+							cart.setUserId(user.getId());
+							cart.setGoodsId(orderGoods.getGoodsId());
+							cart.setGoodsTitle(orderGoods.getGoodsTitle());
+							cart.setGoodsCoverImageUri(orderGoods.getGoodsCoverImageUri());
+							cart.setQuantity(orderGoods.getQuantity());
+							cart.setSku(orderGoods.getSku());
+							// 设置实时价格
+							cart.setPrice(priceListItem.getSalePrice());
+							cart.setRealPrice(priceListItem.getRealSalePrice());
+
+							cart.setBrandTitle(orderGoods.getBrandTitle());
+							cart.setBrandId(orderGoods.getBrandId());
+							cart.setTotalPrice(cart.getPrice() * cart.getQuantity());
+							cart.setRealTotalPrice(cart.getRealPrice() * cart.getQuantity());
+							cart.setSaleType(0);
+							cart.setType(orderGoods.getType());
+
+							tdCartGoodsService.save(cart);
+						} else {
+							existCart.setQuantity(existCart.getQuantity() + orderGoods.getQuantity());
+							// 设置实时价格
+							existCart.setPrice(priceListItem.getSalePrice());
+							existCart.setRealPrice(priceListItem.getRealSalePrice());
+							
+							existCart.setTotalPrice(existCart.getPrice() * existCart.getQuantity());
+							existCart.setRealTotalPrice(existCart.getRealPrice() * existCart.getQuantity());
+							existCart.setSaleType(0);
+							existCart.setType(orderGoods.getType());
+
+							tdCartGoodsService.save(existCart);
+						}
+					}
+				}
+			}
 		}
 
 		return "redirect:/user/selected";
