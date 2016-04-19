@@ -61,6 +61,7 @@ $(function () {
     <div class="content-tab-ul-wrap">
       <ul>
         <li><a href="javascript:;" onclick="tabs(this);" class="selected">编辑信息</a></li>
+        <li><a href="javascript:;" onclick="tabs(this);" class="">分类限购</a></li>
       </ul>
     </div>
   </div>
@@ -164,6 +165,160 @@ $(function () {
         </dd>
     </dl>
 </div>
+
+<div class="tab-content">
+	<dl>
+		<dt>城市名</dt>
+		<dd>${city.cityName!''}</dd>
+	</dl>
+	
+	<dl>
+		<dt>分类限购</dt>
+		<dd>
+			<table border="0" cellspacing="0" cellpadding="0" class="border-table" width="98%">
+				<thead>
+					<tr>
+						<th width="30%">一级分类</th>
+						<th>二级分类</th>
+					</tr>
+				</thead>
+				<tbody style="text-align:center;">
+					<#if level_one??>
+						<#list level_one as one>
+							<tr>
+								<td>
+									<label>${one.title!''}</label>
+									<input id="${one.id?c}" type="checkbox" name="limit" value="${one.id?c}" onclick="oneSelect(${one.id?c});">
+								</td>
+								<td>
+									<#if ("level_two"+one_index)?eval??>
+										<#list ("level_two"+one_index)?eval as two>
+											<label>${two.title!''}</label>
+											<input id="${two.id?c}" type="checkbox" name="limit" value="${two.id?c}" onclick="twoSelect(${two.id?c});">
+										</#list>
+									</#if>								
+								</td>
+							</tr>
+						</#list>
+					</#if>
+				</tbody>
+			</table>
+		</dd>
+	</dl>
+	<script type="text/javascript">
+		<#-- 生成分类树数据 -->
+		var data = {
+			<#if level_one??>
+				<#list level_one as one>
+					${one.id?c} :[ 
+						<#if ("level_two"+one_index)?eval??>
+							<#list ("level_two"+one_index)?eval as two>	
+								${two.id?c}		
+								<#if ("level_two"+one_index)?eval?size !=(two_index+1)>
+									,
+								</#if>
+							</#list>
+						</#if>
+						]
+						<#if level_one?size != (one_index+1)>
+							,
+						</#if>
+				</#list>
+			</#if>
+		}
+		
+		<#-- 二级分类及其父类的关系数据 -->
+		var two_level_data = {
+			<#if level_one??>
+				<#list level_one as one>
+					<#if ("level_two"+one_index)?eval??>
+						<#list ("level_two"+one_index)?eval as two>	
+							${two.id?c} : ${one.id?c}
+							<#if !((one_index+1)==level_one?size && (two_index+1) == ("level_two"+one_index)?eval?size)>
+								,
+							</#if>
+						</#list>
+					</#if>
+				</#list>
+			</#if>
+		}
+		
+		<#-- 点击一级分类选中框的方法 -->
+		function oneSelect(id){
+			if(id){
+				<#-- 获取指定一级分类下的所有二级分类 -->
+				var two_levels = data[id];
+				
+				<#-- 判断指定一级分类的是否被选中 -->
+				var one_level = document.getElementById(id);
+				if(one_level && one_level.checked){
+					<#-- 遍历其下所有的二级分类，使所有的二级分类被选中 -->
+					for(var i = 0; i < two_levels.length; i++){
+						var two = document.getElementById(two_levels[i]);
+						if(two){
+							two.checked = true;
+						}
+					}
+				}
+				
+				if(one_level && !one_level.checked){
+					<#-- 遍历其下所有的二级分类，使所有的二级分类被选中 -->
+					for(var i = 0; i < two_levels.length; i++){
+						var two = document.getElementById(two_levels[i]);
+						if(two){
+							two.checked = false;
+						}
+					}
+				}
+			}
+		}
+		
+		<#-- 点击二级分类选中框的方法 -->
+		function twoSelect(id){
+			if(id){
+				<#-- 获取指定二级分类的父类 -->
+				var parentId = two_level_data[id];
+				
+				var child = document.getElementById(id);
+				
+				var parent = document.getElementById(parentId);
+				
+				<#-- 场景1：选中被点击的子类 -->
+				if(child && child.checked){
+					<#-- 子类被选中，父类也被选中 -->
+					if(parent){
+						parent.checked = true;
+					}
+				}
+				
+				<#-- 场景2：点击子类取消选中 -->
+				if(child && !child.checked){
+					<#-- 获取父类下所有的子类id -->
+					var children = data[parentId];
+					<#-- 创建一个bool类型变量用于判断是否所有的子类都取消选中了 -->
+					var childChecked = false;
+					
+					for(var i = 0; i < children.length; i++){
+						var childEle = document.getElementById(children[i]);
+						if(childEle && childEle.checked){
+							childChecked = true
+						}
+					}
+					
+					if(childChecked){
+						if(parent){
+							parent.checked = true;
+						}
+					}else{
+						if(parent){
+							parent.checked = false;
+						}
+					}
+				}
+			}
+		}
+	</script>		
+</div>
 <!--/内容-->
 
 
@@ -177,6 +332,5 @@ $(function () {
 </div>
 <!--/工具栏-->
 </form>
-
-
-</body></html>
+</body>
+</html>

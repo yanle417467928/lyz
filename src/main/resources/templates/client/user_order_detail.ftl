@@ -100,6 +100,7 @@
                     <li class="li5">是否代下单：<#if order.isSellerOrder??&&order.isSellerOrder>是<#else>否</#if></li>
                     <li class="li5" style="overflow: visible;height: auto;">订单备注：${order.remark!''}</li>
                     <li class="li5">服务导购：${order.sellerRealName!''}</li>
+                    <li class="li5">导购电话：${order.sellerUsername!''}</li>
                     <li class="li5">使用现金券：<div class="div1">券金额：<p>￥<span><#if order.cashCoupon??>${order.cashCoupon?string("0.00")}<#else>0.00</#if></span></p></div></li>
                     <li class="li6"><span>使用产品券：</span><div class="div1"><p>${order.productCoupon!''}</p></div></li>
                     <style type="text/css">
