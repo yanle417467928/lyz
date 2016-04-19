@@ -433,6 +433,8 @@ public class TdManagerGoodsController {
 		Page<TdGoods> goods = tdGoodsService.findAll(page, 1000000);
 		for (TdGoods tdGoods : goods) 
 		{
+			tdDiySiteInventoryService.findAll();
+			
 			TdDiySiteInventory inventory = new TdDiySiteInventory();
 			inventory.setInventory(0L);
 			inventory.setDiySiteId(site.getId());
@@ -445,6 +447,7 @@ public class TdManagerGoodsController {
 			inventory.setDiyCode(site.getStoreCode());
 			inventory.setGoodsTitle(tdGoods.getTitle());
 			inventory.setRegionId(site.getCityId());
+			inventory.setRegionName(site.getCity());
 			tdDiySiteInventoryService.save(inventory);
 		}
 	}
@@ -1133,7 +1136,8 @@ public class TdManagerGoodsController {
 	 * @return
 	 */
 	@RequestMapping(value = "/inventory/list")
-	public String inventoryList(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,String __EVENTARGUMENT, String __VIEWSTATE, String keywords,Long regionId, Long siteId, Long[] listId, Integer[] listChkId) {
+	public String inventoryList(HttpServletRequest req, ModelMap map, Integer page, Integer size, String __EVENTTARGET,String __EVENTARGUMENT, String __VIEWSTATE, String keywords,Long regionId, Long siteId, Long[] listId, Integer[] listChkId,Long[] listInventory)
+	{
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username)
 		{

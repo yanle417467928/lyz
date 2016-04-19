@@ -9,8 +9,11 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.ynyes.lyz.entity.TdDiySiteInventory;
 
-public interface TdDiySiteInventoryRepo
-		extends PagingAndSortingRepository<TdDiySiteInventory, Long>, JpaSpecificationExecutor<TdDiySiteInventory> {
+public interface TdDiySiteInventoryRepo extends PagingAndSortingRepository<TdDiySiteInventory, Long>, JpaSpecificationExecutor<TdDiySiteInventory> 
+{
+	TdDiySiteInventory findByGoodsCodeAndDiySiteId(String goodsCode,Long siteId);
+	
+	TdDiySiteInventory findBygoodsCodeAndDiySiteIdNull(String goodsCode);
 
 	Page<TdDiySiteInventory> findByGoodsCodeContainingOrGoodsTitleContainingOrderByIdAsc(String code,String title,Pageable pageable);
 	

@@ -44,6 +44,24 @@ public class TdDiySiteInventoryService {
 		return (List<TdDiySiteInventory>) repository.findAll();
 	}
 	
+	public TdDiySiteInventory findByGoodsCodeAndDiySiteId(String goodsCode,Long siteId)
+	{
+		if (StringUtils.isBlank(goodsCode) || siteId == null)
+		{
+			return null;
+		}
+		return repository.findByGoodsCodeAndDiySiteId(goodsCode, siteId);
+	}
+	
+	public TdDiySiteInventory findBygoodsCodeAndDiySiteIdNull(String goodsCode)
+	{
+		if (StringUtils.isBlank(goodsCode))
+		{
+			return null;
+		}
+		return repository.findBygoodsCodeAndDiySiteIdNull(goodsCode);
+	}
+	
 	public Page<TdDiySiteInventory> findAll(String keywords,int page,int size)
 	{
 		PageRequest pageRequest = new PageRequest(page, size);

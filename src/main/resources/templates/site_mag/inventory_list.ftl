@@ -48,6 +48,7 @@ var theForm = document.forms['form1'];
     <div class="l-list">
         <ul class="icon-list">
           <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
+          <li><a id="btnSave" class="save" href="javascript:__doPostBack('btnInventory','')"><i></i><span>保存</span></a></li>
         </ul>
         <div class="menu-list">
             <div class="rule-single-select">
@@ -106,7 +107,7 @@ var theForm = document.forms['form1'];
                 <td align="left"><#if item.goodsCode??>${item.goodsCode!""}</#if></td>
                 <td align="left">${item.diySiteName!""}</td>
                 <td align="left">${item.cityId!""}</td>
-                <td align="left"><#if item.inventory??>${item.inventory?c}</#if></td>
+                <td align="center"><input name="listInventory" type="text" value="<#if item.inventory??>${item.inventory?c}<#else>0</#if>" id="listSortId" class="sort" onkeydown="return checkNumber(event);"></td>
             </tr>
         </#list>
     </#if>
