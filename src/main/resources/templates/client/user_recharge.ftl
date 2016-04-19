@@ -23,8 +23,11 @@
         </script>
     </head>
     <body class="bgc-f3f4f6">
-        <#-- 引入公共购物方式选择滑动窗口 -->
+        <#-- 引入公共购物方式选择滑动窗口 
         <#include "/client/common_shopping_type.ftl">
+        -->
+        <#-- 引入公共警告窗口 -->
+        <#include "/client/common_warn.ftl">
         
         <!-- 头部 -->
         <header>
@@ -36,58 +39,52 @@
         
         <!-- 充值 -->
         <article class="balance-recharge">
-            <section class="recharge">
+            <section class="recharge" style="border:none;">
                 <div>
                     <span class="sp1">充值</span>
-                    <input type="text" placeholder="请输入充值金额">
+                    <input type="text" id="cash" placeholder="请输入充值金额">
                     <span class="sp2">元</span>
                 </div>
             </section>
             <!-- 充值方式 -->
             <section class="pay-way">
-                <div class="paylist">
-                    <div class="left">
-                        <img class="way" width="78" height="40" src="/client/images/x_icon_zhifubao.png" alt="支付宝支付">
-                    </div>
-                    <div class="zfb">
-                        <div class="div1">支付宝</div>
-                        <div class="div2">推荐有支付宝账号的用户使用</div>
-                    </div>
-                    <div class="right">
-                        <img width="30" height="30" class="check" src="/client/images/x_icon_checked.png" alt="">
-                    </div>
-                </div>
-                <div class="paylist">
-                    <div class="left">
-                        <img class="way" width="78" height="40" src="/client/images/x_icon_weixinzhifu.png" alt="微信支付">
-                    </div>
-                    <div class="zfb">
-                        <div class="div1">微信支付</div>
-                        <div class="div2">推荐有微信钱包账号的用户使用</div>
-                    </div>
-                    <div class="right">
-                        <img width="30" height="30" class="check" src="/client/images/x_icon_check.png" alt="">
-                    </div>
-                </div>
-                <div class="paylist">
-                    <div class="left">
-                        <img class="way" width="78" height="40" src="/client/images/x_icon_yinhangka.png" alt="银行卡支付">
-                    </div>
-                    <div class="zfb">
-                        <div class="div1">银行卡</div>
-                        <div class="div2">推荐有银联银行卡账户的用户使用</div>
-                    </div>
-                    <div class="right">
-                        <img width="30" height="30" class="check" src="/client/images/x_icon_check.png" alt="">
-                    </div>
-                </div>
+            	<#if payType_list?? && payType_list?size gt 0>
+        			<#list payType_list as item>
+		                <div class="paylist">
+		                    <div class="left">
+		                        <img class="way" width="78" height="40" src="${item.coverImageUri!''}" alt="${item.title!''}">
+		                    </div>
+		                    <div class="zfb">
+		                        <div class="div1">${item.title!''}</div>
+		                        <div class="div2">${item.info!''}</div>
+		                    </div>
+		                    <div class="right">
+		                    	<#if item_index == 0>
+		                        	<img width="30" id="${item.id?c}" height="30" class="check" src="/client/images/x_icon_checked.png" alt="">
+		                        <#else>
+		                        	<img width="30" id="${item.id?c}" height="30" class="check" src="/client/images/x_icon_check.png" alt="">
+		                        </#if>
+		                    </div>
+		                </div>
+	                </#list>
+                </#if>
             </section>
-            <a class="btn-next" href="#">下一步</a>
+            <a class="btn-next" href="javascript:recharge.confirm();">下一步</a>
         </article>
         <script type="text/javascript">
             $(".pay-way .paylist").click(function(){
                 $(this).find("img.check").attr("src","/client/images/x_icon_checked.png");
                 $(this).siblings().find("img.check").attr("src","/client/images/x_icon_check.png");
+                var id = $(this).find("img.check").attr("id");
+                if(id){
+                	recharge.type[id] = true;
+                }
+                
+               	for(var key in recharge.type){
+               		if(key && key !== id){
+               			recharge.type[key] = false;
+               		}
+               	}
             });
         </script>
         <!-- 充值 END -->
@@ -96,4 +93,36 @@
         <#include "/client/common_footer.ftl">
         <!-- 底部 END -->
     </body>
+    <script>
+    	<#-- 创建一个命名空间 -->
+    	var recharge = {
+    		<#-- 所有的支付方式 -->
+    		type : {
+    			<#if payType_list?? && payType_list?size gt 0>
+    				<#list payType_list as item>
+    					<#if item?? && item_index == 0> 
+	    					${item.id?c} : true
+    					</#if>
+    					<#if item?? && item_index != 0> 
+    						${item.id?c} : false
+    					</#if>
+    					<#if item_index != (payType_list?size - 1)>
+    						,
+    					</#if>
+    				</#list>
+    			</#if>
+    		},
+    		<#-- 提交充值申请的方法 -->
+    		confirm : function(){
+    			<#-- 判断输入的金额是否为一个数字 -->
+    			var cash = $("#cash").val();
+    			if("" === cash || isNaN(cash)){
+    				warning("请填写正确的充值金额");
+    				return;
+    			}
+				
+				    			
+    		}
+    	}
+    </script>
 </html>

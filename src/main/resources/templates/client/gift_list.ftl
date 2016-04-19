@@ -138,82 +138,51 @@
 		
 	
 	</script>
-		<div class="win_yn">
+		<div class="win_yn" style="z-index:999;">
 			<div class="my_left">
 				<div class="close">
 					<input class="sub" type="submit" name="" id="" value="关闭" onclick="win_no()" />
 				</div>
 				<div class="add419_title">我的赠品</div>
 	    		<div class="add419_box_title">
-			    	<h3>编码</h3>
-			    	<h3>标题</h3>
+			    	<h3>SKU</h3>
+			    	<h3>名称</h3>
 			    	<h3>数量</h3>
 	    		</div>
 		    <div class="swiper-container">
 		        <div class="swiper-wrapper">
-		            <div class="swiper-slide">
-				    	<div class="box" style="width: 100%;">
-				    		<div class="add419_box">
-				    			<span>编码</span>
-				    			<span>编码编码编码编码编码编码编码</span>
-				    			<span>3</span>
-				    		</div>
-				    	</div>
-		            </div>
-		            <div class="swiper-slide">
-				    	<div class="box" style="width: 100%;">
-				    		<div class="add419_box">
-				    			<span>编码</span>
-				    			<span>编码编码编码编码编码编码编码</span>
-				    			<span>3</span>
-				    		</div>
-				    	</div>
-		            </div>
-		            <div class="swiper-slide">
-				    	<div class="box" style="width: 100%;">
-				    		<div class="add419_box">
-				    			<span>编码</span>
-				    			<span>编码编码编码编码编码编码编码</span>
-				    			<span>3</span>
-				    		</div>
-				    	</div>
-		            </div>
-		            <div class="swiper-slide">
-				    	<div class="box" style="width: 100%;">
-				    		<div class="add419_box">
-				    			<span>编码</span>
-				    			<span>编码编码编码编码编码编码编码</span>
-				    			<span>3</span>
-				    		</div>
-				    	</div>
-		            </div>
-		            <div class="swiper-slide">
-				    	<div class="box" style="width: 100%;">
-				    		<div class="add419_box">
-				    			<span>编码</span>
-				    			<span>编码编码编码编码编码编码编码</span>
-				    			<span>3</span>
-				    		</div>
-				    	</div>
-		            </div>
-		            <div class="swiper-slide">
-				    	<div class="box" style="width: 100%;">
-				    		<div class="add419_box">
-				    			<span>编码</span>
-				    			<span>编码编码编码编码编码编码编码</span>
-				    			<span>3</span>
-				    		</div>
-				    	</div>
-		            </div>
-		            <div class="swiper-slide">
-				    	<div class="box" style="width: 100%;">
-				    		<div class="add419_box">
-				    			<span>编码</span>
-				    			<span>编码编码编码编码编码编码编码</span>
-				    			<span>3</span>
-				    		</div>
-				    	</div>
-		            </div>
+		        	<#if present??>
+		        		<#list present as item>
+		        			<#if item??>
+					            <div class="swiper-slide">
+							    	<div class="box" style="width: 100%;">
+							    		<div class="add419_box">
+							    			<span>${item.sku!''}</span>
+							    			<span>${item.goodsTitle!''}</span>
+							    			<span>${item.quantity!'0'}</span>
+							    		</div>
+							    	</div>
+					            </div>
+				            </#if>
+			            </#list>
+	            	</#if>
+		        </div>
+		        <div class="swiper-wrapper">
+		        	<#if gift??>
+		        		<#list gift as item>
+		        			<#if item??>
+					            <div class="swiper-slide">
+							    	<div class="box" style="width: 100%;">
+							    		<div class="add419_box">
+							    			<span>${item.sku!''}</span>
+							    			<span>${item.goodsTitle!''}</span>
+							    			<span>${item.quantity!'0'}</span>
+							    		</div>
+							    	</div>
+					            </div>
+				            </#if>
+			            </#list>
+	            	</#if>
 		        </div>
 		    </div>
 		    <script src="/client/js/swiper.min.js"></script>

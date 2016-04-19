@@ -40,6 +40,7 @@ import com.ynyes.lyz.entity.TdGeoInfo;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
+import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdSetting;
@@ -68,6 +69,7 @@ import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
+import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdReturnNoteService;
@@ -175,6 +177,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdActivityService tdActivityService;
+
+	@Autowired
+	private TdPayTypeService tdPayTypeService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1223,12 +1228,17 @@ public class TdUserController {
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/recharge")
-	public String userRecharge(HttpServletRequest req) {
+	public String userRecharge(HttpServletRequest req, ModelMap map) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {
 			return "redirect:/login";
 		}
+
+		// 获取所有的在线支付方式
+		List<TdPayType> payType_list = tdPayTypeService.findByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc();
+
+		map.addAttribute("payType_list", payType_list);
 		return "/client/user_recharge";
 	}
 
