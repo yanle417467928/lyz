@@ -669,9 +669,9 @@ public class TdOrderService {
 	public List<TdOrder> findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(
 			String keywords, String username) {
 		if (null == keywords || null == username) {
-			return null;
 		}
-		return repository.findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrSellerUsernameContainingAndUsernameOrShippingNameContainingAndUsernameOrShippingAddressContainingAndUsernameOrderByOrderTimeDesc(keywords, username, keywords, username, keywords, username, keywords, username);
+		return null;
+//		return repository.findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrSellerUsernameContainingAndUsernameOrShippingNameContainingAndUsernameOrShippingAddressContainingAndUsernameOrderByOrderTimeDesc(keywords, username, keywords, username, keywords, username, keywords, username);
 	}
 
 	/**
@@ -682,9 +682,9 @@ public class TdOrderService {
 	public List<TdOrder> findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrderByOrderTimeDesc(
 			String keywords, Long sellerId) {
 		if (null == keywords || null == sellerId) {
-			return null;
 		}
-		return repository.findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrShippingNameContainingAndSellerIdOrShippingAddressContainingAndSellerIdOrderByOrderTimeDesc(keywords, sellerId, keywords, sellerId, keywords, sellerId, keywords, sellerId);
+		return null;
+//		return repository.findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrShippingNameContainingAndSellerIdOrShippingAddressContainingAndSellerIdOrderByOrderTimeDesc(keywords, sellerId, keywords, sellerId, keywords, sellerId, keywords, sellerId);
 	}
 
 	/**
@@ -695,18 +695,18 @@ public class TdOrderService {
 	public List<TdOrder> findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrderByOrderTimeDesc(
 			String keywords, Long diySiteId) {
 		if (null == keywords || null == diySiteId) {
-			return null;
 		}
-		return repository.findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrShippingNameContainingAndDiySiteIdOrShippingAddressContainingAndDiySiteIdOrderByOrderTimeDesc(keywords, diySiteId, keywords, diySiteId, keywords, diySiteId, keywords, diySiteId);
+		return null;
+//		return repository.findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrShippingNameContainingAndDiySiteIdOrShippingAddressContainingAndDiySiteIdOrderByOrderTimeDesc(keywords, diySiteId, keywords, diySiteId, keywords, diySiteId, keywords, diySiteId);
 	}
 	
-	/**
-	 * 根据城市名称和订单时间查询订单
-	 * @return
-	 */
-	public List<TdOrder> findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String city,
-			Date begin, Date end) {
-		return repository.findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(city, begin, end);
-	}
+//	/**
+//	 * 根据城市名称和订单时间查询订单
+//	 * @return
+//	 */
+//	public List<TdOrder> findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String city,
+//			Date begin, Date end) {
+//		return repository.findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(city, begin, end);
+//	}
 	
 }
