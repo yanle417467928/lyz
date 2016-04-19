@@ -57,7 +57,7 @@ import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
 
 @Service
-public class TdCommonService1 {
+public class TdCommonService {
 
 	// static String wmsUrl =
 	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
