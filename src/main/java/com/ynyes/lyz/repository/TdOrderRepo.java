@@ -220,7 +220,7 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	 * @author DengXiao
 	 *   OrContainingAndUsername
 	 */
-	List<TdOrder> findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrSellerUsernameContainingAndUsernameOrShippingNameContainingAndUsernameOrShippingAddressContainingAndUsernameOrderByOrderTimeDesc(String keywords1, String username1, String keywords2, String username2, String keywords3, String username3, String keywords4, String username4);
+//	List<TdOrder> findByUsernameContainingAndUsernameOrOrderNumberContainingAndUsernameOrSellerUsernameContainingAndUsernameOrShippingNameContainingAndUsernameOrShippingAddressContainingAndUsernameOrderByOrderTimeDesc(String keywords1, String username1, String keywords2, String username2, String keywords3, String username3, String keywords4, String username4);
 
 	/**
 	 * 销顾模糊查询订单，参与参数：username，orderNumber
@@ -229,14 +229,14 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	 * 
 	 *  OrContainingAndSellerId
 	 */
-	List<TdOrder> findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrShippingNameContainingAndSellerIdOrShippingAddressContainingAndSellerIdOrderByOrderTimeDesc(String keywords1, Long sellerId1, String keywords2, Long sellerId2, String keywords3, Long sellerId3, String keywords4, Long sellerId4);
+//	List<TdOrder> findByUsernameContainingAndSellerIdOrOrderNumberContainingAndSellerIdOrShippingNameContainingAndSellerIdOrShippingAddressContainingAndSellerIdOrderByOrderTimeDesc(String keywords1, Long sellerId1, String keywords2, Long sellerId2, String keywords3, Long sellerId3, String keywords4, Long sellerId4);
 
 	/**
 	 * 店长模糊查询订单，参与参数：username,orderNumber
 	 * 
 	 * @author DengXiao
 	 */
-	List<TdOrder> findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrShippingNameContainingAndDiySiteIdOrShippingAddressContainingAndDiySiteIdOrderByOrderTimeDesc(String keywords1, Long diySiteId1, String keywords2, Long diySiteId2, String keywords3, Long diySiteId3, String keywords4, Long diySiteId4);
+//	List<TdOrder> findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrShippingNameContainingAndDiySiteIdOrShippingAddressContainingAndDiySiteIdOrderByOrderTimeDesc(String keywords1, Long diySiteId1, String keywords2, Long diySiteId2, String keywords3, Long diySiteId3, String keywords4, Long diySiteId4);
 
 	/**
 	 * 根据城市名称和订单时间查询订单
