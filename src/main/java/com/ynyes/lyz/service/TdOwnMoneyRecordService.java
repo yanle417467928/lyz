@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -110,7 +109,7 @@ public class TdOwnMoneyRecordService {
     {
         PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "createTime"));
         
-        return repository.findAll(pageRequest);
+        return repository.findByIsOwnIsNull(pageRequest);
     }
     
     public Page<TdOwnMoneyRecord> findByDiyCodeAndIsEnableOrderByIdDesc(String diyCode,Boolean isEnable ,int page, int size)
@@ -118,9 +117,9 @@ public class TdOwnMoneyRecordService {
     	PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "createTime"));
     	if (diyCode == null || diyCode.equalsIgnoreCase(""))
     	{
-			return repository.findByIsEnableOrderByIdDesc(isEnable, pageRequest);
+			return repository.findByIsEnableAndIsOwnIsNullOrderByIdDesc(isEnable, pageRequest);
 		}
-    	return repository.findByDiyCodeAndIsEnableOrderByIdDesc(diyCode, isEnable, pageRequest);
+    	return repository.findByDiyCodeAndIsEnableAndIsOwnIsNullOrderByIdDesc(diyCode, isEnable, pageRequest);
     }
     public Page<TdOwnMoneyRecord> findByDiyCodeAndIsPayedOrderByIdDesc(String diyCode,Boolean isPayed ,int page, int size)
 	{
@@ -128,21 +127,21 @@ public class TdOwnMoneyRecordService {
 		
 		if (diyCode == null || diyCode.equalsIgnoreCase(""))
     	{
-			return repository.findByIsPayedOrderByIdDesc(isPayed, pageRequest);
+			return repository.findByIsPayedAndIsOwnIsNullOrderByIdDesc(isPayed, pageRequest);
 		}
-		return repository.findByDiyCodeAndIsPayedOrderByIdDesc(diyCode, isPayed, pageRequest);
+		return repository.findByDiyCodeAndIsPayedAndIsOwnIsNullOrderByIdDesc(diyCode, isPayed, pageRequest);
 	}
     
     public Page<TdOwnMoneyRecord> findByIsEnableOrderByIdDesc(Boolean isEnale ,int page, int size)
     {
     	PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "createTime"));
-    	return repository.findByIsEnableOrderByIdDesc(isEnale, pageRequest);
+    	return repository.findByIsEnableAndIsOwnIsNullOrderByIdDesc(isEnale, pageRequest);
     }
     
     public Page<TdOwnMoneyRecord> findByIsPayedOrderByIdDesc(Boolean isPayed,int page, int size)
     {
     	PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "createTime"));
-    	return repository.findByIsPayedOrderByIdDesc(isPayed, pageRequest);
+    	return repository.findByIsPayedAndIsOwnIsNullOrderByIdDesc(isPayed, pageRequest);
     }
     
     
@@ -150,7 +149,7 @@ public class TdOwnMoneyRecordService {
     {
         PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "createTime"));
         
-        return repository.findByDiyCodeOrderByIdDesc(diyCode, pageRequest);
+        return repository.findByDiyCodeAndIsOwnIsNullOrderByIdDesc(diyCode, pageRequest);
     }
     
     

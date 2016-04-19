@@ -12,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 
 /**
- * 欠款记录
+ * 代收款记录
  * 
  * @author Sharon
  *
@@ -65,6 +65,10 @@ public class TdOwnMoneyRecord {
     // 是否审核 0:不同过，1：通过
     @Column
     private Boolean ispassed;
+    
+    //是否是欠款记录 （ 后面添加的字段 默认为null表示为欠款记录）
+    @Column
+    private Boolean isOwn;
     
 
 	public Boolean getIspassed() {
@@ -153,6 +157,14 @@ public class TdOwnMoneyRecord {
 
 	public void setIsPayed(Boolean isPayed) {
 		this.isPayed = isPayed;
+	}
+
+	public Boolean getIsOwn() {
+		return isOwn;
+	}
+
+	public void setIsOwn(Boolean isOwn) {
+		this.isOwn = isOwn;
 	}
 	
 }

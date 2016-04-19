@@ -182,6 +182,9 @@ function imgChange(){
     	$("#signPhoto").height("100px");
 	} 
 }
+function payedChange(){
+	$('#owned').val($('#agencyFund').html()-$('#payed').val() );
+}
 </script>
 </head>
 <body class="bgc-f3f4f6">
@@ -193,9 +196,9 @@ function imgChange(){
   <div id="bg"></div>
   <div id="arreabox">
     <form>
-      <div class="title">申请欠款</div>   
-      <div class="text1">已交款<input type="text" id="payed" value="0">元</div>
-      <div class="text1">欠款&nbsp;&nbsp;<input type="text" id="owned" value="0">元</div>
+      <div class="title" id="titleName">填写代收金额</div>   
+      <div class="text1">已交款<input type="text" id="payed" value="0" oninput="payedChange()">元</div>
+      <div class="text1">欠款&nbsp;&nbsp;<input type="text" id="owned" value="0" readonly="readonly">元</div>
       <div class="button-group">
         <a class="sure" href="#" onclick="pupclose()">关闭</a>
         <a class="cancle" href="#" onclick="submitOwnMoney()">提交</a>
@@ -204,7 +207,10 @@ function imgChange(){
   </div>
   <script type="text/javascript">
     // $("#bg").height($(window).height());
-    function pupopen(){
+    function pupopen(type){
+      if(type==1){
+    	  $('#titleName').html("申请欠款");
+      }
       document.getElementById("bg").style.display="block";
       document.getElementById("arreabox").style.display="block" ;
     }
@@ -292,8 +298,8 @@ function imgChange(){
         <div class="mesg">实代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.payed??>${ownrecord.payed?c}<#else>0.00</#if><#else><#if td_order.allActualPay??>${td_order.allActualPay?c}<#else>0.00</#if></#if>元</div>
         -->
         <div class="mesg">订单总金额：<#if td_order.allTotalPay?? && td_order.allActualPay??>${td_order.allTotalPay + td_order.allActualPay}<#else>0.00</#if>元</div>
-        <div class="mesg">需代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.owned??>${ownrecord.owned?c}<#else>0.00</#if><#else><#if td_order.allTotalPay??>${td_order.allTotalPay?c}<#else>0</#if></#if>元</div>
-        <div class="mesg">实代收金额：<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.payed??>${ownrecord.payed?c}<#else>0.00</#if><#else><#if td_order.allActualPay??>${td_order.allActualPay?c}<#else>0.00</#if></#if>元</div>
+        <div class="mesg">需代收金额：<span id="agencyFund"><#if td_order.allTotalPay??>${td_order.allTotalPay?c}<#else>0</#if></span>元</div>
+        <div class="mesg">实代收金额：<#if (ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true) || (ownrecord?? && ownrecord.isOwn?? && ownrecord.isOwn==false)><#if ownrecord.payed??>${ownrecord.payed?c}<#else>	0.00</#if><#else>0.00</#if>元</div>
       </div>
     </section>
     <!-- 签收图片 -->
@@ -306,11 +312,35 @@ function imgChange(){
     </section>
     </#if>
     <#if td_order.statusId == 4>
-    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="javascript:win_yes('是否确定拒签退货？','submitReturn(${td_order.id?c});')">拒签退货</a>
+    	<#if td_order.photo??>
+    	   	<!-- <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="javascript:win_yes('是否已收回代收款<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.owned??>${ownrecord.owned?c}<#else>0.00</#if><#else><#if td_order.allTotalPay??>${td_order.allTotalPay?c}<#else>0</#if></#if>元？','submitDelivery(${td_order.id?c});')">确认送达</a> -->
+    		<!-- <a class="btn-submit-save bgc-ff8e08" <#if ownrecord??>href="javascript:;" style="background:#999"</#if> href="javascript:;" <#if !ownrecord??>onclick="pupopen()"</#if>><#if ownrecord?? && ownrecord.isEnable??><#if ownrecord.isEnable == true><#if ownrecord.ispassed == true>审核通过<#else>未通过审核</#if><#else>等待审核</#if><#else>填写代收金额</#if></a> -->
+    		<#if ownrecord?? >
+    			<#if ownrecord.isEnable?? && ownrecord.isEnable == true>
+    				<#if ownrecord.ispassed?? && ownrecord.ispassed == true>
+    					<a class="btn-submit-save bgc-ff8e08" href="javascript:;" style="background:#999">审核通过</a>
+    					<a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="javascript:win_yes('请确认代收款和货物是否正确？','submitDelivery(${td_order.id?c});')">确认送达</a>
+    				<#else>
+    					<a class="btn-submit-save bgc-ff8e08" href="javascript:;" style="background:#999">未通过审核</a>
+    					<a class="btn-submit-save bgc-ff8e08" onclick="pupopen(1)">申请欠款</a>
+    				</#if>
+    			<#else>
+    				<#if ownrecord.isOwn?? && ownrecord.isOwn==false>
+    				    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="javascript:win_yes('请确认代收款和货物是否正确？','submitDelivery(${td_order.id?c});')">确认送达</a>
+    				<#else>	
+    					<a class="btn-submit-save bgc-ff8e08" href="javascript:;" style="background:#999">等待审核</a>
+    				</#if>
+    				
+    			</#if>
+    		<#else>
+    			<a class="btn-submit-save bgc-ff8e08" onclick="pupopen()">填写代收金额</a>
+    		</#if>
+    	<#else>
+    	    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="javascript:win_yes('是否确定拒签退货？','submitReturn(${td_order.id?c});')">拒签退货</a>
+    		<a class="btn-submit-save bgc-ff8e08" href="javascript:photo();" >拍照上传</a>
+    	</#if>
+
     <!-- <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="submitDelivery(${td_order.id?c})">确认送达</a> -->
-    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="javascript:win_yes('是否已收回代收款<#if ownrecord?? && ownrecord.isEnable?? && ownrecord.isEnable == true && ownrecord.ispassed == true><#if ownrecord.owned??>${ownrecord.owned?c}<#else>0.00</#if><#else><#if td_order.allTotalPay??>${td_order.allTotalPay?c}<#else>0</#if></#if>元？','submitDelivery(${td_order.id?c});')">确认送达</a>
-    <a class="btn-submit-save bgc-ff8e08" <#if td_order.photo??>href="javascript:;" style="background:#999"<#else>href="javascript:photo();"</#if> >拍照上传</a>
-    <a class="btn-submit-save bgc-ff8e08" <#if ownrecord??>href="javascript:;" style="background:#999"</#if> href="javascript:;" <#if !ownrecord??>onclick="pupopen()"</#if>><#if ownrecord?? && ownrecord.isEnable??><#if ownrecord.isEnable == true><#if ownrecord.ispassed == true>审核通过<#else>未通过审核</#if><#else>等待审核</#if><#else>申请欠款</#if></a>
     </#if>
     <div style="display:block;filter:alpha(opacity=0);-moz-opacity:0;opacity:0;float: left;height: 0px;width: 0px;position: relative;">
         <form id="imgUpload" action="/delivery/img" enctype="multipart/form-data" method="post" style="hight:0px;width: 0px;">

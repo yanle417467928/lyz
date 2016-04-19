@@ -22,14 +22,14 @@ public interface TdOwnMoneyRecordRepo extends
 {
 	List<TdOwnMoneyRecord> findByOrderNumberIgnoreCase(String orderNumber);
 	
-	Page<TdOwnMoneyRecord> findByDiyCodeOrderByIdDesc(String diyCode ,Pageable page);
+	Page<TdOwnMoneyRecord> findByDiyCodeAndIsOwnIsNullOrderByIdDesc(String diyCode ,Pageable page);
 	
-	Page<TdOwnMoneyRecord> findByIsEnableOrderByIdDesc(Boolean isEnale,Pageable page);
+	Page<TdOwnMoneyRecord> findByIsEnableAndIsOwnIsNullOrderByIdDesc(Boolean isEnale,Pageable page);
 	
-	Page<TdOwnMoneyRecord> findByIsPayedOrderByIdDesc(Boolean isPayed,Pageable page);
+	Page<TdOwnMoneyRecord> findByIsPayedAndIsOwnIsNullOrderByIdDesc(Boolean isPayed,Pageable page);
 	
-	Page<TdOwnMoneyRecord> findByDiyCodeAndIsEnableOrderByIdDesc(String diyCode,Boolean isEnable ,Pageable page);
-	Page<TdOwnMoneyRecord> findByDiyCodeAndIsPayedOrderByIdDesc(String diyCode,Boolean isPayed ,Pageable page);
+	Page<TdOwnMoneyRecord> findByDiyCodeAndIsEnableAndIsOwnIsNullOrderByIdDesc(String diyCode,Boolean isEnable ,Pageable page);
+	Page<TdOwnMoneyRecord> findByDiyCodeAndIsPayedAndIsOwnIsNullOrderByIdDesc(String diyCode,Boolean isPayed ,Pageable page);
 	
-	
+	Page<TdOwnMoneyRecord> findByIsOwnIsNull(Pageable page);
 }

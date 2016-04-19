@@ -17,6 +17,7 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -476,7 +477,7 @@ public class TdDeliveryIndexController {
 		}
 
 		// 所有子单都处理
-		if (null != order.getMainOrderNumber()) {
+		if (StringUtils.isNotBlank(order.getMainOrderNumber())) {
 			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
 
 			if (null != orderList) {
@@ -720,7 +721,11 @@ public class TdDeliveryIndexController {
 			res.put("message", "订单不存在");
 			return res;
 		}
-
+		
+		if(owned != null && owned==0){ //欠款为0  修改订单时付款
+			modifyPayment(order.getMainOrderNumber(),payed);
+		}
+		
 		// 所有子单都确认收货
 		if (null != order.getMainOrderNumber()) {
 			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
@@ -729,21 +734,26 @@ public class TdDeliveryIndexController {
 				for (TdOrder subOrder : orderList) {
 					List<TdOwnMoneyRecord> recList = tdOwnMoneyRecordService
 							.findByOrderNumberIgnoreCase(subOrder.getOrderNumber());
-
-					if (null != recList && recList.size() > 0) {
-						continue;
-					}
-
-					subOrder.setActualPay(subOrder.getActualPay() + payed);
-					subOrder = tdOrderService.save(subOrder);
-
 					TdOwnMoneyRecord rec = new TdOwnMoneyRecord();
+					if (null != recList && recList.size() > 0) {
+						//如果存在修改欠款申请
+						rec=recList.get(0);
+						//continue;
+					}
+					//修改实付款 已经移到同意申请欠款处 
+//					subOrder.setActualPay(subOrder.getActualPay() + payed);
+//					subOrder = tdOrderService.save(subOrder);
+
+					
 					rec.setCreateTime(new Date());
 					rec.setOrderNumber(subOrder.getOrderNumber());
 					rec.setDiyCode(subOrder.getDiySiteCode());
 					rec.setOwned(owned);
 					rec.setPayed(payed);
 					rec.setUsername(subOrder.getUsername());
+					if(owned != null && owned==0){
+						rec.setIsOwn(false);
+					}
 					rec.setIsEnable(false);
 					rec.setIsPayed(false);
 					rec.setSortId(99L);
@@ -847,5 +857,25 @@ public class TdDeliveryIndexController {
 
 		return "redirect:/delivery/detail/" + id + "?msg=0";
 	}
+	/**
+	 * 修改订单实付款
+	 * @param mainOrderNumber 主单号
+	 * @param payed 代收款
+	 */
+	private void modifyPayment(String mainOrderNumber,Double payed){
+		// 所有子单都处理
+		if (StringUtils.isNotBlank(mainOrderNumber)) {
+			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(mainOrderNumber);
+
+			if (null != orderList) {
+				for (TdOrder subOrder : orderList) {
+					//修改实付款 
+					subOrder.setActualPay(subOrder.getActualPay()==null?0:subOrder.getActualPay() + payed);
+					subOrder = tdOrderService.save(subOrder);
+				}
+			}
+		}
+	}
+	
 
 }
