@@ -21,8 +21,10 @@
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
         <#include "/client/common_wait.ftl">
-        <#-- 引入会员用户信息列表 -->
-        <#include "/client/order_user_list.ftl">
+        <#-- 引入赠品列表 -->
+        <div id="gift_and_present">
+        	<#include "/client/gift_list.ftl">
+        </div>
         <!-- 头部 -->
         <header>
             <a class="back" href="<#if history??>${history }<#else> javascript:history.go(-1);</#if>"></a>
@@ -38,10 +40,30 @@
         <!-- 我的已选 END -->
         <div class="clear h50"></div>
         <!-- 底部 -->
-        <footer>
-        	<a class="btn-clearing" href="javascript:void(0);" style="width:50%;float:left;background:#ffaa00">查看赠品</a>
+        <footer style="position:fixed;">
+        	<a class="btn-clearing" href="javascript:getGift();" style="width:50%;float:left;background:#ffaa00">查看赠品</a>
             <a class="btn-clearing" href="javascript:seller.checkCart();" style="width:50%;float:left;">去结算</a>
         </footer>
         <!-- 底部 END -->
     </body>
+    <script type="text/javascript">
+    function getGift(){
+    	<#-- 开启等待图标 -->
+    	wait();
+    	$.ajax({
+    		url : "/user/show/gift",
+    		type : "post",
+    		timeout : 10000,
+    		error : function(){
+    			close(1);
+    			warning("亲，您的网速不给力啊");
+    		},
+    		success : function(res){
+    			$("#gift_and_present").html(res);
+    			close(1);
+    			win_yes();
+    		}
+    	});
+	}
+    </script>
 </html>

@@ -700,13 +700,13 @@ public class TdOrderService {
 //		return repository.findByUsernameContainingAndDiySiteIdOrOrderNumberContainingAndDiySiteIdOrShippingNameContainingAndDiySiteIdOrShippingAddressContainingAndDiySiteIdOrderByOrderTimeDesc(keywords, diySiteId, keywords, diySiteId, keywords, diySiteId, keywords, diySiteId);
 	}
 	
-	/**
-	 * 根据城市名称和订单时间查询订单
-	 * @return
-	 */
-	public List<TdOrder> findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String city,
-			Date begin, Date end) {
-		return repository.findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(city, begin, end);
-	}
+//	/**
+//	 * 根据城市名称和订单时间查询订单
+//	 * @return
+//	 */
+//	public List<TdOrder> findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String city,
+//			Date begin, Date end) {
+//		return repository.findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(city, begin, end);
+//	}
 	
 }
