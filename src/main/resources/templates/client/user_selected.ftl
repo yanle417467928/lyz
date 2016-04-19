@@ -39,7 +39,8 @@
         <div class="clear h50"></div>
         <!-- 底部 -->
         <footer>
-            <a class="btn-clearing" href="javascript:seller.checkCart();">去结算</a>
+        	<a class="btn-clearing" href="javascript:void(0);" style="width:50%;float:left;background:#ffaa00">查看赠品</a>
+            <a class="btn-clearing" href="javascript:seller.checkCart();" style="width:50%;float:left;">去结算</a>
         </footer>
         <!-- 底部 END -->
     </body>
