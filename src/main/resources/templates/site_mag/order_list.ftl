@@ -215,12 +215,10 @@ function downloaddate(type)
             		</div>
             	</div>
             	</#if>
-            	<div class="odiv" style="width:715px;float:right"><div style="float:left;"><span class="span1">订单号：</span><input name="keywords" type="text" class="input" value="${orderNumber!"" }">
+            	<div class="odiv" style="width:350px;float:right"><div style="float:left;"><span class="span1">订单号：</span><input name="keywords" type="text" class="input" value="${orderNumber!"" }">
                 </div>
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
-                <a style="color:black;" href="javascript:downloaddate(0);" class="a1">代收款报表下载</a>
-                <a style="color:black;" href="javascript:downloaddate(2);" class="a1">收款报表下载</a>
-                <a style="color:black;" href="javascript:downloaddate(1);" class="a1">销售明细表下载</a><div>
+                <div>
                 
             </div></div>
               

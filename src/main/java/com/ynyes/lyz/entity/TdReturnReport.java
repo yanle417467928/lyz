@@ -94,6 +94,13 @@ public class TdReturnReport {
 	//城市名称
 	@Column
 	private String cityName;
+	//创建人
+	private String createUsername;
+	//配送方式
+	@Column
+	private String deliverTypeTitle;
+
+
 	public Long getId() {
 		return id;
 	}
@@ -243,6 +250,24 @@ public class TdReturnReport {
 	}
 	public void setDiySiteCode(String diySiteCode) {
 		this.diySiteCode = diySiteCode;
+	}
+	public String getCityName() {
+		return cityName;
+	}
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+	public String getCreateUsername() {
+		return createUsername;
+	}
+	public void setCreateUsername(String createUsername) {
+		this.createUsername = createUsername;
+	}
+	public String getDeliverTypeTitle() {
+		return deliverTypeTitle;
+	}
+	public void setDeliverTypeTitle(String deliverTypeTitle) {
+		this.deliverTypeTitle = deliverTypeTitle;
 	}
 	
 }

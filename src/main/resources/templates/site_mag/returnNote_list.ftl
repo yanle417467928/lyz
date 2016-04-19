@@ -85,40 +85,6 @@ function downloaddateurl(type,url){
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
                  
             </div>
-            <div style="clear: both;">
-            	<div style="float: right;">
-                                                申请时间:
-                <input name="orderStartTime" id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
-                <input name=orderEndTime id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " />
-               
-                <a style="color:black;" href="javascript:downloaddate(0);" class="a1">退货报表下载</a>
-                </div>
-              <#if diySiteList?? && diySiteList?size gt 0 >
-               <div class="odiv" style="float:right;width:250px;"><span class="span1">门店名称：</span>
-                	<div class="rule-single-select">
-                        <select name="diyCode" id="diyCode">
-                        <option value="" >请选择</option>      
-                        <#list diySiteList as diySite>
-                        	<option value="${diySite.storeCode }" >${diySite.title }</option>
-                        </#list>
-                        </select>
-            		</div>
-            	</div>
-            	</#if> 
-            	<#if cityList?? && cityList?size gt 0 >
-            	<div class="odiv" style="float:right;width:250px;"><span class="span1">城市名称：</span>
-                	<div class="rule-single-select">
-                        <select name="city" id="city">
-                        <option value="" >请选择</option>      
-                        <#list cityList as city>
-                        	<option value="${city.cityName }" >${city.cityName }</option>
-                        </#list>
-                        </select>
-            		</div>
-            	</div>
-            	</#if>
-            	
-            </div>
         </div>
     </div>
     <!--/工具栏-->

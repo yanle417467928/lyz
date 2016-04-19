@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +15,8 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.ibm.icu.util.Calendar;
 
 public class TdManagerBaseController {
 
@@ -43,6 +43,31 @@ public class TdManagerBaseController {
 			}
 		}
 		return date;
+	}
+	
+	/**
+	 * 时间转换字符串默认格式yyyy-MM-dd HH:mm:ss
+	 * 
+	 * @param time
+	 *            需要转换的时间
+	 * @param dateFormat
+	 *            时间格式
+	 * @return
+	 */
+	public String dateToString(Date time, String dateFormat) {
+		if (null == dateFormat || "".equals(dateFormat)) {
+			dateFormat = "yyyy-MM-dd HH:mm:ss";
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		String dateStr = null;
+		if (null != time) {
+			try {
+				dateStr = sdf.format(time);
+			} catch (Exception e) {
+				System.out.println(e);
+			}
+		}
+		return dateStr;
 	}
 	
 	/**
@@ -132,5 +157,71 @@ public class TdManagerBaseController {
 //        }
 //        return view;
 //    }
+	
+	/**
+	 * 获取本月第一天 报表默认开始时间
+	 */
+	public Date getStartTime(){  
+        Calendar todayStart = Calendar.getInstance();//获取当前日期
+        todayStart.add(Calendar.MONTH, 0);
+        todayStart.set(Calendar.DAY_OF_MONTH,1);//设置为1号,当前日期既为本月第一天 
+        todayStart.set(Calendar.HOUR, -12);  //设置时分秒
+        todayStart.set(Calendar.MINUTE, 0);  
+        todayStart.set(Calendar.SECOND, 0);  
+        todayStart.set(Calendar.MILLISECOND, 0);  
+        return todayStart.getTime();  
+    }  
+      
+	/**
+	 * 获取当前时间  报表默认结算时间
+	 */
+    public Date getEndTime(){  
+        Calendar todayEnd = Calendar.getInstance();  
+//        todayEnd.set(Calendar.HOUR, 23);  
+//        todayEnd.set(Calendar.MINUTE, 59);  
+//        todayEnd.set(Calendar.SECOND, 59);  
+//        todayEnd.set(Calendar.MILLISECOND, 999);  
+        return todayEnd.getTime();  
+    }
 
+    /**
+     * 根据订单编号 返回订单状态
+     * @param status 订单编号
+     * @return
+     */
+	public String orderStatus(Long status)
+	{
+		// 订单状态 1:待审核 2:待付款 3:待出库 4:待签收 5: 待评价 6: 已完成 7: 已取消 8:用户删除 9:退货中 10：退货确认
+		// 11：退货取消 12 : 退货完成
+		Integer integerStatus = status.intValue();
+		switch (integerStatus) {
+			case 1:
+				return "待审核";
+			case 2:
+				return "待付款";
+			case 3:
+				return "待出库";
+			case 4:
+				return "待签收";
+			case 5:
+				return "待评价";
+			case 6:
+				return "已完成";
+			case 7:
+				return "已取消";
+			case 8:
+				return "用户删除";
+			case 9:
+				return "退货中";
+			case 10:
+				return "退货确认";
+			case 11:
+				return "退货取消";
+			case 12:
+				return "退货完成";
+				
+			default:
+				return "未知";
+		}
+	}
 }

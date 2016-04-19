@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,7 @@ public class TdSalesDetailService {
 	 * 根据时间,城市,门店查询销售明细报表
 	 * @return
 	 */
-	public List<TdSalesDetail> searchSalesDetail(Date begin,Date end,String cityName,String diySiteCode){
+	public List<TdSalesDetail> searchSalesDetail(Date begin,Date end,String cityName,String diySiteCode,String username){
 		Criteria<TdSalesDetail> c = new Criteria<TdSalesDetail>();
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
@@ -38,10 +40,13 @@ public class TdSalesDetailService {
 			c.add(Restrictions.lte("orderTime", end, true));
 		}
 		if(StringUtils.isNotBlank(cityName)){
-			c.add( Restrictions.eq("city", cityName, true));
+			c.add( Restrictions.eq("cityName", cityName, true));
 		}
 		if(StringUtils.isNotBlank(diySiteCode)){
 			c.add( Restrictions.eq("diySiteCode", diySiteCode, true));
+		}
+		if(StringUtils.isNotBlank(username)){
+			c.add( Restrictions.eq("createUsername", username, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
@@ -51,8 +56,35 @@ public class TdSalesDetailService {
 	 * @return 
 	 * @return
 	 */
-	public void callInsertSalesDetail(Date start,Date end){
-		repository.callInsertSalesDetail(start, end);
+	public void callInsertSalesDetail(Date start,Date end,String username){
+		repository.callInsertSalesDetail(start, end,username);
+	}
+	/**
+	 * 根据时间,城市,门店查询销售明细报表
+	 * @return
+	 */
+	public Page<TdSalesDetail> searchList(String keywords,Date begin,Date end,String cityName,String diySiteCode,String username,int size,int page){
+		PageRequest pageRequest = new PageRequest(page, size);
+		Criteria<TdSalesDetail> c = new Criteria<TdSalesDetail>();
+		if (null != keywords && !keywords.equalsIgnoreCase("")) {
+			c.add(Restrictions.like("orderNumber", keywords, true));
+		}
+		if(null!=begin){
+			c.add(Restrictions.gte("orderTime", begin, true));
+		}if(null!=end){
+			c.add(Restrictions.lte("orderTime", end, true));
+		}
+		if(StringUtils.isNotBlank(cityName)){
+			c.add( Restrictions.eq("cityName", cityName, true));
+		}
+		if(StringUtils.isNotBlank(diySiteCode)){
+			c.add( Restrictions.eq("diySiteCode", diySiteCode, true));
+		}
+		if(StringUtils.isNotBlank(username)){
+			c.add( Restrictions.eq("createUsername", username, true));
+		}
+		c.setOrderByDesc("orderTime");
+		return repository.findAll(c,pageRequest);
 	}
 	
 }
