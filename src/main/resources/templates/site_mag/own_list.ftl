@@ -48,7 +48,7 @@ var theForm = document.forms['form1'];
     <div class="l-list">
       <ul class="icon-list">
         <li><a onclick="return ExePostBack('btnEnable','审核将允许欠款，是否继续？');" class="save" href="javascript:__doPostBack('btnVerify','')"><i></i><span>通过</span></a></li>
-        <li><a onclick="return ExePostBack('btnNotEnable','审核将允许欠款，是否继续？');" class="save" href="javascript:__doPostBack('btnVerify','')"><i></i><span>不通过</span></a></li>
+        <li><a onclick="return ExePostBack('btnNotEnable','不通过审核将不允许欠款，是否继续？');" class="save" href="javascript:__doPostBack('btnVerify','')"><i></i><span>不通过</span></a></li>
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
         <#if tdManagerRole?? && tdManagerRole.isSys>
         <li><a onclick="return ExePostBack('btnDelete');" id="btnDelete" class="del" href="javascript:__doPostBack('btnDelete','')"><i></i><span>删除</span></a></li>
@@ -104,7 +104,7 @@ var theForm = document.forms['form1'];
                         </span>
                         <input type="hidden" name="listId" id="listId" value="${consult.id?c}">
                     </b>
-                    订单号：${consult.orderNumber!""}
+                    订单号 ：<a href="/Verwalter/order/own/edit?id=${consult.id?c}">${consult.orderNumber!""}</a>
                   </div>
                   <div class="ask">
                     <#if !consult.isEnable?? || consult.isEnable==false>
