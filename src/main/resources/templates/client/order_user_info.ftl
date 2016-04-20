@@ -11,8 +11,8 @@
 </#if>
 <script src="/client/js/swiper.min.js"></script>
 <script>
-    var swiper = new Swiper('.swiper-container', {
-        pagination: '.swiper-pagination',
+    var swiper = new Swiper('#user_swiper', {
+        pagination: '#user_swiper .swiper-pagination',
         paginationClickable: true,
         direction: 'vertical',
         slidesPerView: 6

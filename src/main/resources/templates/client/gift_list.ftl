@@ -125,11 +125,11 @@
 		</style>
 	</head>
 	<script type="text/javascript">
-		function win_yes(){
-			$('.win_yn').animate({height:'100%'})
+		function win_yes_gift(){
+			$('#gift_window').animate({height:'100%'})
 		};
-		function win_no(){	
-			$('.win_yn').animate({height:0})
+		function win_no_gift(){	
+			$('#gift_window').animate({height:0})
 		};
 		$(function(){
 			var le=($('.win_yn .my_left .close').width()-$('.win_yn .my_left .sub').width())/2;
@@ -138,10 +138,10 @@
 		
 	
 	</script>
-		<div class="win_yn" style="z-index:999;">
-			<div class="my_left">
+		<div id="gift_window" class="win_yn" style="z-index:999;">
+			<div class="my_left" id="gift_left">
 				<div class="close">
-					<input class="sub" type="submit" name="" id="" value="关闭" onclick="win_no()" />
+					<input class="sub" type="submit" name="" id="" value="关闭" onclick="win_no_gift()" />
 				</div>
 				<div class="add419_title">我的赠品</div>
 	    		<div class="add419_box_title">
@@ -149,7 +149,7 @@
 			    	<h3>名称</h3>
 			    	<h3>数量</h3>
 	    		</div>
-		    <div class="swiper-container">
+		    <div class="swiper-container" id="gift_swiper">
 		        <div class="swiper-wrapper">
 		        	<#if present??>
 		        		<#list present as item>
@@ -187,8 +187,8 @@
 		    </div>
 		    <script src="/client/js/swiper.min.js"></script>
 		    <script>
-			    var swiper = new Swiper('.my_left .swiper-container', {
-			        pagination: '.my_left .swiper-pagination',
+			    var swiper = new Swiper('#gift_swiper', {
+			        pagination: '#gift_left .swiper-pagination',
 			        paginationClickable: true,
 			        direction: 'vertical',
 			        slidesPerView: 4

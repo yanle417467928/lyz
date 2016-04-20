@@ -21,6 +21,8 @@
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
         <#include "/client/common_wait.ftl">
+        <#-- 引入会员用户信息列表 -->
+        <#include "/client/order_user_list.ftl">
         <#-- 引入赠品列表 -->
         <div id="gift_and_present">
         	<#include "/client/gift_list.ftl">
@@ -61,7 +63,7 @@
     		success : function(res){
     			$("#gift_and_present").html(res);
     			close(1);
-    			win_yes();
+    			win_yes_gift();
     		}
     	});
 	}
