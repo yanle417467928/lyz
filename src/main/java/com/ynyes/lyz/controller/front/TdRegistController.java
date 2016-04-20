@@ -145,13 +145,20 @@ public class TdRegistController {
 		new_user.setCustomerId(diySite.getCustomerId());
 
 		TdUser refer_user = tdUserService.findByUsernameAndCityNameAndIsEnableTrue(referPhone, cityInfo);
-		if (null != refer_user) {
+		if (null != refer_user) 
+		{
 			new_user.setUpperDiySiteId(refer_user.getUpperDiySiteId());
 			new_user.setDiyName(refer_user.getDiyName());
 			new_user.setCityId(refer_user.getCityId());
 
 			new_user.setSellerId(refer_user.getId());
 			new_user.setSellerName(refer_user.getRealName());
+			new_user.setCustomerId(refer_user.getCustomerId());
+			TdDiySite refer_diySite = tdDiySiteService.findByRegionIdAndCustomerId(refer_user.getCityId(), refer_user.getCustomerId());
+			if (refer_diySite != null)
+			{
+				new_user.setCustomerId(refer_diySite.getCustomerId());
+			}
 		}
 
 		tdUserService.save(new_user);
@@ -172,7 +179,7 @@ public class TdRegistController {
 		HttpSession session = req.getSession();
 		session.setAttribute("SMSCODE", smscode);
 		String info = "您的验证码为" + smscode + "，请在页面中输入以完成验证。";
-		System.err.println(smscode);
+		System.err.println("MDJ:SMSCODE:" + smscode);
 		String content = null;
 		try {
 			content = URLEncoder.encode(info, "GB2312");
