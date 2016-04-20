@@ -183,7 +183,7 @@ function imgChange(){
 	} 
 }
 function payedChange(){
-	$('#owned').val($('#agencyFund').html()-$('#payed').val() );
+	$('#owned').val(($('#agencyFund').html()-$('#payed').val()).toFixed(2) );
 }
 </script>
 </head>
