@@ -1526,16 +1526,16 @@ public class TdOrderController {
 
 		// 如果用户的不可提现余额大于或等于订单的预存款使用额，则表示改单用的全部都是不可提现余额
 		if (unCashBalance >= order_temp.getActualPay()) {
-			user.setUnCashBalance(user.getUnCashBalance() - order_temp.getActualPay());
+			realUser.setUnCashBalance(realUser.getUnCashBalance() - order_temp.getActualPay());
 			order_temp.setUnCashBalanceUsed(order_temp.getActualPay());
 		} else {
-			user.setCashBalance(user.getCashBalance() + user.getUnCashBalance() - order_temp.getActualPay());
-			user.setUnCashBalance(0.0);
+			realUser.setCashBalance(realUser.getCashBalance() + realUser.getUnCashBalance() - order_temp.getActualPay());
+			realUser.setUnCashBalance(0.0);
 			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
 			order_temp.setCashBalanceUsed(order_temp.getActualPay() - user.getUnCashBalance());
 		}
-		user.setBalance(user.getBalance() - order_temp.getActualPay());
-		tdUserService.save(user);
+		realUser.setBalance(realUser.getBalance() - order_temp.getActualPay());
+		tdUserService.save(realUser);
 
 		req.getSession().setAttribute("order_temp", order_temp);
 		tdOrderService.save(order_temp);
