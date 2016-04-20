@@ -1365,6 +1365,9 @@ public class TdUserController {
 			}
 		}
 
+		Long realUserId = order.getRealUserId();
+		TdUser realUser = tdUserService.findOne(realUserId);
+		
 		// 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
 		List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
 		// 进行遍历操作
@@ -1375,7 +1378,7 @@ public class TdUserController {
 					Long statusId = subOrder.getStatusId();
 					if (null != statusId && 3L == statusId.longValue()) {
 						// 在此进行资金和优惠券的退还
-						tdPriceCountService.cashAndCouponBack(subOrder, user);
+						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
 					}
 					subOrder.setStatusId(7L);
 					subOrder.setCancelTime(new Date());

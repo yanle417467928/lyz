@@ -739,7 +739,7 @@ public class TdPriceCountService {
 	 */
 	public void returnCashOrCoupon(Long orderId, String params) {
 		TdOrder order = tdOrderService.findOne(orderId);
-		Long userId = order.getUserId();
+		Long userId = order.getRealUserId();
 		TdUser user = tdUserService.findOne(userId);
 		String cityName = user.getCityName();
 		TdCity city = tdCityService.findByCityName(cityName);
