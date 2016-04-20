@@ -1219,10 +1219,11 @@ public class TdManagerOrderController {
 				TdOwnMoneyRecord ownMoneyRecord = tdOwnMoneyRecordService.findOne(chkId);
 				if (ownMoneyRecord != null)
 				{
-					//修改订单实际付款
+					
+					/*//修改订单实际付款  逻辑修改
 					TdOrder order=tdOrderService.findByOrderNumber(ownMoneyRecord.getOrderNumber());
 					order.setActualPay(order.getActualPay()==null?0:order.getActualPay()+ownMoneyRecord.getPayed());
-					tdOrderService.save(order);
+					tdOrderService.save(order);*/
 					
 					ownMoneyRecord.setIsEnable(true);
 					ownMoneyRecord.setIspassed(true);

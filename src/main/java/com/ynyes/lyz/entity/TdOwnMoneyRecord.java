@@ -29,7 +29,7 @@ public class TdOwnMoneyRecord {
     @Column
     private String username;
     
-    // 订单号
+    // 订单号(主单号)
     @Column
     private String orderNumber;
     

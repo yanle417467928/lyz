@@ -413,7 +413,7 @@ public class TdDeliveryIndexController {
 			}
 			if (null != order && null != order.getOrderNumber()) {
 				List<TdOwnMoneyRecord> records = tdOwnMoneyRecordService
-						.findByOrderNumberIgnoreCase(order.getOrderNumber());
+						.findByOrderNumberIgnoreCase(order.getMainOrderNumber());
 				if (records != null && records.size() > 0) {
 					TdOwnMoneyRecord record = records.get(0);
 					map.addAttribute("ownrecord", record);
@@ -726,7 +726,31 @@ public class TdDeliveryIndexController {
 			modifyPayment(order.getMainOrderNumber(),payed);
 		}
 		
-		// 所有子单都确认收货
+		//自记录主单号
+		if (null != order.getMainOrderNumber()) {
+			List<TdOwnMoneyRecord> recList = tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(order.getMainOrderNumber());
+			TdOwnMoneyRecord rec = new TdOwnMoneyRecord();
+			if (null != recList && recList.size() > 0) {
+				//如果存在修改欠款申请
+				rec=recList.get(0);
+			}
+			rec.setCreateTime(new Date());
+			rec.setOrderNumber(order.getMainOrderNumber());
+			rec.setDiyCode(order.getDiySiteCode());
+			rec.setOwned(owned);
+			rec.setPayed(payed);
+			rec.setUsername(order.getUsername());
+			if(owned != null && owned==0){
+				rec.setIsOwn(false);
+			}
+			rec.setIsEnable(false);
+			rec.setIsPayed(false);
+			rec.setSortId(99L);
+
+			rec = tdOwnMoneyRecordService.save(rec);
+		}
+		
+		/*// 所有子单都确认收货
 		if (null != order.getMainOrderNumber()) {
 			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
 
@@ -761,7 +785,7 @@ public class TdDeliveryIndexController {
 					rec = tdOwnMoneyRecordService.save(rec);
 				}
 			}
-		}
+		}*/
 
 		res.put("code", 0);
 
