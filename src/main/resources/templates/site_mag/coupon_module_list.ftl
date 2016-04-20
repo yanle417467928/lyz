@@ -12,7 +12,7 @@
 </head>
 
 <body class="mainbody">
-<form name="form1" method="post" action="/Verwalter/coupon/type/list" id="form1">
+<form name="form1" method="post" action="/Verwalter/coupon/module/list" id="form1">
 <div>
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="${__EVENTTARGET!""}">
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="${__EVENTARGUMENT!""}">
@@ -45,7 +45,7 @@ function __doPostBack(eventTarget, eventArgument) {
   <div id="floatHead" class="toolbar">
     <div class="l-list">
       <ul class="icon-list">
-        <li><a class="add" href="/Verwalter/coupon/type/edit"><i></i><span>新增</span></a></li>
+        <li><a class="add" href="/Verwalter/coupon/module/edit"><i></i><span>新增</span></a></li>
         <li><a class="all" href="javascript:;" onclick="checkAll(this);"><i></i><span>全选</span></a></li>
         <li><a id="btnSave" class="save" href="javascript:__doPostBack('btnSave','')"><i></i><span>保存</span></a></li>
         <#if tdManagerRole?? && tdManagerRole.isSys>
@@ -64,14 +64,16 @@ function __doPostBack(eventTarget, eventArgument) {
   <tr class="odd_bg">
     <th width="8%">选择</th>
     <th align="left">名称</th>
-    <th width="10%">价格</th>
-    <th align="left" width="37%">描述</th>
+    <th align="left">城市</th>
+    <th align="left">商品名称</th>
+    <th align="left">SKU</th>
+    <th width="10%">价值</th>
     <th align="center" width="12%">排序</th>
     <th width="10%">操作</th>
   </tr>
 
-    <#if coupon_type_list??>
-        <#list coupon_type_list as item>
+    <#if module_page?? && module_page.content?? && module_page.content?size gt 0>
+        <#list module_page.content as item>
             <tr>
                 <td align="center">
                     <span class="checkall" style="vertical-align:middle;">
@@ -79,12 +81,14 @@ function __doPostBack(eventTarget, eventArgument) {
                     </span>
                     <input type="hidden" name="listId" id="listId" value="${item.id?c}">
                 </td>
-                <td><a href="/Verwalter/coupon/type/edit?id=${item.id?c}">${item.title!""}</a></td>
+                <td><a href="/Verwalter/coupon/module/edit?id=${item.id?c}">${item.title!""}</a></td>
+                <td>${item.cityTitle!""}</td>
+                <td>${item.goodsTitle!""}</td>
+                <td>${item.sku!""}</td>
                 <td align="center"><#if item.price??>${item.price?string("0.00")}</#if></td>
-                <td>${item.description!""}</td>
                 <td align="center"><input name="listSortId" disabled="" type="text" value="${item.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
                 <td align="center">
-                    <a href="/Verwalter/coupon/type/edit?id=${item.id?c}">修改</a>
+                    <a href="/Verwalter/coupon/module/edit?id=${item.id?c}">修改</a>
                 </td>
               </tr>
         </#list>

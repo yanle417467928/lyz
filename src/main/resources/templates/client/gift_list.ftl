@@ -145,7 +145,7 @@
 				</div>
 				<div class="add419_title">我的赠品</div>
 	    		<div class="add419_box_title">
-			    	<h3>SKU</h3>
+			    	<h3>编号</h3>
 			    	<h3>名称</h3>
 			    	<h3>数量</h3>
 	    		</div>
@@ -196,8 +196,4 @@
 		    </script>
 		</div>
 	</div>
-	
-	
-	
-	
 </html>

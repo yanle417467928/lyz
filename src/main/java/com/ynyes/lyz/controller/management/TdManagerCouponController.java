@@ -234,7 +234,7 @@ public class TdManagerCouponController extends TdManagerBaseController {
 		return "/site_mag/coupon_module_list";
 	}
 
-	@RequestMapping(value = "/type/edit")
+	@RequestMapping(value = "/module/edit")
 	public String typeEdit(Long id, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
 
 		String username = (String) req.getSession().getAttribute("manager");
@@ -244,10 +244,10 @@ public class TdManagerCouponController extends TdManagerBaseController {
 		}
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
-		map.addAttribute("category_list", tdProductCategoryService.findAll());
+		
 
 		if (null != id) {
-			map.addAttribute("coupon_type", tdCouponTypeService.findOne(id));
+			
 		}
 		return "/site_mag/coupon_type_edit";
 	}
