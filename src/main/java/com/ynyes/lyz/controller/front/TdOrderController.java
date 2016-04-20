@@ -765,6 +765,14 @@ public class TdOrderController {
 		// 获取虚拟订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 
+		String realUsername = "";
+		if (null != user.getUserType() && (user.getUserType().equals(1L) || user.getUserType().equals(2L))
+				&& null != order) {
+			realUsername = order.getRealUserUsername();
+		}else{
+			realUsername = username;
+		}
+
 		// 获取订单的真实用户
 		Long realUserId = order.getRealUserId();
 		TdUser realUser = tdUserService.findOne(realUserId);
@@ -789,7 +797,7 @@ public class TdOrderController {
 				if (null != brandId) {
 					List<TdCoupon> cash_coupon_brand = tdCouponService
 							.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
-									username, 1L, brandId, user.getCityName());
+									realUsername, 1L, brandId, user.getCityName());
 					if (null != cash_coupon_brand && cash_coupon_brand.size() > 0) {
 						cash_coupon_map.put(brandId, cash_coupon_brand);
 					}
@@ -808,14 +816,14 @@ public class TdOrderController {
 			if (null != cartGoods) {
 				List<TdCoupon> product_coupon_by_goodsId = tdCouponService
 						.findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-								username, cartGoods.getGoodsId(), user.getCityName());
+								realUsername, cartGoods.getGoodsId(), user.getCityName());
 				if (null != product_coupon_by_goodsId && product_coupon_by_goodsId.size() > 0) {
 					product_coupon_list.addAll(product_coupon_by_goodsId);
 				}
 
 				List<TdCoupon> no_product_coupon_by_goodsId = tdCouponService
 						.findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-								username, cartGoods.getGoodsId(), user.getCityName());
+								realUsername, cartGoods.getGoodsId(), user.getCityName());
 				if (null != no_product_coupon_by_goodsId && no_product_coupon_by_goodsId.size() > 0) {
 					Long brandId = cartGoods.getBrandId();
 					List<TdCoupon> list = cash_coupon_map.get(brandId);
