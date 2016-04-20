@@ -1030,6 +1030,46 @@ public class TdManagerOrderController {
 			model.addAttribute("tdDiySite", tdDiySiteService.findOne(diySiteId));
 		}
 	}
+	
+	@RequestMapping(value = "/own/edit")
+	public String ownEdit(Long id, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+		String username = (String) req.getSession().getAttribute("manager");
+		if (null == username) {
+			return "redirect:/Verwalter/login";
+		}
+
+		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+		if (null != id) {
+			TdOwnMoneyRecord own= tdOwnMoneyRecordService.findOne(id);
+			TdOrder order=tdOrderService.findByOrderNumber(own.getOrderNumber());
+			map.addAttribute("order", order);
+			map.addAttribute("consult", own);
+			//仓库
+			if(null != order){
+				List<TdDeliveryInfo> deliveryList=tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+				if(null!=deliveryList && deliveryList.size()>0){
+					List<TdWareHouse> wareHouseList= tdWareHouseService.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
+					if(null != wareHouseList && wareHouseList.size()>0){
+						map.addAttribute("tdWareHouse", wareHouseList.get(0));
+					}
+				}
+			}
+		}
+		return "/site_mag/own_edit";
+	}
+	@RequestMapping(value = "/own/save")
+	@ResponseBody
+	public Map<String, Object> ownSave(Long id,Long type, HttpServletRequest req){
+		Map<String, Object> map=new HashMap<String,Object>();
+		Long[] ids={id};
+		if(type==1){
+			btnEnale(ids);
+		}else{
+			btnNotEnale(ids);
+		}
+		map.put("code", 0);
+		return map;
+	}
 
 	private void btnSave(String type, Long[] ids, Double[] sortIds) {
 		if (null == type || type.isEmpty()) {

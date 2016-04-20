@@ -323,6 +323,7 @@ function payedChange(){
     				<#else>
     					<a class="btn-submit-save bgc-ff8e08" href="javascript:;" style="background:#999">未通过审核</a>
     					<a class="btn-submit-save bgc-ff8e08" onclick="pupopen(1)">申请欠款</a>
+    					<a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="javascript:win_yes('是否确定拒签退货？','submitReturn(${td_order.id?c});')">拒签退货</a>
     				</#if>
     			<#else>
     				<#if ownrecord.isOwn?? && ownrecord.isOwn==false>
