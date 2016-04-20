@@ -131,7 +131,7 @@
         <#include "/client/common_shopping_type.ftl">
         <div id="content">
             <div class="sec_header">
-                <a class="back" href="javascript:history.go(-1);"></a>
+                <a class="back" href="/user"></a>
                 <p>我的订单</p>             
             </div>
             

@@ -1532,6 +1532,7 @@ public class TdUserController {
 
 		user.setUpperDiySiteId(site.getId());
 		user.setDiyName(site.getTitle());
+		user.setCustomerId(site.getCustomerId());
 		tdUserService.save(user);
 		res.put("status", 0);
 		return res;
@@ -2134,5 +2135,58 @@ public class TdUserController {
 			}
 		}
 		return giftGoodsList;
+	}
+
+	@RequestMapping(value = "/seller/get")
+	public String userSellerGet(HttpServletRequest req, ModelMap map, Long diyId) {
+		TdDiySite diySite = tdDiySiteService.findOne(diyId);
+		if (null != diySite) {
+			List<TdUser> user_list = tdUserService.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(
+					diySite.getRegionId(), diySite.getCustomerId());
+			map.addAttribute("user_list", user_list);
+		}
+		return "/client/user_seller_info";
+	}
+
+	@RequestMapping(value = "/seller/search")
+	public String userSellerSearch(HttpServletRequest req, ModelMap map, Long diyId, String keywords) {
+		TdDiySite diySite = tdDiySiteService.findOne(diyId);
+		if (null != diySite) {
+			List<TdUser> user_list = tdUserService
+					.findByCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(
+							diySite.getCustomerId(), diySite.getRegionId(), keywords);
+			map.addAttribute("user_list", user_list);
+		}
+		return "/client/user_seller_info";
+	}
+
+	@RequestMapping(value = "/seller/select")
+	@ResponseBody
+	public Map<String, Object> userSellerSelect(HttpServletRequest req, ModelMap map, Long sellerId) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+		// 获取指定的销顾
+		TdUser seller = tdUserService.findOne(sellerId);
+		if (null != seller) {
+			// 获取当前登录用户
+			String username = (String) req.getSession().getAttribute("username");
+			TdUser user = tdUserService.findByUsername(username);
+			if (null != user) {
+				user.setSellerId(seller.getId());
+				user.setSellerName(seller.getRealName());
+				user.setReferPhone(seller.getUsername());
+				tdUserService.save(user);
+				
+				res.put("name", seller.getRealName());
+			} else {
+				res.put("message", "未能成功获取到登录用户的信息");
+				return res;
+			}
+		} else {
+			res.put("message", "未能成功获取到导购信息");
+			return res;
+		}
+		res.put("status", 0);
+		return res;
 	}
 }

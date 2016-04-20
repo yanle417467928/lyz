@@ -76,8 +76,8 @@ public class TdRegistController {
 
 	@RequestMapping(value = "/save")
 	@ResponseBody
-	public Map<String, Object> save(HttpServletRequest req, String cityInfo,String name, String phone, String code, String password,
-			String repassword, String referPhone, String diySiteName) {
+	public Map<String, Object> save(HttpServletRequest req, String cityInfo, String name, String phone, String code,
+			String password, String repassword, String referPhone, String diySiteName) {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 		String smsCode = (String) req.getSession().getAttribute("SMSCODE");
@@ -98,30 +98,26 @@ public class TdRegistController {
 			res.put("message", "验证码错误");
 			return res;
 		}
-		if(StringUtils.isNotBlank(password))
-		{
-			if (!repassword.equals(password))
-			{
+		if (StringUtils.isNotBlank(password)) {
+			if (!repassword.equals(password)) {
 				res.put("message", "两次输入的密码不一致");
 				return res;
 			}
-		}
-		else 
-		{
+		} else {
 			password = "123456";
 		}
 
 		// 根据城市的名称获取指定城市的信息
 		TdCity city = tdCityService.findByCityName(cityInfo);
-		if (null == city)
-		{
+		if (null == city) {
 			city = new TdCity();
 			city.setCityName(cityInfo);
 			city = tdCityService.save(city);
 		}
 
 		// 获取门店名称
-		TdDiySite diySite = tdDiySiteService.findByRegionIdAndTitleAndIsEnableTrue(city.getSobIdCity(), (cityInfo + "默认门店").trim());
+		TdDiySite diySite = tdDiySiteService.findByRegionIdAndTitleAndIsEnableTrue(city.getSobIdCity(),
+				(cityInfo + "默认门店").trim());
 		TdUser new_user = new TdUser();
 		new_user.setUsername(phone);
 		new_user.setPassword(MD5.md5(password, 32));
@@ -139,6 +135,8 @@ public class TdRegistController {
 		new_user.setLastLoginTime(new Date());
 		new_user.setDiyName(cityInfo + "默认门店");
 		new_user.setUpperDiySiteId(diySite.getId());
+		new_user.setSellerId(0L);
+		new_user.setSellerName("无");
 		// 设置默认头像
 		new_user.setHeadImageUri("/client/images/per_titleimg01.png");
 		new_user.setCashBalance(0.0);
@@ -151,6 +149,9 @@ public class TdRegistController {
 			new_user.setUpperDiySiteId(refer_user.getUpperDiySiteId());
 			new_user.setDiyName(refer_user.getDiyName());
 			new_user.setCityId(refer_user.getCityId());
+
+			new_user.setSellerId(refer_user.getId());
+			new_user.setSellerName(refer_user.getRealName());
 		}
 
 		tdUserService.save(new_user);

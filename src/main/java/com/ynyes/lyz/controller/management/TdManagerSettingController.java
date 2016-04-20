@@ -346,8 +346,10 @@ public class TdManagerSettingController {
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
+		TdCity city = tdCityService.findOne(id);
+
 		if (null != id) {
-			map.addAttribute("city", tdCityService.findOne(id));
+			map.addAttribute("city", city);
 		}
 		map.addAttribute("SMSAccount_list", tdSmsAccountService.findAll());
 		map.addAttribute("company_list", tdCompanyService.findAll());
@@ -363,6 +365,18 @@ public class TdManagerSettingController {
 				List<TdProductCategory> level_two = tdProductCategoryService
 						.findByParentIdOrderBySortIdAsc(category.getId());
 				map.addAttribute("level_two" + i, level_two);
+			}
+		}
+
+		// 查找指定城市的限购信息
+		if (null != city) {
+			List<TdCategoryLimit> limits = tdCategoryLimitService.findBySobId(city.getSobIdCity());
+			if (null != limits) {
+				for (TdCategoryLimit limit : limits) {
+					if (null != limit) {
+						map.addAttribute("limit" + limit.getCategoryId(), true);
+					}
+				}
 			}
 		}
 

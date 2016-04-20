@@ -20,13 +20,16 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 
 	TdUser findByUsernameAndCityNameAndIsEnableTrue(String username, String cityName);
 
-	TdUser findByUsernameAndIdNot(String username, Long id); // zhangji 2016-1-8 // 10:26:41
+	TdUser findByUsernameAndIdNot(String username, Long id); // zhangji 2016-1-8
+																// // 10:26:41
 
 	Page<TdUser> findByUserTypeOrderByIdDesc(Long userlevelId, Pageable page);
 
-	Page<TdUser> findByUsernameContainingOrRealNameContainingOrderByIdDesc(String keywords1, String keywords2,Pageable page);
+	Page<TdUser> findByUsernameContainingOrRealNameContainingOrderByIdDesc(String keywords1, String keywords2,
+			Pageable page);
 
-	Page<TdUser> findByUsernameContainingAndUserTypeOrEmailContainingAndUserTypeOrderByIdDesc(String keywords1,Long userLevelId, String keywords3, Long userLevelId2, Pageable page);
+	Page<TdUser> findByUsernameContainingAndUserTypeOrEmailContainingAndUserTypeOrderByIdDesc(String keywords1,
+			Long userLevelId, String keywords3, Long userLevelId2, Pageable page);
 
 	TdUser findByOpUser(String opUser);
 
@@ -96,12 +99,26 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	/**
 	 * @注释：搜索城市下面的用户
 	 */
-	public Page<TdUser> findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(String cityName0,String username,String cityName,String realName,Pageable page );
-	
+	public Page<TdUser> findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(
+			String cityName0, String username, String cityName, String realName, Pageable page);
+
 	/**
 	 * 根据用户类型查询用户
-	 * @param userType 用户类型
+	 * 
+	 * @param userType
+	 *            用户类型
 	 * @return
 	 */
 	public List<TdUser> findByUserTypeOrderByIdDesc(Long userType);
+
+	/**
+	 * 根据关键词查找指定门店的销顾和店长
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月20日上午11:24:54
+	 */
+	public List<TdUser> findByCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(
+			Long customerId1, Long cityId1, Long userType1, String keywords1, Long customerId2, Long cityId2,
+			Long userType2, String keywords2, Long customerId3, Long cityId3, Long userType3, String keywords3,
+			Long customerId4, Long cityId4, Long userType4, String keywords4);
 }

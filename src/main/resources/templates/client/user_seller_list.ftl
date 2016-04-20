@@ -106,11 +106,10 @@
     };
 </script>
 <div class="win_yn" style="z-index:99">
-	
     <div class="my_left">
         <div class="searchBox">
             <input placeholder="请输入搜索内容" type="text" name="" id="keywords" value="" />
-            <input type="button" name="" id="" value="搜索" onclick="seller.searchInfo();" />
+            <input type="button" name="" id="" value="搜索" onclick="service.searchSeller();" />
         </div>
         <#--
             <input class="sub" type="submit" name="" id="" value="确定" onclick="win_no()" />
@@ -120,7 +119,7 @@
         </div>
         <div class="swiper-container">
             <div class="swiper-wrapper" id="changeInfo">
-                <#include "/client/order_user_info.ftl">
+                <#include "/client/user_seller_info.ftl">
             </div>
         </div>
     </div>

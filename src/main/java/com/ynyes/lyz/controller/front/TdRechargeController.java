@@ -7,12 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/recharge")
 public class TdRechargeController {
 
-	
-	/**
-	 * 中转仓库
-	 * @author DengXiao
-	 */
-//	@RequestMapping(value = "/warehouse")
-//	public
-	
+//	@RequestMapping(value = "/recharge/alipay")
+//	public String rechargeAli(){
+//		
+//	}
 }

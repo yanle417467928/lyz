@@ -96,6 +96,16 @@
     <script>
     	<#-- 创建一个命名空间 -->
     	var recharge = {
+    		urls : {
+    			<#if payType_list?? && payType_list?size gt 0>
+    				<#list payType_list as item>
+    					${item.id?c} : "${item.title!''}"
+    					<#if item_index != (payType_list?size - 1)>
+    						,
+    					</#if> 
+    				</#list>
+				</#if>
+    		},
     		<#-- 所有的支付方式 -->
     		type : {
     			<#if payType_list?? && payType_list?size gt 0>
@@ -121,7 +131,27 @@
     				return;
     			}
 				
-				    			
+				<#-- 获取支付方式 -->    	
+				var pay = 0;		
+				for(var key in this.type){
+					if(key && this.type[key] && this.type[key] === true){
+						pay = key;
+					}
+				}
+				
+				<#-- 获取支付名称 -->
+				var title = this.urls[pay];
+				
+				switch(title){
+					case "微信支付":
+					break;
+					case "支付宝":
+						window.location.href = "/recharge/alipay?money=" + cash;
+					break;
+					case "银行卡":
+						window.location.href = "/recharge/union?money=" + cash;
+					break;
+				}
     		}
     	}
     </script>

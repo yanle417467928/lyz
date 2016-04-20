@@ -149,11 +149,11 @@ public class TdUserService {
 	 * @author lc
 	 * @注释：按等级搜索用户
 	 */
-	public Page<TdUser> searchAndfindByUserTypeOrderByIdDesc(String keywords, Long userType, int page, int size)
-	{
+	public Page<TdUser> searchAndfindByUserTypeOrderByIdDesc(String keywords, Long userType, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByUsernameContainingAndUserTypeOrEmailContainingAndUserTypeOrderByIdDesc(keywords,userType, keywords, userType, pageRequest);
+		return repository.findByUsernameContainingAndUserTypeOrEmailContainingAndUserTypeOrderByIdDesc(keywords,
+				userType, keywords, userType, pageRequest);
 	}
 
 	public TdUser findByOpUser(String opUser) {
@@ -271,20 +271,39 @@ public class TdUserService {
 	 */
 	public Page<TdUser> searchcityNameAndOrderByIdDesc(String keywords, String cityName, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		if (StringUtils.isBlank(cityName) || StringUtils.isBlank(keywords))
-		{
+		if (StringUtils.isBlank(cityName) || StringUtils.isBlank(keywords)) {
 			return null;
 		}
-		return repository.findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(cityName,keywords, cityName,keywords, pageRequest);
+		return repository.findByCityNameAndUsernameContainingOrCityNameAndRealNameContainingOrderByIdDesc(cityName,
+				keywords, cityName, keywords, pageRequest);
 	}
-	
+
 	/**
 	 * 根据用户类型查询用户
-	 * @param userType 用户类型
+	 * 
+	 * @param userType
+	 *            用户类型
 	 * @return
 	 */
-	public List<TdUser> findByUserTypeOrderByIdDesc(Long userType){
+	public List<TdUser> findByUserTypeOrderByIdDesc(Long userType) {
 		return repository.findByUserTypeOrderByIdDesc(userType);
 	}
-	
+
+	/**
+	 * 根据关键词查找指定门店的销顾和店长
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月20日上午11:24:54
+	 */
+	public List<TdUser> findByCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(
+			Long customerId, Long cityId, String keywords) {
+		if (null == customerId || null == cityId || null == keywords) {
+			return null;
+		}
+		return repository
+				.findByCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(
+						customerId, cityId, 1L, keywords, customerId, cityId, 1L, keywords, customerId, cityId, 2L,
+						keywords, customerId, cityId, 2L, keywords);
+	}
+
 }

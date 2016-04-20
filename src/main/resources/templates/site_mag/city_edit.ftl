@@ -188,13 +188,13 @@ $(function () {
 							<tr>
 								<td>
 									<label>${one.title!''}</label>
-									<input id="${one.id?c}" type="checkbox" name="limit" value="${one.id?c}" onclick="oneSelect(${one.id?c});">
+									<input id="${one.id?c}" type="checkbox" <#if ("limit" + one.id?c)?eval??>checked="checked"</#if> name="limit" value="${one.id?c}" onclick="oneSelect(${one.id?c});">
 								</td>
 								<td>
 									<#if ("level_two"+one_index)?eval??>
 										<#list ("level_two"+one_index)?eval as two>
 											<label>${two.title!''}</label>
-											<input id="${two.id?c}" type="checkbox" name="limit" value="${two.id?c}" onclick="twoSelect(${two.id?c});">
+											<input id="${two.id?c}" type="checkbox" <#if ("limit" + two.id?c)?eval??>checked="checked"</#if> name="limit" value="${two.id?c}" onclick="twoSelect(${two.id?c});">
 										</#list>
 									</#if>								
 								</td>

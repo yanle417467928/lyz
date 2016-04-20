@@ -165,6 +165,8 @@
 			}
 
 			$scope.send = function(){
+				wait();
+				
 				data = "";
 				for(var i = 0; i < this.goods.length; i++){
 					if(0 !== this.goods[i].reQuantity){
@@ -172,16 +174,17 @@
 					}
 				}
 				if("" === data){
+					close(1);
 					return;
 				}
 				if("" === $scope.remark || "请输入您的退货原因" === $scope.remark){
 					$scope.remark = "请输入您的退货原因";
+					close(1);
 					return;
 				}
 				
 				var remark = $scope.remark;
 				
-				wait();
 				$.ajax({
 					type:"post",
 					url:"/user/return/check",
