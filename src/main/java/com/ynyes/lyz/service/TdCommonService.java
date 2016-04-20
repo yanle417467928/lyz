@@ -2176,7 +2176,7 @@ public class TdCommonService {
 			// returnNote.getTurnType() + "</turn_type>"
 			// + "</TABLE>"
 			// + "</ERP>";
-
+			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
 			String date = sdf.format(returnNote.getOrderTime());
 

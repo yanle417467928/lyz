@@ -1356,7 +1356,8 @@ public class TdUserController {
 
 		if (null != order.getStatusId() && 3L == order.getStatusId()) {
 			// 生成退货单
-			if (null != order) {
+			if (null != order)
+			{
 				TdReturnNote returnNote = tdCommonService.MakeReturnNote(order, 0L, "");
 				tdCommonService.sendBackMsgToWMS(returnNote);
 				// System.out.println("MDJWMS:发送退货单：" +
