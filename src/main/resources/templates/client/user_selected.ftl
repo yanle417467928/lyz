@@ -30,7 +30,7 @@
         <!-- 头部 -->
         <header>
             <a class="back" href="<#if history??>${history }<#else> javascript:history.go(-1);</#if>"></a>
-            <p>我的已选</p>
+            <p>我的购物车</p>
             <a id="info" class="btn-edit">编辑</a>
         </header>
         <!-- 头部 END -->
