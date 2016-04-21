@@ -108,8 +108,8 @@
                 </#if>
             </div>
             <div class="go_buy">
-                <a style="background:#ffaa00;width:50%;" style="background:#ffaa00;" href="javascript:addCart();">加入已选</a>
-                <p style="width: 50%;" onclick="window.location.href='/user/selected'">查看已选(<span id="select_num">${selected_number!'0'}</span>)</p>
+                <a style="background:#ffaa00;width:50%;" style="background:#ffaa00;" href="javascript:addCart();">加入购物车</a>
+                <p style="width: 50%;" onclick="window.location.href='/user/selected'">我的购物车(<span id="select_num">${selected_number!'0'}</span>)</p>
                 <#--<a href="javascript:clearing();">去结算</a>-->
             </div>
             <#include "/client/common_footer.ftl">

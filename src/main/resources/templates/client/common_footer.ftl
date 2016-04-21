@@ -24,7 +24,7 @@
             <li>
                 <a href="/user/selected">
                     <div></div>
-                    <span>已选</span>
+                    <span>购物车</span>
                 </a>
             </li>
         </ul>               
