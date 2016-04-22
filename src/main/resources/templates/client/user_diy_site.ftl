@@ -61,7 +61,7 @@
                 <div>当前所属门店：<span id="now_diy">${user.diyName!''}</span></div>
                 <div onclick="service.getSeller();">当前服务导购：<span id="now_seller">${user.sellerName!''}</span></div>
                 <input id="diyId" type="hidden" value="${user.upperDiySiteId?c}">
-                <input id="sellerId" type="hidden" value="${user.sellerId?c}">
+                <input id="sellerId" type="hidden" value="<#if user.sellerId??>${user.sellerId?c}<#else>0</#if>">
             </#if>
             <#if !(isSelected??&&isSelected==false)>
                 <div>
