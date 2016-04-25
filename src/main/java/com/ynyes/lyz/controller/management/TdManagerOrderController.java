@@ -1041,12 +1041,15 @@ public class TdManagerOrderController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		if (null != id) {
 			TdOwnMoneyRecord own= tdOwnMoneyRecordService.findOne(id);
-			TdOrder order=tdOrderService.findByOrderNumber(own.getOrderNumber());
-			map.addAttribute("order", order);
+			String mainOrderNumber= own.getOrderNumber();
+			System.out.println(mainOrderNumber.substring(2,mainOrderNumber.length()));
+			List<TdOrder> orderList=tdOrderService.findByOrderNumberContaining(mainOrderNumber.substring(2,mainOrderNumber.length()));
+			map.addAttribute("orderList",orderList);
+			map.addAttribute("order", orderList.get(0));
 			map.addAttribute("consult", own);
 			//仓库
-			if(null != order){
-				List<TdDeliveryInfo> deliveryList=tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+			if(null != orderList){
+				List<TdDeliveryInfo> deliveryList=tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(mainOrderNumber);
 				if(null!=deliveryList && deliveryList.size()>0){
 					List<TdWareHouse> wareHouseList= tdWareHouseService.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
 					if(null != wareHouseList && wareHouseList.size()>0){

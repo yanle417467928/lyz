@@ -104,8 +104,8 @@ var theForm = document.forms['form1'];
                         </span>
                         <input type="hidden" name="listId" id="listId" value="${consult.id?c}">
                     </b>
-                    <#--订单号 ：<a href="/Verwalter/order/own/edit?id=${consult.id?c}">${consult.orderNumber!""}</a> -->
-                     订单号 ：${consult.orderNumber!""}
+                    订单号 ：<a href="/Verwalter/order/own/edit?id=${consult.id?c}">${consult.orderNumber!""}</a> 
+                    <#-- 订单号 ：${consult.orderNumber!""} -->
                   </div>
                   <div class="ask">
                     <#if !consult.isEnable?? || consult.isEnable==false>

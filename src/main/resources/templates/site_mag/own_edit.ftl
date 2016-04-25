@@ -127,25 +127,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        
-                        <#if order.orderGoodsList??>
-                            <#list order.orderGoodsList as goods>
-                                <tr class="td_c">
-                                    <td>${goods.goodsId?c!""}</td>
-                                    <td style="text-align: left; white-space: normal;">
-                                        ${goods.goodsTitle!""} 
-                                        ${goods.sku!""}
-                                        ${goods.goodsColor!""}
-                                        ${goods.goodsCapacity!""}
-                                        ${goods.goodsVersion!""}
-                                        ${goods.goodsSaleType!""}
-                                    </td>
-                                    <td>${goods.price?string("#.00")}</td>
-                                    <td>${goods.quantity!""}</td>
-                                    <td>${(goods.price*goods.quantity)?string("#.00")}</td>
-                                </tr>
-                            </#list>
-                        </#if>
+                         <#if orderList??>
+        					<#list orderList as orders1>
+		                        <#if orders1.orderGoodsList??>
+		                            <#list orders1.orderGoodsList as goods>
+		                                <tr class="td_c">
+		                                    <td>${goods.goodsId?c!""}</td>
+		                                    <td style="text-align: left; white-space: normal;">
+		                                        ${goods.goodsTitle!""} 
+		                                        ${goods.sku!""}
+		                                        ${goods.goodsColor!""}
+		                                        ${goods.goodsCapacity!""}
+		                                        ${goods.goodsVersion!""}
+		                                        ${goods.goodsSaleType!""}
+		                                    </td>
+		                                    <td>${goods.price?string("#.00")}</td>
+		                                    <td>${goods.quantity!""}</td>
+		                                    <td>${(goods.price*goods.quantity)?string("#.00")}</td>
+		                                </tr>
+		                            </#list>
+		                        </#if>
+		                      </#list>
+		                    </#if>
                     </tbody> 
                 </table> 
             </dd> 
@@ -175,7 +178,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                                <#list order.presentedList as goods>
+                        <#if orderList??>
+        					<#list orderList as orders2>
+                                <#list orders2.presentedList as goods>
                                     <tr class="td_c">
                                         <td>${goods.goodsId?c!""}</td>
                                         <td style="text-align: left; white-space: normal;">
@@ -190,6 +195,8 @@
                                         <td>${(goods.price*goods.quantity)?string("0.00")}</td>
                                     </tr>
                                 </#list>
+                              </#list>
+		                  </#if>
                         </tbody> 
                     </table> 
                 </dd> 
@@ -220,7 +227,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                                <#list order.giftGoodsList as goods>
+                        <#if orderList??>
+        					<#list orderList as orders3>
+                                <#list orders3.giftGoodsList as goods>
                                     <tr class="td_c">
                                         <td>${goods.goodsId?c!""}</td>
                                         <td style="text-align: left; white-space: normal;">
@@ -235,6 +244,8 @@
                                         <td>${(goods.price*goods.quantity)?string("0.00")}</td>
                                     </tr>
                                 </#list>
+                                </#list>
+		                  </#if>
                         </tbody> 
                     </table> 
                 </dd> 
@@ -256,6 +267,7 @@
                             </div>
                         </td>
                     </tr>
+                    <#--
                     <tr>
                         <th width="20%">
                             商品总金额
@@ -268,6 +280,7 @@
                             </div>
                         </td>
                     </tr>
+                     -->
                     <#--
                     <tr>
                         <th>
@@ -297,6 +310,7 @@
                         </td>
                     </tr>
                      -->
+                    <#--
                     <tr>
                         <th>
                             可获取积分总计
@@ -316,12 +330,13 @@
                         不可用预存款：<#if order.unCashBalanceUsed??>${order.unCashBalanceUsed?string("0.00")}<#else>0.00</#if>元
                             </td>
                     </tr>
+                     -->
                     <tr>
                         <th>
                             订单总金额
                         </th>
-                        <td>
-                            ${order.totalPrice?string("0.00")}元</td>
+                        <td width="80%">
+                            ${order.allTotalPay?string("0.00")}元</td>
                     </tr>
                 </tbody>
                 </table>
