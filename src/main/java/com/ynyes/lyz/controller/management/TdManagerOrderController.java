@@ -3,6 +3,7 @@ package com.ynyes.lyz.controller.management;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -660,18 +661,20 @@ public class TdManagerOrderController {
 				}else if(tdManagerRole.getIsSys()){
 					diySiteCode=diyCode;
 				}
-				String userName="";
+				List<String> usernameList=new ArrayList<String>();
 				Boolean isNotFindUser=false;
 				if(StringUtils.isNotBlank(realName)){ //根据会员真实姓名查询用户名
-					TdUser user= tdUserService.findByRealName(realName);
-					if(null != user){
-						userName=user.getUsername();
+					List<TdUser> userList= tdUserService.findByRealName(realName);
+					if(null != userList && userList.size()>0){
+						for (TdUser tdUser : userList) {
+							usernameList.add(tdUser.getUsername());
+						}
 					}else{
 						isNotFindUser=true; 
 					}
 				}
 				if(!isNotFindUser){
-						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, userName, sellerRealName, shippingAddress, shippingPhone,
+						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, usernameList, sellerRealName, shippingAddress, shippingPhone,
 					 deliveryTime, userPhone, shippingName, sendTime,statusId,diySiteCode,city, size, page));
 				}
 //				}

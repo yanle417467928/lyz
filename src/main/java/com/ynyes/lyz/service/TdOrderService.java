@@ -524,7 +524,7 @@ public class TdOrderService {
 	 * 
 	 * @return
 	 */
-	public Page<TdOrder> findAll(String keywords, String orderStartTime, String orderEndTime, String realName,
+	public Page<TdOrder> findAll(String keywords, String orderStartTime, String orderEndTime, List<String> usernameList,
 			String sellerRealName, String shippingAddress, String shippingPhone, String deliveryTime, String userPhone,
 			String shippingName, String sendTime, Long statusId, String diyCode,String city, int size, int page) {
 		PageRequest pageRequest = new PageRequest(page, size);
@@ -553,8 +553,8 @@ public class TdOrderService {
 			c.add(Restrictions.like("shippingAddress", shippingAddress, true));
 		}
 
-		if (null != realName && !"".equals(realName)) {
-			c.add(Restrictions.eq("username", realName, true));
+		if (null != usernameList && usernameList.size()>0) {
+			c.add(Restrictions.in("username", usernameList, true));
 		}
 		if (null != deliveryTime && !deliveryTime.equals("")) {
 			c.add(Restrictions.eq("realUserRealName", stringToDate(deliveryTime, null), true));

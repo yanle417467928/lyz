@@ -79,7 +79,7 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 * @param realName
 	 * @return
 	 */
-	TdUser findByRealName(String realName);
+	List<TdUser> findByRealName(String realName);
 
 	/**
 	 * 根据主单号查询快递员

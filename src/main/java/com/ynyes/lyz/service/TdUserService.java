@@ -236,7 +236,7 @@ public class TdUserService {
 	 * @param realName
 	 * @return
 	 */
-	public TdUser findByRealName(String realName) {
+	public List<TdUser> findByRealName(String realName) {
 		if (null == realName) {
 			return null;
 		}
