@@ -1,5 +1,6 @@
 package com.ynyes.lyz.service;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -603,8 +604,7 @@ public class TdPriceCountService {
 		// 获取订单的商品实际价值
 		Double totalOrderGoodsPrice = this.getTotalOrderGoodsPrice(order);
 
-		NumberFormat nf = NumberFormat.getNumberInstance();
-		nf.setMaximumFractionDigits(2);
+		DecimalFormat decimalFormat = new DecimalFormat("#.00");
 
 		// 获取订单商品数量、总价队列
 		Map<Long, Double[]> allOrderGoods = this.getAllOrderGoods(order);
@@ -626,8 +626,9 @@ public class TdPriceCountService {
 							Double GoodsRealTotal = realPrice * point;
 							if (null != GoodsRealTotal && null != infos[1] && 0.0 != infos[1]) {
 								Double unit = GoodsRealTotal / infos[1];
-								String sUnit = nf.format(unit);
+								String sUnit = decimalFormat.format(unit);
 								unit = Double.parseDouble(sUnit);
+								
 								res.put(goodsId, unit);
 							}
 						}
