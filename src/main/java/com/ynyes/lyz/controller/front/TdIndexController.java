@@ -3,6 +3,7 @@ package com.ynyes.lyz.controller.front;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -16,6 +17,7 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.geronimo.mail.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -124,6 +126,30 @@ public class TdIndexController {
 				map = tdCommonService.testSendBackMsgToWMS(tdReturnNote);
 			}
 		}
+		return map;
+	}
+	
+	@RequestMapping("/test")
+	@ResponseBody
+	public Map<String, String> testMethod()
+	{
+		Map<String, String> map = new HashMap<>();
+		
+		String xmlStr = "<ERP><TABLE><C_OWNER_NO>001</C_OWNER_NO><C_TASK_NO>SU12031604250002</C_TASK_NO><C_TASK_ID>1</C_TASK_ID><C_TASK_TYPE>一般出货</C_TASK_TYPE><C_OP_TYPE>C</C_OP_TYPE><C_S_LOCATION_NO>F1F0111</C_S_LOCATION_NO><C_S_LOCATION_ID>9</C_S_LOCATION_ID><C_S_CONTAINER_SERNO></C_S_CONTAINER_SERNO><C_S_CONTAINER_NO>OU121604240030</C_S_CONTAINER_NO><C_D_LOCATION_NO></C_D_LOCATION_NO><C_D_CONTAINER_NO></C_D_CONTAINER_NO><C_D_CONTAINER_SERNO></C_D_CONTAINER_SERNO><C_GCODE>TJHD801-5</C_GCODE><C_STOCKATTR_ID>1</C_STOCKATTR_ID><C_PACK_QTY>1</C_PACK_QTY><C_D_REQUEST_QTY>1.00</C_D_REQUEST_QTY><C_D_ACK_BAD_QTY>0.00</C_D_ACK_BAD_QTY><C_D_ACK_QIFT_QTY>0.00</C_D_ACK_QIFT_QTY><C_D_ACK_QTY>1.00</C_D_ACK_QTY><C_OP_USER>100003</C_OP_USER><C_OP_TOOLS>PDA</C_OP_TOOLS><C_OP_STATUS>已出车</C_OP_STATUS><C_WAVE_NO>WA12031604240010</C_WAVE_NO><C_SOURCE_NO>OU121604240030</C_SOURCE_NO><C_RESERVED1>HR20160424165828513486</C_RESERVED1><C_RESERVED2></C_RESERVED2><C_RESERVED3></C_RESERVED3><C_RESERVED4></C_RESERVED4><C_RESERVED5></C_RESERVED5><C_NOTE></C_NOTE><C_MK_DT>2016/4/25 9:43:27</C_MK_DT><C_MK_USERNO>100003</C_MK_USERNO><C_MODIFIED_DT>2016/4/25 9:43:29</C_MODIFIED_DT><C_MODIFIED_USERNO>100003</C_MODIFIED_USERNO><C_UPLOAD_STATUS></C_UPLOAD_STATUS><C_SEND_FALG>否</C_SEND_FALG></TABLE><TABLE><C_OWNER_NO>001</C_OWNER_NO><C_TASK_NO>SU12031604250002</C_TASK_NO><C_TASK_ID>2</C_TASK_ID><C_TASK_TYPE>一般出货</C_TASK_TYPE><C_OP_TYPE>C</C_OP_TYPE><C_S_LOCATION_NO>F1F0111</C_S_LOCATION_NO><C_S_LOCATION_ID>10</C_S_LOCATION_ID><C_S_CONTAINER_SERNO></C_S_CONTAINER_SERNO><C_S_CONTAINER_NO>OU121604240030</C_S_CONTAINER_NO><C_D_LOCATION_NO></C_D_LOCATION_NO><C_D_CONTAINER_NO></C_D_CONTAINER_NO><C_D_CONTAINER_SERNO></C_D_CONTAINER_SERNO><C_GCODE>TJHM8015-5</C_GCODE><C_STOCKATTR_ID>1</C_STOCKATTR_ID><C_PACK_QTY>1</C_PACK_QTY><C_D_REQUEST_QTY>1.00</C_D_REQUEST_QTY><C_D_ACK_BAD_QTY>0.00</C_D_ACK_BAD_QTY><C_D_ACK_QIFT_QTY>0.00</C_D_ACK_QIFT_QTY><C_D_ACK_QTY>1.00</C_D_ACK_QTY><C_OP_USER>100003</C_OP_USER><C_OP_TOOLS>PDA</C_OP_TOOLS><C_OP_STATUS>已出车</C_OP_STATUS><C_WAVE_NO>WA12031604240010</C_WAVE_NO><C_SOURCE_NO>OU121604240030</C_SOURCE_NO><C_RESERVED1>HR20160424165828513486</C_RESERVED1><C_RESERVED2></C_RESERVED2><C_RESERVED3></C_RESERVED3><C_RESERVED4></C_RESERVED4><C_RESERVED5></C_RESERVED5><C_NOTE></C_NOTE><C_MK_DT>2016/4/25 9:43:27</C_MK_DT><C_MK_USERNO>100003</C_MK_USERNO><C_MODIFIED_DT>2016/4/25 9:43:29</C_MODIFIED_DT><C_MODIFIED_USERNO>100003</C_MODIFIED_USERNO><C_UPLOAD_STATUS></C_UPLOAD_STATUS><C_SEND_FALG>否</C_SEND_FALG></TABLE></ERP>";
+		byte[] bs = xmlStr.getBytes();
+		byte[] encodeByte = Base64.encode(bs);
+		String encodeXML = null;
+		try
+		{
+			encodeXML = new String(encodeByte, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e1) 
+		{
+			System.err.println("MDJ_WMS:XML 编码出错!");
+			map.put("error", "MDJ_WMS:XML 编码出错!");
+			return map;
+		}
+		map.put("result", encodeXML);
 		return map;
 	}
 

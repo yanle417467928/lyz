@@ -331,8 +331,8 @@ public class CallWMSImpl implements ICallWMS {
 
 				for (int idx = 0; idx < childNodeList.getLength(); idx++)
 				{
- 					Node childNode = childNodeList.item(idx);
-					
+					Node childNode = childNodeList.item(idx);
+
 					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
 					{
 						// 比较字段名
@@ -427,10 +427,9 @@ public class CallWMSImpl implements ICallWMS {
 								c_d_request_qty = Double.parseDouble(string);
 							}
 						}
-						
+
 					}
 				}
-				
 				//保存 修改
 				TdDeliveryInfoDetail infoDetail = new TdDeliveryInfoDetail();
 				infoDetail.setTaskNo(c_task_no);
@@ -472,13 +471,13 @@ public class CallWMSImpl implements ICallWMS {
 				String siteCode = null;
 				if (c_reserved1 != null)
 				{
-					 TdOrder tdOrder = tdOrderService.findByOrderNumber(c_reserved1);
-					 if (tdOrder != null && tdOrder.getStatusId() != null && tdOrder.getStatusId() == 3L)
-					 {
-						 tdOrder.setStatusId(4L);
-						 tdOrderService.save(tdOrder);
-						 siteCode = tdOrder.getDiySiteCode();
-					 }
+					TdOrder tdOrder = tdOrderService.findByOrderNumber(c_reserved1);
+					if (tdOrder != null && tdOrder.getStatusId() != null && tdOrder.getStatusId() == 3L)
+					{
+						tdOrder.setStatusId(4L);
+						tdOrderService.save(tdOrder);
+						siteCode = tdOrder.getDiySiteCode();
+					}
 				}
 				Long backquantity = Math.round(infoDetail.getBackNumber() == null ? 0 : infoDetail.getBackNumber());
 				TdGoods tdGoods = tdGoodsService.findByCode(infoDetail.getgCode());
@@ -487,21 +486,21 @@ public class CallWMSImpl implements ICallWMS {
 				{
 					tdGoods.setLeftNumber(tdGoods.getLeftNumber() - backquantity >= 0 ? tdGoods.getLeftNumber() - backquantity : 0);
 				}
-				if (tdGoods != null && siteCode != null && inventoryList !=null && inventoryList.size() >= 1)
-				{
-					for (int inventoryIndex = 0; inventoryIndex < inventoryList.size(); inventoryIndex++) 
-					{
-						TdDiySiteInventory siteInventory = inventoryList.get(inventoryIndex);
-						if (siteInventory.getDiyCode().equals(siteCode)) 
-						{
-							siteInventory.setInventory(siteInventory.getInventory() - backquantity);
-							tdDiySiteInventoryService.save(siteInventory);
-							break;
-						}
-					}
-				}
+//				if (tdGoods != null && siteCode != null && inventoryList !=null && inventoryList.size() >= 1)
+//				{
+//					for (int inventoryIndex = 0; inventoryIndex < inventoryList.size(); inventoryIndex++) 
+//					{
+//						TdDiySiteInventory siteInventory = inventoryList.get(inventoryIndex);
+//						if (siteInventory.getDiyCode().equals(siteCode)) 
+//						{
+//							siteInventory.setInventory(siteInventory.getInventory() - backquantity);
+//							tdDiySiteInventoryService.save(siteInventory);
+//							break;
+//						}
+//					}
+//				}
 				tdGoodsService.save(tdGoods, "WMS:goods");
-				
+
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
