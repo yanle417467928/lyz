@@ -99,9 +99,16 @@
 			},
 			confirm : function(){
 				var usedBalance = this.getE("used_balance").value;
+				
 				<#-- 首先判断输入的值是不是一个数字 -->
 				if(isNaN(usedBalance)){
 					warning("亲，请输入一个正确的数字");
+					return;
+				}
+				
+				<#-- 再次判断输入的值是否大于0 -->
+				if(usedBalance<0){
+					warning("亲，不能输入负数");
 					return;
 				}
 				
