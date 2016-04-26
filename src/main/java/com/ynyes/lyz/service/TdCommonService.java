@@ -1942,7 +1942,7 @@ public class TdCommonService {
 			requisition.setDiySiteId(order.getDiySiteId());
 			requisition.setDiyCode(order.getDiySiteCode());
 			requisition.setDiySiteTitle(order.getDiySiteName());
-			requisition.setCustomerName(order.getShippingName());
+			requisition.setCustomerName(order.getRealUserRealName());
 			requisition.setCustomerId(order.getUserId());
 			requisition.setOrderNumber(mainOrderNumber);
 			requisition.setReceiveName(order.getShippingName());

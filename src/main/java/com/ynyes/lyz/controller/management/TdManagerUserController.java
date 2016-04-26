@@ -984,6 +984,59 @@ public class TdManagerUserController {
 
 		return "redirect:/Verwalter/user/suggestion/list";
 	}
+	
+
+	@RequestMapping(value = "/setSeller")
+	public String setReller(Long id, Long roleId, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+		String username = (String) req.getSession().getAttribute("manager");
+		if (null == username) {
+			return "redirect:/Verwalter/login";
+		}
+
+		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+		map.addAttribute("roleId", roleId);
+		if (null != id) {
+			map.addAttribute("user", tdUserService.findOne(id));
+		}
+		// map.addAttribute("user_level_list",
+		// tdUserLevelService.findIsEnableTrue());
+		return "/site_mag/user_reller_edit";
+	}
+	
+	@RequestMapping(value = "/moreSeller", method = RequestMethod.POST)
+	public String moreReller(Long id, String oldUsername, String newUsername, String __VIEWSTATE, ModelMap map,
+			String birthdate, HttpServletRequest req) {
+		String username = (String) req.getSession().getAttribute("manager");
+		if (null == username) {
+			return "redirect:/Verwalter/login";
+		}
+
+		TdUser oldTdUser = tdUserService.findOne(id);
+		TdUser newTdUser = tdUserService.findByUsername(newUsername);
+		//输入的导购名不存在
+		if(newTdUser==null){
+			map.put("erroir", "新的导购名不存在");
+			map.put("user", oldTdUser);
+			return "/site_mag/user_reller_edit";
+		}
+		
+		List<TdUser> userList= tdUserService.findBySellerIdAndUserType(oldTdUser.getId(), 0L);
+		//循环修改导购
+		if(userList!=null && userList.size()>0){
+			for (TdUser tdUser : userList) {
+				tdUser.setSellerId(newTdUser.getId());
+				tdUser.setSellerName(newTdUser.getRealName());
+				tdUser.setReferPhone(newTdUser.getUsername());
+			}
+		}
+
+		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
+
+		tdManagerLogService.addLog("edit", "修改用户", req);
+
+		return "redirect:/Verwalter/user/list/";
+	}
+	
 
 	/*----------------用户投诉咨询 end  ---------------------*/
 
@@ -1172,6 +1225,7 @@ public class TdManagerUserController {
 	//
 	// return "/site_mag/error_404";
 	// }
+
 
 	@ModelAttribute
 	public void getModel(@RequestParam(value = "userId", required = false) Long userId,

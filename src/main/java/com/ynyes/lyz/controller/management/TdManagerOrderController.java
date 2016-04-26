@@ -372,6 +372,17 @@ public class TdManagerOrderController {
 		{
 			page = 0;
 		}
+		
+		if (null != __EVENTTARGET)
+		{
+			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
+			{
+				if (null != __EVENTARGUMENT)
+				{
+					page = Integer.parseInt(__EVENTARGUMENT);
+				}
+			}
+		}
 
 		if (null == size || size <= 0) 
 		{

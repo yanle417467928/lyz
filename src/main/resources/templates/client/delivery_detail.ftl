@@ -143,6 +143,24 @@ function submitOwnMoney()
 	var payed = document.getElementById("payed").value;
 	var owned = document.getElementById("owned").value;
 	
+	<#-- 首先判断输入的值是不是一个数字 -->
+	if(isNaN(payed)){
+		warning("亲，请输入一个正确的数字");
+		return;
+	}
+	
+	<#-- 再次判断输入的值是否大于0 -->
+	if(payed<0){
+		warning("亲，不能输入负数");
+		return;
+	}
+	
+	<#-- 再次判断输入的值是否大于需代收金额 -->
+	if(owned < 0){
+		warning("亲，您输入的值大于需代收金额");
+		return;
+	}
+	
 	if (null == payed || null == owned || "" == payed || "" == owned)
 	{
 		warning("请输入正确的金额");

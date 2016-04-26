@@ -305,5 +305,17 @@ public class TdUserService {
 						customerId, cityId, 1L, keywords, customerId, cityId, 1L, keywords, customerId, cityId, 2L,
 						keywords, customerId, cityId, 2L, keywords);
 	}
+	
+	/**
+	 * 根据导购id查询改导购下面的客户
+	 * @param sellerId
+	 * @return
+	 */
+	public List<TdUser> findBySellerIdAndUserType(Long sellerId,Long userType){
+		if (sellerId==null || userType==null) {
+			return null;
+		}
+		return repository.findBySellerIdAndUserType(sellerId, userType);
+	}
 
 }
