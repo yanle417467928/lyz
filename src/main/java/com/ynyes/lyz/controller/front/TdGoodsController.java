@@ -366,6 +366,7 @@ public class TdGoodsController {
 				cartGoods.setUsername(username);
 				cartGoods.setBrandId(goods.getBrandId());
 				cartGoods.setBrandTitle(goods.getBrandTitle());
+				cartGoods.setIsCoupon(goods.getIsCoupon());
 			}
 			if (null != goods.getIsColorPackage() && goods.getIsColorPackage()) {
 				cartGoods.setIsColor(true);

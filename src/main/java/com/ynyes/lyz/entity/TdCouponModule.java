@@ -40,6 +40,10 @@ public class TdCouponModule {
 	@Column
 	private String goodsTitle;
 
+	// 商品的图片
+	@Column
+	private String picUri;
+
 	// 商品的SKU
 	@Column
 	private String sku;
@@ -146,6 +150,14 @@ public class TdCouponModule {
 
 	public void setSortId(Double sortId) {
 		this.sortId = sortId;
+	}
+
+	public String getPicUri() {
+		return picUri;
+	}
+
+	public void setPicUri(String picUri) {
+		this.picUri = picUri;
 	}
 
 }

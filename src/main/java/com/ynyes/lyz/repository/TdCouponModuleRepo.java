@@ -44,4 +44,11 @@ public interface TdCouponModuleRepo
 	Page<TdCouponModule> findByTitleContainingOrGoodsTitleContainingOrSkuContainingOrderBySortIdAsc(String keywords1,
 			String keywords2, String keywords3, Pageable page);
 
+	/**
+	 * 根据商品id和城市sobid查找模板
+	 * 
+	 * @author DengXiao
+	 */
+	TdCouponModule findByGoodsIdAndCityId(Long goodsId, Long cityId);
+
 }

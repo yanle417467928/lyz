@@ -135,6 +135,8 @@ public class TdOrderController {
 		// 如果session中没有虚拟订单，则通过方法生成一个
 		if (null == order_temp) {
 			order_temp = tdCommonService.createVirtual(req, realUserId);
+			// 开始赠送优惠券
+			tdPriceCouintService.sendCoupon(order_temp);
 		}
 
 		// 判断此单是否拥有商品
@@ -769,7 +771,7 @@ public class TdOrderController {
 		if (null != user.getUserType() && (user.getUserType().equals(1L) || user.getUserType().equals(2L))
 				&& null != order) {
 			realUsername = order.getRealUserUsername();
-		}else{
+		} else {
 			realUsername = username;
 		}
 
@@ -954,9 +956,36 @@ public class TdOrderController {
 					return res;
 				}
 				// 第二种情况，不能使用优惠券（使用额已经大于限额）
-				if (permits[1] > permits[0]) {
+				if (permits[1] >= permits[0]) {
 					res.put("message", "您所能使用的" + brand.getTitle() + "公司<br>的优惠券最大限额为" + permits[0] + "元");
 					return res;
+					// 第三种情况，使用的是指定产品现金券，并且使用数目 = 产品数量 - 产品券使用数量
+				} else if (coupon.getTypeCategoryId().longValue() == 2L) {
+					// 获取订单的已选商品
+					List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+					for (TdOrderGoods orderGoods : goodsList) {
+						if (null != orderGoods && null != orderGoods.getGoodsId()
+								&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
+							// 获取产品券使用情况和优惠券使用情况
+							Long couponNumber = orderGoods.getCouponNumber();
+							Long cashNumber = orderGoods.getCashNumber();
+							Long quantity = orderGoods.getQuantity();
+							if (null == couponNumber) {
+								couponNumber = 0L;
+							}
+							if (null == cashNumber) {
+								cashNumber = 0L;
+							}
+							if (null == quantity) {
+								quantity = 0L;
+							}
+
+							if (quantity - couponNumber - cashNumber <= 0L) {
+								res.put("message", "您不能使用更多对于<br>该件产品的优惠券了");
+								return res;
+							}
+						}
+					}
 				} else {
 					// 创建一个布尔变量用于判断该张券是否在当前订单使用过，以应对网络条件不好的情况下，同一张券在一张订单中多次使用的情况
 					Boolean isHave = false;
@@ -981,15 +1010,29 @@ public class TdOrderController {
 						order.setCashCouponId(cashCouponId);
 						req.getSession().setAttribute("order_temp", order);
 						tdOrderService.save(order);
-					}
+						if (coupon.getTypeCategoryId().longValue() == 2L) {
+							// 获取订单的已选商品
+							List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+							for (TdOrderGoods orderGoods : goodsList) {
+								if (null != orderGoods && null != orderGoods.getGoodsId()
+										&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
+									if (null == orderGoods.getCashNumber()) {
+										orderGoods.setCashNumber(0L);
+									}
+									orderGoods.setCashNumber(orderGoods.getCashNumber() + 1L);
+									tdOrderGoodsService.save(orderGoods);
+								}
+							}
+						}
 
-					// 计算当前现金券的实际使用价值
-					if (permits[1] + coupon.getPrice() > permits[0]) {
-						coupon.setRealPrice(permits[0] - permits[1]);
-					} else {
-						coupon.setRealPrice(coupon.getPrice());
+						// 计算当前现金券的实际使用价值
+						if (permits[1] + coupon.getPrice() > permits[0]) {
+							coupon.setRealPrice(permits[0] - permits[1]);
+						} else {
+							coupon.setRealPrice(coupon.getPrice());
+						}
+						tdCouponService.save(coupon);
 					}
-					tdCouponService.save(coupon);
 				}
 			}
 			if (1L == status) {
@@ -1012,6 +1055,21 @@ public class TdOrderController {
 						order.setCashCouponId(cashCouponId);
 						req.getSession().setAttribute("order_temp", order);
 						tdOrderService.save(order);
+					}
+
+					if (coupon.getTypeCategoryId().longValue() == 2L) {
+						// 获取订单的已选商品
+						List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+						for (TdOrderGoods orderGoods : goodsList) {
+							if (null != orderGoods && null != orderGoods.getGoodsId()
+									&& orderGoods.getGoodsId().longValue() == coupon.getGoodsId().longValue()) {
+								if (null == orderGoods.getCashNumber()) {
+									orderGoods.setCashNumber(0L);
+								}
+								orderGoods.setCashNumber(orderGoods.getCashNumber() - 1L);
+								tdOrderGoodsService.save(orderGoods);
+							}
+						}
 					}
 				}
 			}
@@ -1037,7 +1095,7 @@ public class TdOrderController {
 						}
 
 						// 如果使用的产品券已经等于商品的数量，那么就不能够再使用了
-						if (couponNumber == orderGoods.getQuantity()) {
+						if (orderGoods.getQuantity() - orderGoods.getCashNumber() - orderGoods.getCashNumber() <= 0L) {
 							res.put("message", "您不能使用更多对于<br>该件产品的优惠券了");
 							return res;
 						} else {
@@ -1529,7 +1587,8 @@ public class TdOrderController {
 			realUser.setUnCashBalance(realUser.getUnCashBalance() - order_temp.getActualPay());
 			order_temp.setUnCashBalanceUsed(order_temp.getActualPay());
 		} else {
-			realUser.setCashBalance(realUser.getCashBalance() + realUser.getUnCashBalance() - order_temp.getActualPay());
+			realUser.setCashBalance(
+					realUser.getCashBalance() + realUser.getUnCashBalance() - order_temp.getActualPay());
 			realUser.setUnCashBalance(0.0);
 			order_temp.setUnCashBalanceUsed(user.getUnCashBalance());
 			order_temp.setCashBalanceUsed(order_temp.getActualPay() - user.getUnCashBalance());

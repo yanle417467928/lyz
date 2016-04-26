@@ -59,7 +59,8 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+	// static String wmsUrl =
+	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -130,7 +131,7 @@ public class TdCommonService {
 
 	@Autowired
 	private TdCityService tdCityService;
-	
+
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
@@ -508,16 +509,15 @@ public class TdCommonService {
 	 * @author dengxiao
 	 */
 	public void getGoodsAndPrice(HttpServletRequest req, ModelMap map, Long cateGoryId) {
-		
+
 		// 获取门店
-		String username = (String)req.getSession().getAttribute("username");
+		String username = (String) req.getSession().getAttribute("username");
 		TdUser tdUser = tdUserService.findByUsername(username);
 		Long siteId = 0L;
-		if (tdUser != null)
-		{
+		if (tdUser != null) {
 			siteId = tdUser.getUpperDiySiteId();
 		}
-		
+
 		// 创建一个集合存储有价格的商品
 		List<TdGoods> actual_goods = new ArrayList<>();
 		// 查找指定二级分类下的所有商品
@@ -533,17 +533,12 @@ public class TdCommonService {
 					priceListItem.setIsPromotion(this.isJoinActivity(req, goods));
 					map.addAttribute("priceListItem" + i, priceListItem);
 					List<TdDiySiteInventory> inventories = tdDiySiteInventoryService.findByDiySiteId(siteId);
-					if (inventories.size() == 1)
-					{
-						map.addAttribute("goodInventory" + i,inventories.get(0).getInventory());
+					if (inventories.size() == 1) {
+						map.addAttribute("goodInventory" + i, inventories.get(0).getInventory());
+					} else {
+						map.addAttribute("goodInventory" + i, 0);
 					}
-					else
-					{
-						map.addAttribute("goodInventory" + i,0);
-					}
-				} 
-				else 
-				{
+				} else {
 					actual_goods.add(null);
 				}
 			}
@@ -1119,6 +1114,9 @@ public class TdCommonService {
 			goods.setQuantity(cart.getQuantity());
 			goods.setBrandId(cart.getBrandId());
 			goods.setBrandTitle(cart.getBrandTitle());
+			goods.setCouponNumber(0L);
+			goods.setCashNumber(0L);
+			goods.setIsCoupon(cart.getIsCoupon());
 			List<TdOrderGoods> goodsList = virtual.getOrderGoodsList();
 			goodsList.add(goods);
 			tdOrderGoodsService.save(goods);
@@ -2175,7 +2173,7 @@ public class TdCommonService {
 			// returnNote.getTurnType() + "</turn_type>"
 			// + "</TABLE>"
 			// + "</ERP>";
-			
+
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
 			String date = sdf.format(returnNote.getOrderTime());
 

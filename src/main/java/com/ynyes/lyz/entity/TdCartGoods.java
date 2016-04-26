@@ -105,6 +105,10 @@ public class TdCartGoods {
 	// 是否是调色包
 	@Column
 	private Boolean isColor;
+	
+	//是否是券
+	@Column
+	private Boolean isCoupon;
 
 	public Long getId() {
 		return id;
@@ -264,5 +268,13 @@ public class TdCartGoods {
 
 	public void setIsColor(Boolean isColor) {
 		this.isColor = isColor;
+	}
+
+	public Boolean getIsCoupon() {
+		return isCoupon;
+	}
+
+	public void setIsCoupon(Boolean isCoupon) {
+		this.isCoupon = isCoupon;
 	}
 }

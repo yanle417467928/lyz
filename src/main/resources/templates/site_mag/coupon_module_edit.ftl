@@ -15,7 +15,7 @@
 <script type="text/javascript">
 $(function () {
     //初始化表单验证
-    $("#form1").initValidform();
+    $("#moduleForm").initValidform();
     
     //初始化上传控件
     $(".upload-img").each(function () {
@@ -64,10 +64,10 @@ $(function () {
 </head>
 
 <body class="mainbody">
-<form name="form1" method="post" action="/Verwalter/coupon/module/save" id="form1">
+<form name="moduleForm" method="post" action="/Verwalter/coupon/module/save" id="moduleForm">
 <div>
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}">
-<input name="id" type="text" value='<#if module??>${module.id?c}</#if>' style="display:none">
+<input name="id" type="text" value='<#if module??>${module.id?c}</#if>' id="moduleId" style="display:none">
 </div>
 
 <!--导航栏-->
@@ -105,10 +105,10 @@ $(function () {
         <dt>城市</dt>
         <dd>
             <div class="rule-single-select">
-            <select name="cityId" datatype="*" sucmsg=" ">
+            <select name="cityId" id="cityId" datatype="*" sucmsg=" ">
             	<#if city_list??>
             		<#list city_list as item>
-                		<option value="${item.id?c}" <#if module?? && module.cityId == item.id>selected="selected"</#if>>${item.cityName!''}</option>
+                		<option value="${item.sobIdCity?c}" <#if module?? && module.cityId == item.sobIdCity>selected="selected"</#if>>${item.cityName!''}</option>
                 	</#list>
                 </#if>
             </select>
@@ -146,7 +146,7 @@ $(function () {
 <!--工具栏-->
 <div class="page-footer">
   <div class="btn-list">
-    <input type="submit" name="btnSubmit" value="提交保存" id="btnSubmit" class="btn">
+    <input type="button" name="btnSubmit" value="提交保存" id="btnSubmit" class="btn" onclick="moduleCheck();">
     <input name="btnReturn" type="button" value="返回上一页" class="btn yellow" onclick="javascript:history.back(-1);">
   </div>
   <div class="clear"></div>
@@ -171,5 +171,46 @@ function searchGoods()
     })
 }
 
+function moduleCheck(){
+	var cityId = $("#cityId option:selected").val();
+	var goodsId = $("input[name='goodsId']:checked").val()
+	var moduleId = $("#moduleId").val();
+	<#-- 判断是否选中 -->
+	if(!cityId || "" === cityId){
+		$.dialog.alert("请选择城市");
+		return;
+	}
+	
+	if(!goodsId || "" === goodsId){
+		$.dialog.alert("请选择商品");
+		return;
+	}
+	
+	if(!moduleId){
+		moduleId = null;
+	}
+	
+	<#-- 发送异步请求 -->
+	$.ajax({
+		url : "/Verwalter/coupon/module/check",
+		type : "post",
+		timeout : 20000,
+		data : {
+			cityId : cityId,
+			goodsId : goodsId,
+			moduleId : moduleId
+		},
+		error : function(){
+			$.dialog.alert("请选择商品");
+		},
+		success : function(res){
+			if(0 === res.status){
+				$("#moduleForm").submit();
+			}else{
+				$.dialog.alert(res.message);
+			}
+		}
+	});
+}
 </script>
 </html>

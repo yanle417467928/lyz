@@ -1,7 +1,6 @@
 package com.ynyes.lyz.service;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.ibm.icu.util.Calendar;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
+import com.ynyes.lyz.entity.TdCouponModule;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
@@ -44,6 +44,9 @@ public class TdPriceCountService {
 
 	@Autowired
 	private TdCityService tdCityService;
+
+	@Autowired
+	private TdCouponModuleService tdCouponModuleService;
 
 	/**
 	 * 计算订单价格和能使用的最大的预存款的方法
@@ -628,7 +631,7 @@ public class TdPriceCountService {
 								Double unit = GoodsRealTotal / infos[1];
 								String sUnit = decimalFormat.format(unit);
 								unit = Double.parseDouble(sUnit);
-								
+
 								res.put(goodsId, unit);
 							}
 						}
@@ -744,8 +747,8 @@ public class TdPriceCountService {
 		TdUser user = tdUserService.findOne(userId);
 		String cityName = user.getCityName();
 		TdCity city = tdCityService.findByCityName(cityName);
-		if (null != order && null != params && !"".equals(params) && (null != order.getIsRefund() && order.getIsRefund())) 
-		{
+		if (null != order && null != params && !"".equals(params)
+				&& (null != order.getIsRefund() && order.getIsRefund())) {
 			Map<String, Object> result = this.countCouponCondition(orderId);
 
 			Boolean useProCashCoupon = (Boolean) result.get("useProCashCoupon");
@@ -788,50 +791,6 @@ public class TdPriceCountService {
 							Double total = number * unit;
 							if (null != goodsId) {
 								TdGoods goods = tdGoodsService.findOne(goodsId);
-								// 退还指定产品现金券
-								if (useProCashCoupon) {
-									Double useProCash = (Double) result.get("proCash" + goodsId);
-									if (null == useProCash) {
-										useProCash = 0.00;
-									}
-									// 创建一个变量用于表示退还的券的金额
-									Double proCashPrice = 0.0;
-									if (total > useProCash) {
-										proCashPrice = useProCash;
-									} else {
-										proCashPrice = total;
-									}
-									total -= proCashPrice;
-
-									// 开始新生成一个指定产品优惠券
-									TdCoupon proCashCoupon = new TdCoupon();
-									proCashCoupon.setTypeId(3L);
-									proCashCoupon.setTypeCategoryId(2L);
-									if (null != goods) {
-										proCashCoupon.setBrandId(goods.getBrandId());
-										proCashCoupon.setBrandTitle(goods.getBrandTitle());
-									}
-									proCashCoupon.setPicUri(goods.getCoverImageUri());
-									proCashCoupon.setGoodsId(goods.getId());
-									proCashCoupon.setGoodsName(goods.getTitle());
-									proCashCoupon.setTypeTitle("退货返还的优惠券");
-									proCashCoupon.setPrice(proCashPrice);
-									if (null != city) {
-										proCashCoupon.setCityName(city.getCityName());
-										proCashCoupon.setCityId(city.getId());
-									}
-									proCashCoupon.setIsDistributted(true);
-									proCashCoupon.setGetNumber(1L);
-									proCashCoupon.setGetTime(new Date());
-									proCashCoupon.setAddTime(new Date());
-									proCashCoupon.setExpireTime(endTime);
-									proCashCoupon.setUsername(order.getUsername());
-									proCashCoupon.setIsUsed(false);
-									proCashCoupon.setIsOutDate(false);
-									proCashCoupon.setMobile(order.getUsername());
-									proCashCoupon.setSku(goods.getCode());
-									tdCouponService.save(proCashCoupon);
-								}
 								// 开始退还产品券
 								if (total > 0) {
 									if (useProCoupon) {
@@ -947,6 +906,81 @@ public class TdPriceCountService {
 					}
 				}
 				this.returnCashOrCoupon(orderId, params);
+			}
+		}
+	}
+
+	/**
+	 * 自动发放指定产品现金券的方法
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月26日下午6:33:44
+	 */
+	public void sendCoupon(TdOrder order) {
+		// 获取真实用户
+		Long realUserId = order.getRealUserId();
+		TdUser user = tdUserService.findOne(realUserId);
+		// 只有认证会员才会被赠送优惠券
+		if (null != user && null != user.getSellerId()) {
+
+			// 获取所有的商品
+			List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+
+			// 确定有购买的商品才进行送券
+			if (null != goodsList && goodsList.size() > 0) {
+				// 获取3个月后的日期
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(new Date());
+				cal.add(Calendar.MONTH, 3);
+				Date expiredTime = cal.getTime();
+
+				// 获取城市
+				TdCity city = tdCityService.findBySobIdCity(user.getCityId());
+				if (null == city) {
+					return;
+				}
+
+				for (TdOrderGoods orderGoods : goodsList) {
+					// 如果买的商品本身就是券，则不赠送
+					if (null != orderGoods && !(null != orderGoods.getIsCoupon() && orderGoods.getIsCoupon())) {
+						Long goodsId = orderGoods.getGoodsId();
+						Long quantity = orderGoods.getQuantity();
+						if (null == goodsId || null == quantity) {
+							continue;
+						}
+
+						// 根据商品id和城市id查找模板
+						TdCouponModule module = tdCouponModuleService.findByGoodsIdAndCityId(goodsId, user.getCityId());
+						if (null != module) {
+							// 购买的数量为多少就赠送多少
+							for (int i = 0; i < quantity; i++) {
+								TdCoupon coupon = new TdCoupon();
+								coupon.setTypeId(4L);
+								coupon.setTypeCategoryId(2L);
+								coupon.setBrandId(module.getBrandId());
+								coupon.setBrandTitle(module.getBrandTitle());
+								coupon.setGoodsId(module.getGoodsId());
+								coupon.setPicUri(module.getPicUri());
+								coupon.setGoodsName(module.getGoodsTitle());
+								coupon.setTypeTitle(module.getSku() + "产品现金券");
+								coupon.setTypeDescription(module.getSku() + "产品现金券");
+								coupon.setTypePicUri(module.getPicUri());
+								coupon.setPrice(module.getPrice());
+								coupon.setIsDistributted(true);
+								coupon.setGetTime(new Date());
+								coupon.setUsername(user.getUsername());
+								coupon.setIsUsed(false);
+								coupon.setIsOutDate(false);
+								coupon.setExpireTime(expiredTime);
+								coupon.setMobile(user.getUsername());
+								coupon.setSku(module.getSku());
+								coupon.setCityId(city.getId());
+								coupon.setCityName(city.getCityName());
+								tdCouponService.save(coupon);
+							}
+						}
+					}
+				}
 			}
 		}
 	}

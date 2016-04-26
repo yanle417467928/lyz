@@ -24,7 +24,7 @@ public class TdCoupon {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	// 优惠券获取方式：1. 后台手动发放 2. 用户抢券 3. 退货新生成券
+	// 优惠券获取方式：1. 后台手动发放 2. 用户抢券 3. 退货新生成券 4.系统自动发放给会员
 	@Column
 	private Long typeId;
 

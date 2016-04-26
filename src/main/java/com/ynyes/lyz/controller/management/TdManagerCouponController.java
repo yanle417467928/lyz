@@ -169,8 +169,8 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 	@RequestMapping(value = "/module/list")
 	public String couponType(String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId,
-			Integer[] listChkId, Long[] listSortId, ModelMap map, HttpServletRequest req, Long cityId, String keywords,
-			Integer page, Integer size) {
+			Integer[] listChkId, Double[] listSortId, ModelMap map, HttpServletRequest req, Long cityId,
+			String keywords, Integer page, Integer size) {
 		String username = (String) req.getSession().getAttribute("manager");
 
 		if (null == username) {
@@ -190,10 +190,10 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 		if (null != __EVENTTARGET) {
 			if (__EVENTTARGET.equalsIgnoreCase("btnDelete")) {
-				btnTypeDelete(listId, listChkId);
+				btnModuleDelete(listId, listChkId);
 				tdManagerLogService.addLog("delete", "删除优惠券模板", req);
 			} else if (__EVENTTARGET.equalsIgnoreCase("btnSave")) {
-				btnTypeSave(listId, listSortId);
+				btnModuleSave(listId, listSortId);
 				tdManagerLogService.addLog("edit", "修改优惠券模板", req);
 			}
 		}
@@ -212,14 +212,18 @@ public class TdManagerCouponController extends TdManagerBaseController {
 			size = SiteMagConstant.pageSize;
 		}
 
+		if (null == cityId) {
+			cityId = 0L;
+		}
+
 		if (null == keywords || "".equals(keywords)) {
-			if (null == cityId) {
+			if (0L == cityId.longValue()) {
 				module_page = tdCouponModuleService.findAll(page, size);
 			} else {
 				module_page = tdCouponModuleService.findByCityIdOrderBySortIdAsc(cityId, page, size);
 			}
 		} else {
-			if (null == cityId) {
+			if (0L == cityId.longValue()) {
 				module_page = tdCouponModuleService
 						.findByTitleContainingOrGoodsTitleContainingOrSkuContainingOrderBySortIdAsc(keywords, page,
 								size);
@@ -230,6 +234,7 @@ public class TdManagerCouponController extends TdManagerBaseController {
 			}
 		}
 
+		map.addAttribute("city_list", tdCityService.findAll());
 		map.addAttribute("module_page", module_page);
 		map.addAttribute("cityId", cityId);
 		map.addAttribute("keywords", keywords);
@@ -289,7 +294,7 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 		// 获取城市编号
 		Long cityId = module.getCityId();
-		TdCity city = tdCityService.findOne(cityId);
+		TdCity city = tdCityService.findBySobIdCity(cityId);
 		if (null != city) {
 			module.setCityTitle(city.getCityName());
 		}
@@ -302,10 +307,27 @@ public class TdManagerCouponController extends TdManagerBaseController {
 			module.setBrandId(goods.getBrandId());
 			module.setBrandTitle(goods.getBrandTitle());
 			module.setSku(goods.getCode());
+			module.setPicUri(goods.getCoverImageUri());
 		}
 		tdCouponModuleService.save(module);
 
 		return "redirect:/Verwalter/coupon/module/list";
+	}
+
+	@RequestMapping(value = "/module/check")
+	@ResponseBody
+	public Map<String, Object> moduleCheck(Long cityId, Long goodsId, Long moduleId) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+
+		TdCouponModule module = tdCouponModuleService.findByGoodsIdAndCityId(goodsId, cityId);
+		if (null != module && !(null != moduleId && module.getId() == moduleId)) {
+			res.put("message", "该城市指定商品的优惠券模块已经添加");
+			return res;
+		}
+
+		res.put("status", 0);
+		return res;
 	}
 
 	@RequestMapping(value = "/list")
@@ -979,7 +1001,7 @@ public class TdManagerCouponController extends TdManagerBaseController {
 		}
 	}
 
-	private void btnTypeSave(Long[] ids, Long[] sortIds) {
+	private void btnModuleSave(Long[] ids, Double[] sortIds) {
 		if (null == ids || null == sortIds || ids.length < 1 || sortIds.length < 1) {
 			return;
 		}
@@ -987,18 +1009,18 @@ public class TdManagerCouponController extends TdManagerBaseController {
 		for (int i = 0; i < ids.length; i++) {
 			Long id = ids[i];
 
-			TdCouponType e = tdCouponTypeService.findOne(id);
+			TdCouponModule e = tdCouponModuleService.findOne(id);
 
 			if (null != e) {
 				if (sortIds.length > i) {
 					e.setSortId(sortIds[i]);
-					tdCouponTypeService.save(e);
+					tdCouponModuleService.save(e);
 				}
 			}
 		}
 	}
 
-	private void btnTypeDelete(Long[] ids, Integer[] chkIds) {
+	private void btnModuleDelete(Long[] ids, Integer[] chkIds) {
 		if (null == ids || null == chkIds || ids.length < 1 || chkIds.length < 1) {
 			return;
 		}
@@ -1007,7 +1029,7 @@ public class TdManagerCouponController extends TdManagerBaseController {
 			if (chkId >= 0 && ids.length > chkId) {
 				Long id = ids[chkId];
 
-				tdCouponTypeService.delete(id);
+				tdCouponModuleService.delete(id);
 			}
 		}
 	}

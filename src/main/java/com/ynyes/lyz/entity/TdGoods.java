@@ -242,7 +242,7 @@ public class TdGoods {
 	@OneToMany
 	@JoinColumn(name = "ownerGoodsId")
 	private List<TdGoodsCombination> combList;
-	
+
 	// 商品库存，关联门店
 	@OneToMany
 	@JoinColumn(name = "ownerGoodsId")
@@ -330,7 +330,7 @@ public class TdGoods {
 	// 品牌ID
 	@Column
 	private Long brandId;
-	
+
 	// 品牌Flag
 	@Column
 	private String productFlag;
@@ -428,10 +428,14 @@ public class TdGoods {
 	// 团购价格
 	@Column(scale = 2)
 	private Double attribute1;
-	
+
 	// 单位名称
 	@Column
 	private String unitName;
+
+	// 是否是券
+	@Column
+	private Boolean isCoupon;
 
 	public List<TdDiySiteInventory> getInventoryList() {
 		return inventoryList;
@@ -1207,5 +1211,13 @@ public class TdGoods {
 
 	public void setProductFlag(String productFlag) {
 		this.productFlag = productFlag;
+	}
+
+	public Boolean getIsCoupon() {
+		return isCoupon;
+	}
+
+	public void setIsCoupon(Boolean isCoupon) {
+		this.isCoupon = isCoupon;
 	}
 }

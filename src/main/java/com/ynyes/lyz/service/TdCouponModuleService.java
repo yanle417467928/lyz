@@ -7,7 +7,6 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ynyes.lyz.entity.TdCouponModule;
@@ -94,13 +93,25 @@ public class TdCouponModuleService {
 	 * @version 创建时间：2016年4月20日下午5:06:20
 	 * @param
 	 */
-	public Page<TdCouponModule> findByTitleContainingOrGoodsTitleContainingOrSkuContainingOrderBySortIdAsc(String keywords,
-			int page, int size) {
+	public Page<TdCouponModule> findByTitleContainingOrGoodsTitleContainingOrSkuContainingOrderBySortIdAsc(
+			String keywords, int page, int size) {
 		if (null == keywords) {
 			return null;
 		}
 		PageRequest pageRequest = new PageRequest(page, size);
 		return repository.findByTitleContainingOrGoodsTitleContainingOrSkuContainingOrderBySortIdAsc(keywords, keywords,
 				keywords, pageRequest);
+	}
+
+	/**
+	 * 根据商品id和城市sobid查找模板
+	 * 
+	 * @author DengXiao
+	 */
+	public TdCouponModule findByGoodsIdAndCityId(Long goodsId, Long cityId) {
+		if (null == goodsId || null == cityId) {
+			return null;
+		}
+		return repository.findByGoodsIdAndCityId(goodsId, cityId);
 	}
 }

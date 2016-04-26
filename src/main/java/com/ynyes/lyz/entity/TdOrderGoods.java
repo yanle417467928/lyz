@@ -109,6 +109,10 @@ public class TdOrderGoods {
 	@Column
 	private Long couponNumber;
 
+	// 使用指定产品现金券的数量，默认为0
+	@Column
+	private Long cashNumber;
+
 	// 退货数量
 	@Column
 	private Long returnNumber;
@@ -128,6 +132,10 @@ public class TdOrderGoods {
 	// 表示已选类型（目前：0. 代表商品；1. 代表产品券）
 	@Column
 	private Long type;
+
+	// 是否是券
+	@Column
+	private Boolean isCoupon;
 
 	public String getSubOrderNumber() {
 		return subOrderNumber;
@@ -353,16 +361,19 @@ public class TdOrderGoods {
 		this.type = type;
 	}
 
-	@Override
-	public String toString() {
-		return "TdOrderGoods [id=" + id + ", goodsId=" + goodsId + ", goodsTitle=" + goodsTitle + ", goodsSubTitle="
-				+ goodsSubTitle + ", goodsCoverImageUri=" + goodsCoverImageUri + ", sku=" + sku + ", goodsColor="
-				+ goodsColor + ", goodsCapacity=" + goodsCapacity + ", goodsVersion=" + goodsVersion
-				+ ", goodsSaleType=" + goodsSaleType + ", price=" + price + ", realPrice=" + realPrice + ", quantity="
-				+ quantity + ", deliveredQuantity=" + deliveredQuantity + ", points=" + points + ", isReturnApplied="
-				+ isReturnApplied + ", isCommented=" + isCommented + ", commentId=" + commentId + ", brandTitle="
-				+ brandTitle + ", brandId=" + brandId + ", canReturnNumber=" + canReturnNumber + ", returnUnitPrice="
-				+ returnUnitPrice + ", couponNumber=" + couponNumber + ", returnNumber=" + returnNumber + "]";
+	public Boolean getIsCoupon() {
+		return isCoupon;
 	}
 
+	public void setIsCoupon(Boolean isCoupon) {
+		this.isCoupon = isCoupon;
+	}
+
+	public Long getCashNumber() {
+		return cashNumber;
+	}
+
+	public void setCashNumber(Long cashNumber) {
+		this.cashNumber = cashNumber;
+	}
 }
