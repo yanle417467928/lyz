@@ -133,7 +133,7 @@
             
             <div class="go_buy">
                 <a style="background:#ffaa00;width:50%;" href="javascript:addCart();">加入购物车</a>
-                <p style="width: 50%;" onclick="window.location.href='/user/selected?history=%2Fgoods%2Fnormal%2Flist'">我的购物车<span id="select_num">${selected_number!'0'}</span>)</p> 
+                <p style="width: 50%;" onclick="window.location.href='/user/selected?history=%2Fgoods%2Fnormal%2Flist'">我的购物车(<span id="select_num">${selected_number!'0'}</span>)</p> 
                 <!-- <a href="javascript:seller.checkCart();">去结算</a> -->
             </div>
             <#include "/client/common_footer.ftl">
