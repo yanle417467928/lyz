@@ -36,7 +36,7 @@
         <!-- 头部 END -->
         
         <!-- 我的已选 -->
-        <div id="my_selected">
+        <div id="my_selected" style="margin-bottom: 50px;">
             <#include "/client/selected_goods_and_color.ftl">
         </div>
         <!-- 我的已选 END -->
