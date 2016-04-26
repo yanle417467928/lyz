@@ -37,7 +37,7 @@
                 <input class="password" type="password" placeholder="请输入新密码" ng-required="true" ng-minlength="6" ng-maxlength="20" ng-model="param.new_password" name="new_password" id="new_password">
                 <div class="title">确认新密码</div>
                 <input class="password" type="password" placeholder="请确认新密码" ng-required="true" ng-minlength="6" ng-maxlength="20" ng-model="param.re_password" name="re_password" id="re_password">
-                <input ng-class={"invalid":editPwdForm.$invalid,"valid":editPwdForm.$valid} ng-disabled="editPwdForm.$invalid" type="submit" value="确定修改">
+                <input ng-class={"invalid":editPwdForm.$invalid,"valid":editPwdForm.$valid} ng-disabled="editPwdForm.$invalid" type="submit" style="background-color:#cc1421;" class="btn-submit-save" value="确定修改">
             </form>
         </article>
         <!-- 设置新密码 END -->
