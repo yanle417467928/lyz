@@ -95,8 +95,7 @@ function downloaddate(type)
      error:function(data){
      alert(data);
      }
-    });
-    
+    });      
 }
 </script>
     <!--导航栏-->

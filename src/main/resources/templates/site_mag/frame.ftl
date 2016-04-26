@@ -94,8 +94,8 @@
                 }
                 else // 打开状态
                 {
-                 //   childA.children(".expandable").removeClass("open").addClass("close");
-                 //   childUl.hide();
+                    childA.children(".expandable").removeClass("open").addClass("close");
+                    childUl.hide();
                 }
             }
         });
