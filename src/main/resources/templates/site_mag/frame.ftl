@@ -94,12 +94,28 @@
                 }
                 else // 打开状态
                 {
-                    childA.children(".expandable").removeClass("open").addClass("close");
-                    childUl.hide();
+                    //childA.children(".expandable").removeClass("open").addClass("close");
+                    //childUl.hide();
+                    if(childA.children(".expandable").hasClass("toclose")){
+                    	childA.children(".expandable").removeClass("open").addClass("close");
+                    	childUl.hide();
+                    }
                 }
             }
         });
-
+        $(".list-group li .expandable").click(function(){
+            var childA = $(this).parent("a");
+                // 文件夹关闭状态
+                if (childA.children(".expandable").hasClass("close"))
+                {
+                    childA.children(".expandable").removeClass("toclose").addClass("toopen");
+                }
+                else // 打开状态
+                {
+                    childA.children(".expandable").removeClass("toopen").addClass("toclose");
+                }
+        });
+   	
     });
 
   var ordernumberconfirmed = 0; //待确认订单
