@@ -97,6 +97,7 @@
                 <div class="messagebox">
                     <label>出生日期</label>
                     <div class="editable-info no-icon-next">
+                    
                         <input id="beginTime" class="select-date" <#if user.birthday??>value="${user.birthday?string("yyyy-MM-dd")}"</#if>>
                     </div>
                 </div>

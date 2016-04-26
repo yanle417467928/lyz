@@ -12,7 +12,7 @@
         var nowdate = new Date();
         var indexY=1,indexM=1,indexD=1;
         var indexH=1,indexI=1,indexS=0;
-        var initY=parseInt((nowdate.getYear()+"").substr(1,2));
+        var initY=parseInt(nowdate.getFullYear())-1940;
         var initM=parseInt(nowdate.getMonth()+"")+1;
         var initD=parseInt(nowdate.getDate()+"");
         var initH=parseInt(nowdate.getHours());
@@ -88,7 +88,7 @@
         function resetInitDete(){
             if(opts.curdate){return false;}
             else if(that.val()===""){return false;}
-            initY = parseInt(that.val().substr(2,2));
+            initY = parseInt(that.val().substr(0,4))-opts.beginyear;
             initM = parseInt(that.val().substr(5,2));
             initD = parseInt(that.val().substr(8,2));
         }
