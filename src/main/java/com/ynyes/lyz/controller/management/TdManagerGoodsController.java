@@ -786,6 +786,8 @@ public class TdManagerGoodsController {
 				map.addAttribute("pricelist", pricelist);
 			}
 			return "/site_mag/dialog_price_list";
+		}else if (null != type && type.equalsIgnoreCase("module")){
+			return "/site_mag/dialog_module_list";
 		}
 
 		return "/site_mag/dialog_goods_combination_list";

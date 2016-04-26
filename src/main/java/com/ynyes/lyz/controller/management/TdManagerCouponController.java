@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.management;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -169,7 +170,7 @@ public class TdManagerCouponController extends TdManagerBaseController {
 	@RequestMapping(value = "/module/list")
 	public String couponType(String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId,
 			Integer[] listChkId, Long[] listSortId, ModelMap map, HttpServletRequest req, Long cityId, String keywords,
-			int page, int size) {
+			Integer page, Integer size) {
 		String username = (String) req.getSession().getAttribute("manager");
 
 		if (null == username) {
@@ -203,7 +204,11 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 		Page<TdCouponModule> module_page = null;
 
-		if (0 >= size) {
+		if (null == page) {
+			page = 0;
+		}
+
+		if (null == size) {
 			size = SiteMagConstant.pageSize;
 		}
 
@@ -244,16 +249,30 @@ public class TdManagerCouponController extends TdManagerBaseController {
 		}
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
-		
+
+		List<TdCity> city_list = tdCityService.findAll();
+		map.addAttribute("city_list", city_list);
 
 		if (null != id) {
-			
+			TdCouponModule module = tdCouponModuleService.findOne(id);
+			map.addAttribute("module", module);
+			if (null != module.getGoodsId()) {
+				List<TdGoods> goodsList = new ArrayList<>();
+				TdGoods goods = tdGoodsService.findOne(module.getGoodsId());
+				if (null != goods) {
+					goodsList.add(goods);
+				}
+				if (goodsList.size() > 0) {
+					map.addAttribute("goodsList", goodsList);
+				}
+			}
 		}
-		return "/site_mag/coupon_type_edit";
+		return "/site_mag/coupon_module_edit";
 	}
 
-	@RequestMapping(value = "/type/save")
-	public String typeSave(TdCouponType tdCouponType, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+	@RequestMapping(value = "/module/save", method = RequestMethod.POST)
+	public String ModuleSave(TdCouponModule module, String __VIEWSTATE, ModelMap map, HttpServletRequest req,
+			Long goodsId) {
 		String username = (String) req.getSession().getAttribute("manager");
 
 		if (null == username) {
@@ -262,34 +281,31 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
-		if (null == tdCouponType.getId()) {
-			tdManagerLogService.addLog("add", "用户修改优惠券类型", req);
+		if (null == module.getId()) {
+			tdManagerLogService.addLog("add", "用户添加优惠券模板", req);
 		} else {
-			tdManagerLogService.addLog("edit", "用户修改优惠券类型", req);
+			tdManagerLogService.addLog("edit", "用户修改优惠券模板", req);
 		}
 
-		// if(null != tdCouponType.getCategoryId() &&
-		// (tdCouponType.getCategoryId() == 1L || tdCouponType.getCategoryId()
-		// == 2L))
-		// tdCouponType.setPicUri("unique");
-		tdCouponTypeService.save(tdCouponType);
+		// 获取城市编号
+		Long cityId = module.getCityId();
+		TdCity city = tdCityService.findOne(cityId);
+		if (null != city) {
+			module.setCityTitle(city.getCityName());
+		}
 
-		// 同步优惠券数据
-		List<TdCoupon> couponList = tdCouponService.findByTypeIdAndIsDistributtedFalse(tdCouponType.getId());
-		List<TdCoupon> couponListTrue = tdCouponService
-				.findByTypeIdAndIsDistributtedTrueOrderByIdDesc(tdCouponType.getId()); // zhangji
-		for (TdCoupon item : couponList) {
-			// item.setCanUsePrice(tdCouponType.getCanUsePrice());
-			item.setTypeTitle(tdCouponType.getTitle());
-			tdCouponService.save(item);
+		if (null != goodsId) {
+			// 获取指定编号的商品
+			TdGoods goods = tdGoodsService.findOne(goodsId);
+			module.setGoodsId(goodsId);
+			module.setGoodsTitle(goods.getTitle());
+			module.setBrandId(goods.getBrandId());
+			module.setBrandTitle(goods.getBrandTitle());
+			module.setSku(goods.getCode());
 		}
-		// zhangji
-		for (TdCoupon item : couponListTrue) {
-			// item.setCanUsePrice(tdCouponType.getCanUsePrice());
-			item.setTypeTitle(tdCouponType.getTitle());
-			tdCouponService.save(item);
-		}
-		return "redirect:/Verwalter/coupon/type/list";
+		tdCouponModuleService.save(module);
+
+		return "redirect:/Verwalter/coupon/module/list";
 	}
 
 	@RequestMapping(value = "/list")

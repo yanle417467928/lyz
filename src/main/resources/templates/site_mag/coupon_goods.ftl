@@ -25,7 +25,7 @@
                         <#if goodsList??>
                             <#list goodsList as g>
                                 <tr class="td_c">
-                                    <td><input type="radio" name="goodsId" value="${g.id?c}"></td>
+                                    <td><input type="radio" name="goodsId" <#if module??&&module.goodsId??&&module.goodsId?c==g.id?c>checked="checked"</#if> value="${g.id?c}"></td>
                                     <td>${g.id?c}</td>
                                     <td >
                                         ${g.title!''}
