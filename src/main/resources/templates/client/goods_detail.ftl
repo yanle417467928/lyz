@@ -192,7 +192,7 @@
 						</#if>
 					</li>
 					<li>
-						<span onclick="addCart();">加入已选</span>
+						<span onclick="addCart(1);">加入购物车</span>
 					</li>
 					<li>
 						<span onclick="buyNow(${goods.id?c});">立刻购买</span>
