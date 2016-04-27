@@ -68,24 +68,26 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	List<TdGoods> findByIdAndIsOnSaleTrue(Iterable<Long> ids);
 
 	Page<TdGoods> findByCategoryIdTreeContainingOrderBySortIdAsc(String catId, Pageable page);
-	
+
 	Page<TdGoods> findByCategoryIdIsNullOrderBySortIdAsc(Pageable page);
 
 	Page<TdGoods> findByCategoryIdTreeContainingAndIsOnSaleTrueOrderBySortIdAsc(String catId, Pageable page);
 
 	Page<TdGoods> findByTitleContainingOrSubTitleContainingOrDetailContainingOrderBySortIdAsc(String keywords1,
 			String keywords2, String keywords3, Pageable page);
-	Page<TdGoods> findByTitleContainingOrSubTitleContainingOrDetailContainingOrCodeContainingOrderBySortIdAsc(String keywords1,
-			String keywords2, String keywords3,String keywords4, Pageable page);
+
+	Page<TdGoods> findByTitleContainingOrSubTitleContainingOrDetailContainingOrCodeContainingOrderBySortIdAsc(
+			String keywords1, String keywords2, String keywords3, String keywords4, Pageable page);
 
 	Page<TdGoods> findByTitleContainingOrSubTitleContainingOrDetailContainingAndIsOnSaleTrueOrderBySortIdAsc(
 			String keywords1, String keywords2, String keywords3, Pageable page);
 
 	Page<TdGoods> findByCategoryIdTreeContainingAndTitleContainingOrCategoryIdTreeContainingAndSubTitleContainingOrCategoryIdTreeContainingAndDetailContainingOrCategoryIdTreeContainingAndCodeContainingOrderBySortIdAsc(
-			String catId1, String keywords1, String catId2, String keywords2, String catId3, String keywords3,String catId4, String keyword4,
-			Pageable page);
-	
-	Page<TdGoods> findByCategoryIdIsNullAndTitleContainingOrCategoryIdIsNullAndSubTitleContainingOrCategoryIdIsNullAndDetailContainingOrCategoryIdIsNullAndCodeContainingOrderBySortIdAsc( String keywords1, String keywords2, String keywords3,String keyword4,Pageable page);
+			String catId1, String keywords1, String catId2, String keywords2, String catId3, String keywords3,
+			String catId4, String keyword4, Pageable page);
+
+	Page<TdGoods> findByCategoryIdIsNullAndTitleContainingOrCategoryIdIsNullAndSubTitleContainingOrCategoryIdIsNullAndDetailContainingOrCategoryIdIsNullAndCodeContainingOrderBySortIdAsc(
+			String keywords1, String keywords2, String keywords3, String keyword4, Pageable page);
 
 	Page<TdGoods> findByCategoryIdTreeContainingAndTitleContainingAndIsOnSaleTrueOrCategoryIdTreeContainingAndSubTitleContainingAndIsOnSaleTrueOrCategoryIdTreeContainingAndDetailContainingAndIsOnSaleTrueOrderBySortIdAsc(
 			String catId1, String keywords1, String catId2, String keywords2, String catId3, String keywords3,
@@ -334,6 +336,21 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	 */
 	List<TdGoods> findByCategoryIdAndIsOnSaleTrueOrderBySortIdAsc(Long categoryId);
 
+	/**
+	 * 根据分类id查找指定分类下的所有优惠券商品（不分页）
+	 * 
+	 * @author dengxiao
+	 */
+	List<TdGoods> findByCategoryIdAndIsOnSaleTrueAndIsCouponTrueOrderBySortIdAsc(Long categoryId);
+
+	/**
+	 * 根据分类id查找指定分类下的所有非优惠券商品（不分页）
+	 * 
+	 * @author dengxiao
+	 */
+	@Query("select g from TdGoods g where g.isOnSale is true and g.isCoupon is not true and g.categoryId = ?1 order by g.sortId asc")
+	List<TdGoods> findByCategoryIdAndIsOnSaleTrueAndIsCouponNotTrueOrderBySortIdAsc(Long categoryId);
+
 	// 更新商品类别信息，查找该类别所有。 zhangji
 	List<TdGoods> findByCategoryIdOrderBySortIdAsc(Long categoryId);
 
@@ -437,4 +454,30 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 			String keywords2, String Keywords3);
 
 	List<TdGoods> findByIsColorPackageTrueOrderBySortIdAsc();
+
+	/**
+	 * 查询所有券商品的分类id
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月27日上午10:06:13
+	 */
+	@Query("select g.categoryId from TdGoods g where g.isCoupon is true group by g.categoryId")
+	List<Long> findByCouponGoodsCategoryId();
+
+	/**
+	 * 查找所有的券商品
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月27日上午10:11:26
+	 */
+	List<TdGoods> findByIsCouponTrue();
+
+	/**
+	 * 查找指定商品id的分类id集合
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月27日上午10:17:33
+	 */
+	@Query("select g.categoryId from TdGoods g where g.id in ?1 group by g.categoryId")
+	List<Long> findCategoryIdByIds(List<Long> ids);
 }

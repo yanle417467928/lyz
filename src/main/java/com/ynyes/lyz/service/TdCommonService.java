@@ -1140,6 +1140,9 @@ public class TdCommonService {
 			goods.setCouponNumber(0L);
 			goods.setCashNumber(0L);
 			goods.setIsCoupon(cart.getIsCoupon());
+			if (null != goods.getIsCoupon() && goods.getIsCoupon()) {
+				virtual.setIsCoupon(true);
+			}
 			List<TdOrderGoods> goodsList = virtual.getOrderGoodsList();
 			goodsList.add(goods);
 			tdOrderGoodsService.save(goods);
