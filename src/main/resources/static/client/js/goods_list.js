@@ -254,8 +254,9 @@ function deleteSelectedColorPackage(id) {
 	});
 }
 
-// 加入已选的方法
-function addCart() {
+// 加入已选的方法  
+//isGoHistory=1 返回上个页面 
+function addCart(isGoHistory) {
 	var params = "";
 	// 获取所有value值大于0的input标签（即获得了所有数量要大于0的商品）
 	$('.goodsSelectedQuantity').each(
@@ -295,6 +296,9 @@ function addCart() {
 				$('.goodsSelectedQuantity').val('0');
 				// 将已选商品的数量正确显示
 				$("#select_num").text(res.selected_number);
+				if(isGoHistory==1){
+					window.history.go(-1);
+				}
 			}
 		}
 	});
@@ -382,4 +386,12 @@ function quantityChange(goodsId){
 		return;
 	}
 	
+}
+//限制输入 只能输入数字
+function keyup(obj){
+	if(obj.value.length==1){obj.value=obj.value.replace(/[^1-9]/g,'')}else{obj.value=obj.value.replace(/\D/g,'')};
+}
+//限制输入 只能输入数字
+function afterpaste(obj){
+	if(obj.value.length==1){obj.value=obj.value.replace(/[^1-9]/g,'')}else{obj.value=obj.value.replace(/\D/g,'')};
 }

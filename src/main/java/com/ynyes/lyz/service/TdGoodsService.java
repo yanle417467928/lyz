@@ -1311,7 +1311,7 @@ public class TdGoodsService {
 		}
 		return repository
 				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySortIdAsc(
-						keywords, keywords, keywords, keywords, keywords);
+						keywords);
 	}
 
 	/**
@@ -1325,7 +1325,7 @@ public class TdGoodsService {
 		}
 		return repository
 				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySortIdDesc(
-						keywords, keywords, keywords, keywords, keywords);
+						keywords);
 	}
 
 	/**
@@ -1363,7 +1363,7 @@ public class TdGoodsService {
 		}
 		return repository
 				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySoldNumberAsc(
-						keywords, keywords, keywords, keywords, keywords);
+						keywords);
 	}
 
 	/**
@@ -1377,7 +1377,7 @@ public class TdGoodsService {
 		}
 		return repository
 				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySoldNumberDesc(
-						keywords, keywords, keywords, keywords, keywords);
+						keywords);
 	}
 
 	public List<TdGoods> searchGoods(String keywords) {

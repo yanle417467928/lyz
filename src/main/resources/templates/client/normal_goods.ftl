@@ -29,7 +29,7 @@
                     </#if>
                     <div>
                         <span onclick="changeQuantity(${goods.id?c},'delete')">-</span>
-                        <input class="goodsSelectedQuantity" min="0" type="number" id="quantity${goods.id?c}" value="0" onchange="quantityChange(${goods.id?c})">
+                        <input class="goodsSelectedQuantity" min="0" type="number" id="quantity${goods.id?c}" value="0" onchange="quantityChange(${goods.id?c})" onkeyup="keyup(this)" onafterpaste="afterpaste(this)">
                         <span onclick="changeQuantity(${goods.id?c},'add')">+</span>
                     </div>
                 </dd>

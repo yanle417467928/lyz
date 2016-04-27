@@ -95,7 +95,7 @@
 					<li class="li03">
 						<div>数量：</div>
 						<a onclick="changeQuantity(${goods.id?c},'delete')">-</a>
-						<input type="text" class="goodsSelectedQuantity" id="quantity${goods.id?c}" value="${select_quantity!'0'}" />
+						<input type="text" class="goodsSelectedQuantity" id="quantity${goods.id?c}" value="${select_quantity!'0'}" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" />
 						<a onclick="changeQuantity(${goods.id?c},'add')">+</a>
 						<#if goods??&&goods.isColorful??&&goods.isColorful>
                             <p>调色</p>
@@ -192,7 +192,7 @@
 						</#if>
 					</li>
 					<li>
-						<span onclick="addCart();">加入已选</span>
+						<span onclick="addCart(1);">加入购物车</span>
 					</li>
 					<li>
 						<span onclick="buyNow(${goods.id?c});">立刻购买</span>

@@ -251,7 +251,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 
 	
 
-	private String changeName(List<TdWareHouse> wareHouses,String name)
+	private String changeName(List<TdWareHouse> wareHouses,String number)
 	{
 //		郑州公司	11	总仓
 //		天荣中转仓	1101	分仓
@@ -260,11 +260,11 @@ public class TdManagerStatementController extends TdManagerBaseController {
 //		百姓中转仓	1104	分仓
 //		主仓库	1105	分仓
 		for (TdWareHouse tdWareHouse : wareHouses) {
-			if(tdWareHouse.getWhNumber().equals(name)){
-				return wareHouses.get(0).getWhName();
+			if(tdWareHouse.getWhNumber().equals(number)){
+				return tdWareHouse.getWhName();
 			}
 		}
-		return "未知编号：" + name;
+		return "未知编号：" + number;
 		
 //		if (name == null || name.equalsIgnoreCase(""))
 //		{
