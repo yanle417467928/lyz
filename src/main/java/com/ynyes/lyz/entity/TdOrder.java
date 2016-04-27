@@ -355,7 +355,7 @@ public class TdOrder {
 	//有效时间(超过有效时间未支付将重新计算价格)
 	@Column
 	private Date validTime;
-
+	
 	public Double getRefund() {
 		return refund;
 	}

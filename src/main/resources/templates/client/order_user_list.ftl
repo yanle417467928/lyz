@@ -105,7 +105,7 @@
         $('#user_window').animate({height:0})
     };
 </script>
-<div id="user_window" class="win_yn_user" style="z-index:99">
+<div id="user_window" class="win_yn_user" style="z-index:100000">
 	
     <div class="my_left">
         <div class="searchBox">

@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -161,7 +162,7 @@ public class TdGoodsService {
 
 		return repository.findAll(pageRequest);
 	}
-	
+
 	// 查找所有商品
 	public Page<TdGoods> findAllOrderById(int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
@@ -254,8 +255,8 @@ public class TdGoodsService {
 	public Page<TdGoods> searchAndOrderBySortIdAsc(String keywords, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
 
-		return repository.findByTitleContainingOrSubTitleContainingOrDetailContainingOrCodeContainingOrderBySortIdAsc(keywords,
-				keywords, keywords, keywords,pageRequest);
+		return repository.findByTitleContainingOrSubTitleContainingOrDetailContainingOrCodeContainingOrderBySortIdAsc(
+				keywords, keywords, keywords, keywords, pageRequest);
 	}
 
 	// 痛殴关键字搜索上架商品并按序号排序
@@ -270,17 +271,18 @@ public class TdGoodsService {
 	public Page<TdGoods> searchAndFindByCategoryIdOrderBySortIdAsc(String keywords, Long categoryId, int page,
 			int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		
-		if (categoryId == -1)
-		{
-			return repository.findByCategoryIdIsNullAndTitleContainingOrCategoryIdIsNullAndSubTitleContainingOrCategoryIdIsNullAndDetailContainingOrCategoryIdIsNullAndCodeContainingOrderBySortIdAsc(keywords, keywords, keywords, keywords, pageRequest);
+
+		if (categoryId == -1) {
+			return repository
+					.findByCategoryIdIsNullAndTitleContainingOrCategoryIdIsNullAndSubTitleContainingOrCategoryIdIsNullAndDetailContainingOrCategoryIdIsNullAndCodeContainingOrderBySortIdAsc(
+							keywords, keywords, keywords, keywords, pageRequest);
 		}
 
 		String catIdStr = "[" + categoryId + "]";
 
 		return repository
 				.findByCategoryIdTreeContainingAndTitleContainingOrCategoryIdTreeContainingAndSubTitleContainingOrCategoryIdTreeContainingAndDetailContainingOrCategoryIdTreeContainingAndCodeContainingOrderBySortIdAsc(
-						catIdStr, keywords, catIdStr, keywords, catIdStr, keywords,catIdStr,keywords,pageRequest);
+						catIdStr, keywords, catIdStr, keywords, catIdStr, keywords, catIdStr, keywords, pageRequest);
 	}
 
 	// 搜索特定类别的上架商品并按序号排序
@@ -461,8 +463,7 @@ public class TdGoodsService {
 	// 查找制定类别的所有商品并按序号排序
 	public Page<TdGoods> findByCategoryIdTreeContainingOrderBySortIdAsc(Long catId, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		if (catId == -1)
-		{
+		if (catId == -1) {
 			return repository.findByCategoryIdIsNullOrderBySortIdAsc(pageRequest);
 		}
 
@@ -673,6 +674,7 @@ public class TdGoodsService {
 		return repository.findByCategoryIdTreeContainingAndBrandIdAndParamValueCollectLikeAndIsOnSaleTrue(
 				"[" + catId + "]", brandId, paramStr, pageRequest);
 	}
+
 	/**** 列表页商品筛选 ******/
 
 	/**
@@ -944,6 +946,7 @@ public class TdGoodsService {
 				.findByCategoryIdTreeContainingAndTitleContainingIgnoreCaseAndIsGroupSaleTrueOrCategoryIdTreeContainingAndSubTitleContainingIgnoreCaseAndIsGroupSaleTrueOrCategoryIdTreeContainingAndDetailContainingIgnoreCaseAndIsGroupSaleTrue(
 						catIdStr, keywords, catIdStr, keywords, catIdStr, keywords, pageRequest);
 	}
+
 	/**** 后台商品删选 ****/
 
 	/**** 团购和秒杀 ****/
@@ -1142,6 +1145,7 @@ public class TdGoodsService {
 
 		return false;
 	}
+
 	/**** 团购和秒杀 ****/
 
 	/**
@@ -1386,5 +1390,62 @@ public class TdGoodsService {
 
 	public List<TdGoods> findByIsColorPackageTrueOrderBySortIdAsc() {
 		return repository.findByIsColorPackageTrueOrderBySortIdAsc();
+	}
+
+	/**
+	 * 查询所有券商品的分类id
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月27日上午10:06:13
+	 */
+	public List<Long> findByCouponGoodsCategoryId() {
+		return repository.findByCouponGoodsCategoryId();
+	}
+
+	/**
+	 * 查找所有的券商品
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月27日上午10:11:26
+	 */
+	public List<TdGoods> findByIsCouponTrue() {
+		return repository.findByIsCouponTrue();
+	}
+
+	/**
+	 * 查找指定商品id的分类id集合
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月27日上午10:17:33
+	 */
+	public List<Long> findCategoryIdByIds(List<Long> ids) {
+		if (null == ids || ids.size() == 0) {
+			return null;
+		}
+		return repository.findCategoryIdByIds(ids);
+	}
+
+	/**
+	 * 根据分类id查找指定分类下的所有优惠券商品（不分页）
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdGoods> findByCategoryIdAndIsOnSaleTrueAndIsCouponTrueOrderBySortIdAsc(Long categoryId) {
+		if (null == categoryId) {
+			return null;
+		}
+		return repository.findByCategoryIdAndIsOnSaleTrueAndIsCouponTrueOrderBySortIdAsc(categoryId);
+	}
+
+	/**
+	 * 根据分类id查找指定分类下的所有非优惠券商品（不分页）
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdGoods> findByCategoryIdAndIsOnSaleTrueAndIsCouponNotTrueOrderBySortIdAsc(Long categoryId) {
+		if (null == categoryId) {
+			return null;
+		}
+		return repository.findByCategoryIdAndIsOnSaleTrueAndIsCouponNotTrueOrderBySortIdAsc(categoryId);
 	}
 }
