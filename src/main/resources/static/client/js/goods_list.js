@@ -387,3 +387,11 @@ function quantityChange(goodsId){
 	}
 	
 }
+//限制输入 只能输入数字
+function keyup(obj){
+	if(obj.value.length==1){obj.value=obj.value.replace(/[^1-9]/g,'')}else{obj.value=obj.value.replace(/\D/g,'')};
+}
+//限制输入 只能输入数字
+function afterpaste(obj){
+	if(obj.value.length==1){obj.value=obj.value.replace(/[^1-9]/g,'')}else{obj.value=obj.value.replace(/\D/g,'')};
+}
