@@ -207,6 +207,7 @@ function __doPostBack(eventTarget, eventArgument) {
     <tbody>
         <tr class="odd_bg">
             <th align="left">标题</th>
+            <th align="left" width="12%">商品编号</th>
             <th align="left" width="12%">所属类别</th>
             <th align="left" width="12%">销售价</th>
             <th align="left" width="16%">发布时间</th>    
@@ -217,6 +218,7 @@ function __doPostBack(eventTarget, eventArgument) {
                 <tr>
                     <td>
                         <a class="itemzengpin_select" style="cursor:pointer;" itemzengpin_title="${goods.title!""} ${goods.version!""} ${goods.color!""} ${goods.capacity!""} ${goods.saleType!""}" itemzengpin_id="${goods.id?c}" itemzengpin_price="${goods.salePrice?string("#.##")}" itemzengpin_image="${goods.coverImageUri!''}">${goods.title!""} ${goods.version!""} ${goods.color!""} ${goods.capacity!""} ${goods.saleType!""}</a></td>
+                    <td>${goods.code!""}</td>
                     <td>${goods.categoryTitle!""}</td>
                     <td>${goods.salePrice?string("#.##")}</td>
                     <td>${goods.onSaleTime!""}</td>

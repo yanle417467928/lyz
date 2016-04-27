@@ -93,7 +93,7 @@ $(function () {
             title: "赠品",
             content: 'url:/Verwalter/goods/list/dialog/gift?total=' + $("#var_box_gift").children("tr").length,
             width: 800,
-            height: 350
+            height: 550
         });
         
         //如果是修改状态，将对象传进去
@@ -441,6 +441,9 @@ function del_goods_comb(obj) {
                                     <td><input type="text" id="id" name="combList[${comb_index}].goodsId" class="td-input" value="${comb.goodsId?c}" style="width:90%;"></td>
                                     <td>
                                         <input type="text" id="title" name="combList[${comb_index}].goodsTitle" class="td-input" value="${comb.goodsTitle!''}" style="width:90%;">
+                                    </td>
+                                    <td>
+                                        <input type="text" id="code" name="combList[${comb_index}].number" class="td-input" value="${comb.code?c}" style="width:90%;">
                                     </td>
                                     <td>
                                         <input type="text" id="number" name="combList[${comb_index}].number" class="td-input" value="${comb.number?c}" style="width:90%;">
