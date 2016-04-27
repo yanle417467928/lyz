@@ -379,7 +379,6 @@ public class TdManagerSettingController {
 				}
 			}
 		}
-
 		return "/site_mag/city_edit";
 	}
 
