@@ -193,6 +193,13 @@ public class TdCommonService {
 		// }
 	}
 
+	/**
+	 * 
+	 * @param order
+	 * @param type 1:用户取消订单 2：管理员取消订单
+	 * @param msg
+	 * @return
+	 */
 	public TdReturnNote MakeReturnNote(TdOrder order, Long type, String msg) {
 		TdReturnNote returnNote = new TdReturnNote();
 
@@ -227,34 +234,48 @@ public class TdCommonService {
 
 		// 退货信息
 		returnNote.setUsername(order.getUsername());
-		if (type == 0L) {
+		if (type == 0L) 
+		{
 			returnNote.setRemarkInfo("用户取消订单，退货");
-		} else if (type == 1L) {
+		}
+		else if (type == 1L)
+		{
 			returnNote.setRemarkInfo("管理员 " + msg + " 取消订单,退货");
 		}
 
 		Long turnType;
-		if (org.apache.commons.lang3.StringUtils.isNotBlank(order.getDeliverTypeTitle())
-				&& "门店自提".equals(order.getDeliverTypeTitle())) {
+		if (org.apache.commons.lang3.StringUtils.isNotBlank(order.getDeliverTypeTitle()) && "门店自提".equals(order.getDeliverTypeTitle())) 
+		{
 			returnNote.setTurnType(1L);
 			turnType = 1L;
-		} else {
+		}
+		else 
+		{
 			returnNote.setTurnType(2L);
 			turnType = 2L;
 		}
 		// 退货方式
 		returnNote.setTurnType(turnType);
 		// 原订单配送方式
-		if ("门店自提".equals(order.getDeliverTypeTitle())) {
-			if (turnType.equals(1L)) {
+		if ("门店自提".equals(order.getDeliverTypeTitle())) 
+		{
+			if (turnType.equals(1L)) 
+			{
 				returnNote.setStatusId(2L); // 门店自提单-门店到店退货 待验货
-			} else {
+			}
+			else
+			{
 				returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
 			}
-		} else {
-			if (turnType.equals(1L)) {
+		} 
+		else 
+		{
+			if (turnType.equals(1L)) 
+			{
 				returnNote.setStatusId(2L); // 送货上门单 门店到店退货 待验货
-			} else {
+			}
+			else 
+			{
 				returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
 			}
 		}
@@ -265,8 +286,10 @@ public class TdCommonService {
 
 		returnNote.setTurnPrice(order.getTotalGoodsPrice());
 		List<TdOrderGoods> orderGoodsList = new ArrayList<>();
-		if (null != order.getOrderGoodsList()) {
-			for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
+		if (null != order.getOrderGoodsList())
+		{
+			for (TdOrderGoods oGoods : order.getOrderGoodsList()) 
+			{
 				TdOrderGoods orderGoods = new TdOrderGoods();
 
 				orderGoods.setBrandId(oGoods.getBrandId());

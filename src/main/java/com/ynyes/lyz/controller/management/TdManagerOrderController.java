@@ -57,6 +57,7 @@ import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
 import com.ynyes.lyz.service.TdPayTypeService;
+import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.service.TdReturnNoteService;
@@ -158,6 +159,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdGatheringService tdGatheringService;
+	
+	@Autowired
+	private TdPriceCountService tdPriceCountService;
 	
 	 /**
 	 * @author lc
@@ -1004,6 +1008,16 @@ public class TdManagerOrderController {
 					if (null != order && order.getStatusId().equals(3L)) 
 					{
 						TdReturnNote returnNote = tdCommonService.MakeReturnNote(order,1L,username);
+						String realUserName = order.getRealUserUsername();
+						if (StringUtils.isBlank(realUserName))
+						{
+							realUserName = order.getUsername();
+						}
+						if (StringUtils.isNotBlank(realUserName))
+						{
+							TdUser realUser = tdUserService.findByUsername(realUserName);
+							tdPriceCountService.cashAndCouponBack(order, realUser);
+						}
 						tdCommonService.sendBackMsgToWMS(returnNote);
 					}
 					order.setStatusId(7L);
