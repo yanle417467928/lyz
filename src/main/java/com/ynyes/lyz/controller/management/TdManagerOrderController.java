@@ -69,6 +69,8 @@ import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.service.TdWareHouseService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
+import scala.annotation.elidable;
+
 /**
  * 后台首页控制器
  * 
@@ -994,32 +996,11 @@ public class TdManagerOrderController {
 				}
 			}
 			// 确认取消
-			else if (type.equalsIgnoreCase("orderCancel")) {
+			else if (type.equalsIgnoreCase("orderCancel")) 
+			{
 				if (order.getStatusId().equals(1L) || order.getStatusId().equals(2L) || order.getStatusId().equals(3L)) // zhangji
 				{
-					if (StringUtils.isNotBlank(order.getRemarkInfo()))
-					{
-						order.setRemarkInfo(order.getRemarkInfo() + "管理员取消订单：" + username);
-					}
-					else
-					{
-						order.setRemarkInfo("管理员取消订单：" + username);
-					}
-					if (null != order && order.getStatusId().equals(3L)) 
-					{
-						TdReturnNote returnNote = tdCommonService.MakeReturnNote(order,1L,username);
-						String realUserName = order.getRealUserUsername();
-						if (StringUtils.isBlank(realUserName))
-						{
-							realUserName = order.getUsername();
-						}
-						if (StringUtils.isNotBlank(realUserName))
-						{
-							TdUser realUser = tdUserService.findByUsername(realUserName);
-							tdPriceCountService.cashAndCouponBack(order, realUser);
-						}
-						tdCommonService.sendBackMsgToWMS(returnNote);
-					}
+					this.cancelRelativeOrderBySubOrder(order,username);
 					order.setStatusId(7L);
 					order.setCancelTime(new Date());
 				}
@@ -1100,6 +1081,70 @@ public class TdManagerOrderController {
 		}
 		map.put("code", 0);
 		return map;
+	}
+	
+	/**
+	 * 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
+	 * @param order
+	 */
+	private void cancelRelativeOrderBySubOrder(TdOrder order,String username)
+	{
+		
+		Long realUserId = order.getRealUserId();
+		TdUser realUser = null;
+		if (realUserId == null)
+		{
+			realUser = tdUserService.findByUsername(order.getUsername());
+		}
+		else
+		{
+			realUser = tdUserService.findOne(realUserId);
+		}
+		
+		String orderNumberTemp = order.getOrderNumber();
+		String newOrderNumber = "";
+		// 通过计算得到订单的数字部分
+		for (int i = 0; i < orderNumberTemp.length(); i++)
+		{
+			if (orderNumberTemp.charAt(i) >= 48 && orderNumberTemp.charAt(i) <= 57)
+			{
+				newOrderNumber += orderNumberTemp.charAt(i);
+			}
+		}
+		List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
+		// 进行遍历操作
+		if (null != list && list.size() > 0) 
+		{
+			for (TdOrder subOrder : list) 
+			{
+				if (null != subOrder) 
+				{
+					// 设置订单状态为取消状态，同时记录已退货属性
+					Long statusId = subOrder.getStatusId();
+					if (null != statusId && 3L == statusId.longValue()) 
+					{
+						// 在此进行资金和优惠券的退还
+						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
+						
+						// 通知物流
+						if (StringUtils.isNotBlank(order.getRemarkInfo()))
+						{
+							order.setRemarkInfo(order.getRemarkInfo() + "管理员取消订单：" + username);
+						}
+						else
+						{
+							order.setRemarkInfo("管理员取消订单：" + username);
+						}
+						TdReturnNote returnNote = tdCommonService.MakeReturnNote(order,1L,username);
+						tdCommonService.sendBackMsgToWMS(returnNote);
+					}
+					subOrder.setStatusId(7L);
+					subOrder.setCancelTime(new Date());
+					subOrder.setIsRefund(true);
+					tdOrderService.save(subOrder);
+				}
+			}
+		}
 	}
 
 	private void btnSave(String type, Long[] ids, Double[] sortIds) {
