@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.neo4j.cypher.internal.compiler.v2_1.commands.indexQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
@@ -415,18 +417,56 @@ public class TdManagerGoodsController {
 	@ResponseBody
 	public String setGoodsLeftNumbers(Integer page)
 	{
-		List<TdDiySite> diySites = tdDiySiteService.findAll();
 		if (page == null)
 		{
 			page = 0;
 		}
-		for (TdDiySite tdDiySite : diySites) 
+		
+//		//设置门店库存
+//		List<TdDiySite> diySites = tdDiySiteService.findAll();
+//		for (TdDiySite tdDiySite : diySites) 
+//		{
+//			setInventoryByDiySite(tdDiySite,page);
+//		}
+		
+		
+		//设置城市库存
+		List<TdCity> cityList = tdCityService.findAll();
+		for (TdCity tdCity : cityList)
 		{
-			setInventoryByDiySite(tdDiySite,page);
+			this.setInventoryByCity(tdCity, 0);
 		}
+		
 		return "yes";
 	}
 	
+	public void setInventoryByCity(TdCity city,int page)
+	{
+		Page<TdGoods> goods = tdGoodsService.findAll(page, 1000000);
+		for (TdGoods tdGoods : goods) 
+		{
+			TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionId(tdGoods.getCode(), city.getSobIdCity());
+			if (inventory == null)
+			{
+				inventory = new TdDiySiteInventory();
+				inventory.setInventory(0L);
+				inventory.setGoodsCode(tdGoods.getCode());
+				inventory.setGoodsId(tdGoods.getId());
+				inventory.setCategoryId(tdGoods.getCategoryId());
+				inventory.setCategoryIdTree(tdGoods.getCategoryIdTree());
+				inventory.setCategoryTitle(tdGoods.getCategoryTitle());
+				inventory.setGoodsTitle(tdGoods.getTitle());
+				inventory.setRegionId(city.getSobIdCity());
+				inventory.setRegionName(city.getCityName());
+				tdDiySiteInventoryService.save(inventory);
+			}
+		}
+	}
+	/**
+	 * 设置门店库存，初始库存为0
+	 * @param site
+	 * @param page
+	 */
 	public void setInventoryByDiySite(TdDiySite site,int page)
 	{
 		Page<TdGoods> goods = tdGoodsService.findAll(page, 1000000);
@@ -445,7 +485,7 @@ public class TdManagerGoodsController {
 			inventory.setCategoryTitle(tdGoods.getCategoryTitle());
 			inventory.setDiyCode(site.getStoreCode());
 			inventory.setGoodsTitle(tdGoods.getTitle());
-			inventory.setRegionId(site.getCityId());
+			inventory.setRegionId(site.getRegionId());
 			inventory.setRegionName(site.getCity());
 			tdDiySiteInventoryService.save(inventory);
 		}
@@ -1158,6 +1198,10 @@ public class TdManagerGoodsController {
 					page = Integer.parseInt(__EVENTARGUMENT);
 				}
 			}
+			else if (__EVENTTARGET.equalsIgnoreCase("btnInventory")) 
+			{
+				this.btnChangeInventory(listId,listInventory,req);
+			}
 		}
 
 		if (null == page || page < 0) 
@@ -1205,6 +1249,23 @@ public class TdManagerGoodsController {
 		}
 		
 		return "site_mag/inventory_list";
+	}
+	
+	private void btnChangeInventory(Long[] ids,Long[] listInventory,HttpServletRequest req)
+	{
+		if (null == ids || null == listInventory || ids.length < 1 || listInventory.length < 1 || ids.length != listInventory.length)
+		{
+			return;
+		}
+		for (int i = 0; i < ids.length; i++)
+		{
+			TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findOne(ids[i]);
+			if (diySiteInventory != null)
+			{
+				diySiteInventory.setInventory(listInventory[i]);
+				tdDiySiteInventoryService.save(diySiteInventory);
+			}
+		}
 	}
 	/**
 	 * 删除库存日志

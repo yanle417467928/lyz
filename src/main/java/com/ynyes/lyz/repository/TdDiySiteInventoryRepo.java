@@ -26,4 +26,6 @@ public interface TdDiySiteInventoryRepo extends PagingAndSortingRepository<TdDiy
 	Page<TdDiySiteInventory> findByDiySiteId(Long siteId,Pageable pageable);
 	
 	Page<TdDiySiteInventory> findByRegionIdOrderByIdAsc(Long regionId,Pageable pageable);
+	
+	TdDiySiteInventory findByGoodsCodeAndRegionId(String goodsCode,Long regionId);
 }

@@ -251,6 +251,11 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 		if (null != returnNumber && !returnNumber.isEmpty() && null != type && !type.isEmpty()) {
 			TdReturnNote returnNote = tdReturnNoteService.findByReturnNumber(returnNumber);
 
+			if (returnNote == null)
+			{
+				res.put("message", "参数错误");
+				return res;
+			}
 			// 通知物流
 			if ("informDiy".equalsIgnoreCase(type)) 
 			{

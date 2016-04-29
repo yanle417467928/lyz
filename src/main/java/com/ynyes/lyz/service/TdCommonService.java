@@ -194,9 +194,9 @@ public class TdCommonService {
 	}
 
 	/**
-	 * 
+	 * 取消订单产生的退货单
 	 * @param order
-	 * @param type 1:用户取消订单 2：管理员取消订单
+	 * @param type 1:用户取消订单 2：管理员取消订单 
 	 * @param msg
 	 * @return
 	 */
@@ -2376,7 +2376,7 @@ public class TdCommonService {
 			return;
 		}
 		Object[] objects = null;
-
+		System.err.println(note.getReturnNumber());
 		if (note != null && note.getReturnGoodsList() != null) {
 			for (TdOrderGoods orderGoods : note.getReturnGoodsList()) {
 				String xmlReturnGoodsEncode = XMLMakeAndEncode(orderGoods, 5);

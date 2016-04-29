@@ -587,7 +587,7 @@ public class TdDeliveryIndexController {
 			return res;
 		}
 
-		// 所有子单都确认收货
+		// 所有子单
 		if (null != order.getMainOrderNumber()) {
 			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
 
@@ -641,8 +641,8 @@ public class TdDeliveryIndexController {
 						// 快递员为自己
 						returnNote.setDriver(user.getOpUser());
 
-						// 待取货
-						returnNote.setStatusId(1L);
+						// 退货完成
+						returnNote.setStatusId(5L);
 
 						returnNote.setDeliverTypeTitle(subOrder.getDeliverTypeTitle());
 						returnNote.setOrderTime(new Date());
@@ -670,6 +670,7 @@ public class TdDeliveryIndexController {
 
 								orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
 								orderGoods.setPoints(oGoods.getPoints());
+								orderGoods.setReturnNoteNumber(returnNote.getReturnNumber());
 								// tdOrderGoodsService.save(orderGoods);
 								// 添加商品信息
 								orderGoodsList.add(orderGoods);
@@ -685,6 +686,24 @@ public class TdDeliveryIndexController {
 						tdOrderGoodsService.save(orderGoodsList);
 						// 保存退货单
 						tdReturnNoteService.save(returnNote);
+						
+						
+						// 在此进行资金和优惠券的退还
+						Long realUserId = order.getRealUserId();
+						TdUser realUser = null;
+						if (realUserId == null)
+						{
+							realUser = tdUserService.findByUsername(order.getUsername());
+						}
+						else
+						{
+							realUser = tdUserService.findOne(realUserId);
+						}
+						// 在此进行资金和优惠券的退还
+						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
+						
+						// 发送物流通知
+						tdCommonService.sendBackMsgToWMS(returnNote);
 
 						subOrder.setStatusId(9L);
 						subOrder.setIsRefund(true);

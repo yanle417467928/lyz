@@ -56,7 +56,7 @@ var theForm = document.forms['form1'];
                     <option <#if !regionId??>selected="selected"</#if> value="" >所有城市</option>
                     <#if city_list??>
                         <#list city_list as c>
-                            <option value='${c.id?c}' <#if regionId?? && c.id==regionId>selected="selected"</#if> >${c.cityName!""}</option>
+                            <option value='${c.sobIdCity?c}' <#if regionId?? && c.sobIdCity==regionId>selected="selected"</#if> >${c.cityName!""}</option>
                         </#list>
                     </#if>
                 </select>
@@ -86,7 +86,7 @@ var theForm = document.forms['form1'];
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ltable">
   <tbody>
   <tr class="odd_bg">
-    <th width="6%">选择</th>
+    <#--<th width="6%">选择</th>-->
     <th align="left">商品名称</th>
     <th align="left" width="15%">商品编码</th>
     <th align="left" width="15%">所属门店</th>
@@ -97,16 +97,16 @@ var theForm = document.forms['form1'];
     <#if inventory_page??>
         <#list inventory_page.content as item>
             <tr>
-                <td align="center">
-                    <span class="checkall" style="vertical-align:middle;">
+                <#--<td align="center">-->
+                    <#--<span class="checkall" style="vertical-align:middle;">
                         <input id="listChkId" type="checkbox" name="listChkId" value="${item_index}" >
-                    </span>
+                    </span>-->
                     <input type="hidden" name="listId" id="listId" value="${item.id?c}">
-                </td>
+                <#--</td>-->
                 <td align="left">${item.goodsTitle!""}</td>
                 <td align="left"><#if item.goodsCode??>${item.goodsCode!""}</#if></td>
-                <td align="left">${item.diySiteName!""}</td>
-                <td align="left">${item.cityId!""}</td>
+                <td align="left">${item.diySiteName!"城市库存"}</td>
+                <td align="left">${item.regionName!""}</td>
                 <td align="center"><input name="listInventory" type="text" value="<#if item.inventory??>${item.inventory?c}<#else>0</#if>" id="listSortId" class="sort" onkeydown="return checkNumber(event);"></td>
             </tr>
         </#list>

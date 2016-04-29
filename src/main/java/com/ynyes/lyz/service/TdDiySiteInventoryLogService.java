@@ -1,7 +1,9 @@
 package com.ynyes.lyz.service;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,14 @@ public class TdDiySiteInventoryLogService {
 		return repository.findOne(id);
 	}
 
-	public List<TdDiySiteInventoryLog> findAll() {
+	public List<TdDiySiteInventoryLog> findAll() 
+	{
 		return (List<TdDiySiteInventoryLog>) repository.findAll();
+	}
+	
+	public void saveWithRequsition(HttpServletRequest req,Long oldValue,Long newValue)
+	{
+		TdDiySiteInventoryLog log = new TdDiySiteInventoryLog();
+		log.setChangeDate(new Date());
 	}
 }
