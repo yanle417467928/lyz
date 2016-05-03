@@ -317,5 +317,31 @@ public class TdUserService {
 		}
 		return repository.findBySellerIdAndUserType(sellerId, userType);
 	}
+	/**
+	 * 根据用户类型获取类型名称
+	 * @param userType
+	 * @return
+	 */
+	public String getUserTypeName(Long userType){
+		if(userType!=null){
+			if(userType==0L){
+				return "会员";
+			}else if(userType==1L){
+				return "销售顾问";
+			}else if(userType==2L){
+				return "店长";
+			}else if(userType==3L){
+				return "店主";
+			}else if(userType==4L){
+				return "区域经理";
+			}else if(userType==5L){
+				return "配送员";
+			}else{
+				return "未知编号:"+userType;
+			}
+		}
+		return "未知编号";
+		
+	}
 
 }

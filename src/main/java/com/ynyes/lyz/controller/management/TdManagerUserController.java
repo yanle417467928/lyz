@@ -996,7 +996,9 @@ public class TdManagerUserController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("roleId", roleId);
 		if (null != id) {
-			map.addAttribute("user", tdUserService.findOne(id));
+			TdUser user= tdUserService.findOne(id);
+			map.addAttribute("user", user);
+			map.addAttribute("userTypeName", tdUserService.getUserTypeName(user.getUserType()));
 		}
 		// map.addAttribute("user_level_list",
 		// tdUserLevelService.findIsEnableTrue());
@@ -1015,8 +1017,9 @@ public class TdManagerUserController {
 		TdUser newTdUser = tdUserService.findByUsername(newUsername);
 		//输入的导购名不存在
 		if(newTdUser==null){
-			map.put("erroir", "新的导购名不存在");
+			map.put("error", "新的"+tdUserService.getUserTypeName(oldTdUser.getUserType())+"名不存在");
 			map.put("user", oldTdUser);
+			map.addAttribute("userTypeName", tdUserService.getUserTypeName(oldTdUser.getUserType()));
 			return "/site_mag/user_reller_edit";
 		}
 		

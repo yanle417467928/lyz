@@ -187,7 +187,7 @@ var theForm = document.forms['form1'];
                 <td align="center"></td>
                 <td align="center"><#if user.statusId??><#if user.statusId==0>待审核<#elseif user.statusId==1>正常</#if></#if></td>
                 <td align="center">
-                	<#if user.userType==1>
+                	<#if user.userType==1 || user.userType==2>
                     <a href="/Verwalter/user/setSeller?id=${user.id?c}&roleId=${roleId!""}">离职</a> |
                     </#if>
                     <a href="/Verwalter/user/edit?id=${user.id?c}&roleId=${roleId!""}">修改</a> | 
