@@ -262,6 +262,8 @@ function payedChange(){
       	<#elseif td_order.statusId==5 || td_order.statusId==6>
       		<div class="mesg">送达时间：${td_order.deliveryTime!''}</div>
       	</#if>
+      	<div class="mesg">导购姓名：${td_order.sellerRealName!''}</div>
+        <div class="mesg">导购电话：${td_order.sellerUsername!''}</div>
         <div class="mesg">收货人姓名：${td_order.shippingName!''}</div>
         <div class="mesg">手机号码：${td_order.shippingPhone!''}</div>
         <div class="mesg">收货地址：${td_order.shippingAddress!''}</div>

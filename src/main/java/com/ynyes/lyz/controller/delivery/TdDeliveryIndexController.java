@@ -442,7 +442,10 @@ public class TdDeliveryIndexController {
 		}
 
 		if (null != id) {
-			map.addAttribute("td_return_order", tdReturnNoteService.findOne(id));
+			TdReturnNote returnNote= tdReturnNoteService.findOne(id);
+			TdOrder order=tdOrderService.findByOrderNumber(returnNote.getOrderNumber());
+			map.addAttribute("td_return_order", returnNote);
+			map.addAttribute("order", order);
 		}
 
 		map.addAttribute("id", id);

@@ -179,6 +179,10 @@ function submitRecv(id)
       <div class="title">退货商品</div>
       <div class="content">
         <div class="mesg">订单编号：${td_return_order.orderNumber!''}</div>
+        <#if order??>
+        	<div class="mesg">导购姓名：${order.sellerRealName!''}</div>
+        	<div class="mesg">导购电话：${order.sellerUsername!''}</div>
+        </#if>
         <#if td_return_order.returnGoodsList??>
         	<#list td_return_order.returnGoodsList as item>
         		<div class="mesg">产品：${item.goodsTitle!''} * ${item.quantity!'0'}</div>
