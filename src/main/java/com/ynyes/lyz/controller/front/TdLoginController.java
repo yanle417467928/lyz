@@ -99,7 +99,7 @@ public class TdLoginController {
 					user.setLastVisitTime(new Date());
 					tdUserService.save(user);
 
-					tdCommonService.clear(req);
+					//tdCommonService.clear(req); 清空购物车的方法 
 				}
 				else
 				{
