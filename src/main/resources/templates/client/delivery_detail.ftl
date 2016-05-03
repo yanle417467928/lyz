@@ -212,7 +212,7 @@ function payedChange(){
 <#include "/client/common_confirm.ftl">
   <!--弹窗-->
   <div id="bg"></div>
-  <div id="arreabox">
+  <div id="arreabox" style="top:50%">
     <form>
       <div class="title" id="titleName">填写代收金额</div>   
       <div class="text1">已交款<input type="text" id="payed" value="0" oninput="payedChange()">元</div>
