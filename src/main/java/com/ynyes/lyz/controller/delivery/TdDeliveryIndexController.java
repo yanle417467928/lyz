@@ -301,34 +301,8 @@ public class TdDeliveryIndexController {
 			map.addAttribute("days", days);
 		}
 
-		// 查看本配送员所有
-		List<String> orderNumberList = new ArrayList<String>();
-
-		// 根据快递员编号找task_no
-		List<TdDeliveryInfo> deliveryInfoList = tdDeliveryInfoService.findDistinctTaskNoByDriver(user.getOpUser());
-
-		if (null != deliveryInfoList && deliveryInfoList.size() > 0) {
-			List<String> taskNoList = new ArrayList<String>();
-
-			for (TdDeliveryInfo deInfo : deliveryInfoList) {
-				taskNoList.add(deInfo.getTaskNo());
-			}
-
-			if (taskNoList.size() > 0)
-
-			{
-				List<TdDeliveryInfoDetail> detailList = tdDeliveryInfoDetailService
-						.findDistinctSubOrderNumberByTaskNoIn(taskNoList);
-
-				if (null != detailList && detailList.size() > 0) {
-					for (TdDeliveryInfoDetail detail : detailList) {
-						if (null != detail.getSubOrderNumber() && !detail.getSubOrderNumber().isEmpty()) {
-							orderNumberList.add(detail.getSubOrderNumber());
-						}
-					}
-				}
-			}
-		}
+		// 查看本配送员所有的订单号
+		List<String> orderNumberList =queryOrderNumberList(user.getOpUser());
 
 		List<TdOrder> orderList = null;
 
@@ -903,6 +877,84 @@ public class TdDeliveryIndexController {
 
 		return "redirect:/delivery/detail/" + id + "?msg=0";
 	}
+	
+	/**
+	 * 获取配送列表
+	 * 
+	 * @param keyword
+	 *            搜索关键字
+	 * @param type
+	 *            类型
+	 * @param req
+	 * @param map
+	 * @return 搜索页面
+	 * @author zp
+	 */
+	@RequestMapping(value = "/order/search")
+	public String orderSearch(String keyword, Integer type, HttpServletRequest req,ModelMap map) {
+		String username = (String) req.getSession().getAttribute("username");
+
+		if (null == username) {
+			return "redirect:/login";
+		}
+
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (null == user) {
+			return "redirect:/login";
+		}
+
+		if (null == type) {
+			type = 1;
+		}
+
+		map.addAttribute("type", type);
+
+		List<TdOrder> orderList = null;
+
+		
+		List<Long> statusIds=new ArrayList<Long>();
+		statusIds.add(5L);
+		statusIds.add(6L);
+		statusIds.add(4L);
+		statusIds.add(3L);
+		//根据类型查询相应数据
+		orderList = tdOrderService.queryDeliverysearch(statusIds, keyword, user.getOpUser());
+
+		map.addAttribute("order_list", orderList);
+
+		return "/client/delivery_list_search";
+	}
+	
+	/**
+	 * 退货单 搜索功能
+	 * @param keyword 关键字
+	 * @param req
+	 * @param map
+	 * @return 结果页面
+	 */
+	@RequestMapping(value = "/return/search")
+	public String deliveryReturnIndex(String keyword, HttpServletRequest req,ModelMap map) {
+		String username = (String) req.getSession().getAttribute("username");
+
+		if (null == username) {
+			return "redirect:/login";
+		}
+
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (null == user) {
+			return "redirect:/login";
+		}
+		//根据条件查询
+		List<TdReturnNote> rnList = tdReturnNoteService.findReturnSearch(user.getOpUser(), keyword);
+
+		map.addAttribute("return_list", rnList);
+
+		return "/client/return_list_search";
+	}
+
+	
 	/**
 	 * 修改订单实付款
 	 * @param mainOrderNumber 主单号
@@ -921,6 +973,44 @@ public class TdDeliveryIndexController {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 查询快递员配送的订单号
+	 * @param opUser 快递员编号
+	 * @return 订单号集合
+	 * @author zp
+	 */
+	private List<String> queryOrderNumberList(String opUser){
+		
+		List<String> orderNumberList = new ArrayList<String>();
+		
+		// 根据快递员编号找task_no
+		List<TdDeliveryInfo> deliveryInfoList = tdDeliveryInfoService.findDistinctTaskNoByDriver(opUser);
+
+		if (null != deliveryInfoList && deliveryInfoList.size() > 0) {
+			List<String> taskNoList = new ArrayList<String>();
+
+			for (TdDeliveryInfo deInfo : deliveryInfoList) {
+				taskNoList.add(deInfo.getTaskNo());
+			}
+
+			if (taskNoList.size() > 0)
+
+			{
+				List<TdDeliveryInfoDetail> detailList = tdDeliveryInfoDetailService
+						.findDistinctSubOrderNumberByTaskNoIn(taskNoList);
+
+				if (null != detailList && detailList.size() > 0) {
+					for (TdDeliveryInfoDetail detail : detailList) {
+						if (null != detail.getSubOrderNumber() && !detail.getSubOrderNumber().isEmpty()) {
+							orderNumberList.add(detail.getSubOrderNumber());
+						}
+					}
+				}
+			}
+		}
+		return orderNumberList;
 	}
 	
 

@@ -45,4 +45,14 @@ public interface TdReturnNoteRepo extends PagingAndSortingRepository<TdReturnNot
 	Integer countByDriverAndStatusIdAndOrderTimeBetweenOrderByIdDesc(String driver,Long statusId, Date start, Date end);
 	//退货查询 增加配送员编号
 	Integer countByDriverAndStatusIdAndOrderTimeAfterOrderByIdDesc(String driver,Long statusId, Date time);
+	
+	/**
+	 * 退货单 搜索功能
+	 * @param driver 配送员编号
+	 * @param keyword1 关键字
+	 * @param keyword2
+	 * @return 结果集
+	 * @author zp
+	 */
+	List<TdReturnNote> findByDriverAndOrderNumberContainingOrDriverAndReturnNumberContainingOrderByIdDesc(String driver1,String keyword1,String driver2,String keyword2);
 }

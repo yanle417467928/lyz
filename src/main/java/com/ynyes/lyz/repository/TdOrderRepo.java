@@ -244,4 +244,38 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	 */
 	List<TdOrder> findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(String city,
 			Date begin, Date end);
+	
+	/**
+	 * 配送员搜索查询
+	 * @param statusIds 订单状态
+	 * @param keyword 关键字 (订单号,收货人,收货人电话,收货人地址)
+	 * @param opUser 配送员编号
+	 * @return 查询结果
+	 * @author zp
+	 */
+	@Query("select o from TdOrder o,TdDeliveryInfo d "
+			+ "where o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.orderNumber like %?2% or "
+			+ "o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.mainOrderNumber like %?2% or "
+			+ "o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.shippingName like %?2% or "
+			+ "o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.shippingPhone like %?2% or "
+			+ "o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.shippingAddress like %?2% "
+			+ "group by o.mainOrderNumber order by o.orderTime desc")
+	List<TdOrder> queryDeliverysearch(List<Long> statusIds,String keyword,String opUser);
+	
+	/**
+	 * 配送员搜索查询
+	 * @param statusIds 订单状态
+	 * @param keyword 关键字 (订单号,收货人,收货人电话,收货人地址)
+	 * @param opUser 配送员编号
+	 * @return 查询结果
+	 * @author zp
+	 */
+	@Query("select count(1) from TdOrder o,TdDeliveryInfo d "
+			+ "where o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.orderNumber like %?2% or "
+			+ "o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.mainOrderNumber like %?2% or "
+			+ "o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.shippingName like %?2% or "
+			+ "o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.shippingPhone like %?2% or "
+			+ "o.statusId in ?1 and d.driver = ?3 and d.orderNumber = o.mainOrderNumber and o.shippingAddress like %?2% "
+			+ "group by o.mainOrderNumber order by o.orderTime desc")
+	Integer queryCountDeliverysearch(List<Long> statusIds,String keyword,String opUser);
 }

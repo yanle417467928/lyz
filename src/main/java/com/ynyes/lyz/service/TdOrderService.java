@@ -708,5 +708,27 @@ public class TdOrderService {
 			Date begin, Date end) {
 		return repository.findByCityAndOrderTimeAfterAndOrderTimeBeforeOrderByOrderTimeDesc(city, begin, end);
 	}
+	/**
+	 * 配送员搜索查询
+	 * @param statusIds 订单状态
+	 * @param keyword 关键字 (订单号,收货人,收货人电话,收货人地址)
+	 * @param opUser 配送员编号
+	 * @return 查询结果
+	 * @author zp
+	 */
+	public List<TdOrder> queryDeliverysearch(List<Long> statusIds,String keyword,String opUser){
+		return repository.queryDeliverysearch(statusIds, keyword, opUser);
+	}
+	/**
+	 * 配送员搜索查询
+	 * @param statusIds 订单状态
+	 * @param keyword 关键字 (订单号,收货人,收货人电话,收货人地址)
+	 * @param opUser 配送员编号
+	 * @return 查询结果
+	 * @author zp
+	 */
+	public Integer queryCountDeliverysearch(List<Long> statusIds,String keyword,String opUser){
+		return repository.queryCountDeliverysearch(statusIds, keyword, opUser);
+	}
 	
 }

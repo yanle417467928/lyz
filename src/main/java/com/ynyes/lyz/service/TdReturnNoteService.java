@@ -271,6 +271,16 @@ public class TdReturnNoteService {
 
 		return repository.countByDriverAndStatusIdAndOrderTimeAfterOrderByIdDesc(driver,statusId, time);
 	}
+	/**
+	 * 退货单 搜索功能
+	 * @param driver 配送员编号
+	 * @param keyword 关键字
+	 * @return 结果集
+	 * @author zp
+	 */
+	public List<TdReturnNote> findReturnSearch(String driver,String keyword){
+		return repository.findByDriverAndOrderNumberContainingOrDriverAndReturnNumberContainingOrderByIdDesc(driver, keyword,driver, keyword);
+	}
 
 
 }
