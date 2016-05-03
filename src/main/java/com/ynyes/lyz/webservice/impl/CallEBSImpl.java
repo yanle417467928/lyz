@@ -456,6 +456,9 @@ public class CallEBSImpl implements ICallEBS {
 				String start_date_active = null;//生效日期
 				String end_date_active = null;//失效日期
 				Double attribute1 = null; //价格-会员价
+				//add for 产品券价目表
+				Double attribute2 = null;   //产品券会员价
+				Double attribute3 = null;   //产品券零售价
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -544,6 +547,20 @@ public class CallEBSImpl implements ICallEBS {
 								end_date_active = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
+						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE2   "))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								attribute2 = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE2"))
+						{
+							if (null != childNode.getChildNodes().item(0))
+							{
+								attribute3 = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
+							}
+						}
 					}
 				}
 				//保存
@@ -565,6 +582,8 @@ public class CallEBSImpl implements ICallEBS {
 				tdPriceListItem.setPriceListName(description);
 				tdPriceListItem.setGoodsTitle(item_desc);
 				tdPriceListItem.setRealSalePrice(attribute1);
+				tdPriceListItem.setCouponRealPrice(attribute2);
+				tdPriceListItem.setCouponPrice(attribute3);
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				if (start_date_active != null)
 				{

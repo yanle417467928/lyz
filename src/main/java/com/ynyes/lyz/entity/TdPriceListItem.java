@@ -99,35 +99,34 @@ public class TdPriceListItem {
 	// 排序号
 	@Column
 	private Double sortId;
-	
-// 接口新增数据 ---------->
-	
-	//价目表头ID
+
+	// 接口新增数据 ---------->
+
+	// 价目表头ID
 	@Column
 	private Long listHeaderId;
-	
-	//描述
+
+	// 描述
 	private String description;
-	
-	//价目表行ID
+
+	// 价目表行ID
 	private Long listLineId;
-	
-	//产品ID
+
+	// 产品ID
 	private Integer inventoryItemId;
-	
-	//产品编号
+
+	// 产品编号
 	private String itemNum;
-	
-	//物料描述
+
+	// 物料描述
 	private String itemDesc;
-	
-	//物料单位
+
+	// 物料单位
 	private String productUomCode;
-	
-	//价格(进货价，或者是：销售价salePrice 根据价目表类型判断)
+
+	// 价格(进货价，或者是：销售价salePrice 根据价目表类型判断)
 	private Double price;
-	
-	
+
 	// 开始时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -139,6 +138,14 @@ public class TdPriceListItem {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date endDateActive;
+
+	// 券虚拟价格
+	@Column(scale = 2)
+	private Double couponPrice;
+
+	// 券实际价格
+	@Column(scale = 2)
+	private Double couponRealPrice;
 
 	public Date getStartDateActive() {
 		return startDateActive;
@@ -378,5 +385,21 @@ public class TdPriceListItem {
 
 	public void setActivities(String activities) {
 		this.activities = activities;
+	}
+
+	public Double getCouponPrice() {
+		return couponPrice;
+	}
+
+	public void setCouponPrice(Double couponPrice) {
+		this.couponPrice = couponPrice;
+	}
+
+	public Double getCouponRealPrice() {
+		return couponRealPrice;
+	}
+
+	public void setCouponRealPrice(Double couponRealPrice) {
+		this.couponRealPrice = couponRealPrice;
 	}
 }
