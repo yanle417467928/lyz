@@ -547,14 +547,14 @@ public class CallEBSImpl implements ICallEBS {
 								end_date_active = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE2   "))
+						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE2"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								attribute2 = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
 							}
 						}
-						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE2"))
+						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE3"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
