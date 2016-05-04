@@ -440,12 +440,17 @@ public class TdManagerGoodsController {
 		return "yes";
 	}
 	
+	/**
+	 * 设置城市库存，初始库存为0
+	 * @param site
+	 * @param page
+	 */
 	public void setInventoryByCity(TdCity city,int page)
 	{
 		Page<TdGoods> goods = tdGoodsService.findAll(page, 1000000);
 		for (TdGoods tdGoods : goods) 
 		{
-			TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionId(tdGoods.getCode(), city.getSobIdCity());
+			TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(tdGoods.getCode(), city.getSobIdCity());
 			if (inventory == null)
 			{
 				inventory = new TdDiySiteInventory();
@@ -474,20 +479,24 @@ public class TdManagerGoodsController {
 		{
 			tdDiySiteInventoryService.findAll();
 			
-			TdDiySiteInventory inventory = new TdDiySiteInventory();
-			inventory.setInventory(0L);
-			inventory.setDiySiteId(site.getId());
-			inventory.setDiySiteName(site.getTitle());
-			inventory.setGoodsCode(tdGoods.getCode());
-			inventory.setGoodsId(tdGoods.getId());
-			inventory.setCategoryId(tdGoods.getCategoryId());
-			inventory.setCategoryIdTree(tdGoods.getCategoryIdTree());
-			inventory.setCategoryTitle(tdGoods.getCategoryTitle());
-			inventory.setDiyCode(site.getStoreCode());
-			inventory.setGoodsTitle(tdGoods.getTitle());
-			inventory.setRegionId(site.getRegionId());
-			inventory.setRegionName(site.getCity());
-			tdDiySiteInventoryService.save(inventory);
+			TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(tdGoods.getCode(), site.getId());
+			if (inventory == null)
+			{
+				inventory = new TdDiySiteInventory();
+				inventory.setInventory(0L);
+				inventory.setDiySiteId(site.getId());
+				inventory.setDiySiteName(site.getTitle());
+				inventory.setGoodsCode(tdGoods.getCode());
+				inventory.setGoodsId(tdGoods.getId());
+				inventory.setCategoryId(tdGoods.getCategoryId());
+				inventory.setCategoryIdTree(tdGoods.getCategoryIdTree());
+				inventory.setCategoryTitle(tdGoods.getCategoryTitle());
+				inventory.setDiyCode(site.getStoreCode());
+				inventory.setGoodsTitle(tdGoods.getTitle());
+				inventory.setRegionId(site.getRegionId());
+				inventory.setRegionName(site.getCity());
+				tdDiySiteInventoryService.save(inventory);
+			}
 		}
 	}
 	
@@ -1224,17 +1233,15 @@ public class TdManagerGoodsController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("city_list", tdCityService.findAll());
 		List<TdDiySite> diysite_list = new ArrayList<>();
+		map.addAttribute("site_list", diysite_list);
 		if (regionId != null)
 		{
-			diysite_list = tdDiySiteService.findByCityId(regionId);
+			diysite_list = tdDiySiteService.findByRegionIdAndIsEnableOrderBySortIdAsc(regionId);
 		}
 		else
 		{
 			diysite_list = tdDiySiteService.findAll();
 		}
-		
-		
-		map.addAttribute("site_list", diysite_list);
 		if (siteId != null)
 		{
 			map.addAttribute("inventory_page", tdDiySiteInventoryService.findBySiteIdAndKeywords(siteId, keywords, page, size));
