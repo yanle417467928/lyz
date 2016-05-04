@@ -32,7 +32,7 @@
         
         // 确认取货
         function OrderConfirm() {
-            var dialog = $.dialog.confirm('该步骤将确认退货单取货(该由配送员点击)，确认要继续吗？', function () {
+            var dialog = $.dialog.confirm('该步骤将确认退货单取货(如果非门店自提单子,该由配送员点击)，确认要继续吗？', function () {
                 var returnNumber = $.trim($("#returnNumber").text());
                 var postData = { "returnNumber": returnNumber, "type": "btnConfirm" };
                 //发送AJAX请求

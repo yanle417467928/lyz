@@ -2149,7 +2149,7 @@ public class TdCommonService {
 			Long statusId = returnNote.getStatusId();
 			if (returnNote.getRemarkInfo().equalsIgnoreCase("拒签退货"))
 			{
-				statusId = 2L;
+				statusId = 1L;
 			}
 
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + returnNote.getId() + "</id>" + "<cancel_time>"

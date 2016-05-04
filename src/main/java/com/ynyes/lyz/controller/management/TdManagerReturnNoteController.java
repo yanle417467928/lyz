@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.mysql.fabric.xmlrpc.base.Data;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
@@ -274,12 +273,19 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			//确认收货
 			else if("btnConfirm".equalsIgnoreCase(type))
 			{
-				 returnNote.setManagerRemarkInfo(returnNote.getManagerRemarkInfo() + "后台确认收货("+username+"");
-				 if (returnNote.getStatusId() != null && returnNote.getStatusId() == 2L) 
-				 {
-					 returnNote.setStatusId(3L);
-					 returnNote.setReceiveTime(new Date());
-				 }
+				if (returnNote.getManagerRemarkInfo() != null)
+				{
+					returnNote.setManagerRemarkInfo(returnNote.getManagerRemarkInfo() + "|后台确认收货("+username+")");
+				}
+				else
+				{
+					returnNote.setManagerRemarkInfo("后台确认收货("+username+")");
+				}
+				if (returnNote.getStatusId() != null && returnNote.getStatusId() == 2L) 
+				{
+					returnNote.setStatusId(3L);
+					returnNote.setReceiveTime(new Date());
+				}
 			}
 			// 确认验货
 			else if ("examineReturn".equalsIgnoreCase(type)) {
