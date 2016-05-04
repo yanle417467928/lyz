@@ -934,7 +934,7 @@ public class TdDeliveryIndexController {
 	 * @return 结果页面
 	 */
 	@RequestMapping(value = "/return/search")
-	public String deliveryReturnIndex(String keyword, HttpServletRequest req,ModelMap map) {
+	public String returnSearch(String keyword, HttpServletRequest req,ModelMap map) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		if (null == username) {

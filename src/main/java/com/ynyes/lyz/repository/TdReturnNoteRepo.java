@@ -50,9 +50,8 @@ public interface TdReturnNoteRepo extends PagingAndSortingRepository<TdReturnNot
 	 * 退货单 搜索功能
 	 * @param driver 配送员编号
 	 * @param keyword1 关键字
-	 * @param keyword2
 	 * @return 结果集
 	 * @author zp
 	 */
-	List<TdReturnNote> findByDriverAndOrderNumberContainingOrDriverAndReturnNumberContainingOrderByIdDesc(String driver1,String keyword1,String driver2,String keyword2);
+	List<TdReturnNote> findByDriverAndOrderNumberContainingOrDriverAndReturnNumberContainingOrDriverAndDiySiteTelContainingOrDriverAndDiySiteTitleContainingOrDriverAndDiySiteAddressContainingOrderByIdDesc(String driver1,String keyword1,String driver2,String keyword2,String driver3,String keyword3,String driver4,String keyword4,String driver5,String keyword5);
 }

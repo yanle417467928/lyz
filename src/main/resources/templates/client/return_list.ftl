@@ -147,7 +147,7 @@ function timer() {
   <!-- 搜索栏  -->
 	<input id="typeId" type="hidden" value="${typeId!'0'}">
 	<div class="searchbox bgc-f3f4f6 bdt">
-		<input type="text" id="keywords" placeholder="退货单号/订单号"> <a
+		<input type="text" id="keywords" placeholder="退货单号/订单号/门店信息"> <a
 			href="javascript:searchDelivery();"></a>
 	</div>
   <!-- 搜索栏  END -->
@@ -163,19 +163,9 @@ function timer() {
     </ul>
     <!-- 详情列表 -->
     
-    <#if return_list??>
-    	<#list return_list as item>
-    		<section>
-		      <a href="/delivery/return/detail/${item.id?c}">
-		      	
-		        	<div class="time">【退货时间 ${item.orderTime!''}】</div>
-	        	
-		        <div class="address">退货单号：${item.returnNumber!''}</div>
-		        <div class="address">定单号：${item.orderNumber!''}</div>
-		      </a>
-		    </section>
-    	</#list>
-    </#if>
+    <#include "/client/return_list_search.ftl">
+    
+   
   </article>
   <!-- 详情列表 END -->
 

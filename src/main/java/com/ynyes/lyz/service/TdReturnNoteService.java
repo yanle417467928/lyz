@@ -279,7 +279,7 @@ public class TdReturnNoteService {
 	 * @author zp
 	 */
 	public List<TdReturnNote> findReturnSearch(String driver,String keyword){
-		return repository.findByDriverAndOrderNumberContainingOrDriverAndReturnNumberContainingOrderByIdDesc(driver, keyword,driver, keyword);
+		return repository.findByDriverAndOrderNumberContainingOrDriverAndReturnNumberContainingOrDriverAndDiySiteTelContainingOrDriverAndDiySiteTitleContainingOrDriverAndDiySiteAddressContainingOrderByIdDesc(driver, keyword,driver, keyword,driver, keyword,driver, keyword,driver, keyword);
 	}
 
 
