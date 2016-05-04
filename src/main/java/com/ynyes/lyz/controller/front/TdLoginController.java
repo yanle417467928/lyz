@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdUser;
-import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.MD5;
 
@@ -23,9 +22,6 @@ public class TdLoginController {
 
 	@Autowired
 	private TdUserService tdUserService;
-	
-	@Autowired
-	private TdCommonService tdCommonService;
 
 	@RequestMapping
 	public String index() {
