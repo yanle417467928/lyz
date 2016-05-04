@@ -71,37 +71,33 @@ function __doPostBack(eventTarget, eventArgument) {
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ltable">
 <tbody>
     <tr class="odd_bg">
-        <th align="left">
-            价目表行编号
-        </th>
-        <th align="left" width="">
-            价目表行名称
-        </th>
-        <th align="left" width="">
-           商品名称
-        </th>
-        <th align="left" width="">
-           商品编号
-        </th>
-        <th align="left" width="12%">开始时间</th>
-        <th align="left" width="12%">结束时间</th>
-        <th align="left" width="12%">销售价</th>
-        <th align="left" width="12%">实际价</th>       
+        <th align="center" width="5%">价目表行编号</th>
+        <th align="left" width="">价目表行名称</th>
+        <th align="left" width="">商品名称</th>
+        <th align="left" width="">商品编号</th>
+        <th align="left" width="8%">开始时间</th>
+        <th align="left" width="8%">结束时间</th>
+        <th align="left" width="5%">销售价</th>
+        <th align="left" width="5%">实际价</th>
+        <th align="left" width="6%">产品券会员价</th>
+        <th align="left" width="6%">产品券零售价</th>
     </tr>
 
     <#if price_item_page??>
         <#list price_item_page.content as pricelist>
             <tr>
-                <td>
+                <td align="center">
                     <#if pricelist.listLineId??>${pricelist.listLineId?c}</#if>
                 </td>
-                <td><a href="/Verwalter/pricelist/edit?id=${pricelist.id?c}">${pricelist.priceListName!""}</a></td>
+                <td>${pricelist.priceListName!""}</td>
                 <td>${pricelist.itemDesc!""}</td>
                 <td>${pricelist.itemNum!""}</td>
                 <td>${pricelist.startDateActive!""}</td>
                 <td>${pricelist.endDateActive!""}</td>
-	            <td>${pricelist.salePrice!""}</td>
-	            <td align="left">${pricelist.realSalePrice!""}</td>                
+	            <td align="left">${pricelist.salePrice!""}</td>
+	            <td align="left">${pricelist.realSalePrice!""}</td>               
+	            <td align="left">${pricelist.couponRealPrice!""}</td>
+	            <td align="left">${pricelist.couponPrice!""}</td>
             </tr>
         </#list>
     </#if>
