@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.repository.TdOwnMoneyRecordRepo;
+import com.ynyes.lyz.util.Criteria;
+import com.ynyes.lyz.util.Restrictions;
 
 
 /**
@@ -180,4 +182,37 @@ public class TdOwnMoneyRecordService {
         
         return (List<TdOwnMoneyRecord>) repository.save(entities);
     }
+    
+    /**
+     * 欠款审核 查询
+     * @param diyCode 门店编号
+     * @param orderNumber 订单号
+     * @param isPayed 是否还清
+     * @param ispassed 是否通过
+     * @param size 每页数量
+     * @param page 当前页
+     * @return 结果集
+     * @author zp
+     */
+	public Page<TdOwnMoneyRecord> searchOwnList(String diyCode,String orderNumber,Long isEnable,Long isPayed,int size,int page){
+		PageRequest pageRequest = new PageRequest(page, size);
+		Criteria<TdOwnMoneyRecord> c = new Criteria<TdOwnMoneyRecord>();
+		
+		if(null!=diyCode){
+			c.add(Restrictions.eq("diyCode", diyCode, true));
+		}
+		if(null!=orderNumber){
+			c.add(Restrictions.like("orderNumber", orderNumber, true));
+		}
+		if(null!=isEnable){
+			c.add(Restrictions.eq("isEnable", isEnable, true));
+		}
+		if(null!=isPayed){
+			c.add(Restrictions.eq("isPayed", isPayed, true));
+		}
+		c.add(Restrictions.eq("isOwn", null, true));
+		
+		c.setOrderByDesc("createTime");
+		return repository.findAll(c,pageRequest);
+	}
 }
