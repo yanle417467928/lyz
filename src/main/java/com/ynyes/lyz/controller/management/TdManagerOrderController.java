@@ -69,8 +69,6 @@ import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.service.TdWareHouseService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
-import scala.annotation.elidable;
-
 /**
  * 后台首页控制器
  * 
@@ -349,9 +347,10 @@ public class TdManagerOrderController {
 	
 	
 	// 欠款审核
+	//增加搜索功能 zp
 	@RequestMapping(value = "/own/list")
 	public String ownList(HttpServletRequest req, Integer page, Long statusId, Integer size,ModelMap map, String __EVENTTARGET,
-			String __EVENTARGUMENT, String __VIEWSTATE,Long[] listChkId,Long payLeft)
+			String __EVENTARGUMENT, String __VIEWSTATE,Long[] listChkId,Long payLeft,String keywords)
 	{
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) 
@@ -395,14 +394,7 @@ public class TdManagerOrderController {
 			size = SiteMagConstant.pageSize;
 		}
 		
-		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
-		{
-			map.addAttribute("own_page",tdOwnMoneyRecordService.findByDiyCodeOrderByIdDesc(tdManager.getDiyCode(), page, size));
-		}
-		else
-		{
-			map.addAttribute("own_page",tdOwnMoneyRecordService.findAllOrderBySortIdAsc(page, size));
-		}
+		
 		if (null != __EVENTTARGET)
 		{
 			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
@@ -410,22 +402,6 @@ public class TdManagerOrderController {
 				if (null != __EVENTARGUMENT)
 				{
 					page = Integer.parseInt(__EVENTARGUMENT);
-				}
-			}
-			else if (__EVENTTARGET.equalsIgnoreCase("statusId")) 
-			{
-				if (null != statusId)
-				{
-					if (statusId == 0)
-					{
-						map.remove("own_page");
-						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsEnableOrderByIdDesc(diyCode, false, page, size));
-					}
-					else if (statusId == 1)
-					{
-						map.remove("own_page");
-						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsEnableOrderByIdDesc(diyCode, true, page, size));
-					}
 				}
 			}
 			else if (__EVENTTARGET.equalsIgnoreCase("btnEnable")) 
@@ -441,25 +417,19 @@ public class TdManagerOrderController {
 				{
 					btnNotEnale(listChkId);
 				}
+			}else if(__EVENTTARGET.equalsIgnoreCase("statusId")){
+				page=0;
+			}else if(__EVENTTARGET.equalsIgnoreCase("payLeft")){
+				page=0;
 			}
-			else if (__EVENTTARGET.equalsIgnoreCase("payLeft")) 
-			{
-				if (null != payLeft)
-				{
-					if (payLeft == 0)
-					{
-						map.remove("own_page");
-						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsPayedOrderByIdDesc(diyCode, false, page, size));
-					}
-					else if (payLeft == 1)
-					{
-						map.remove("own_page");
-						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsPayedOrderByIdDesc(diyCode, true, page, size));
-					}
-				}
+			else if(__EVENTTARGET.equalsIgnoreCase("btnSearch")){
+				page=0;
 			}
-			
 		}
+		
+		map.addAttribute("own_page",tdOwnMoneyRecordService.searchOwnList(diyCode, keywords, statusId,payLeft , size, page));
+		
+		
 		map.addAttribute("page", page);
 		map.addAttribute("size", size);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
@@ -467,6 +437,7 @@ public class TdManagerOrderController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("statusId",statusId);
 		map.addAttribute("payLeft",payLeft);
+		map.addAttribute("keywords",keywords);
 		return "/site_mag/own_list";
 	}
 

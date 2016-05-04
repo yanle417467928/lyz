@@ -289,7 +289,7 @@
                                   <#case 1>待通知物流<#break>
                                   <#case 2>待确认收货<#break>
                                   <#case 3>待退款<#break>
-                                  <#case 4>还未定义状态<#break>
+                                  <#case 4>还未定义的状态<#break>
                                   <#case 5>已完成<#break> 
                             </#switch>
                             </#if>
