@@ -413,6 +413,18 @@ public class TdManagerUserController {
 			tdUser.setUnCashBalance(ounCashBalance);
 		}
 		
+		//如果是导购或者店长修改其名下的会员导购电话 zp
+		if(tdUser.getUserType().equals(1L)||tdUser.getUserType().equals(2L)){
+			//循环修改导购 
+			List<TdUser> userList= tdUserService.findBySellerIdAndUserType(tdUser.getId(), 0L);
+			if(userList!=null && userList.size()>0){
+				for (TdUser user : userList) {
+					user.setSellerName(tdUser.getRealName());
+					tdUserService.save(user);
+				}
+			}
+		}
+		
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
 		if (null == tdUser.getId()) 
@@ -551,6 +563,18 @@ public class TdManagerUserController {
 				item.setUsername(newUsername);
 				tdUserRecentVisitService.save(item);
 			}
+			//如果是导购或者店长修改其名下的会员导购电话 zp
+			if(tdUser.getUserType().equals(1L)||tdUser.getUserType().equals(2L)){
+				//循环修改导购 
+				List<TdUser> userList= tdUserService.findBySellerIdAndUserType(tdUser.getId(), 0L);
+				if(userList!=null && userList.size()>0){
+					for (TdUser user : userList) {
+						user.setReferPhone(newUsername);
+						tdUserService.save(user);
+					}
+				}
+			}
+			
 
 		}
 
@@ -1030,6 +1054,7 @@ public class TdManagerUserController {
 				tdUser.setSellerId(newTdUser.getId());
 				tdUser.setSellerName(newTdUser.getRealName());
 				tdUser.setReferPhone(newTdUser.getUsername());
+				tdUserService.save(tdUser);
 			}
 		}
 
