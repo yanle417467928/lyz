@@ -2145,6 +2145,12 @@ public class TdCommonService {
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
 			String date = sdf.format(returnNote.getOrderTime());
+			
+			Long statusId = returnNote.getStatusId();
+			if (returnNote.getRemarkInfo().equalsIgnoreCase("拒签退货"))
+			{
+				statusId = 2L;
+			}
 
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + returnNote.getId() + "</id>" + "<cancel_time>"
 					+ returnNote.getCancelTime() + "</cancel_time>" + "<check_time>" + returnNote.getCheckTime()
@@ -2158,7 +2164,7 @@ public class TdCommonService {
 					+ "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>" + "<return_number>"
 					+ returnNote.getReturnNumber() + "</return_number>" + "<return_time>" + returnNote.getReturnTime()
 					+ "</return_time>" + "<sort_id>" + returnNote.getSortId() + "</sort_id>" + "<status_id>"
-					+ returnNote.getStatusId() + "</status_id>" + "<username>" + returnNote.getUsername()
+					+ statusId + "</status_id>" + "<username>" + returnNote.getUsername()
 					+ "</username>" + "<deliver_type_title>" + returnNote.getDeliverTypeTitle()
 					+ "</deliver_type_title>" + "<turn_price>" + returnNote.getTurnPrice() + "</turn_price>"
 					+ "<turn_type>" + returnNote.getTurnType() + "</turn_type>" + "<shopping_address>"
