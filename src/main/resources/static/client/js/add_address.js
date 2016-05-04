@@ -185,9 +185,12 @@ function saveAddress() {
 		}
 	});
 }
-
-function cleanSpelChar(th){
-    if(/["'<>%;)(&+]/.test(th.value)){
-          $(th).val(th.value.replace(/["'<>%;)(&+]/,""));
+/**
+ * 退货地址 限制输入特殊字符
+ * @author zp
+ */
+function cleanSpelChar(obj){
+    if(/["'<>%;)(&+]/.test(obj.value)){
+          $(obj).val(obj.value.replace(/["'<>%;)(&+]/,""));
     }
 }

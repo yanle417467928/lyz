@@ -52,7 +52,7 @@
             <form>
                 <div class="edit-info">
                     <label>收货人：</label>
-                    <input type="text" id="receiveName" value="">
+                    <input type="text" id="receiveName" value="" onkeyup="cleanSpelChar(this)">
                 </div>
                 <div class="edit-info">
                     <label>手机号码：</label>
@@ -81,7 +81,7 @@
                 </div>
                 <div class="edit-info">
                     <label>详细地址：</label>
-                    <input type="text" id="detail">
+                    <input type="text" id="detail" onkeyup="cleanSpelChar(this)">
                 </div>
                 <input style="background-color:#cc1421;" class="btn-submit-save" type="button" onclick="saveAddress();" value="保存">
             </form>
