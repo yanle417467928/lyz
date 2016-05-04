@@ -34,7 +34,7 @@
             <form>
                 <div class="edit-info">
                     <label>收货人：</label>
-                    <input type="text" id="receiverName" value="${address.receiverName!''}">
+                    <input type="text" id="receiverName" value="${address.receiverName!''}" >
                 </div>
                 <div class="edit-info">
                     <label>手机号码：</label>

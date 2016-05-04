@@ -185,3 +185,9 @@ function saveAddress() {
 		}
 	});
 }
+
+function cleanSpelChar(th){
+    if(/["'<>%;)(&+]/.test(th.value)){
+          $(th).val(th.value.replace(/["'<>%;)(&+]/,""));
+    }
+}

@@ -163,6 +163,26 @@
 					this.countTotal();
 				}
 			}
+			
+				
+			$scope.change = function(index){
+				if($('#'+index)[0].value.length>=1){
+					$('#'+index)[0].value=$('#'+index)[0].value.replace(/[^1-9]/g,'');
+				}else{
+					$('#'+index)[0].value=$('#'+index)[0].value.replace(/\D/g,'');
+				}
+				var number = $('#'+index).val();
+				if(number <= this.goods[index].quantity && number!=""){
+					this.goods[index].reQuantity = number;
+					this.goods[index].total = this.goods[index].unit*number;
+					this.countTotal();
+				}else{
+					$('#'+index).val(0);
+					this.goods[index].reQuantity = 0;
+					this.goods[index].total = 0;
+					this.countTotal();
+				}
+			}
 
 			$scope.send = function(){
 				wait();
@@ -250,7 +270,7 @@
 					<p>{{item.title}}</p>
 					<div class="fen_div01">
 						<a ng-click="delete($index);">-</a>
-						<input type="text" readOnly="true" name="" id="{{$index}}" ng-model="item.reQuantity">
+						<input type="text" name="" id="{{$index}}" ng-model="item.reQuantity" ng-keyup="change($index,this);">
 						<a ng-click="add($index);">+</a>
 					</div>
 					<div class="fen_div02">
