@@ -157,39 +157,6 @@ public class TdCommonService {
 		} else {
 			return "未知编号：" + name;
 		}
-
-		// if (name == null || name.equalsIgnoreCase(""))
-		// {
-		// return "未知";
-		// }
-		// if (name.equalsIgnoreCase("11"))
-		// {
-		// return "郑州公司";
-		// }
-		// else if (name.equalsIgnoreCase("1101"))
-		// {
-		// return "天荣中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1102"))
-		// {
-		// return "五龙口中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1103"))
-		// {
-		// return "东大中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1104"))
-		// {
-		// return "百姓中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1105"))
-		// {
-		// return "主仓库";
-		// }
-		// else
-		// {
-		// return "未知编号：" + name;
-		// }
 	}
 
 	/**
@@ -224,11 +191,14 @@ public class TdCommonService {
 		// 门店信息
 		if (null != order.getDiySiteId()) {
 			TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
-			returnNote.setDiySiteId(order.getDiySiteId());
-			returnNote.setDiyCode(diySite.getStoreCode());
-			returnNote.setDiySiteTel(diySite.getServiceTele());
-			returnNote.setDiySiteTitle(diySite.getTitle());
-			returnNote.setDiySiteAddress(diySite.getAddress());
+			if (diySite != null)
+			{
+				returnNote.setDiySiteId(order.getDiySiteId());
+				returnNote.setDiyCode(diySite.getStoreCode());
+				returnNote.setDiySiteTel(diySite.getServiceTele());
+				returnNote.setDiySiteTitle(diySite.getTitle());
+				returnNote.setDiySiteAddress(diySite.getAddress());
+			}
 		}
 
 		// 退货信息

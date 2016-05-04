@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.mysql.fabric.xmlrpc.base.Data;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
@@ -264,7 +265,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				{
 					// 生成收货通知
 					tdCommonService.sendBackToWMS(returnNote);
-					if (returnNote.getStatusId() == 1) 
+					if (returnNote.getStatusId() == 1)
 					{
 						returnNote.setStatusId(2L);
 					}
@@ -277,6 +278,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				 if (returnNote.getStatusId() != null && returnNote.getStatusId() == 2L) 
 				 {
 					 returnNote.setStatusId(3L);
+					 returnNote.setReceiveTime(new Date());
 				 }
 			}
 			// 确认验货
@@ -297,6 +299,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					{
 						tdPriceCountService.actAccordingWMS(returnNote, order.getId());
 						order.setStatusId(12L);
+						returnNote.setReturnTime(new Date());
 						tdOrderService.save(order);
 						
 					}

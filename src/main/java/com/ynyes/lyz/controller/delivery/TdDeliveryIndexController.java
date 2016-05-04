@@ -461,7 +461,6 @@ public class TdDeliveryIndexController {
 				for (TdOrder subOrder : orderList) {
 					subOrder.setStatusId(5L);
 					subOrder.setDeliveryTime(new Date());
-
 					subOrder = tdOrderService.save(subOrder);
 				}
 			}
@@ -603,6 +602,7 @@ public class TdDeliveryIndexController {
 						if (null != subOrder.getDiySiteId()) {
 							TdDiySite diySite = tdDiySiteService.findOne(subOrder.getDiySiteId());
 							returnNote.setDiySiteId(subOrder.getDiySiteId());
+							returnNote.setDiyCode(diySite.getStoreCode());
 							returnNote.setDiySiteTel(diySite.getServiceTele());
 							returnNote.setDiySiteTitle(diySite.getTitle());
 							returnNote.setDiySiteAddress(diySite.getAddress());
@@ -622,7 +622,12 @@ public class TdDeliveryIndexController {
 						returnNote.setStatusId(5L);
 
 						returnNote.setDeliverTypeTitle(subOrder.getDeliverTypeTitle());
-						returnNote.setOrderTime(new Date());
+						
+						// 生成退单时间
+						returnNote.setOrderTime(current);
+						
+						// 配送员确认收货时间
+						returnNote.setReceiveTime(current);
 
 						returnNote.setTurnPrice(subOrder.getTotalGoodsPrice());
 						List<TdOrderGoods> orderGoodsList = new ArrayList<>();
@@ -678,9 +683,13 @@ public class TdDeliveryIndexController {
 						}
 						// 在此进行资金和优惠券的退还
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
-						
+						// 退款时间
+						returnNote.setReturnTime(new Date());
 						// 发送物流通知
 						tdCommonService.sendBackMsgToWMS(returnNote);
+						// 通知物流时间
+						returnNote.setSendWmsTime(new Date());
+						
 
 						subOrder.setStatusId(9L);
 						subOrder.setIsRefund(true);

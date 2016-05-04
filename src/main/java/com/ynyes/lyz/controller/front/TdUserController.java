@@ -1652,6 +1652,7 @@ public class TdUserController {
 				if (null != order.getDiySiteId()) {
 					TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
 					returnNote.setDiySiteId(order.getDiySiteId());
+					returnNote.setDiyCode(diySite.getStoreCode());
 					returnNote.setDiySiteTel(diySite.getServiceTele());
 					returnNote.setDiySiteTitle(diySite.getTitle());
 					returnNote.setDiySiteAddress(diySite.getAddress());

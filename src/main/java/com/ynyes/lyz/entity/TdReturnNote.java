@@ -89,7 +89,7 @@ public class TdReturnNote {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date cancelTime;
 
-	// 确认时间
+	// 确认时间: 确认验货
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date checkTime;
@@ -98,6 +98,16 @@ public class TdReturnNote {
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date returnTime;
+	
+	// 通知物流时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date sendWmsTime;
+
+	// 配送员确认收货时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date receiveTime;
 
 	// 排序号
 	@Column
@@ -297,6 +307,22 @@ public class TdReturnNote {
 
 	public void setReturnTime(Date returnTime) {
 		this.returnTime = returnTime;
+	}
+
+	public Date getSendWmsTime() {
+		return sendWmsTime;
+	}
+
+	public void setSendWmsTime(Date sendWmsTime) {
+		this.sendWmsTime = sendWmsTime;
+	}
+
+	public Date getReceiveTime() {
+		return receiveTime;
+	}
+
+	public void setReceiveTime(Date receiveTime) {
+		this.receiveTime = receiveTime;
 	}
 
 	public Double getSortId() {
