@@ -38,7 +38,7 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 * 
 	 * @author DengXiao
 	 */
-	List<TdUser> findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(Long cityId1, Long customerId1,
+	List<TdUser> findByCityIdAndCustomerIdAndUserTypeAndIsEnableTrueOrCityIdAndCustomerIdAndUserTypeAndIsEnableTrue(Long cityId1, Long customerId1,
 			Long userType1, Long cityId2, Long customerId2, Long userType2);
 
 	/**
@@ -117,7 +117,7 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 * @author 作者：DengXiao
 	 * @version 创建时间：2016年4月20日上午11:24:54
 	 */
-	public List<TdUser> findByCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(
+	public List<TdUser> findByCustomerIdAndCityIdAndUserTypeAndUsernameContainingAndIsEnableTrueOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingAndIsEnableTrueOrCustomerIdAndCityIdAndUserTypeAndUsernameContainingAndIsEnableTrueOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(
 			Long customerId1, Long cityId1, Long userType1, String keywords1, Long customerId2, Long cityId2,
 			Long userType2, String keywords2, Long customerId3, Long cityId3, Long userType3, String keywords3,
 			Long customerId4, Long cityId4, Long userType4, String keywords4);
