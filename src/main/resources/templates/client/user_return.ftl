@@ -196,7 +196,7 @@
 				if("" === data){
 					close(1);
 					win_no_return();
-					warning("请选择商品");
+					warning("请填写要退商品数量");
 					return;
 				}
 				if("" === $scope.remark || "请输入您的退货原因" === $scope.remark){

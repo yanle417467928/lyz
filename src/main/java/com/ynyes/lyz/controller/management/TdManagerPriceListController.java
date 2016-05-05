@@ -1,7 +1,5 @@
 package com.ynyes.lyz.controller.management;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdPriceList;
-import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -353,94 +350,94 @@ public class TdManagerPriceListController {
         return "redirect:/Verwalter/pricelist/list";
     }
 	
-	 private void btnSave(String type, Long[] ids, Double[] sortIds)
-	    {
-	        if (null == type || type.isEmpty())
-	        {
-	            return;
-	        }
-	        
-	        if (null == ids || null == sortIds
-	                || ids.length < 1 || sortIds.length < 1)
-	        {
-	            return;
-	        }
-	        
-	        for (int i = 0; i < ids.length; i++)
-	        {
-	            Long id = ids[i];
-	            
-	            //zhangji 修改
-	            if (type.equalsIgnoreCase("pricelist"))
-	            {
-	                TdPriceList e = tdPriceListService.findOne(id);
-	                
-	                if (null != e)
-	                {
-	                    if (sortIds.length > i)
-	                    {
-	                        e.setSortId(sortIds[i]);
-	                        tdPriceListService.save(e);
-	                    }
-	                }
-	            }
-	            else if (type.equalsIgnoreCase("pricelistItem"))
-	            {
-	                TdPriceListItem e = tdPriceListItemService.findOne(id);
-	                
-	                if (null != e)
-	                {
-	                    if (sortIds.length > i)
-	                    {
-	                        e.setSortId(sortIds[i]);
-	                        tdPriceListItemService.save(e);
-	                    }
-	                }
-	            }
-	           
-	        }
-	    }
-	    
-	    private void btnDelete(String type, Long[] ids, Integer[] chkIds)
-	    {
-	        if (null == type || type.isEmpty())
-	        {
-	            return;
-	        }
-	        
-	        if (null == ids || null == chkIds
-	                || ids.length < 1 || chkIds.length < 1)
-	        {
-	            return;
-	        }
-	        
-	        for (int chkId : chkIds)
-	        {
-	            if (chkId >=0 && ids.length > chkId)
-	            {
-	                Long id = ids[chkId];
-	                
-	                // zhangji 修改
-	                if (type.equalsIgnoreCase("pricelist"))
-	                {
-	                	//同步城市表
-	                	TdCity tdCity = tdCityService
-	                			.findOne(tdPriceListService
-	                					.findOne(id).getCityId());
-	                	tdCity.setPriceListId(null);
-	                	tdCityService.save(tdCity);
-	                	
-	                	//删除价目表商品 zhangji
-	                	List<TdPriceListItem> itemList = tdPriceListItemService.findByPriceListIdOrderBySortIdAsc(id);
-	                	tdPriceListItemService.delete(itemList);
-	                	
-	                	tdPriceListService.delete(id);
-	                }
-	                else if (type.equalsIgnoreCase("pricelistItem"))
-	                {
-	                	tdPriceListItemService.delete(id);
-	                }
-	            }
-	        }
-	    }
+//	 private void btnSave(String type, Long[] ids, Double[] sortIds)
+//	    {
+//	        if (null == type || type.isEmpty())
+//	        {
+//	            return;
+//	        }
+//	        
+//	        if (null == ids || null == sortIds
+//	                || ids.length < 1 || sortIds.length < 1)
+//	        {
+//	            return;
+//	        }
+//	        
+//	        for (int i = 0; i < ids.length; i++)
+//	        {
+//	            Long id = ids[i];
+//	            
+//	            //zhangji 修改
+//	            if (type.equalsIgnoreCase("pricelist"))
+//	            {
+//	                TdPriceList e = tdPriceListService.findOne(id);
+//	                
+//	                if (null != e)
+//	                {
+//	                    if (sortIds.length > i)
+//	                    {
+//	                        e.setSortId(sortIds[i]);
+//	                        tdPriceListService.save(e);
+//	                    }
+//	                }
+//	            }
+//	            else if (type.equalsIgnoreCase("pricelistItem"))
+//	            {
+//	                TdPriceListItem e = tdPriceListItemService.findOne(id);
+//	                
+//	                if (null != e)
+//	                {
+//	                    if (sortIds.length > i)
+//	                    {
+//	                        e.setSortId(sortIds[i]);
+//	                        tdPriceListItemService.save(e);
+//	                    }
+//	                }
+//	            }
+//	           
+//	        }
+//	    }
+//	    
+//	    private void btnDelete(String type, Long[] ids, Integer[] chkIds)
+//	    {
+//	        if (null == type || type.isEmpty())
+//	        {
+//	            return;
+//	        }
+//	        
+//	        if (null == ids || null == chkIds
+//	                || ids.length < 1 || chkIds.length < 1)
+//	        {
+//	            return;
+//	        }
+//	        
+//	        for (int chkId : chkIds)
+//	        {
+//	            if (chkId >=0 && ids.length > chkId)
+//	            {
+//	                Long id = ids[chkId];
+//	                
+//	                // zhangji 修改
+//	                if (type.equalsIgnoreCase("pricelist"))
+//	                {
+//	                	//同步城市表
+//	                	TdCity tdCity = tdCityService
+//	                			.findOne(tdPriceListService
+//	                					.findOne(id).getCityId());
+//	                	tdCity.setPriceListId(null);
+//	                	tdCityService.save(tdCity);
+//	                	
+//	                	//删除价目表商品 zhangji
+//	                	List<TdPriceListItem> itemList = tdPriceListItemService.findByPriceListIdOrderBySortIdAsc(id);
+//	                	tdPriceListItemService.delete(itemList);
+//	                	
+//	                	tdPriceListService.delete(id);
+//	                }
+//	                else if (type.equalsIgnoreCase("pricelistItem"))
+//	                {
+//	                	tdPriceListItemService.delete(id);
+//	                }
+//	            }
+//	        }
+//	    }
 }

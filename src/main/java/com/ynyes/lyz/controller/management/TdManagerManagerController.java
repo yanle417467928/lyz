@@ -554,7 +554,6 @@ public class TdManagerManagerController {
 					tdManagerRoleService.findOne(roleId));
 		}
 		
-		TdManagerDiySiteRole role = tdDiySiteRoleService.findOne(diySiteRoleId);
 		if (null != diySiteRoleId) {
 			model.addAttribute("tdManagerDiySiteRole",
 					tdDiySiteRoleService.findOne(diySiteRoleId));

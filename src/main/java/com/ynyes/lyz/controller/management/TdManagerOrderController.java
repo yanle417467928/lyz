@@ -39,29 +39,23 @@ import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdWareHouse;
-import com.ynyes.lyz.service.TdAgencyFundService;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
-import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDeliveryTypeService;
 import com.ynyes.lyz.service.TdDistrictService;
 import com.ynyes.lyz.service.TdDiySiteService;
-import com.ynyes.lyz.service.TdGatheringService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdManagerRoleService;
 import com.ynyes.lyz.service.TdManagerService;
-import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.service.TdProductCategoryService;
-import com.ynyes.lyz.service.TdReturnNoteService;
-import com.ynyes.lyz.service.TdSalesDetailService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
@@ -137,28 +131,10 @@ public class TdManagerOrderController {
 	private TdDeliveryInfoService tdDeliveryInfoService;
 	
 	@Autowired
-	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
-	
-	@Autowired
-	private TdOrderGoodsService tdOrderGoodsService;
-	
-	@Autowired
 	private TdCommonService tdCommonService;
 	
 	@Autowired
-	private TdReturnNoteService tdReturnNoteService;
-	
-	@Autowired
 	private TdWareHouseService tdWareHouseService;
-	
-	@Autowired
-	private TdAgencyFundService tdAgencyFundService;
-	
-	@Autowired
-	private TdSalesDetailService tdSalesDetailService;
-	
-	@Autowired
-	private TdGatheringService tdGatheringService;
 	
 	@Autowired
 	private TdPriceCountService tdPriceCountService;

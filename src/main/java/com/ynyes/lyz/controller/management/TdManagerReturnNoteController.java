@@ -24,19 +24,13 @@ import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
-import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDiySiteService;
-import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdManagerRoleService;
 import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdOrderService;
-import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReturnNoteService;
-import com.ynyes.lyz.service.TdReturnReportService;
-import com.ynyes.lyz.service.TdUserService;
-import com.ynyes.lyz.service.TdUserTurnRecordService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
 @Controller
@@ -52,17 +46,17 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	@Autowired
 	private TdOrderService tdOrderService;
 
-	@Autowired
-	private TdUserService tdUserSerrvice;
-
-	@Autowired
-	private TdDiySiteService tdDisSiteService;
-
-	@Autowired
-	private TdPayTypeService tdPayTypeService;
-
-	@Autowired
-	private TdUserTurnRecordService tdUserTurnRecordService;
+//	@Autowired
+//	private TdUserService tdUserSerrvice;
+//
+//	@Autowired
+//	private TdDiySiteService tdDisSiteService;
+//
+//	@Autowired
+//	private TdPayTypeService tdPayTypeService;
+//
+//	@Autowired
+//	private TdUserTurnRecordService tdUserTurnRecordService;
 
 	@Autowired
 	private TdCommonService tdCommonService;
@@ -72,21 +66,21 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	
 	@Autowired
 	private TdManagerRoleService tdManagerRoleService;
-	
-	@Autowired
-	private TdGoodsService tdGoodsService;
-	
-	@Autowired
-	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
+//	
+//	@Autowired
+//	private TdGoodsService tdGoodsService;
+//	
+//	@Autowired
+//	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
 	
 	@Autowired
 	private TdCityService tdCityService;
 	
 	@Autowired
 	private TdDiySiteService tdDiySiteService;
-	
-	@Autowired
-	private TdReturnReportService tdReturnReportService;
+//	
+//	@Autowired
+//	private TdReturnReportService tdReturnReportService;
 	
 	@Autowired
 	private TdPriceCountService tdPriceCountService;
