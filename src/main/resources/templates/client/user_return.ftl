@@ -195,6 +195,8 @@
 				}
 				if("" === data){
 					close(1);
+					win_no_return();
+					warning("请选择商品");
 					return;
 				}
 				if("" === $scope.remark || "请输入您的退货原因" === $scope.remark){
@@ -234,7 +236,7 @@
         
 		function order_return(){
             var he = ($(window).height() - $('.turn_div div').height())/2 - 50;
-            $('.turn_div div').css({marginTop:he});   
+            $('.turn_div div').css({marginTop:he});
             $('.turn_div').fadeIn(600);
         };
 	</script>

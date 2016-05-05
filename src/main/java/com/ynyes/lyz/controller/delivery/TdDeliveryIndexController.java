@@ -564,18 +564,22 @@ public class TdDeliveryIndexController {
 		}
 
 		// 所有子单
-		if (null != order.getMainOrderNumber()) {
+		if (null != order.getMainOrderNumber() && order.getStatusId() == 4L)
+		{
 			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(order.getMainOrderNumber());
 
-			if (null != orderList) {
-				for (TdOrder subOrder : orderList) {
+			if (null != orderList)
+			{
+				for (TdOrder subOrder : orderList) 
+				{
 					subOrder.setStatusId(5L);
 					subOrder.setDeliveryTime(new Date());
 
 					subOrder = tdOrderService.save(subOrder);
 
 					// 生成退货单
-					if (null != subOrder) {
+					if (null != subOrder) 
+					{
 						TdReturnNote returnNote = new TdReturnNote();
 
 						// 退货单编号
