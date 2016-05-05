@@ -51,6 +51,6 @@
                     <p id="color_price">￥0.00</p>
                 </#if>
             </div>
-            <div class="down_buy" <#if color_package_list??&&color_package_list?size gt 0>onclick="addColor()"</#if>>确定</div>
+            <div class="down_buy" <#if color_package_list??&&color_package_list?size gt 0>onclick="addColor(${goodsId?c })"</#if>>确定</div>
         </div>
     </div>

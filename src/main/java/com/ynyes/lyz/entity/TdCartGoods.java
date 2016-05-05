@@ -109,6 +109,10 @@ public class TdCartGoods {
 	//是否是券
 	@Column
 	private Boolean isCoupon;
+	
+	//调色包归属商品SKU zp
+	@Column
+	private String ownerGoodsSku;
 
 	public Long getId() {
 		return id;
@@ -277,4 +281,13 @@ public class TdCartGoods {
 	public void setIsCoupon(Boolean isCoupon) {
 		this.isCoupon = isCoupon;
 	}
+
+	public String getOwnerGoodsSku() {
+		return ownerGoodsSku;
+	}
+
+	public void setOwnerGoodsSku(String ownerGoodsSku) {
+		this.ownerGoodsSku = ownerGoodsSku;
+	}
+	
 }

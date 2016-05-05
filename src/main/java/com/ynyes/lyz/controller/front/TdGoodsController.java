@@ -218,11 +218,11 @@ public class TdGoodsController {
 
 	/**
 	 * 添加已选调色包的方法
-	 * 
+	 * 增加商品id参数 zp 
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/color/add")
-	public String colorAdd(String colorName, Long quantity, ModelMap map, HttpServletRequest req) {
+	public String colorAdd(String colorName, Long quantity, ModelMap map, HttpServletRequest req,Long goodsId) {
 		// 获取登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsername(username);
@@ -238,6 +238,8 @@ public class TdGoodsController {
 		if (null == priceListItem) {
 			priceListItem = new TdPriceListItem();
 		}
+		//调色商品归属商品
+		TdGoods good= tdGoodsService.findOne(goodsId);
 
 		// 创建一个已选商品实体，用于存储各项已选数据
 		TdCartGoods cartGoods = new TdCartGoods();
@@ -256,6 +258,9 @@ public class TdGoodsController {
 		cartGoods.setUsername(username);
 		cartGoods.setBrandId(goods.getBrandId());
 		cartGoods.setBrandTitle(goods.getBrandTitle());
+		if(good!=null){
+			cartGoods.setOwnerGoodsSku(good.getCode());
+		}
 		// ********************************设置属性结束*******************************************
 
 		// 查找到所有的已选商品
@@ -266,14 +271,17 @@ public class TdGoodsController {
 			TdCartGoods cart = selected_goods.get(i);
 			if (null != cart && null != cart.getGoodsId()
 					&& goods.getId().longValue() == cart.getGoodsId().longValue()) {
-				isHave = true;
-				cart.setQuantity(cart.getQuantity() + cartGoods.getQuantity());
-				cart.setPrice(cartGoods.getPrice());
-				cart.setRealPrice(cartGoods.getRealPrice());
-				cart.setTotalPrice(cart.getPrice() * cart.getQuantity());
-				cart.setRealPrice(cart.getRealPrice() * cart.getQuantity());
-				cart.setIsColor(true);
-				tdCartGoodsService.save(cart);
+				//判断调色商品归属商品sku是否一知
+				if(good!=null && good.getCode().equals(cart.getOwnerGoodsSku())){
+					isHave = true;
+					cart.setQuantity(cart.getQuantity() + cartGoods.getQuantity());
+					cart.setPrice(cartGoods.getPrice());
+					cart.setRealPrice(cartGoods.getRealPrice());
+					cart.setTotalPrice(cart.getPrice() * cart.getQuantity());
+					cart.setRealPrice(cart.getRealPrice() * cart.getQuantity());
+					cart.setIsColor(true);
+					tdCartGoodsService.save(cart);
+				}
 			}
 		}
 		// 如果没有包含，则直接保存
