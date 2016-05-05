@@ -105,3 +105,13 @@ function saveAddress() {
 //			+ "&receiveMobile=" + receiveMobile + "&district=" + district
 //			+ "&subdistrict=" + subdistrict + "&detail=" + detail;
 }
+
+/**
+ * 退货地址 限制输入特殊字符
+ * @author zp
+ */
+function cleanSpelChar(obj){
+    if(/["'<>%;)(&+]/.test(obj.value)){
+          $(obj).val(obj.value.replace(/["'<>%;)(&+]/,""));
+    }
+}

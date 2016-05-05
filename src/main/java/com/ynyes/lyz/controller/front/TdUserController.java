@@ -1334,14 +1334,12 @@ public class TdUserController {
 		// 查询到指定的订单
 		TdOrder order = tdOrderService.findOne(orderId);
 		if (null != order.getStatusId()) {
-			// if (2L == order.getStatusId().longValue() && 3L ==
-			// order.getStatusId().longValue()) {
-			// res.put("message", "已出库的订单不能取消");
-			// return res;
-			// }
 			if (4L == order.getStatusId()) {
 				res.put("message", "已出库的订单不能取消");
 				return res;
+			}
+			if (order.getStatusId() != 2L && order.getStatusId() != 3) {
+				res.put("message", "订单状态错误,刷新后提交");
 			}
 		}
 		// 首先判断订单是不是运费单
@@ -1354,18 +1352,13 @@ public class TdUserController {
 			}
 		}
 
-		if (null != order.getStatusId() && 3L == order.getStatusId()) {
-			// 生成退货单
-			if (null != order) {
-				TdReturnNote returnNote = tdCommonService.MakeReturnNote(order, 0L, "");
-				tdCommonService.sendBackMsgToWMS(returnNote);
-				// System.out.println("MDJWMS:发送退货单：" +
-				// returnNote.getReturnNumber() + "成功！");
-			}
-		}
-
 		Long realUserId = order.getRealUserId();
-		TdUser realUser = tdUserService.findOne(realUserId);
+		TdUser realUser = null;
+		if (realUserId == null) {
+			realUser = tdUserService.findByUsername(order.getUsername());
+		} else {
+			realUser = tdUserService.findOne(realUserId);
+		}
 
 		// 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
 		List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
@@ -1378,6 +1371,10 @@ public class TdUserController {
 					if (null != statusId && 3L == statusId.longValue()) {
 						// 在此进行资金和优惠券的退还
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
+
+						// 通知物流
+						TdReturnNote returnNote = tdCommonService.MakeReturnNote(subOrder, 0L, "");
+						tdCommonService.sendBackMsgToWMS(returnNote);
 					}
 					subOrder.setStatusId(7L);
 					subOrder.setCancelTime(new Date());
@@ -1645,6 +1642,7 @@ public class TdUserController {
 				if (null != order.getDiySiteId()) {
 					TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
 					returnNote.setDiySiteId(order.getDiySiteId());
+					returnNote.setDiyCode(diySite.getStoreCode());
 					returnNote.setDiySiteTel(diySite.getServiceTele());
 					returnNote.setDiySiteTitle(diySite.getTitle());
 					returnNote.setDiySiteAddress(diySite.getAddress());
@@ -1665,17 +1663,9 @@ public class TdUserController {
 				// returnNote.setTurnType(turnType);
 				// 原订单配送方式
 				if ("门店自提".equals(order.getDeliverTypeTitle())) {
-					if (turnType == 1) {
-						returnNote.setStatusId(1L); // 门店自提单-门店到店退货 待验货
-					} else {
-						returnNote.setStatusId(1L); // 门店自提单-物流取货 待取货
-					}
+					returnNote.setStatusId(2L); // 门店自提单-门店到店退货 待验货
 				} else {
-					if (turnType == 1) {
-						returnNote.setStatusId(1L); // 送货上门单 门店到店退货 待验货
-					} else {
-						returnNote.setStatusId(1L); // 送货上门单 物流取货 待取货
-					}
+					returnNote.setStatusId(1L); // 送货上门单 物流取货 待取货
 				}
 
 				returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
@@ -1837,17 +1827,9 @@ public class TdUserController {
 			// returnNote.setTurnType(turnType);
 			// 原订单配送方式
 			if ("门店自提".equals(order.getDeliverTypeTitle())) {
-				if (turnType == 1) {
-					returnNote.setStatusId(1L); // 门店自提单-门店到店退货 待验货
-				} else {
-					returnNote.setStatusId(1L); // 门店自提单-物流取货 待取货
-				}
+				returnNote.setStatusId(2L); // 门店自提单-门店到店退货 待验货
 			} else {
-				if (turnType == 1) {
-					returnNote.setStatusId(1L); // 送货上门单 门店到店退货 待验货
-				} else {
-					returnNote.setStatusId(1L); // 送货上门单 物流取货 待取货
-				}
+				returnNote.setStatusId(1L); // 送货上门单 物流取货 待取货
 			}
 
 			returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());

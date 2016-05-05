@@ -173,7 +173,7 @@ public class TdUserService {
 		if (null == cityId || null == customerId) {
 			return null;
 		}
-		return repository.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(cityId, customerId, 1L,
+		return repository.findByCityIdAndCustomerIdAndUserTypeAndIsEnableTrueOrCityIdAndCustomerIdAndUserTypeAndIsEnableTrue(cityId, customerId, 1L,
 				cityId, customerId, 2L);
 	}
 
@@ -301,7 +301,7 @@ public class TdUserService {
 			return null;
 		}
 		return repository
-				.findByCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrCustomerIdAndCityIdAndUserTypeAndUsernameContainingOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(
+				.findByCustomerIdAndCityIdAndUserTypeAndUsernameContainingAndIsEnableTrueOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingAndIsEnableTrueOrCustomerIdAndCityIdAndUserTypeAndUsernameContainingAndIsEnableTrueOrCustomerIdAndCityIdAndUserTypeAndRealNameContainingOrderBySortIdAsc(
 						customerId, cityId, 1L, keywords, customerId, cityId, 1L, keywords, customerId, cityId, 2L,
 						keywords, customerId, cityId, 2L, keywords);
 	}
@@ -316,6 +316,32 @@ public class TdUserService {
 			return null;
 		}
 		return repository.findBySellerIdAndUserType(sellerId, userType);
+	}
+	/**
+	 * 根据用户类型获取类型名称
+	 * @param userType
+	 * @return
+	 */
+	public String getUserTypeName(Long userType){
+		if(userType!=null){
+			if(userType==0L){
+				return "会员";
+			}else if(userType==1L){
+				return "销售顾问";
+			}else if(userType==2L){
+				return "店长";
+			}else if(userType==3L){
+				return "店主";
+			}else if(userType==4L){
+				return "区域经理";
+			}else if(userType==5L){
+				return "配送员";
+			}else{
+				return "未知编号:"+userType;
+			}
+		}
+		return "未知编号";
+		
 	}
 
 }

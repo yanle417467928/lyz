@@ -57,6 +57,7 @@ import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
 import com.ynyes.lyz.service.TdPayTypeService;
+import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdPriceListService;
 import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.service.TdReturnNoteService;
@@ -158,6 +159,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdGatheringService tdGatheringService;
+	
+	@Autowired
+	private TdPriceCountService tdPriceCountService;
 	
 	 /**
 	 * @author lc
@@ -343,9 +347,10 @@ public class TdManagerOrderController {
 	
 	
 	// 欠款审核
+	//增加搜索功能 zp
 	@RequestMapping(value = "/own/list")
 	public String ownList(HttpServletRequest req, Integer page, Long statusId, Integer size,ModelMap map, String __EVENTTARGET,
-			String __EVENTARGUMENT, String __VIEWSTATE,Long[] listChkId,Long payLeft)
+			String __EVENTARGUMENT, String __VIEWSTATE,Long[] listChkId,Long payLeft,String keywords)
 	{
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) 
@@ -389,14 +394,7 @@ public class TdManagerOrderController {
 			size = SiteMagConstant.pageSize;
 		}
 		
-		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
-		{
-			map.addAttribute("own_page",tdOwnMoneyRecordService.findByDiyCodeOrderByIdDesc(tdManager.getDiyCode(), page, size));
-		}
-		else
-		{
-			map.addAttribute("own_page",tdOwnMoneyRecordService.findAllOrderBySortIdAsc(page, size));
-		}
+		
 		if (null != __EVENTTARGET)
 		{
 			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
@@ -404,22 +402,6 @@ public class TdManagerOrderController {
 				if (null != __EVENTARGUMENT)
 				{
 					page = Integer.parseInt(__EVENTARGUMENT);
-				}
-			}
-			else if (__EVENTTARGET.equalsIgnoreCase("statusId")) 
-			{
-				if (null != statusId)
-				{
-					if (statusId == 0)
-					{
-						map.remove("own_page");
-						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsEnableOrderByIdDesc(diyCode, false, page, size));
-					}
-					else if (statusId == 1)
-					{
-						map.remove("own_page");
-						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsEnableOrderByIdDesc(diyCode, true, page, size));
-					}
 				}
 			}
 			else if (__EVENTTARGET.equalsIgnoreCase("btnEnable")) 
@@ -435,25 +417,19 @@ public class TdManagerOrderController {
 				{
 					btnNotEnale(listChkId);
 				}
+			}else if(__EVENTTARGET.equalsIgnoreCase("statusId")){
+				page=0;
+			}else if(__EVENTTARGET.equalsIgnoreCase("payLeft")){
+				page=0;
 			}
-			else if (__EVENTTARGET.equalsIgnoreCase("payLeft")) 
-			{
-				if (null != payLeft)
-				{
-					if (payLeft == 0)
-					{
-						map.remove("own_page");
-						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsPayedOrderByIdDesc(diyCode, false, page, size));
-					}
-					else if (payLeft == 1)
-					{
-						map.remove("own_page");
-						map.addAttribute("own_page", tdOwnMoneyRecordService.findByDiyCodeAndIsPayedOrderByIdDesc(diyCode, true, page, size));
-					}
-				}
+			else if(__EVENTTARGET.equalsIgnoreCase("btnSearch")){
+				page=0;
 			}
-			
 		}
+		
+		map.addAttribute("own_page",tdOwnMoneyRecordService.searchOwnList(diyCode, keywords, statusId,payLeft , size, page));
+		
+		
 		map.addAttribute("page", page);
 		map.addAttribute("size", size);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
@@ -461,6 +437,7 @@ public class TdManagerOrderController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("statusId",statusId);
 		map.addAttribute("payLeft",payLeft);
+		map.addAttribute("keywords",keywords);
 		return "/site_mag/own_list";
 	}
 
@@ -990,22 +967,11 @@ public class TdManagerOrderController {
 				}
 			}
 			// 确认取消
-			else if (type.equalsIgnoreCase("orderCancel")) {
+			else if (type.equalsIgnoreCase("orderCancel")) 
+			{
 				if (order.getStatusId().equals(1L) || order.getStatusId().equals(2L) || order.getStatusId().equals(3L)) // zhangji
 				{
-					if (StringUtils.isNotBlank(order.getRemarkInfo()))
-					{
-						order.setRemarkInfo(order.getRemarkInfo() + "管理员取消订单：" + username);
-					}
-					else
-					{
-						order.setRemarkInfo("管理员取消订单：" + username);
-					}
-					if (null != order && order.getStatusId().equals(3L)) 
-					{
-						TdReturnNote returnNote = tdCommonService.MakeReturnNote(order,1L,username);
-						tdCommonService.sendBackMsgToWMS(returnNote);
-					}
+					this.cancelRelativeOrderBySubOrder(order,username);
 					order.setStatusId(7L);
 					order.setCancelTime(new Date());
 				}
@@ -1086,6 +1052,70 @@ public class TdManagerOrderController {
 		}
 		map.put("code", 0);
 		return map;
+	}
+	
+	/**
+	 * 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
+	 * @param order
+	 */
+	private void cancelRelativeOrderBySubOrder(TdOrder order,String username)
+	{
+		
+		Long realUserId = order.getRealUserId();
+		TdUser realUser = null;
+		if (realUserId == null)
+		{
+			realUser = tdUserService.findByUsername(order.getUsername());
+		}
+		else
+		{
+			realUser = tdUserService.findOne(realUserId);
+		}
+		
+		String orderNumberTemp = order.getOrderNumber();
+		String newOrderNumber = "";
+		// 通过计算得到订单的数字部分
+		for (int i = 0; i < orderNumberTemp.length(); i++)
+		{
+			if (orderNumberTemp.charAt(i) >= 48 && orderNumberTemp.charAt(i) <= 57)
+			{
+				newOrderNumber += orderNumberTemp.charAt(i);
+			}
+		}
+		List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
+		// 进行遍历操作
+		if (null != list && list.size() > 0) 
+		{
+			for (TdOrder subOrder : list) 
+			{
+				if (null != subOrder) 
+				{
+					// 设置订单状态为取消状态，同时记录已退货属性
+					Long statusId = subOrder.getStatusId();
+					if (null != statusId && 3L == statusId.longValue()) 
+					{
+						// 在此进行资金和优惠券的退还
+						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
+						
+						// 通知物流
+						if (StringUtils.isNotBlank(order.getRemarkInfo()))
+						{
+							order.setRemarkInfo(order.getRemarkInfo() + "管理员取消订单：" + username);
+						}
+						else
+						{
+							order.setRemarkInfo("管理员取消订单：" + username);
+						}
+						TdReturnNote returnNote = tdCommonService.MakeReturnNote(order,1L,username);
+						tdCommonService.sendBackMsgToWMS(returnNote);
+					}
+					subOrder.setStatusId(7L);
+					subOrder.setCancelTime(new Date());
+					subOrder.setIsRefund(true);
+					tdOrderService.save(subOrder);
+				}
+			}
+		}
 	}
 
 	private void btnSave(String type, Long[] ids, Double[] sortIds) {

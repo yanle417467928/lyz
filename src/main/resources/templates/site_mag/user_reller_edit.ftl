@@ -55,20 +55,21 @@ $(function () {
 <div class="tab-content">
 	<input type="hidden" name="id" value="<#if user??>${user.id?c}</#if>" >
     <dl>
-        <dt>原始导购名：</dt>
+        <dt>原始${userTypeName!'' }名：</dt>
        <dd>
-            <#if user??>${user.referPhone!''}</#if>
+            <#if user??>${user.username!''}</#if>
        </dd>
     </dl>
   
 
 
     <dl>
-        <dt>新任导购名：</dt>
+        <dt>新任${userTypeName!'' }名：</dt>
        <dd>
             <input name="newUsername" type="text" value="<#if user??>${user.referPhone!''}</#if>" maxlength="200" class="input normal" datatype="m|/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/" ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id?c}</#if>" sucmsg=" " minlength="2">
        		<input name="oldUsername" type="hidden" value="<#if user??>${user.referPhone!''}</#if>" />
-            <span class="Validform_checktip">*修改导购名后，原始导购名下的用户将同步为新导购名</span>
+            <span class="Validform_checktip">*修改${userTypeName!'' }名后，原始${userTypeName!'' }名下的用户将同步为新${userTypeName!'' }名</span>
+            <#if error??><span class="Validform_checktip">${error }</span></#if>
         </span></dd>
     </dl>
 </div>

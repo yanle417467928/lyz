@@ -104,6 +104,12 @@ public class TdDiySiteInventoryService {
 	{
 		return repository.findByDiySiteId(code);
 	}
+	public TdDiySiteInventory findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(String goodsCode,Long regionId)
+	{
+		if (StringUtils.isBlank(goodsCode) || regionId == null)
+			return null;
+		return repository.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goodsCode, regionId);
+	}
 	
 
 }

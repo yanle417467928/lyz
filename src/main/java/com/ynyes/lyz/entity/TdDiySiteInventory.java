@@ -19,7 +19,7 @@ public class TdDiySiteInventory {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	// 城市编码
+	// 城市编码 由ebs给的
 	@Column
 	private Long regionId;
 	

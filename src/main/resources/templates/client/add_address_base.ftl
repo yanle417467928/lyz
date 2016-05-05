@@ -34,7 +34,7 @@
             <form>
                 <div class="edit-info">
                     <label>收货人：</label>
-                    <input type="text" id="receiverName" value="${address.receiverName!''}">
+                    <input type="text" id="receiverName" value="${address.receiverName!''}" onkeyup="cleanSpelChar(this)">
                 </div>
                 <div class="edit-info">
                     <label>手机号码：</label>
@@ -46,7 +46,7 @@
                 </div>
                 <div class="edit-info">
                     <label>详细地址：</label>
-                    <input type="text" id="detailAddress" value="${address.detailAddress!''}">
+                    <input type="text" id="detailAddress" value="${address.detailAddress!''}" onkeyup="cleanSpelChar(this)">
                 </div>
                 <input style="background-color:#cc1421;" class="btn-submit-save" type="button" value="保存" onclick="saveAddress();">
             </form>

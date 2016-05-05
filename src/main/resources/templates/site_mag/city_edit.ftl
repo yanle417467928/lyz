@@ -166,7 +166,7 @@ $(function () {
     </dl>
 </div>
 
-<div class="tab-content">
+<div class="tab-content" style="display: none;">
 	<dl>
 		<dt>城市名</dt>
 		<dd>${city.cityName!''}</dd>

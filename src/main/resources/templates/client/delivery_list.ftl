@@ -104,9 +104,39 @@ function timer() {
       document.getElementById("popbox").style.display="none" ;
       window.location.href="/delivery/order?start=" + document.getElementById("start").value + "&end=" + document.getElementById("end").value;
     }
+    <#-- 模糊查询配送单的方法 -->
+    function searchDelivery(){
+        <#-- 获取查询关键词 -->
+        var keywords = $("#keywords").val();
+        if("" === keywords){
+            return;
+        }
+        <#-- 开启等待图标 -->
+        wait();
+        $.ajax({
+            url : "/delivery/order/search",
+            type : "post",
+            timeout : 20000,
+            data:{
+                keyword : keywords,
+                type : 1
+            },
+            error:function(){
+                close(1);
+                warning("亲，您的网速不给力啊");
+            },
+            success:function(res){
+                $(".look-details-list").html(res);
+                close(1);
+            }
+        });
+    }
   </script>
   <!--弹窗 END-->
-  <!-- 头部 -->
+	<#-- 引入等待提示样式 -->
+	<#include "/client/common_wait.ftl">
+
+	<!-- 头部 -->
   <header>
     <a class="back" href="/delivery"></a>
     <div class="date-group">
@@ -116,7 +146,13 @@ function timer() {
     </div>
   </header>
   <!-- 头部 END -->
-
+  <!-- 搜索栏  -->
+	<input id="typeId" type="hidden" value="${typeId!'0'}">
+	<div class="searchbox bgc-f3f4f6 bdt">
+		<input type="text" id="keywords" placeholder="地址/收货人信息"> <a
+			href="javascript:searchDelivery();"></a>
+	</div>
+  <!-- 搜索栏  END -->
   <!-- 详情列表 -->
   <article class="look-details-list">
     <ul>

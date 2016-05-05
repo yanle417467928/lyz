@@ -93,7 +93,7 @@ $(function () {
             title: "赠品",
             content: 'url:/Verwalter/goods/list/dialog/gift?total=' + $("#var_box_gift").children("tr").length,
             width: 800,
-            height: 350
+            height: 550
         });
         
         //如果是修改状态，将对象传进去

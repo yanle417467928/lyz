@@ -32,7 +32,7 @@
         
         // 确认取货
         function OrderConfirm() {
-            var dialog = $.dialog.confirm('该步骤将确认退货单取货(该由配送员点击)，确认要继续吗？', function () {
+            var dialog = $.dialog.confirm('该步骤将确认退货单取货(如果非门店自提单子,该由配送员点击)，确认要继续吗？', function () {
                 var returnNumber = $.trim($("#returnNumber").text());
                 var postData = { "returnNumber": returnNumber, "type": "btnConfirm" };
                 //发送AJAX请求
@@ -147,86 +147,6 @@
         <dl>
             <dd style="margin-left: 50px; text-align: center;">
                 <div class="order-flow" style="width: 850px">
-                   <#--
-                   <#if returnNote.statusId == 1>
-                        <div class="order-flow-left">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">订单已生成</p>
-                                <p>${returnNote.orderTime!""}</p>
-                            </span>
-                        </div>
-                        <div class="order-flow-wait">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">通知物流</p>
-                            </span>
-                        </div>
-                        <div class="order-flow-wait">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">物流确认</p>
-                            </span>
-                        </div>
-                        <div class="order-flow-wait">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">待退款</p>
-                            </span>
-                        </div>
-                        <div class="order-flow-right-wait">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">未完成</p>
-                                    <p></p>
-                                </span>
-                            </div>
-                    <#elseif returnNote.statusId == 2>
-                            <div class="order-flow-left">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">订单已生成</p>
-                                    <p>${returnNote.orderTime!""}</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-arrive">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">已确认</p>
-                                    <p>${returnNote.checkTime!""}</p>
-                                </span>
-                            </div>
-                            <div class="order-flow-right-wait">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">待退款</p>
-                                    <p></p>
-                                </span>
-                            </div>
-                    <#elseif returnNote.statusId == 3>
-                        <div class="orderreturnNote-left">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">订单已生成</p>
-                                <p>${returnNote.orderTime!""}</p>
-                            </span>
-                        </div>
-                        <div class="order-flow-arrive">
-                            <a class="order-flow-input"></a>
-                            <span>
-                                <p class="name">已确认</p>
-                                <p>${returnNote.payTime!""}</p>
-                            </span>
-                        </div>
-                        <div class="order-flow-right-arrive">
-                                <a class="order-flow-input"></a>
-                                <span>
-                                    <p class="name">已完成</p>
-                                    <p>${returnNote.returnTime!''}</p>
-                                </span>
-                            </div>
-                    </#if>
-                    -->
                 </div>
             </dd>
         </dl>
@@ -366,9 +286,10 @@
                         <td>
                             <#if returnNote.statusId??>
                             <#switch returnNote.statusId>
-                                  <#case 2>待物流取货<#break>
-                                  <#case 3>待验货<#break>
-                                  <#case 4>待退款<#break>
+                                  <#case 1>待通知物流<#break>
+                                  <#case 2>待确认收货<#break>
+                                  <#case 3>待退款<#break>
+                                  <#case 4>还未定义的状态<#break>
                                   <#case 5>已完成<#break> 
                             </#switch>
                             </#if>

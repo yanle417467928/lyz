@@ -104,6 +104,33 @@ function timer() {
       document.getElementById("popbox").style.display="none" ;
       window.location.href="/delivery/return?start=" + document.getElementById("start").value + "&end=" + document.getElementById("end").value;
     }
+    <#-- 模糊查询退货单的方法 -->
+    function searchDelivery(){
+        <#-- 获取查询关键词 -->
+        var keywords = $("#keywords").val();
+        if("" === keywords){
+            return;
+        }
+        <#-- 开启等待图标 -->
+        wait();
+        $.ajax({
+            url : "/delivery/return/search",
+            type : "post",
+            timeout : 20000,
+            data:{
+                keyword : keywords,
+                type : 1
+            },
+            error:function(){
+                close(1);
+                warning("亲，您的网速不给力啊");
+            },
+            success:function(res){
+                $(".look-details-list").html(res);
+                close(1);
+            }
+        });
+    }
   </script>
   <!--弹窗 END-->
   <!-- 头部 -->
@@ -116,6 +143,16 @@ function timer() {
     </div>
   </header>
   <!-- 头部 END -->
+  <!--弹窗 END-->
+  <!-- 搜索栏  -->
+	<input id="typeId" type="hidden" value="${typeId!'0'}">
+	<div class="searchbox bgc-f3f4f6 bdt">
+		<input type="text" id="keywords" placeholder="退货单号/订单号/门店信息"> <a
+			href="javascript:searchDelivery();"></a>
+	</div>
+  <!-- 搜索栏  END -->
+  <#-- 引入等待提示样式 -->
+  <#include "/client/common_wait.ftl">
 
   <!-- 详情列表 -->
   <article class="look-details-list">
@@ -126,19 +163,9 @@ function timer() {
     </ul>
     <!-- 详情列表 -->
     
-    <#if return_list??>
-    	<#list return_list as item>
-    		<section>
-		      <a href="/delivery/return/detail/${item.id?c}">
-		      	
-		        	<div class="time">【退货时间 ${item.orderTime!''}】</div>
-	        	
-		        <div class="address">退货单号：${item.returnNumber!''}</div>
-		        <div class="address">定单号：${item.orderNumber!''}</div>
-		      </a>
-		    </section>
-    	</#list>
-    </#if>
+    <#include "/client/return_list_search.ftl">
+    
+   
   </article>
   <!-- 详情列表 END -->
 

@@ -163,6 +163,26 @@
 					this.countTotal();
 				}
 			}
+			
+				
+			$scope.change = function(index){
+				if($('#'+index)[0].value.length>=1){
+					$('#'+index)[0].value=$('#'+index)[0].value.replace(/[^1-9]/g,'');
+				}else{
+					$('#'+index)[0].value=$('#'+index)[0].value.replace(/\D/g,'');
+				}
+				var number = $('#'+index).val();
+				if(number <= this.goods[index].quantity && number!=""){
+					this.goods[index].reQuantity = number;
+					this.goods[index].total = this.goods[index].unit*number;
+					this.countTotal();
+				}else{
+					$('#'+index).val(0);
+					this.goods[index].reQuantity = 0;
+					this.goods[index].total = 0;
+					this.countTotal();
+				}
+			}
 
 			$scope.send = function(){
 				wait();
@@ -175,6 +195,8 @@
 				}
 				if("" === data){
 					close(1);
+					win_no_return();
+					warning("请选择商品");
 					return;
 				}
 				if("" === $scope.remark || "请输入您的退货原因" === $scope.remark){
@@ -214,7 +236,7 @@
         
 		function order_return(){
             var he = ($(window).height() - $('.turn_div div').height())/2 - 50;
-            $('.turn_div div').css({marginTop:he});   
+            $('.turn_div div').css({marginTop:he});
             $('.turn_div').fadeIn(600);
         };
 	</script>
@@ -250,7 +272,7 @@
 					<p>{{item.title}}</p>
 					<div class="fen_div01">
 						<a ng-click="delete($index);">-</a>
-						<input type="text" readOnly="true" name="" id="{{$index}}" ng-model="item.reQuantity">
+						<input type="text" name="" id="{{$index}}" ng-model="item.reQuantity" ng-keyup="change($index,this);">
 						<a ng-click="add($index);">+</a>
 					</div>
 					<div class="fen_div02">

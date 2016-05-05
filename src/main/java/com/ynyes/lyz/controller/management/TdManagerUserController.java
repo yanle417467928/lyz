@@ -413,6 +413,18 @@ public class TdManagerUserController {
 			tdUser.setUnCashBalance(ounCashBalance);
 		}
 		
+		//如果是导购或者店长修改其名下的会员导购电话 zp
+		if(tdUser.getUserType().equals(1L)||tdUser.getUserType().equals(2L)){
+			//循环修改导购 
+			List<TdUser> userList= tdUserService.findBySellerIdAndUserType(tdUser.getId(), 0L);
+			if(userList!=null && userList.size()>0){
+				for (TdUser user : userList) {
+					user.setSellerName(tdUser.getRealName());
+					tdUserService.save(user);
+				}
+			}
+		}
+		
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
 		if (null == tdUser.getId()) 
@@ -551,6 +563,18 @@ public class TdManagerUserController {
 				item.setUsername(newUsername);
 				tdUserRecentVisitService.save(item);
 			}
+			//如果是导购或者店长修改其名下的会员导购电话 zp
+			if(tdUser.getUserType().equals(1L)||tdUser.getUserType().equals(2L)){
+				//循环修改导购 
+				List<TdUser> userList= tdUserService.findBySellerIdAndUserType(tdUser.getId(), 0L);
+				if(userList!=null && userList.size()>0){
+					for (TdUser user : userList) {
+						user.setReferPhone(newUsername);
+						tdUserService.save(user);
+					}
+				}
+			}
+			
 
 		}
 
@@ -996,7 +1020,9 @@ public class TdManagerUserController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("roleId", roleId);
 		if (null != id) {
-			map.addAttribute("user", tdUserService.findOne(id));
+			TdUser user= tdUserService.findOne(id);
+			map.addAttribute("user", user);
+			map.addAttribute("userTypeName", tdUserService.getUserTypeName(user.getUserType()));
 		}
 		// map.addAttribute("user_level_list",
 		// tdUserLevelService.findIsEnableTrue());
@@ -1015,8 +1041,9 @@ public class TdManagerUserController {
 		TdUser newTdUser = tdUserService.findByUsername(newUsername);
 		//输入的导购名不存在
 		if(newTdUser==null){
-			map.put("erroir", "新的导购名不存在");
+			map.put("error", "新的"+tdUserService.getUserTypeName(oldTdUser.getUserType())+"名不存在");
 			map.put("user", oldTdUser);
+			map.addAttribute("userTypeName", tdUserService.getUserTypeName(oldTdUser.getUserType()));
 			return "/site_mag/user_reller_edit";
 		}
 		
@@ -1027,6 +1054,7 @@ public class TdManagerUserController {
 				tdUser.setSellerId(newTdUser.getId());
 				tdUser.setSellerName(newTdUser.getRealName());
 				tdUser.setReferPhone(newTdUser.getUsername());
+				tdUserService.save(tdUser);
 			}
 		}
 

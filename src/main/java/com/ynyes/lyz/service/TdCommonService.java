@@ -60,8 +60,7 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	// static String wmsUrl =
-	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -159,41 +158,15 @@ public class TdCommonService {
 		} else {
 			return "未知编号：" + name;
 		}
-
-		// if (name == null || name.equalsIgnoreCase(""))
-		// {
-		// return "未知";
-		// }
-		// if (name.equalsIgnoreCase("11"))
-		// {
-		// return "郑州公司";
-		// }
-		// else if (name.equalsIgnoreCase("1101"))
-		// {
-		// return "天荣中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1102"))
-		// {
-		// return "五龙口中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1103"))
-		// {
-		// return "东大中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1104"))
-		// {
-		// return "百姓中转仓";
-		// }
-		// else if (name.equalsIgnoreCase("1105"))
-		// {
-		// return "主仓库";
-		// }
-		// else
-		// {
-		// return "未知编号：" + name;
-		// }
 	}
 
+	/**
+	 * 取消订单产生的退货单
+	 * @param order
+	 * @param type 1:用户取消订单 2：管理员取消订单 
+	 * @param msg
+	 * @return
+	 */
 	public TdReturnNote MakeReturnNote(TdOrder order, Long type, String msg) {
 		TdReturnNote returnNote = new TdReturnNote();
 
@@ -219,46 +192,37 @@ public class TdCommonService {
 		// 门店信息
 		if (null != order.getDiySiteId()) {
 			TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
-			returnNote.setDiySiteId(order.getDiySiteId());
-			returnNote.setDiyCode(diySite.getStoreCode());
-			returnNote.setDiySiteTel(diySite.getServiceTele());
-			returnNote.setDiySiteTitle(diySite.getTitle());
-			returnNote.setDiySiteAddress(diySite.getAddress());
+			if (diySite != null)
+			{
+				returnNote.setDiySiteId(order.getDiySiteId());
+				returnNote.setDiyCode(diySite.getStoreCode());
+				returnNote.setDiySiteTel(diySite.getServiceTele());
+				returnNote.setDiySiteTitle(diySite.getTitle());
+				returnNote.setDiySiteAddress(diySite.getAddress());
+			}
 		}
 
 		// 退货信息
 		returnNote.setUsername(order.getUsername());
-		if (type == 0L) {
+		if (type == 0L)
+		{
 			returnNote.setRemarkInfo("用户取消订单，退货");
-		} else if (type == 1L) {
+		}
+		else if (type == 1L)
+		{
 			returnNote.setRemarkInfo("管理员 " + msg + " 取消订单,退货");
 		}
 
-		Long turnType;
-		if (org.apache.commons.lang3.StringUtils.isNotBlank(order.getDeliverTypeTitle())
-				&& "门店自提".equals(order.getDeliverTypeTitle())) {
+		if (org.apache.commons.lang3.StringUtils.isNotBlank(order.getDeliverTypeTitle()) && "门店自提".equals(order.getDeliverTypeTitle())) 
+		{
 			returnNote.setTurnType(1L);
-			turnType = 1L;
-		} else {
+		}
+		else
+		{
 			returnNote.setTurnType(2L);
-			turnType = 2L;
 		}
-		// 退货方式
-		returnNote.setTurnType(turnType);
-		// 原订单配送方式
-		if ("门店自提".equals(order.getDeliverTypeTitle())) {
-			if (turnType.equals(1L)) {
-				returnNote.setStatusId(2L); // 门店自提单-门店到店退货 待验货
-			} else {
-				returnNote.setStatusId(2L); // 门店自提单-物流取货 待取货
-			}
-		} else {
-			if (turnType.equals(1L)) {
-				returnNote.setStatusId(2L); // 送货上门单 门店到店退货 待验货
-			} else {
-				returnNote.setStatusId(2L); // 送货上门单 物流取货 待取货
-			}
-		}
+		
+		returnNote.setStatusId(5L);
 
 		returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
 
@@ -266,8 +230,10 @@ public class TdCommonService {
 
 		returnNote.setTurnPrice(order.getTotalGoodsPrice());
 		List<TdOrderGoods> orderGoodsList = new ArrayList<>();
-		if (null != order.getOrderGoodsList()) {
-			for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
+		if (null != order.getOrderGoodsList())
+		{
+			for (TdOrderGoods oGoods : order.getOrderGoodsList()) 
+			{
 				TdOrderGoods orderGoods = new TdOrderGoods();
 
 				orderGoods.setBrandId(oGoods.getBrandId());
@@ -2228,6 +2194,12 @@ public class TdCommonService {
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
 			String date = sdf.format(returnNote.getOrderTime());
+			
+			Long statusId = returnNote.getStatusId();
+			if (returnNote.getRemarkInfo().equalsIgnoreCase("拒签退货"))
+			{
+				statusId = 1L;
+			}
 
 			String xmlStr = "<ERP>" + "<TABLE>" + "<id>" + returnNote.getId() + "</id>" + "<cancel_time>"
 					+ returnNote.getCancelTime() + "</cancel_time>" + "<check_time>" + returnNote.getCheckTime()
@@ -2241,7 +2213,7 @@ public class TdCommonService {
 					+ "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>" + "<return_number>"
 					+ returnNote.getReturnNumber() + "</return_number>" + "<return_time>" + returnNote.getReturnTime()
 					+ "</return_time>" + "<sort_id>" + returnNote.getSortId() + "</sort_id>" + "<status_id>"
-					+ returnNote.getStatusId() + "</status_id>" + "<username>" + returnNote.getUsername()
+					+ statusId + "</status_id>" + "<username>" + returnNote.getUsername()
 					+ "</username>" + "<deliver_type_title>" + returnNote.getDeliverTypeTitle()
 					+ "</deliver_type_title>" + "<turn_price>" + returnNote.getTurnPrice() + "</turn_price>"
 					+ "<turn_type>" + returnNote.getTurnType() + "</turn_type>" + "<shopping_address>"
@@ -2428,7 +2400,7 @@ public class TdCommonService {
 			return;
 		}
 		Object[] objects = null;
-
+		System.err.println(note.getReturnNumber());
 		if (note != null && note.getReturnGoodsList() != null) {
 			for (TdOrderGoods orderGoods : note.getReturnGoodsList()) {
 				String xmlReturnGoodsEncode = XMLMakeAndEncode(orderGoods, 5);
