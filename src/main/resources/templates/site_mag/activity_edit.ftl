@@ -443,9 +443,6 @@ function del_goods_comb(obj) {
                                         <input type="text" id="title" name="combList[${comb_index}].goodsTitle" class="td-input" value="${comb.goodsTitle!''}" style="width:90%;">
                                     </td>
                                     <td>
-                                        <input type="text" id="code" name="combList[${comb_index}].number" class="td-input" value="${comb.code?c}" style="width:90%;">
-                                    </td>
-                                    <td>
                                         <input type="text" id="number" name="combList[${comb_index}].number" class="td-input" value="${comb.number?c}" style="width:90%;">
                                     </td>
                                     <td>
