@@ -2263,7 +2263,12 @@ public class TdCommonService {
 			// + "</ERP>";
 
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
-			String date = sdf.format(returnNote.getOrderTime());
+			String orderDate = sdf.format(returnNote.getOrderTime());
+			String returnDate = null;
+			if (returnNote.getReturnTime() !=null)
+			{
+				returnDate = sdf.format(returnNote.getReturnTime());
+			}
 			
 			Long statusId = returnNote.getStatusId();
 			if (returnNote.getRemarkInfo().equalsIgnoreCase("拒签退货"))
@@ -2278,10 +2283,10 @@ public class TdCommonService {
 					+ returnNote.getDiySiteTel() + "</diy_site_tel>" + "<diy_site_title>" + returnNote.getDiySiteTitle()
 					+ "</diy_site_title>" + "<manager_remark_info>" + returnNote.getManagerRemarkInfo()
 					+ "</manager_remark_info>" + "<order_number>" + returnNote.getOrderNumber() + "</order_number>"
-					+ "<order_time>" + date + "</order_time>" + "<pay_type_id>" + returnNote.getPayTypeId()
+					+ "<order_time>" + orderDate + "</order_time>" + "<pay_type_id>" + returnNote.getPayTypeId()
 					+ "</pay_type_id>" + "<pay_type_title>" + returnNote.getPayTypeTitle() + "</pay_type_title>"
 					+ "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>" + "<return_number>"
-					+ returnNote.getReturnNumber() + "</return_number>" + "<return_time>" + returnNote.getReturnTime()
+					+ returnNote.getReturnNumber() + "</return_number>" + "<return_time>" + returnDate
 					+ "</return_time>" + "<sort_id>" + returnNote.getSortId() + "</sort_id>" + "<status_id>"
 					+ statusId + "</status_id>" + "<username>" + returnNote.getUsername()
 					+ "</username>" + "<deliver_type_title>" + returnNote.getDeliverTypeTitle()

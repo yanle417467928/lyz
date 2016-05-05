@@ -734,9 +734,6 @@ public class TdDeliveryIndexController {
 
 						returnNote.setReturnGoodsList(orderGoodsList);
 						tdOrderGoodsService.save(orderGoodsList);
-						// 保存退货单
-						tdReturnNoteService.save(returnNote);
-						
 						
 						// 在此进行资金和优惠券的退还
 						Long realUserId = order.getRealUserId();
@@ -757,6 +754,9 @@ public class TdDeliveryIndexController {
 						tdCommonService.sendBackMsgToWMS(returnNote);
 						// 通知物流时间
 						returnNote.setSendWmsTime(new Date());
+						
+						// 保存退货单
+						tdReturnNoteService.save(returnNote);
 						
 
 						subOrder.setStatusId(9L);
