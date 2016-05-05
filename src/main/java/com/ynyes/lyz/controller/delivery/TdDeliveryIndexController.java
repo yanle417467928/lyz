@@ -667,6 +667,70 @@ public class TdDeliveryIndexController {
 								tdOrderGoodsService.save(oGoods);
 							}
 						}
+						if (null != subOrder.getGiftGoodsList()) {
+							for (TdOrderGoods oGoods : subOrder.getGiftGoodsList()) {
+								TdOrderGoods orderGoods = new TdOrderGoods();
+
+								orderGoods.setBrandId(oGoods.getBrandId());
+								orderGoods.setBrandTitle(oGoods.getBrandTitle());
+								orderGoods.setGoodsId(oGoods.getGoodsId());
+								orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
+								orderGoods.setSku(oGoods.getSku());
+								orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
+								orderGoods.setGoodsColor(oGoods.getGoodsColor());
+								orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
+								orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
+								orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
+								orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
+
+								orderGoods.setPrice(oGoods.getPrice());
+								orderGoods.setQuantity(oGoods.getQuantity());
+
+								orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
+								orderGoods.setPoints(oGoods.getPoints());
+								orderGoods.setReturnNoteNumber(returnNote.getReturnNumber());
+								// tdOrderGoodsService.save(orderGoods);
+								// 添加商品信息
+								orderGoodsList.add(orderGoods);
+
+								// 订单商品设置退货为True
+								oGoods.setIsReturnApplied(true);
+								// 更新订单商品信息是否退货状态
+								tdOrderGoodsService.save(oGoods);
+							}
+						}
+						if (null != subOrder.getPresentedList()) {
+							for (TdOrderGoods oGoods : subOrder.getPresentedList()) {
+								TdOrderGoods orderGoods = new TdOrderGoods();
+
+								orderGoods.setBrandId(oGoods.getBrandId());
+								orderGoods.setBrandTitle(oGoods.getBrandTitle());
+								orderGoods.setGoodsId(oGoods.getGoodsId());
+								orderGoods.setGoodsSubTitle(oGoods.getGoodsSubTitle());
+								orderGoods.setSku(oGoods.getSku());
+								orderGoods.setGoodsCoverImageUri(oGoods.getGoodsCoverImageUri());
+								orderGoods.setGoodsColor(oGoods.getGoodsColor());
+								orderGoods.setGoodsCapacity(oGoods.getGoodsCapacity());
+								orderGoods.setGoodsVersion(oGoods.getGoodsVersion());
+								orderGoods.setGoodsSaleType(oGoods.getGoodsSaleType());
+								orderGoods.setGoodsTitle(oGoods.getGoodsTitle());
+
+								orderGoods.setPrice(oGoods.getPrice());
+								orderGoods.setQuantity(oGoods.getQuantity());
+
+								orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
+								orderGoods.setPoints(oGoods.getPoints());
+								orderGoods.setReturnNoteNumber(returnNote.getReturnNumber());
+								// tdOrderGoodsService.save(orderGoods);
+								// 添加商品信息
+								orderGoodsList.add(orderGoods);
+
+								// 订单商品设置退货为True
+								oGoods.setIsReturnApplied(true);
+								// 更新订单商品信息是否退货状态
+								tdOrderGoodsService.save(oGoods);
+							}
+						}
 
 						returnNote.setReturnGoodsList(orderGoodsList);
 						tdOrderGoodsService.save(orderGoodsList);
