@@ -12,8 +12,9 @@
                         <img src="${goods.goodsCoverImageUri!''}" alt="产品图片">
                     </div>
                     <div class="product-info">
-                        <div class="descript">${goods.goodsTitle!''}</div>
+                        <div class="descript">${goods.goodsTitle!''} </div>
                         <label>${goods.sku!''}</label>
+                        <label>调色:${goods.ownerGoodsSku!''}</label>
                         <div class="choose-num">
                             <#if ("goods"+goods_index)?eval??>
                                 <input type="hidden" id="goods${goods.goodsId?c}quantity" value="<#if ("goods"+goods_index)?eval??>${("goods"+goods_index)?eval?c}<#else>0</#if>">

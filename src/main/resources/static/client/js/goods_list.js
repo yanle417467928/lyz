@@ -150,7 +150,8 @@ function changeColorNum(operation) {
 }
 
 // 确定调色的方法
-function addColor() {
+//增加商品id参数 zp
+function addColor(goodsId) {
 	// 获取当前数量
 	var nowNum = $("#select_color_quantity").val();
 	// 如果数量为0，不进行任何操作
@@ -159,6 +160,7 @@ function addColor() {
 	}
 	// 获取当前的颜色编号
 	var colorName = $("#color_name").html();
+	
 
 	// 开启等待响应的图标
 	wait();
@@ -170,7 +172,8 @@ function addColor() {
 		type : "post",
 		data : {
 			"colorName" : colorName,
-			"quantity" : nowNum
+			"quantity" : nowNum,
+			"goodsId":goodsId
 		},
 		success : function(res) {
 			$("#select_colors_by_dx").html(res);

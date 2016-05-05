@@ -136,6 +136,10 @@ public class TdOrderGoods {
 	// 是否是券
 	@Column
 	private Boolean isCoupon;
+	
+	//调色包归属商品SKU zp
+	@Column
+	private String ownerGoodsSku;
 
 	public String getSubOrderNumber() {
 		return subOrderNumber;
@@ -375,5 +379,13 @@ public class TdOrderGoods {
 
 	public void setCashNumber(Long cashNumber) {
 		this.cashNumber = cashNumber;
+	}
+
+	public String getOwnerGoodsSku() {
+		return ownerGoodsSku;
+	}
+
+	public void setOwnerGoodsSku(String ownerGoodsSku) {
+		this.ownerGoodsSku = ownerGoodsSku;
 	}
 }

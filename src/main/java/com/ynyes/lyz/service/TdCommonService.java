@@ -1168,6 +1168,7 @@ public class TdCommonService {
 			goods.setCouponNumber(0L);
 			goods.setCashNumber(0L);
 			goods.setIsCoupon(cart.getIsCoupon());
+			goods.setOwnerGoodsSku(cart.getOwnerGoodsSku());
 			if (null != goods.getIsCoupon() && goods.getIsCoupon()) {
 				virtual.setIsCoupon(true);
 			}

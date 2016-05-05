@@ -674,6 +674,10 @@
                                         ${goods.goodsCapacity!""}
                                         ${goods.goodsVersion!""}
                                         ${goods.goodsSaleType!""}
+                                        <#if goods.ownerGoodsSku??>
+                                        	调色:${goods.ownerGoodsSku!""}
+                                        </#if>
+                                        
                                     </td>
                                     <td>${goods.price?string("#.00")}</td>
                                     <td>${goods.quantity!""}</td>
