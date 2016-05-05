@@ -175,6 +175,20 @@ function getDiySiteList(object)
                 </div>
             </dd>
         </dl>
+         <dl>
+            <dt>赠送类型</dt>
+            <dd>
+                <div class="rule-single-select">
+                    <select name="giftType" datatype="*" sucmsg=" ">
+                        <#if !activity??>
+                        <option value="">请选择类别...</option>
+                        </#if>
+                        <option value="0" <#if activity?? && activity.giftType?? && activity.giftType == 0>selected="selected"</#if> >赠送商品</option>
+                        <option value="1" <#if activity?? && activity.giftType?? && activity.giftType == 1>selected="selected"</#if> >赠送产品卷</option>
+                    </select>
+                </div>
+            </dd>
+        </dl>
         <dl>
             <dt>可用</dt>
             <dd>

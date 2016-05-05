@@ -51,4 +51,12 @@ public interface TdCouponModuleRepo
 	 */
 	TdCouponModule findByGoodsIdAndCityId(Long goodsId, Long cityId);
 
+	/**
+	 * 根据商品id和城市sobid和模板类型查找模板
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月29日下午7:13:21
+	 */
+	TdCouponModule findByGoodsIdAndCityIdAndType(Long goodsId, Long cityId, Long type);
+
 }

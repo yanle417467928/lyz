@@ -34,26 +34,26 @@
         <!-- 填写订单 -->
         <article>
             <!-- 用户信息 -->
-            <#if order.deliverTypeTitle!='门店自提'>
-            <#if order??&&order.shippingName??&&order.shippingPhone??&&order.shippingAddress??>
-                <div class="receiver-info">    
-                    <div class="div1">
-                        <div class="div1-1">收货人：<span>${order.shippingName!''}</span></div>
-                        <div class="div1-2">电话：
-                            <span>
-                                <#if order.shippingPhone??&&order.shippingPhone?length==11>
-                                    ${order.shippingPhone[0..2]}****${order.shippingPhone[7..10]}
-                                </#if>
-                            </span>
-                        </div>
-                    </div>
-                    <a class="go-target" href="/order/change/address">
-                        <div class="div2">收货地址：<span>${order.shippingAddress!''}</span></div>
-                    </a>
-                </div>
-            <#else>
-                <a href="/order/add/address" style="background:#ffaa00;display:block;text-align:center;line-height:30px;width:92%;margin:0 4%;font-size:1.2em;color:white;border-radius:4px;margin-top:15px;">添加收货地址+</a>
-            </#if>
+            <#if order.deliverTypeTitle!='门店自提' && !(order.isCoupon??&&order.isCoupon)>
+	            <#if order??&&order.shippingName??&&order.shippingPhone??&&order.shippingAddress??>
+	                <div class="receiver-info">    
+	                    <div class="div1">
+	                        <div class="div1-1">收货人：<span>${order.shippingName!''}</span></div>
+	                        <div class="div1-2">电话：
+	                            <span>
+	                                <#if order.shippingPhone??&&order.shippingPhone?length==11>
+	                                    ${order.shippingPhone[0..2]}****${order.shippingPhone[7..10]}
+	                                </#if>
+	                            </span>
+	                        </div>
+	                    </div>
+	                    <a class="go-target" href="/order/change/address">
+	                        <div class="div2">收货地址：<span>${order.shippingAddress!''}</span></div>
+	                    </a>
+	                </div>
+	            <#else>
+	                <a href="/order/add/address" style="background:#ffaa00;display:block;text-align:center;line-height:30px;width:92%;margin:0 4%;font-size:1.2em;color:white;border-radius:4px;margin-top:15px;">添加收货地址+</a>
+	            </#if>
             </#if>
             <!-- 编辑订单 -->
             <article class="fill-order-list">
@@ -72,13 +72,15 @@
                     </section>
                 </#if>
                 <!-- 送货上门 -->
-                <section class="delivery">
-                    <div class="div1">
-                        <label>配送方式</label>
-                        <a class="delivery-method" href="/order/delivery">${order.deliverTypeTitle!''}</a>
-                    </div>
-                    <div class="div2">${order.deliveryDate!''}  ${order.deliveryDetailId!''}:30-${(order.deliveryDetailId+1)?eval}:30</div>
-                </section>
+                <#if !(order.isCoupon??&&order.isCoupon)>
+	                <section class="delivery">
+	                    <div class="div1">
+	                        <label>配送方式</label>
+	                        <a class="delivery-method" href="/order/delivery">${order.deliverTypeTitle!''}</a>
+	                    </div>
+	                    <div class="div2">${order.deliveryDate!''}  ${order.deliveryDetailId!''}:30-${(order.deliveryDetailId+1)?eval}:30</div>
+	                </section>
+                </#if>
                 <!-- 支付方式 -->
                 <section class="pay-method">
                     <label>支付方式</label>
@@ -91,10 +93,10 @@
                 </section>
                 <!-- 发票信息 -->
                 <#if order.sellerRealName??>
-                <section class="invoice-info">
-                    <label>服务导购</label>
-                    <div>${order.sellerRealName!'暂无'}</div>
-                </section>
+	                <section class="invoice-info">
+	                    <label>服务导购</label>
+	                   	<a class="target" href="/order/delivery">${order.sellerRealName!'暂无'}</a>
+	                </section>
                 </#if>
                 <!-- 留言 -->
                 <section class="leave-message">
@@ -104,8 +106,8 @@
                 <section class="coupon">
                     <div class="div1">
                         <label>产品劵</label>
-                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(product_coupon_list??&&product_coupon_list?size gt 0)>href="/order/coupon/1"</#if>>
-                            <#if isCoupon??&&isCoupon==false>
+                        <a class="target" <#if (product_coupon_list??&&product_coupon_list?size gt 0)>href="/order/coupon/1"</#if>>
+                            <#if order??&&order.isCoupon??&&order.isCoupon>
                                                                                 禁止使用
                             <#else>
                                 <#if product_coupon_list??&&product_coupon_list?size gt 0>
@@ -122,10 +124,12 @@
                     </div>
                     <div class="div1">
                         <label>现金劵</label>
-                        <a class="target" <#if !(isCoupon??&&isCoupon==false)&&(no_product_coupon_list??&&no_product_coupon_list?size gt 0)>href="/order/coupon/0"</#if>>
-                            <#if isCoupon??&&isCoupon==false>
+                        <a class="target" <#if (no_product_coupon_list??&&no_product_coupon_list?size gt 0)>href="/order/coupon/0"</#if>>
+                        	<#--
+                            <#if order??&&order.isCoupon??&&order.isCoupon>
                                                                                 禁止使用
                             <#else>
+                            -->
                                 <#if no_product_coupon_list??&&no_product_coupon_list?size gt 0>
                                     <#if no_product_used??>
                                         ${no_product_used}张
@@ -135,7 +139,9 @@
                                 <#else>
                                                                                     无可用
                                 </#if>
+                            <#--
                             </#if>
+                            -->
                         </a>
                     </div>
                     <div class="div1">
@@ -144,11 +150,15 @@
                             <#assign max=0.00>
                         </#if>
                         <a class="target" <#if !(isCoupon??&&isCoupon==false)>href="/order/user/balance?max=${max?string("0.00")}"</#if>>
+                        	<#--
                             <#if isCoupon??&&isCoupon==false>
                                                                                 禁止使用
                             <#else>
+                            -->
                                 <#if order??&&order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if>
+                            <#--
                             </#if>
+                            -->
                         </a>
                     </div>
                 </section>
@@ -175,7 +185,7 @@
                 <span id="order_total_price"><#if order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span>
             </div>
             <#--<a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>-->
-            <a class="btn-clearing" id="buyNow" href="javascript:pay();">去支付</a>
+            <a class="btn-clearing" id="buyNow" href="javascript:confirm();">去支付</a>
         </footer>
         <!-- 底部 END -->
     </body>

@@ -73,6 +73,7 @@ function getUserInfo() {
  * @author DengXiao
  */
 function pay() {
+
 	wait();
 	// 发起异步请求验证结算
 	$.ajax({
@@ -95,14 +96,37 @@ function pay() {
 			}
 			if (3 == res.status) {
 				if ("支付宝" == res.title) {
-					window.location.href = "/pay/alipay?id=" + res.order_id +"&type=0";
-				}
-				else if(res.title == "微信支付")
-				{
+					window.location.href = "/pay/alipay?id=" + res.order_id
+							+ "&type=0";
+				} else if (res.title == "微信支付") {
 					document.location = "WXAppPay:WX:" + res.order_id;
-				}else if("银行卡" === res.title){
-					window.location.href = "/pay/union?id=" +res.order_id + "&type=0";
+				} else if ("银行卡" === res.title) {
+					window.location.href = "/pay/union?id=" + res.order_id
+							+ "&type=0";
 				}
+			}
+		}
+	});
+}
+
+function confirm() {
+	wait();
+	$.ajax({
+		url : "/order/coupon/confirm",
+		timeout : 20000,
+		type : "post",
+		error : function() {
+			close(1);
+			warning("亲，您的网速不给力啊");
+		},
+		success : function(res) {
+			if (-1 === res.status) {
+				close(-1);
+				warning("该订单不能选择'货到付款'或'到店支付'");
+			}
+
+			if (0 === res.status) {
+				pay();
 			}
 		}
 	});

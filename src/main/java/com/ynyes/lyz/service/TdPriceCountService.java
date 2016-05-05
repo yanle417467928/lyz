@@ -118,9 +118,9 @@ public class TdPriceCountService {
 			}
 		}
 
-		// 如果订单的配送方式是到店支付，则不计算运费
+		// 如果订单的配送方式是到店支付，则不计算运费（新增：电子券订单也不计算运费 —— @Date 2016年4月27日）
 		String title = order.getDeliverTypeTitle();
-		if (null != title && "门店自提".equals(title)) {
+		if ((null != title && "门店自提".equals(title)) || (null != order.getIsCoupon() && order.getIsCoupon())) {
 			order.setDeliverFee(0.00);
 			// 同时判断能否使用券和预存款
 			Long payTypeId = order.getPayTypeId();
@@ -751,7 +751,6 @@ public class TdPriceCountService {
 				&& (null != order.getIsRefund() && order.getIsRefund())) {
 			Map<String, Object> result = this.countCouponCondition(orderId);
 
-			Boolean useProCashCoupon = (Boolean) result.get("useProCashCoupon");
 			Boolean useProCoupon = (Boolean) result.get("useProCoupon");
 			Boolean useCashCoupon = (Boolean) result.get("useCashCoupon");
 
@@ -940,9 +939,14 @@ public class TdPriceCountService {
 					return;
 				}
 
+				Long type = 0L;
+				if (null != order.getIsCoupon() && order.getIsCoupon()) {
+					type = 1L;
+				}
+
 				for (TdOrderGoods orderGoods : goodsList) {
 					// 如果买的商品本身就是券，则不赠送
-					if (null != orderGoods && !(null != orderGoods.getIsCoupon() && orderGoods.getIsCoupon())) {
+					if (null != orderGoods) {
 						Long goodsId = orderGoods.getGoodsId();
 						Long quantity = orderGoods.getQuantity();
 						if (null == goodsId || null == quantity) {
@@ -950,7 +954,8 @@ public class TdPriceCountService {
 						}
 
 						// 根据商品id和城市id查找模板
-						TdCouponModule module = tdCouponModuleService.findByGoodsIdAndCityId(goodsId, user.getCityId());
+						TdCouponModule module = tdCouponModuleService.findByGoodsIdAndCityIdAndType(goodsId,
+								user.getCityId(), type);
 						if (null != module) {
 							// 购买的数量为多少就赠送多少
 							for (int i = 0; i < quantity; i++) {

@@ -706,6 +706,9 @@ public class TdGoodsController {
 		// 获取订单中所有的商品
 		TdOrder order = tdOrderService.findOne(orderId);
 		if (null != order) {
+			// 判断是券订单还是实物订单
+			Boolean isCoupon = order.getIsCoupon();
+
 			// 获取订单的订单商品
 			List<TdOrderGoods> goodsList = order.getOrderGoodsList();
 			if (null != goodsList && goodsList.size() > 0) {
@@ -733,8 +736,15 @@ public class TdGoodsController {
 							cart.setQuantity(orderGoods.getQuantity());
 							cart.setSku(orderGoods.getSku());
 							// 设置实时价格
-							cart.setPrice(priceListItem.getSalePrice());
-							cart.setRealPrice(priceListItem.getRealSalePrice());
+
+							if (null != isCoupon && isCoupon) {
+								cart.setPrice(priceListItem.getCouponPrice());
+								cart.setRealPrice(priceListItem.getCouponRealPrice());
+								cart.setIsCoupon(true);
+							} else {
+								cart.setPrice(priceListItem.getSalePrice());
+								cart.setRealPrice(priceListItem.getRealSalePrice());
+							}
 
 							cart.setBrandTitle(orderGoods.getBrandTitle());
 							cart.setBrandId(orderGoods.getBrandId());

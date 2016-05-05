@@ -1,9 +1,7 @@
 package com.ynyes.lyz.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
@@ -11,8 +9,6 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
@@ -127,13 +123,14 @@ public class TdCouponGoodsService {
 		List<TdGoods> actual_goods = new ArrayList<>();
 		// 查找指定二级分类下的所有商品
 		List<TdGoods> goods_list = tdGoodsService
-				.findByCategoryIdAndIsOnSaleTrueAndIsCouponTrueOrderBySortIdAsc(cateGoryId);
+				.findByCategoryIdAndIsOnSaleTrueAndIsCouponNotTrueOrderBySortIdAsc(cateGoryId);
 		for (int i = 0; i < goods_list.size(); i++) {
 			TdGoods goods = goods_list.get(i);
 			if (null != goods) {
 				// 查找指定商品的价格
 				TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
-				if (null != priceListItem) {
+				if (null != priceListItem && null != priceListItem.getCouponPrice()
+						&& null != priceListItem.getCouponRealPrice()) {
 					actual_goods.add(goods);
 					// 开始判断此件商品是否参加活动
 					priceListItem.setIsPromotion(tdCommonService.isJoinActivity(req, goods));

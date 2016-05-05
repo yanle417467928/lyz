@@ -62,14 +62,18 @@
                             <#case 5>
                                 <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                 <#if !item.isRefund?? || !item.isRefund>
-                                <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
+	                                <#if !(item.isCoupon??&&item.isCoupon)>
+	                                	<a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
+	                                </#if>
                                 <a href="">立即评价</a>
                                 </#if>
                             <#break>
                             <#case 6>
                                 <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                 <#if !item.isRefund?? || !item.isRefund>
-                                <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
+	                                <#if !(item.isCoupon??&&item.isCoupon)>
+	                                	<a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
+	                                </#if>
                                 </#if>
                                 <a href="javascript:win_yes('是否确定删除？','deleteOrder(${item.id?c})');">删除订单</a>
                             <#break>

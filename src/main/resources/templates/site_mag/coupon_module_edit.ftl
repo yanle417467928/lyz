@@ -115,6 +115,20 @@ $(function () {
             </div>
         </dd>
     </dl>
+     <dl>
+            <dt>模板类型</dt>
+            <dd>
+                <div class="rule-single-select">
+                    <select id="type" name="type" datatype="*" sucmsg=" ">
+                        <#if !module??>
+                        <option value="">请选择类别...</option>
+                        </#if>
+                        <option value="0" <#if module?? && module.type?? && module.type == 0>selected="selected"</#if> >商品</option>
+                        <option value="1" <#if module?? && module.type?? && module.type == 1>selected="selected"</#if> >产品卷</option>
+                    </select>
+                </div>
+            </dd>
+        </dl>
     <dl>
         <dt>价值</dt>
         <dd>
@@ -173,6 +187,7 @@ function searchGoods()
 
 function moduleCheck(){
 	var cityId = $("#cityId option:selected").val();
+	var type = $("#type option:selected").val();
 	var goodsId = $("input[name='goodsId']:checked").val()
 	var moduleId = $("#moduleId").val();
 	<#-- 判断是否选中 -->
@@ -183,6 +198,11 @@ function moduleCheck(){
 	
 	if(!goodsId || "" === goodsId){
 		$.dialog.alert("请选择商品");
+		return;
+	}
+	
+	if(!type || "" === type){
+		$.dialog.alert("请选择模板类型");
 		return;
 	}
 	
@@ -198,6 +218,7 @@ function moduleCheck(){
 		data : {
 			cityId : cityId,
 			goodsId : goodsId,
+			type : type,
 			moduleId : moduleId
 		},
 		error : function(){

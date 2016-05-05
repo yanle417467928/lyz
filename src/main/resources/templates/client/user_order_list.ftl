@@ -199,7 +199,9 @@
                                             <#switch item.statusId>
                                                 <#case 2>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    <#if !(item.isCoupon??&&item.isCoupon)>
+                                                    	<a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    </#if>
                                                     <#if user_type??>
                                                         <#if user_type!=1>
                                                         <a href="/order?id=${item.id?c}" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>
@@ -207,7 +209,9 @@
                                                     </#if>
                                                 <#break>
                                                 <#case 3>
-                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    <#if !(item.isCoupon??&&item.isCoupon)>
+                                                    	<a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    </#if>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                 <#break>
                                                 <#case 4>
@@ -218,8 +222,10 @@
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <#if !item.isRefund?? || !item.isRefund>
-                                                    <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
-                                                    <a href="">立即评价</a>
+                                                    	<#if !(item.isCoupon??&&item.isCoupon)>
+                                                    		<a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
+                                                    	</#if>
+                                                    	<a href="">立即评价</a>
                                                     </#if>
                                                 <#break>
                                                 <#case 6>
@@ -281,7 +287,9 @@
                                             <#switch item.statusId>
                                                 <#case 2>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    <#if !(item.isCoupon??&&item.isCoupon)>
+                                                    	<a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    </#if>
                                                     <#--<a href="/order?id=${item.id?c}" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>-->
                                                     <#if user_type??>
                                                         <#if user_type!=1>
@@ -290,7 +298,9 @@
                                                     </#if>
                                                 <#break>
                                                 <#case 3>
-                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                	<#if !(item.isCoupon??&&item.isCoupon)>
+                                                    	<a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    </#if>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                 <#break>
                                                 <#case 4>
@@ -301,8 +311,10 @@
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <#if !item.isRefund?? || !item.isRefund>
-                                                    <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
-                                                    <a href="">立即评价</a>
+	                                                    <#if !(item.isCoupon??&&item.isCoupon)>
+	                                                		<a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
+	                                                	</#if>
+	                                                    <a href="">立即评价</a>
                                                     </#if>
                                                 <#break>
                                                 <#case 6>
@@ -364,7 +376,9 @@
                                             <#switch item.statusId>
                                                 <#case 2>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    <#if !(item.isCoupon??&&item.isCoupon)>
+                                                    	<a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    </#if>
                                                     <#--<a href="/order?id=${item.id?c}" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>-->
                                                     <#if user_type??>
                                                         <#if user_type!=1>
@@ -373,7 +387,9 @@
                                                     </#if>
                                                 <#break>
                                                 <#case 3>
-                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                	<#if !(item.isCoupon??&&item.isCoupon)>
+                                                    	<a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    </#if>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                 <#break>
                                                 <#case 4>
@@ -384,8 +400,10 @@
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <#if !item.isRefund?? || !item.isRefund>
-                                                    <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
-                                                    <a href="">立即评价</a>
+	                                                    <#if !(item.isCoupon??&&item.isCoupon)>
+	                                                		<a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
+	                                                	</#if>
+                                                    	<a href="">立即评价</a>
                                                     </#if>
                                                 <#break>
                                                 <#case 6>
@@ -447,7 +465,9 @@
                                             <#switch item.statusId>
                                                 <#case 2>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    <#if !(item.isCoupon??&&item.isCoupon)>
+                                                    	<a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    </#if>
                                                     <#--<a href="/order?id=${item.id?c}" style="border: #cc1421 1px solid; color: #cc1421;">去支付</a>-->
                                                     <#if user_type??>
                                                         <#if user_type!=1>
@@ -456,7 +476,9 @@
                                                     </#if>
                                                 <#break>
                                                 <#case 3>
-                                                    <a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                	<#if !(item.isCoupon??&&item.isCoupon)>
+                                                    	<a href="javascript:win_yes('是否确定取消？','cancel(${item.id?c});');">取消订单</a>
+                                                    </#if>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                 <#break>
                                                 <#case 4>
@@ -467,8 +489,10 @@
                                                 <#case 5>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
                                                     <#if !item.isRefund?? || !item.isRefund>
-                                                    <a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
-                                                    <a href="">立即评价</a>
+	                                                    <#if !(item.isCoupon??&&item.isCoupon)>
+	                                                		<a href="/user/order/return?orderId=${item.id?c}">申请退货</a>
+	                                                	</#if>
+                                                    	<a href="">立即评价</a>
                                                     </#if>
                                                 <#break>
                                                 <#case 6>

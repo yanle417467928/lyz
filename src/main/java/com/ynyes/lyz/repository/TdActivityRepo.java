@@ -28,6 +28,15 @@ public interface TdActivityRepo
 			Date date1, Date date2);
 
 	/**
+	 * 根据门店id和赠送类型查找参与的未过期的活动，按照排序号正序排序
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月29日下午6:24:15
+	 */
+	List<TdActivity> findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
+			String diySiteId, Date date1, Date date2, Long giftType);
+
+	/**
 	 * 按照活动名查找活动
 	 * 
 	 * @author dengxiao

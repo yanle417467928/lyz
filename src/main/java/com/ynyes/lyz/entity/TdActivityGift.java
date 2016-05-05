@@ -28,24 +28,24 @@ public class TdActivityGift {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	//活动名称
+	// 活动名称
 	@Column
 	private String name;
-	
+
 	// 赠送小辅料的名字
 	@Column
 	private String giftName;
-	
+
 	// 是否可用
 	@Column
 	private Boolean isUseable;
-	
+
 	// 活动创建时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date creatTime;
-	
+
 	// 活动开始时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -65,7 +65,7 @@ public class TdActivityGift {
 	// 类别id
 	@Column
 	private Long categoryId;
-	
+
 	// 类别名字
 	@Column
 	private String categoryName;
@@ -73,25 +73,27 @@ public class TdActivityGift {
 	// 满足购买改类别赠送的数量
 	@Column
 	private Long buyNumber;
-	
+
 	// 赠品
 	@OneToMany
 	@JoinColumn(name = "ownerActivityGiftId")
 	private List<TdActivityGiftList> giftList;
-	
-	
-	
+
 	// 赠品数量
 	@Column
 	private Integer totalGift;
-	
+
 	// 城市id
 	@Column
 	private Long cityId;
-	
+
 	// 门店id（多个以","分割）
 	@Column
 	private String diySiteIds;
+
+	// 赠送类型（0代表商品，1代表小辅料）
+	@Column
+	private Long giftType;
 
 	public Long getId() {
 		return id;
@@ -212,7 +214,13 @@ public class TdActivityGift {
 	public void setDiySiteIds(String diySiteIds) {
 		this.diySiteIds = diySiteIds;
 	}
-	
-	
+
+	public Long getGiftType() {
+		return giftType;
+	}
+
+	public void setGiftType(Long giftType) {
+		this.giftType = giftType;
+	}
 
 }

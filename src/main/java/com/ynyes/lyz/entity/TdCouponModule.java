@@ -32,6 +32,10 @@ public class TdCouponModule {
 	@Column
 	private String cityTitle;
 
+	// 模板类型（0.代表是商品；1. 代表是券）
+	@Column
+	private Long type;
+
 	// 商品的id
 	@Column
 	private Long goodsId;
@@ -160,4 +164,11 @@ public class TdCouponModule {
 		this.picUri = picUri;
 	}
 
+	public Long getType() {
+		return type;
+	}
+
+	public void setType(Long type) {
+		this.type = type;
+	}
 }

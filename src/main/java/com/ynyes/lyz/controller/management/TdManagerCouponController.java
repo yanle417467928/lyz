@@ -316,13 +316,13 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 	@RequestMapping(value = "/module/check")
 	@ResponseBody
-	public Map<String, Object> moduleCheck(Long cityId, Long goodsId, Long moduleId) {
+	public Map<String, Object> moduleCheck(Long cityId, Long goodsId, Long moduleId,Long type) {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 
-		TdCouponModule module = tdCouponModuleService.findByGoodsIdAndCityId(goodsId, cityId);
+		TdCouponModule module = tdCouponModuleService.findByGoodsIdAndCityIdAndType(goodsId, cityId,type);
 		if (null != module && !(null != moduleId && module.getId() == moduleId)) {
-			res.put("message", "该城市指定商品的优惠券模块已经添加");
+			res.put("message", "该城市指定商品和类型的优惠券模块已经添加");
 			return res;
 		}
 

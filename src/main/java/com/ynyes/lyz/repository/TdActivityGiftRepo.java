@@ -16,6 +16,6 @@ public interface TdActivityGiftRepo
 	 * 
 	 * @author dengxiao
 	 */
-	List<TdActivityGift> findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterOrderBySortIdAsc(Long categoryId,
-			Date date1, Date date2);
+	List<TdActivityGift> findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterAndGiftTypeOrderBySortIdAsc(
+			Long categoryId, Date date1, Date date2, Long giftType);
 }

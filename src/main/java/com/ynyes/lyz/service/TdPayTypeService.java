@@ -141,4 +141,18 @@ public class TdPayTypeService {
 	public List<TdPayType> findByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc() {
 		return repository.findByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc();
 	}
+
+	/**
+	 * 查找首个线上支付的支付方式
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月29日上午9:26:37
+	 */
+	public TdPayType findTopByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc() {
+		List<TdPayType> pay_list = repository.findByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc();
+		if (null != pay_list && pay_list.size() > 0) {
+			return pay_list.get(0);
+		}
+		return null;
+	}
 }

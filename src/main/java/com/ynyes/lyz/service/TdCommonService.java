@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import com.ibm.icu.math.BigDecimal;
+import com.ibm.icu.util.Calendar;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
@@ -399,14 +400,15 @@ public class TdCommonService {
 		return priceItemList.get(0);
 	}
 
-	public List<TdGoods> getTdGoodsByDiySiteCode(TdDiySite diySite) {
-		List<TdGoods> tdGoodsList = new ArrayList<TdGoods>();
-		Long sobId = diySite.getRegionId();
-		String priceType = "LYZ";
-		List<TdPriceList> priceList_list = tdPriceListService
-				.findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId, priceType, new Date(), new Date());
-		return tdGoodsList;
-	}
+	// public List<TdGoods> getTdGoodsByDiySiteCode(TdDiySite diySite) {
+	// List<TdGoods> tdGoodsList = new ArrayList<TdGoods>();
+	// Long sobId = diySite.getRegionId();
+	// String priceType = "LYZ";
+	// List<TdPriceList> priceList_list = tdPriceListService
+	// .findBySobIdAndPriceTypeAndStartDateActiveAndEndDateActive(sobId,
+	// priceType, new Date(), new Date());
+	// return tdGoodsList;
+	// }
 
 	/**
 	 * 查找三级分类的方法并查找指定三级分类下的所有商品及其价目表的方法
@@ -494,6 +496,9 @@ public class TdCommonService {
 		if (null != level_one_categories && level_one_categories.size() > 0) {
 			for (int i = 0; i < level_one_categories.size(); i++) {
 				TdCategoryLimit one = level_one_categories.get(i);
+				if (0 == i && null != one) {
+					map.addAttribute("one_level_category_id", one.getId());
+				}
 				if (null != one) {
 					List<TdCategoryLimit> level_two_categories = tdCategoryLimitService
 							.findBySobIdAndParentIdOrderBySortIdAsc(sobId, one.getCategoryId());
@@ -521,13 +526,15 @@ public class TdCommonService {
 		// 创建一个集合存储有价格的商品
 		List<TdGoods> actual_goods = new ArrayList<>();
 		// 查找指定二级分类下的所有商品
-		List<TdGoods> goods_list = tdGoodsService.findByCategoryIdAndIsOnSaleTrueOrderBySortIdAsc(cateGoryId);
+		List<TdGoods> goods_list = tdGoodsService
+				.findByCategoryIdAndIsOnSaleTrueAndIsCouponNotTrueOrderBySortIdAsc(cateGoryId);
 		for (int i = 0; i < goods_list.size(); i++) {
 			TdGoods goods = goods_list.get(i);
 			if (null != goods) {
 				// 查找指定商品的价格
 				TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
-				if (null != priceListItem) {
+				if (null != priceListItem && null != priceListItem.getSalePrice()
+						&& null != priceListItem.getRealSalePrice()) {
 					actual_goods.add(goods);
 					// 开始判断此件商品是否参加活动
 					priceListItem.setIsPromotion(this.isJoinActivity(req, goods));
@@ -743,8 +750,14 @@ public class TdCommonService {
 		if (null == giftGoodsList) {
 			giftGoodsList = new ArrayList<>();
 		}
+
+		Long giftType = 0L;
+		if (null != order && null != order.getIsCoupon() && order.getIsCoupon()) {
+			giftType = 1L;
+		}
+
 		// 获取已选能够参加的活动
-		List<TdActivityGift> activities = this.getActivityGiftBySelected(req);
+		List<TdActivityGift> activities = this.getActivityGiftBySelected(req, giftType);
 		for (TdActivityGift activity : activities) {
 			Long categoryId = activity.getCategoryId();
 			Long quantity = activity.getBuyNumber();
@@ -771,7 +784,7 @@ public class TdCommonService {
 						Boolean isHave = false;
 						for (TdOrderGoods orderGoods : giftGoodsList) {
 							if (null != orderGoods && null != orderGoods.getGoodsId()
-									&& orderGoods.getGoodsId() == gift.getGoodsId()) {
+									&& orderGoods.getGoodsId().longValue() == gift.getGoodsId().longValue()) {
 								isHave = true;
 								orderGoods.setQuantity(orderGoods.getQuantity() + goods.getQuantity());
 							}
@@ -780,6 +793,8 @@ public class TdCommonService {
 							giftGoodsList.add(goods);
 						}
 						tdOrderGoodsService.save(goods);
+						// 消减数量
+						group.put(categoryId, group.get(categoryId) - quantity);
 					}
 				}
 			}
@@ -794,7 +809,7 @@ public class TdCommonService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdActivityGift> getActivityGiftBySelected(HttpServletRequest req) {
+	public List<TdActivityGift> getActivityGiftBySelected(HttpServletRequest req, Long giftType) {
 		// 创建一个集合用于存储当前已选的所能参加的小辅料活动
 		List<TdActivityGift> join = new ArrayList<>();
 		// 获取当前用户
@@ -808,8 +823,8 @@ public class TdCommonService {
 
 			// 根据分类id获取小辅料赠送活动
 			List<TdActivityGift> activityGift_list = tdActivityGiftService
-					.findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterOrderBySortIdAsc(categoryId,
-							new Date());
+					.findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterAndGiftTypeOrderBySortIdAsc(
+							categoryId, new Date(), giftType);
 			// 将参加的活动添加到join中
 			if (null != activityGift_list) {
 				for (TdActivityGift activityGift : activityGift_list) {
@@ -1127,6 +1142,16 @@ public class TdCommonService {
 		}
 		virtual = this.getPresent(req, virtual);
 		virtual = this.getGift(req, virtual);
+
+		// 券订单不能使用线下支付的方式
+		if (null != virtual.getIsCoupon() && virtual.getIsCoupon()) {
+			// 获取第一个线上支付的支付方式
+			TdPayType top = tdPayTypeService.findTopByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc();
+			virtual.setPayTypeId(top.getId());
+			virtual.setPayTypeTitle(top.getTitle());
+			tdOrderService.save(virtual);
+		}
+
 		return virtual;
 	}
 
@@ -1157,12 +1182,18 @@ public class TdCommonService {
 			selected_map.put(id, quantity);
 		}
 
+		Long giftType = 0L;
+
+		if (null != order.getIsCoupon() && order.getIsCoupon()) {
+			giftType = 1L;
+		}
+
 		// 获取用户的门店
 		TdDiySite diySite = this.getDiySite(req);
 		// 获取用户门店所能参加的活动
 		List<TdActivity> activity_list = tdActivityService
-				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySite.getId() + "",
-						new Date());
+				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
+						diySite.getId() + "", new Date(), giftType);
 		for (TdActivity activity : activity_list) {
 			// 创建一个布尔变量表示已选商品能否参加指定的活动
 			Boolean isJoin = true;
@@ -1342,7 +1373,11 @@ public class TdCommonService {
 				order.setAllActualPay(order_temp.getActualPay());
 				// 设置实际应该支付的总额
 				order.setAllTotalPay(order_temp.getTotalPrice());
+				// 设置是否是电子券
+				order.setIsCoupon(order_temp.getIsCoupon());
+
 				order_map.put(brand.getId(), order);
+
 			}
 		}
 
@@ -1584,12 +1619,25 @@ public class TdCommonService {
 			if (null != order && null != order.getTotalGoodsPrice() && order.getTotalGoodsPrice() > 0) {
 				BigDecimal b = new BigDecimal(order.getTotalPrice());
 				order.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+				if (null != order_temp.getIsCoupon() && order_temp.getIsCoupon()) {
+					order.setStatusId(5L);
+				}
 				order = tdOrderService.save(order);
 				// 增加一个判定，只有配送单才会抛到WMS去——dengxiao
 				if ("送货上门".equals(order.getDeliverTypeTitle())) {
 					orderList.add(order);
 				}
 			}
+		}
+
+		Boolean isSend = true;
+
+		if (null != order_temp.getIsCoupon() && order_temp.getIsCoupon()) {
+			isSend = false;
+		}
+
+		if (!isSend) {
+			this.getCoupon(order_temp);
 		}
 
 		// 删除虚拟订单
@@ -1610,10 +1658,11 @@ public class TdCommonService {
 		// sendMsgToWMS(orderList, order_temp.getOrderNumber());
 
 		// 子线程 抛单给WMS
-		SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList,
-				order_temp.getOrderNumber());
-		requsitThread.start();
-
+		if (isSend) {
+			SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList,
+					order_temp.getOrderNumber());
+			requsitThread.start();
+		}
 	}
 
 	/**
@@ -2455,4 +2504,184 @@ public class TdCommonService {
 		return map;
 	}
 
+	/**
+	 * 电子券订单支付完成之后获得优惠券的方法
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 创建时间：2016年4月27日下午4:06:40
+	 */
+	public void getCoupon(TdOrder order) {
+		if (null == order) {
+			return;
+		}
+
+		Boolean isCoupon = order.getIsCoupon();
+		if (null == isCoupon || !isCoupon) {
+			return;
+		}
+
+		// 获取所有购买的商品
+		List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+		// 获取所有的赠品
+		List<TdOrderGoods> presentedList = order.getPresentedList();
+		// 获取所有的小辅料
+		List<TdOrderGoods> giftGoodsList = order.getGiftGoodsList();
+
+		Long realUserId = order.getRealUserId();
+
+		TdUser realUser = tdUserService.findOne(realUserId);
+		if (null == realUser) {
+			return;
+		}
+
+		// 获取城市
+		TdCity city = tdCityService.findBySobIdCity(realUser.getCityId());
+		if (null == city) {
+			return;
+		}
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.YEAR, 3);
+		Date expiredTime = cal.getTime();
+
+		if (null != orderGoodsList && orderGoodsList.size() > 0) {
+			for (TdOrderGoods orderGoods : orderGoodsList) {
+				if (null != orderGoods) {
+					Long goodsId = orderGoods.getGoodsId();
+					Long quantity = orderGoods.getQuantity();
+					if (null == goodsId || null == quantity) {
+						continue;
+					}
+
+					// 购买的数量为多少就赠送多少
+					for (int i = 0; i < quantity; i++) {
+						TdCoupon coupon = new TdCoupon();
+						coupon.setTypeId(4L);
+						coupon.setTypeCategoryId(3L);
+						coupon.setBrandId(orderGoods.getBrandId());
+						coupon.setBrandTitle(orderGoods.getBrandTitle());
+						coupon.setGoodsId(orderGoods.getGoodsId());
+						coupon.setPicUri(orderGoods.getGoodsCoverImageUri());
+						coupon.setGoodsName(orderGoods.getGoodsTitle());
+						coupon.setTypeTitle(orderGoods.getSku() + "产品现金券");
+						coupon.setTypeDescription(orderGoods.getSku() + "产品现金券");
+						coupon.setTypePicUri(orderGoods.getGoodsCoverImageUri());
+						coupon.setPrice(orderGoods.getPrice());
+						coupon.setIsDistributted(true);
+						coupon.setGetTime(new Date());
+						coupon.setUsername(realUser.getUsername());
+						coupon.setIsUsed(false);
+						coupon.setIsOutDate(false);
+						coupon.setExpireTime(expiredTime);
+						coupon.setMobile(realUser.getUsername());
+						coupon.setSku(orderGoods.getSku());
+						coupon.setCityId(city.getId());
+						coupon.setCityName(city.getCityName());
+
+						coupon.setDiySiteCode(order.getDiySiteCode());
+						coupon.setDiySiteTital(order.getDiySiteName());
+
+						coupon.setSellerId(order.getSellerId());
+						coupon.setSellerRealName(order.getSellerRealName());
+						coupon.setSellerUsername(order.getSellerUsername());
+
+						tdCouponService.save(coupon);
+					}
+				}
+			}
+		}
+		if (null != presentedList && presentedList.size() > 0) {
+			for (TdOrderGoods orderGoods : presentedList) {
+				if (null != orderGoods) {
+					Long goodsId = orderGoods.getGoodsId();
+					Long quantity = orderGoods.getQuantity();
+					if (null == goodsId || null == quantity) {
+						continue;
+					}
+
+					// 购买的数量为多少就赠送多少
+					for (int i = 0; i < quantity; i++) {
+						TdCoupon coupon = new TdCoupon();
+						coupon.setTypeId(4L);
+						coupon.setTypeCategoryId(3L);
+						coupon.setBrandId(orderGoods.getBrandId());
+						coupon.setBrandTitle(orderGoods.getBrandTitle());
+						coupon.setGoodsId(orderGoods.getGoodsId());
+						coupon.setPicUri(orderGoods.getGoodsCoverImageUri());
+						coupon.setGoodsName(orderGoods.getGoodsTitle());
+						coupon.setTypeTitle(orderGoods.getSku() + "产品现金券");
+						coupon.setTypeDescription(orderGoods.getSku() + "产品现金券");
+						coupon.setTypePicUri(orderGoods.getGoodsCoverImageUri());
+						coupon.setPrice(orderGoods.getPrice());
+						coupon.setIsDistributted(true);
+						coupon.setGetTime(new Date());
+						coupon.setUsername(realUser.getUsername());
+						coupon.setIsUsed(false);
+						coupon.setIsOutDate(false);
+						coupon.setExpireTime(expiredTime);
+						coupon.setMobile(realUser.getUsername());
+						coupon.setSku(orderGoods.getSku());
+						coupon.setCityId(city.getId());
+						coupon.setCityName(city.getCityName());
+
+						coupon.setDiySiteCode(order.getDiySiteCode());
+						coupon.setDiySiteTital(order.getDiySiteName());
+
+						coupon.setSellerId(order.getSellerId());
+						coupon.setSellerRealName(order.getSellerRealName());
+						coupon.setSellerUsername(order.getSellerUsername());
+
+						tdCouponService.save(coupon);
+					}
+				}
+			}
+		}
+		if (null != giftGoodsList && giftGoodsList.size() > 0) {
+			for (TdOrderGoods orderGoods : giftGoodsList) {
+				if (null != orderGoods) {
+					Long goodsId = orderGoods.getGoodsId();
+					Long quantity = orderGoods.getQuantity();
+					if (null == goodsId || null == quantity) {
+						continue;
+					}
+
+					// 购买的数量为多少就赠送多少
+					for (int i = 0; i < quantity; i++) {
+						TdCoupon coupon = new TdCoupon();
+						coupon.setTypeId(4L);
+						coupon.setTypeCategoryId(3L);
+						coupon.setBrandId(orderGoods.getBrandId());
+						coupon.setBrandTitle(orderGoods.getBrandTitle());
+						coupon.setGoodsId(orderGoods.getGoodsId());
+						coupon.setPicUri(orderGoods.getGoodsCoverImageUri());
+						coupon.setGoodsName(orderGoods.getGoodsTitle());
+						coupon.setTypeTitle(orderGoods.getSku() + "产品现金券");
+						coupon.setTypeDescription(orderGoods.getSku() + "产品现金券");
+						coupon.setTypePicUri(orderGoods.getGoodsCoverImageUri());
+						coupon.setPrice(orderGoods.getPrice());
+						coupon.setIsDistributted(true);
+						coupon.setGetTime(new Date());
+						coupon.setUsername(realUser.getUsername());
+						coupon.setIsUsed(false);
+						coupon.setIsOutDate(false);
+						coupon.setExpireTime(expiredTime);
+						coupon.setMobile(realUser.getUsername());
+						coupon.setSku(orderGoods.getSku());
+						coupon.setCityId(city.getId());
+						coupon.setCityName(city.getCityName());
+
+						coupon.setDiySiteCode(order.getDiySiteCode());
+						coupon.setDiySiteTital(order.getDiySiteName());
+
+						coupon.setSellerId(order.getSellerId());
+						coupon.setSellerRealName(order.getSellerRealName());
+						coupon.setSellerUsername(order.getSellerUsername());
+
+						tdCouponService.save(coupon);
+					}
+				}
+			}
+		}
+	}
 }

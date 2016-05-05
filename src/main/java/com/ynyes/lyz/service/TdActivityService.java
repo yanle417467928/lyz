@@ -199,12 +199,24 @@ public class TdActivityService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdActivity> findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(
-			String diySiteId, Date now) {
-		if (null == diySiteId || null == now) {
+	// public List<TdActivity>
+	// findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(
+	// String diySiteId, Date now) {
+	// if (null == diySiteId || null == now) {
+	// return null;
+	// }
+	// return
+	// repository.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySiteId
+	// + ",", now, now);
+	// }
+
+	public List<TdActivity> findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
+			String diySiteId, Date now, Long giftType) {
+		if (null == diySiteId || null == now || null == giftType) {
 			return null;
 		}
-		return repository.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySiteId + ",", now, now);
+		return repository.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
+				diySiteId + ",", now, now, giftType);
 	}
 
 	public TdActivity findByName(String name) {

@@ -64,7 +64,7 @@
                             <li class="li2 bdbt-n">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                                 <div class="product-info">
-                                    <div class="div1">${item.goodsTitle!''}</div>
+                                    <div class="div1">${item.goodsTitle!''}<#if item.isCoupon??&&item.isCoupon>【券】</#if></div>
                                     <div class="div1">${item.sku!''}</div>
                                     <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}<#else>0.00</#if></span><label>数量：<span>${item.quantity!'0'}</span></label></div>
                                 </div>
@@ -77,7 +77,7 @@
                             <li class="li2 bdbt-n">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                                 <div class="product-info">
-                                    <div class="div1">${item.goodsTitle!''}<span style="color:red">【赠品】</span></div>
+                                    <div class="div1">${item.goodsTitle!''}<span style="color:red"><#if item.isCoupon??&&item.isCoupon>【赠品-券】<#else>【赠品】</#if></span></div>
                                     <div class="div1">${item.sku!''}</div>
                                     <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}<#else>0.00</#if></span><label>数量：<span>${item.quantity!'0'}</span></label></div>
                                 </div>
@@ -89,7 +89,7 @@
                             <li class="li2 bdbt-n">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                                 <div class="product-info">
-                                    <div class="div1">${item.goodsTitle!''}<span style="color:red">【小辅料】</span></div>
+                                    <div class="div1">${item.goodsTitle!''}<span style="color:red"><#if item.isCoupon??&&item.isCoupon>【小辅料-券】<#else>【小辅料】</#if></span></div>
                                     <div class="div1">${item.sku!''}</div>
                                     <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}<#else>0.00</#if></span><label>数量：<span>${item.quantity!'0'}</span></label></div>
                                 </div>

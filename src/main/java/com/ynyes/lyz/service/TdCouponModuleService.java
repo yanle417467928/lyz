@@ -114,4 +114,11 @@ public class TdCouponModuleService {
 		}
 		return repository.findByGoodsIdAndCityId(goodsId, cityId);
 	}
+
+	public TdCouponModule findByGoodsIdAndCityIdAndType(Long goodsId, Long cityId, Long type) {
+		if(null == goodsId || null == cityId || null == type){
+			return null;
+		}
+		return repository.findByGoodsIdAndCityIdAndType(goodsId,cityId,type);
+	}
 }

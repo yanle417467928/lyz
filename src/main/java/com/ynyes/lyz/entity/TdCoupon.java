@@ -143,6 +143,19 @@ public class TdCoupon {
 	// 门店名称
 	@Column
 	private String diySiteTital;
+	
+	//销顾名称
+	@Column
+	private String sellerRealName;
+	
+	//销顾账号
+	@Column
+	private String sellerUsername;
+	
+	//销顾id
+	@Column
+	private Long sellerId;
+	
 	// 城市id
 	@Column
 	private Long cityId;
@@ -158,6 +171,30 @@ public class TdCoupon {
 	@Column
 	private String sku;
 
+	// 使用门店code
+	@Column
+	private String useDiySiteCode;
+
+	// 使用门店名称
+	@Column
+	private String useDiySiteTitle;
+
+	// 使用门店id
+	@Column
+	private Long useDiySiteId;
+	
+	//使用销顾名称
+	@Column
+	private String useSellerRealName;
+
+	//使用销顾账号
+	@Column
+	private String useSellerUsername;
+	
+	//使用销顾id
+	@Column
+	private Long useSellerId;
+	
 	public String getCustomerId() {
 		return customerId;
 	}
@@ -422,4 +459,75 @@ public class TdCoupon {
 		this.cityName = cityName;
 	}
 
+	public String getUseDiySiteCode() {
+		return useDiySiteCode;
+	}
+
+	public void setUseDiySiteCode(String useDiySiteCode) {
+		this.useDiySiteCode = useDiySiteCode;
+	}
+
+	public String getUseDiySiteTitle() {
+		return useDiySiteTitle;
+	}
+
+	public void setUseDiySiteTitle(String useDiySiteTitle) {
+		this.useDiySiteTitle = useDiySiteTitle;
+	}
+
+	public Long getUseDiySiteId() {
+		return useDiySiteId;
+	}
+
+	public void setUseDiySiteId(Long useDiySiteId) {
+		this.useDiySiteId = useDiySiteId;
+	}
+
+	public String getSellerRealName() {
+		return sellerRealName;
+	}
+
+	public void setSellerRealName(String sellerRealName) {
+		this.sellerRealName = sellerRealName;
+	}
+
+	public String getSellerUsername() {
+		return sellerUsername;
+	}
+
+	public void setSellerUsername(String sellerUsername) {
+		this.sellerUsername = sellerUsername;
+	}
+
+	public Long getSellerId() {
+		return sellerId;
+	}
+
+	public void setSellerId(Long sellerId) {
+		this.sellerId = sellerId;
+	}
+
+	public String getUseSellerRealName() {
+		return useSellerRealName;
+	}
+
+	public void setUseSellerRealName(String useSellerRealName) {
+		this.useSellerRealName = useSellerRealName;
+	}
+
+	public String getUseSellerUsername() {
+		return useSellerUsername;
+	}
+
+	public void setUseSellerUsername(String useSellerUsername) {
+		this.useSellerUsername = useSellerUsername;
+	}
+
+	public Long getUseSellerId() {
+		return useSellerId;
+	}
+
+	public void setUseSellerId(Long useSellerId) {
+		this.useSellerId = useSellerId;
+	}
 }

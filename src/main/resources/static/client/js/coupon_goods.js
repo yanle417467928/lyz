@@ -46,7 +46,7 @@ function checkSeller() {
 				if (!isNaN(my_value) && my_value > 0) {
 					params = params
 							+ $('.goodsSelectedQuantity').eq(i).attr("id")
-									.replace("quantity", "") + "+";
+									.replace("quantity", "") + "_";
 					params = params + my_value + "-";
 				}
 			});
@@ -86,7 +86,7 @@ function addCart() {
 				if (!isNaN(my_value) && my_value > 0) {
 					params = params
 							+ $('.goodsSelectedQuantity').eq(i).attr("id")
-									.replace("quantity", "") + "+";
+									.replace("quantity", "") + "_";
 					params = params + my_value + "-";
 				}
 			});

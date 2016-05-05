@@ -166,8 +166,6 @@
 				            </#if>
 			            </#list>
 	            	</#if>
-		        </div>
-		        <div class="swiper-wrapper">
 		        	<#if gift??>
 		        		<#list gift as item>
 		        			<#if item??>

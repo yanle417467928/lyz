@@ -163,6 +163,16 @@ public class TdPayController {
 									if (null != coupon) {
 										coupon.setIsUsed(true);
 										coupon.setUseTime(new Date());
+										coupon.setOrderNumber(order.getOrderNumber());
+										
+										coupon.setUseDiySiteCode(order.getDiySiteCode());
+										coupon.setUseDiySiteId(order.getDiySiteId());
+										coupon.setUseDiySiteTitle(order.getDiySiteName());
+										
+										coupon.setUseSellerId(order.getSellerId());
+										coupon.setUseSellerRealName(order.getSellerRealName());
+										coupon.setUseSellerUsername(order.getSellerUsername());
+										
 										tdCouponService.save(coupon);
 									}
 								}
@@ -180,6 +190,16 @@ public class TdPayController {
 									if (null != coupon) {
 										coupon.setIsUsed(true);
 										coupon.setUseTime(new Date());
+										coupon.setOrderNumber(order.getOrderNumber());
+										
+										coupon.setUseDiySiteCode(order.getDiySiteCode());
+										coupon.setUseDiySiteId(order.getDiySiteId());
+										coupon.setUseDiySiteTitle(order.getDiySiteName());
+										
+										coupon.setUseSellerId(order.getSellerId());
+										coupon.setUseSellerRealName(order.getSellerRealName());
+										coupon.setUseSellerUsername(order.getSellerUsername());
+										
 										tdCouponService.save(coupon);
 									}
 								}
@@ -307,6 +327,12 @@ public class TdPayController {
 										if (null != coupon) {
 											coupon.setIsUsed(true);
 											coupon.setUseTime(new Date());
+											coupon.setOrderNumber(order.getOrderNumber());
+											
+											coupon.setUseDiySiteCode(order.getDiySiteCode());
+											coupon.setUseDiySiteId(order.getDiySiteId());
+											coupon.setUseDiySiteTitle(order.getDiySiteName());
+											
 											tdCouponService.save(coupon);
 										}
 									}
@@ -324,6 +350,12 @@ public class TdPayController {
 										if (null != coupon) {
 											coupon.setIsUsed(true);
 											coupon.setUseTime(new Date());
+											coupon.setOrderNumber(order.getOrderNumber());
+											
+											coupon.setUseDiySiteCode(order.getDiySiteCode());
+											coupon.setUseDiySiteId(order.getDiySiteId());
+											coupon.setUseDiySiteTitle(order.getDiySiteName());
+											
 											tdCouponService.save(coupon);
 										}
 									}

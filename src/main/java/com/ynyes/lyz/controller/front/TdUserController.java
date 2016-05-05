@@ -1356,8 +1356,7 @@ public class TdUserController {
 
 		if (null != order.getStatusId() && 3L == order.getStatusId()) {
 			// 生成退货单
-			if (null != order)
-			{
+			if (null != order) {
 				TdReturnNote returnNote = tdCommonService.MakeReturnNote(order, 0L, "");
 				tdCommonService.sendBackMsgToWMS(returnNote);
 				// System.out.println("MDJWMS:发送退货单：" +
@@ -1367,7 +1366,7 @@ public class TdUserController {
 
 		Long realUserId = order.getRealUserId();
 		TdUser realUser = tdUserService.findOne(realUserId);
-		
+
 		// 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
 		List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
 		// 进行遍历操作
@@ -1975,10 +1974,15 @@ public class TdUserController {
 		// 为了避免脏数据刷新，创建一个map用于存储已选【id：数量】
 		Map<Long, Long> selected_map = new HashMap<>();
 
+		Long giftType = 0L;
+
 		for (TdCartGoods cartGoods : all_selected) {
 			Long id = cartGoods.getGoodsId();
 			Long quantity = cartGoods.getQuantity();
-
+			Boolean isCoupon = cartGoods.getIsCoupon();
+			if (null != isCoupon && isCoupon) {
+				giftType = 1L;
+			}
 			selected_map.put(id, quantity);
 		}
 
@@ -1986,8 +1990,8 @@ public class TdUserController {
 		TdDiySite diySite = tdCommonService.getDiySite(req);
 		// 获取用户门店所能参加的活动
 		List<TdActivity> activity_list = tdActivityService
-				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySite.getId() + "",
-						new Date());
+				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
+						diySite.getId() + "", new Date(), giftType);
 		for (TdActivity activity : activity_list) {
 			// 创建一个布尔变量表示已选商品能否参加指定的活动
 			Boolean isJoin = true;
@@ -2096,10 +2100,19 @@ public class TdUserController {
 	 */
 	public List<TdOrderGoods> getGift(HttpServletRequest req, List<TdCartGoods> all_selected) {
 		List<TdOrderGoods> giftGoodsList = new ArrayList<>();
+
+		Long giftType = 0L;
+		for (TdOrderGoods goods : giftGoodsList) {
+			if (null != goods && null != goods.getIsCoupon() && goods.getIsCoupon()) {
+				giftType = 1L;
+				break;
+			}
+		}
+
 		// 获取已选【分类：数量】组
 		Map<Long, Long> group = tdCommonService.getGroup(req);
 		// 获取已选能够参加的活动
-		List<TdActivityGift> activities = tdCommonService.getActivityGiftBySelected(req);
+		List<TdActivityGift> activities = tdCommonService.getActivityGiftBySelected(req, giftType);
 		for (TdActivityGift activity : activities) {
 			Long categoryId = activity.getCategoryId();
 			Long quantity = activity.getBuyNumber();
@@ -2126,7 +2139,7 @@ public class TdUserController {
 						Boolean isHave = false;
 						for (TdOrderGoods orderGoods : giftGoodsList) {
 							if (null != orderGoods && null != orderGoods.getGoodsId()
-									&& orderGoods.getGoodsId() == gift.getGoodsId()) {
+									&& orderGoods.getGoodsId().longValue() == gift.getGoodsId().longValue()) {
 								isHave = true;
 								orderGoods.setQuantity(orderGoods.getQuantity() + goods.getQuantity());
 							}
@@ -2134,6 +2147,8 @@ public class TdUserController {
 						if (!isHave) {
 							giftGoodsList.add(goods);
 						}
+						// 消减数量
+						group.put(categoryId, group.get(categoryId) - quantity);
 					}
 				}
 			}
@@ -2180,7 +2195,7 @@ public class TdUserController {
 				user.setSellerName(seller.getRealName());
 				user.setReferPhone(seller.getUsername());
 				tdUserService.save(user);
-				
+
 				res.put("name", seller.getRealName());
 			} else {
 				res.put("message", "未能成功获取到登录用户的信息");

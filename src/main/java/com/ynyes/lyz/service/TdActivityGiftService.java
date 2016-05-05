@@ -75,7 +75,7 @@ public class TdActivityGiftService {
 		}
 		return repository.findOne(id);
 	}
-	
+
 	public void delete(Long id) {
 		if (null != id) {
 			repository.delete(id);
@@ -91,13 +91,13 @@ public class TdActivityGiftService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdActivityGift> findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterOrderBySortIdAsc(
-			Long categoryId, Date now) {
-		if (null == categoryId || null == now) {
+	public List<TdActivityGift> findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterAndGiftTypeOrderBySortIdAsc(
+			Long categoryId, Date now, Long giftType) {
+		if (null == categoryId || null == now || null == giftType) {
 			return null;
 		}
-		return repository.findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterOrderBySortIdAsc(categoryId, now,
-				now);
+		return repository.findByCategoryIdAndIsUseableTrueAndBeginTimeBeforeAndEndTimeAfterAndGiftTypeOrderBySortIdAsc(
+				categoryId, now, now, giftType);
 	}
 
 }

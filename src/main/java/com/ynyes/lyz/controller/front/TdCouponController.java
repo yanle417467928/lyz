@@ -163,7 +163,11 @@ public class TdCouponController {
 			return "redirect:/login";
 		}
 
-		tdCouponGoodsService.getAllCouponCategory(req, map);
+		tdCommonService.setHeader(req, map);
+		// tdCommonService.getCategory(req, map);
+		// 新的方法查找三级菜单
+		// tdCommonService.getCategoryTemp(req, map);
+		tdCommonService.thirdGetCategory(req, map);
 		map.addAttribute("user", user);
 		return "/client/coupon_normal_list";
 	}
@@ -172,7 +176,7 @@ public class TdCouponController {
 	public String couponNormalGet(HttpServletRequest req, ModelMap map, Long categoryId) {
 		// 获取指定id分类下的所有商品和其价格
 		tdCouponGoodsService.getGoodsAndPrice(req, map, categoryId);
-		return "/client/normal_goods";
+		return "/client/normal_coupon_goods";
 	}
 
 	@RequestMapping(value = "/coupon/add/cart")

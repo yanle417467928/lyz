@@ -16,7 +16,6 @@ import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdUserService;
-import com.ynyes.lyz.webservice.impl.CallWMSImpl;
 
 @Controller
 @RequestMapping(value = "/diysite")

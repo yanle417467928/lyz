@@ -28,52 +28,58 @@
         <!-- 头部 -->
         <header>
             <a class="back" href="/order"></a>
-            <p>选择配送方式</p>
+            <#if isCoupon??&&isCoupon>
+            	<p>选择服务导购</p>
+            <#else>
+            	<p>选择配送方式</p>
+            </#if>
         </header>
         <!-- 头部 END -->
         
         <!-- 选择配送方式 -->
         <article class="delive-ways">
-            <ul>
-                <li id="delivery1" <#if deliveryId??&&deliveryId==1>class="active"</#if>><a>送货上门</a></li>
-                <li id="delivery2" <#if deliveryId??&&deliveryId==2>class="active"</#if>><a>门店自提</a></li>
-            </ul>   
-            <!-- 配送方式 -->
-            <!-- 送货上门 -->
-            <article class="psfs">
-                <div class="div11">
-                    <label id="dateLabel"><#if deliveryId??&&deliveryId==1>预约日期<#elseif deliveryId??&&deliveryId==2>提货日期</#if></label>
-                    <input type="date" id="theTime" onchange="changeTime();" min="${limitDay!''}"  value=${deliveryDate!''}>
-                </div>
-                <div class="div11">
-                    <label id="timeLabel"><#if deliveryId??&&deliveryId==1>预约时间<#elseif deliveryId??&&deliveryId==2>提货时间</#if></label>
-                    <a class="btn-select" id="btn_select">
-                        <span class="cur-select">${deliveryDetailId}:30-${(deliveryDetailId+1)?eval}:30</span>
-                        <select>
-                           <#list 9..18 as item>
-                                <option <#if deliveryDetailId??&&deliveryDetailId==item>selected="selected"</#if> value="${item}">${item}:30-${item+1}:30</option>
-                            </#list>
-                        </select>
-                    </a>
-                </div>
-            </article>
-            <script>
-            var $$ = function (id) {
-                return document.getElementById(id);
-            }
-            window.onload = function () {
-                var btnSelect = $$("btn_select");
-                var curSelect = btnSelect.getElementsByTagName("span")[0];
-                var oSelect = btnSelect.getElementsByTagName("select")[0];
-                var aOption = btnSelect.getElementsByTagName("option");
-                oSelect.onchange = function () {
-                    var text=oSelect.options[oSelect.selectedIndex].text;
-                    var itemId = oSelect.options[oSelect.selectedIndex].value;
-                    $("#detailTime").val(itemId);
-                    curSelect.innerHTML = text;
-                }
-            } 
-            </script>
+        	<#if !(isCoupon??&&isCoupon)>
+	            <ul>
+	                <li id="delivery1" <#if deliveryId??&&deliveryId==1>class="active"</#if>><a>送货上门</a></li>
+	                <li id="delivery2" <#if deliveryId??&&deliveryId==2>class="active"</#if>><a>门店自提</a></li>
+	            </ul>   
+	            <!-- 配送方式 -->
+	            <!-- 送货上门 -->
+	            <article class="psfs">
+	                <div class="div11">
+	                    <label id="dateLabel"><#if deliveryId??&&deliveryId==1>预约日期<#elseif deliveryId??&&deliveryId==2>提货日期</#if></label>
+	                    <input type="date" id="theTime" onchange="changeTime();" min="${limitDay!''}"  value=${deliveryDate!''}>
+	                </div>
+	                <div class="div11">
+	                    <label id="timeLabel"><#if deliveryId??&&deliveryId==1>预约时间<#elseif deliveryId??&&deliveryId==2>提货时间</#if></label>
+	                    <a class="btn-select" id="btn_select">
+	                        <span class="cur-select">${deliveryDetailId}:30-${(deliveryDetailId+1)?eval}:30</span>
+	                        <select>
+	                           <#list 9..18 as item>
+	                                <option <#if deliveryDetailId??&&deliveryDetailId==item>selected="selected"</#if> value="${item}">${item}:30-${item+1}:30</option>
+	                            </#list>
+	                        </select>
+	                    </a>
+	                </div>
+	            </article>
+	            <script>
+	            var $$ = function (id) {
+	                return document.getElementById(id);
+	            }
+	            window.onload = function () {
+	                var btnSelect = $$("btn_select");
+	                var curSelect = btnSelect.getElementsByTagName("span")[0];
+	                var oSelect = btnSelect.getElementsByTagName("select")[0];
+	                var aOption = btnSelect.getElementsByTagName("option");
+	                oSelect.onchange = function () {
+	                    var text=oSelect.options[oSelect.selectedIndex].text;
+	                    var itemId = oSelect.options[oSelect.selectedIndex].value;
+	                    $("#detailTime").val(itemId);
+	                    curSelect.innerHTML = text;
+	                }
+	            } 
+	            </script>
+            </#if>
             <ol>
                 <li>
                     <div class="div11">

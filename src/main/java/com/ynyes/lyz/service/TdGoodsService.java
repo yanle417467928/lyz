@@ -1446,6 +1446,8 @@ public class TdGoodsService {
 		if (null == categoryId) {
 			return null;
 		}
-		return repository.findByCategoryIdAndIsOnSaleTrueAndIsCouponNotTrueOrderBySortIdAsc(categoryId);
+		return repository
+				.findByCategoryIdAndIsOnSaleTrueAndIsCouponFalseOrCategoryIdAndIsOnSaleTrueAndIsCouponIsNullOrderBySortIdAsc(
+						categoryId, categoryId);
 	}
 }
