@@ -127,6 +127,9 @@ public class TdCouponGoodsService {
 		for (int i = 0; i < goods_list.size(); i++) {
 			TdGoods goods = goods_list.get(i);
 			if (null != goods) {
+				if(goods.getId().longValue() == 1476){
+					System.out.println("123");
+				}
 				// 查找指定商品的价格
 				TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
 				if (null != priceListItem && null != priceListItem.getCouponPrice()

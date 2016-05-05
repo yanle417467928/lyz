@@ -231,8 +231,8 @@ public class TdCouponController {
 				cartGoods.setGoodsTitle(goods.getTitle());
 				cartGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
 				if (null != priceListItem) {
-					cartGoods.setPrice(priceListItem.getSalePrice());
-					cartGoods.setRealPrice(priceListItem.getRealSalePrice());
+					cartGoods.setPrice(priceListItem.getCouponPrice());
+					cartGoods.setRealPrice(priceListItem.getCouponRealPrice());
 					cartGoods.setSku(goods.getCode());
 					cartGoods.setUserId(user.getId());
 					cartGoods.setUsername(username);
