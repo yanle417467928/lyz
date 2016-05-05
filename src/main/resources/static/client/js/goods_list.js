@@ -30,6 +30,12 @@ function changeQuantity(goodsId, operation) {
 		// 正常增加数量
 		quantity = parseInt(quantity) + 1;
 	}
+	if(parseInt(quantity)>parseInt(inventory)){
+		// 设置为最大库存
+		$(quantityElementId).val(inventory);
+		warning("亲，库存只有这么多啦");
+		return;
+	}
 
 	// 把更新后的商品信息和已选数量显示到页面上
 	$(quantityElementId).val(quantity);
