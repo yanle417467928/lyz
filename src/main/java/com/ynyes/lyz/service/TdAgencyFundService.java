@@ -63,9 +63,10 @@ public class TdAgencyFundService {
 	
 	/**
 	 * 根据时间,城市,门店查询代销售报表
+	 * 增加门店id查询
 	 * @return
 	 */
-	public List<TdAgencyFund> searchAgencyFund(Date begin,Date end,String cityName,String diySiteCode,String username){
+	public List<TdAgencyFund> searchAgencyFund(Date begin,Date end,String cityName,String diySiteCode,String username,List<String> roleDiyIds){
 		Criteria<TdAgencyFund> c = new Criteria<TdAgencyFund>();
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
@@ -81,6 +82,9 @@ public class TdAgencyFundService {
 		if(StringUtils.isNotBlank(username)){
 			c.add( Restrictions.eq("createUsername", username, true));
 		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diyId", roleDiyIds, true));
+		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
 	}
@@ -94,9 +98,11 @@ public class TdAgencyFundService {
 	}
 	/**
 	 * 根据时间,城市,门店查询代销售报表
+	 * 增加门店id查询
 	 * @return
 	 */
-	public Page<TdAgencyFund> searchList(String keywords,Date begin,Date end,String cityName,String diySiteCode,String username,int size,int page){
+	public Page<TdAgencyFund> searchList(String keywords,Date begin,Date end,String cityName,String diySiteCode,String username,
+			int size,int page,List<String> roleDiyIds){
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdAgencyFund> c = new Criteria<TdAgencyFund>();
 		if (null != keywords && !keywords.equalsIgnoreCase("")) {
@@ -115,6 +121,9 @@ public class TdAgencyFundService {
 		}
 		if(StringUtils.isNotBlank(username)){
 			c.add( Restrictions.eq("createUsername", username, true));
+		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diyId", roleDiyIds, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c,pageRequest);

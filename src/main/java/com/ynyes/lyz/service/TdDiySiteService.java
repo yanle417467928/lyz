@@ -1,5 +1,6 @@
 package com.ynyes.lyz.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdManagerDiySiteRole;
 import com.ynyes.lyz.repository.TdDiySiteRepo;
 
 /**
@@ -225,5 +227,34 @@ public class TdDiySiteService {
 			return null;
 		}
 		return repository.findByCityId(cityId);
+	}
+	
+	/**
+	 * 获取用户管辖门店
+	 * @param role 用户权限
+	 * @return 结果集
+	 * @author zp
+	 */
+	public List<TdDiySite> userRolediy(TdManagerDiySiteRole role){
+		//返回结果集合
+		List<TdDiySite> resDiyList=new ArrayList<TdDiySite>();
+		//判断空值
+		if(role != null){
+			//获取所有启用门店
+			List<TdDiySite> diyList=repository.findByIsEnableTrue();
+			//超级管理员还回所有启用门店
+			if(role.getIsSys()){
+				resDiyList=diyList;
+			}else{
+				//循环所有城市 
+				for (TdDiySite diy : diyList) {
+					//判断是否拥有当前门店的管理权限
+					if(role.getDiySiteTree()!=null &&role.getDiySiteTree().contains("["+diy.getId()+"]")){
+						resDiyList.add(diy);
+					}
+				}
+			}
+		}
+		return resDiyList;
 	}
 }

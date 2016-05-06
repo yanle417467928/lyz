@@ -30,9 +30,10 @@ public class TdSalesDetailService {
 	
 	/**
 	 * 根据时间,城市,门店查询销售明细报表
+	 * 增加门店id查询
 	 * @return
 	 */
-	public List<TdSalesDetail> searchSalesDetail(Date begin,Date end,String cityName,String diySiteCode,String username){
+	public List<TdSalesDetail> searchSalesDetail(Date begin,Date end,String cityName,String diySiteCode,String username,List<String> roleDiyIds){
 		Criteria<TdSalesDetail> c = new Criteria<TdSalesDetail>();
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
@@ -48,6 +49,9 @@ public class TdSalesDetailService {
 		if(StringUtils.isNotBlank(username)){
 			c.add( Restrictions.eq("createUsername", username, true));
 		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diyId", roleDiyIds, true));
+		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
 	}
@@ -61,9 +65,11 @@ public class TdSalesDetailService {
 	}
 	/**
 	 * 根据时间,城市,门店查询销售明细报表
+	 * 增加门店id查询
 	 * @return
 	 */
-	public Page<TdSalesDetail> searchList(String keywords,Date begin,Date end,String cityName,String diySiteCode,String username,int size,int page){
+	public Page<TdSalesDetail> searchList(String keywords,Date begin,Date end,String cityName,String diySiteCode,String username,
+			int size,int page,List<String> roleDiyIds){
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdSalesDetail> c = new Criteria<TdSalesDetail>();
 		if (null != keywords && !keywords.equalsIgnoreCase("")) {
@@ -82,6 +88,9 @@ public class TdSalesDetailService {
 		}
 		if(StringUtils.isNotBlank(username)){
 			c.add( Restrictions.eq("createUsername", username, true));
+		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diyId", roleDiyIds, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c,pageRequest);

@@ -30,9 +30,10 @@ public class TdReturnReportService {
 	
 	/**
 	 * 根据时间,城市,门店查询退货报表
+	 * 增加门店id查询
 	 * @return
 	 */
-	public List<TdReturnReport> searchReturnReport(Date begin,Date end,String cityName,String diySiteCode,String username){
+	public List<TdReturnReport> searchReturnReport(Date begin,Date end,String cityName,String diySiteCode,String username,List<String> roleDiyIds){
 		Criteria<TdReturnReport> c = new Criteria<TdReturnReport>();
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
@@ -48,6 +49,9 @@ public class TdReturnReportService {
 		if(StringUtils.isNotBlank(username)){
 			c.add( Restrictions.eq("createUsername", username, true));
 		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diyId", roleDiyIds, true));
+		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
 	}
@@ -61,9 +65,11 @@ public class TdReturnReportService {
 	}
 	/**
 	 * 根据时间,城市,门店查询退货报表
+	 * 增加门店id查询
 	 * @return
 	 */
-	public Page<TdReturnReport> searchList(String keywords,Date begin,Date end,String cityName,String diySiteCode,String username,int size ,int page){
+	public Page<TdReturnReport> searchList(String keywords,Date begin,Date end,String cityName,String diySiteCode,String username,
+			int size ,int page,List<String> roleDiyIds){
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdReturnReport> c = new Criteria<TdReturnReport>();
 		if(null!=begin){
@@ -79,6 +85,9 @@ public class TdReturnReportService {
 		}
 		if(StringUtils.isNotBlank(username)){
 			c.add( Restrictions.eq("createUsername", username, true));
+		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diyId", roleDiyIds, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c,pageRequest);

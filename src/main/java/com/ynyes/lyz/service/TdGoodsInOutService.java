@@ -31,9 +31,10 @@ public class TdGoodsInOutService {
 	
 	/**
 	 * 根据时间,城市,门店查询进出货报表
+	 * 增加门店id查询
 	 * @return
 	 */
-	public List<TdGoodsInOut> searchGoodsInOut(Date begin,Date end,String cityName,String diySiteCode,String username){
+	public List<TdGoodsInOut> searchGoodsInOut(Date begin,Date end,String cityName,String diySiteCode,String username,List<String> roleDiyIds){
 		Criteria<TdGoodsInOut> c = new Criteria<TdGoodsInOut>();
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
@@ -49,6 +50,9 @@ public class TdGoodsInOutService {
 		if(StringUtils.isNotBlank(username)){
 			c.add( Restrictions.eq("createUsername", username, true));
 		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diyId", roleDiyIds, true));
+		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c);
 	}
@@ -63,10 +67,11 @@ public class TdGoodsInOutService {
 	
 	/**
 	 * 分页条件查询 
-	 * 
+	 * 增加门店id查询
 	 * @return
 	 */
-	public Page<TdGoodsInOut> searchList(String keywords, Date orderStartTime, Date orderEndTime, String diyCode,String city,String username, int size, int page) {
+	public Page<TdGoodsInOut> searchList(String keywords, Date orderStartTime, Date orderEndTime, String diyCode,String city,String username,
+			int size, int page,List<String> roleDiyIds) {
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdGoodsInOut> c = new Criteria<TdGoodsInOut>();
 		if (null != keywords && !keywords.equalsIgnoreCase("")) {
@@ -85,6 +90,9 @@ public class TdGoodsInOutService {
 		}
 		if(StringUtils.isNotBlank(username)){
 			c.add( Restrictions.eq("createUsername", username, true));
+		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diyId", roleDiyIds, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c, pageRequest);
