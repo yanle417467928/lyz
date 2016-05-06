@@ -13,8 +13,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.ynyes.lyz.entity.TdAgencyFund;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.repository.TdUserRepo;
+import com.ynyes.lyz.util.Criteria;
+import com.ynyes.lyz.util.Restrictions;
 
 @Service
 @Transactional
@@ -337,11 +340,36 @@ public class TdUserService {
 			}else if(userType==5L){
 				return "配送员";
 			}else{
-				return "未知编号:"+userType;
+				return ""+userType;
 			}
 		}
-		return "未知编号";
+		return ""+userType;
 		
+	}
+	
+	/**
+	 * 用户列表查询
+	 * @return
+	 * @author zp
+	 */
+	public Page<TdUser> searchList(String keywords,List<String> roleDiyIds,Long userType,int size,int page){
+		PageRequest pageRequest = new PageRequest(page, size);
+		Criteria<TdUser> c = new Criteria<TdUser>();
+		
+		Criteria<TdUser> criteriaUsername = new Criteria<TdUser>();
+		if (StringUtils.isNotBlank(keywords)) {
+			criteriaUsername.add(Restrictions.like("username", keywords, true));
+		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("upperDiySiteId", roleDiyIds, true));
+		}
+		if (userType==null) {
+			criteriaUsername.add(Restrictions.eq("userType", userType, true));
+		}
+		
+		
+		c.setOrderByDesc("upperDiySiteId");
+		return repository.findAll(c,pageRequest);
 	}
 
 }

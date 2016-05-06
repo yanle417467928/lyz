@@ -1,5 +1,6 @@
 package com.ynyes.lyz.controller.management;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -125,7 +126,6 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	
 	/**
 	 * 报表 展示
-	 * 修改用户权限模块, 修改报表存储过程
 	 * @param keywords 订单号
 	 * @param page 当前页
 	 * @param size 每页显示行数
@@ -223,27 +223,12 @@ public class TdManagerStatementController extends TdManagerBaseController {
 		//查询用户管辖门店权限
     	TdManagerDiySiteRole diySiteRole= tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
     	//获取管理员管辖城市
-    	List<TdCity> cityList= null;
+    	List<TdCity> cityList= new ArrayList<TdCity>();
     	//获取管理员管辖门店
-    	List<TdDiySite> diyList=null; 
-    	//判断不为空和是否是超级管理员
-    	if ((diySiteRole !=null && diySiteRole.getIsSys()) || tdManagerRole.getIsSys()){
-    		diyList=tdDiySiteService.findAll();
-    		cityList= tdCityService.findAll();
-		}else{
-			//获取管理员管辖城市
-	    	cityList=tdCityService.userRoleCity(diySiteRole);
-	    	//获取管理员管辖门店
-	    	diyList=tdDiySiteService.userRolediy(diySiteRole);
-		}
-    	//门店列表增加管理员选择门店
-    	if(tdManager.getDiyCode()!=null){
-    		TdDiySite diy= tdDiySiteService.findByStoreCode(tdManager.getDiyCode());
-    		//判断是否重复
-    		if(diyList.contains(diy)){
-    			diyList.add(diy);
-    		}
-    	}
+    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
+    	
+    	//管理员获取管辖的城市和门店
+    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
     	
     	//城市和门店信息
     	map.addAttribute("diySiteList",diyList);

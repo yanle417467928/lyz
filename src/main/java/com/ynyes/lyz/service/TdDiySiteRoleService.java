@@ -12,6 +12,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ynyes.lyz.entity.TdCity;
+import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerDiySiteRole;
 import com.ynyes.lyz.entity.TdManagerRole;
@@ -27,9 +29,13 @@ import com.ynyes.lyz.repository.TdManagerDiySiteRoleRepo;
 @Service
 @Transactional
 public class TdDiySiteRoleService {
-    
+	
     @Autowired
     TdManagerDiySiteRoleRepo repository;
+    @Autowired
+	TdDiySiteService tdDiySiteService;
+	@Autowired
+	TdCityService tdCityService;
     
     /**
      * 删除
@@ -136,7 +142,8 @@ public class TdDiySiteRoleService {
      * 获取管理员管辖门店id
      * @param tdManagerRole 管理员权限
      * @param tdManager 管理员
-     * @return
+     * @return 结果集
+     * @author zp
      */
     public List<String> userRoleDiyId(TdManagerRole tdManagerRole,TdManager tdManager){
     	//用户管辖门店编号 超级管理员为空
@@ -166,4 +173,42 @@ public class TdDiySiteRoleService {
     	}
     	return roleDiyIds;
 	}
+    /**
+     * 管理员获取管辖的城市和门店
+     * @param cityList 城市列表
+     * @param diyList 门店列表
+     * @param diySiteRole 管理员
+     * @param tdManagerRole 管理员权限
+     * @param tdManager 管理员
+     * @author zp
+     */
+    public void userRoleCityAndDiy(List<TdCity> cityList,List<TdDiySite> diyList,TdManagerDiySiteRole diySiteRole,TdManagerRole tdManagerRole,TdManager tdManager){
+    	List<TdCity> tdCityList=null;
+    	List<TdDiySite> tdDiyList=null;
+    	if ((diySiteRole !=null && diySiteRole.getIsSys()) || tdManagerRole.getIsSys()){
+    		tdDiyList=tdDiySiteService.findAll();
+    		tdCityList= tdCityService.findAll();
+		}else{
+			//获取管理员管辖城市
+			tdCityList=tdCityService.userRoleCity(diySiteRole);
+	    	//获取管理员管辖门店
+			tdDiyList=tdDiySiteService.userRolediy(diySiteRole);
+		}
+    	//门店列表增加管理员选择门店
+    	if(tdManager.getDiyCode()!=null){
+    		TdDiySite diy= tdDiySiteService.findByStoreCode(tdManager.getDiyCode());
+    		//判断是否重复
+    		if(tdDiyList.contains(diy)){
+    			tdDiyList.add(diy);
+    		}
+    	}
+    	//循环添加门店
+    	for (TdDiySite tdDiySite : tdDiyList) {
+    		diyList.add(tdDiySite);
+		}
+    	//循环添加城市
+    	for (TdCity tdCity : tdCityList) {
+    		cityList.add(tdCity);
+		}
+    }
 }
