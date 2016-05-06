@@ -1,5 +1,6 @@
 package com.ynyes.lyz.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.ynyes.lyz.entity.TdCity;
+import com.ynyes.lyz.entity.TdManagerDiySiteRole;
 import com.ynyes.lyz.repository.TdCityRepo;
 
 @Service
@@ -68,5 +70,34 @@ public class TdCityService {
 			return null;
 		}
 		return repository.findBySobIdCity(sobIdCity);
+	}
+	
+	/**
+	 * 获取用户管辖城市
+	 * @param role 用户权限
+	 * @return 结果集
+	 * @author zp
+	 */
+	public List<TdCity> userRoleCity(TdManagerDiySiteRole role){
+		//返回结果集合
+		List<TdCity> resCityList=new ArrayList<TdCity>();
+		//判断空值
+		if(role != null){
+			//获取所有城市
+			List<TdCity> cityList=(List<TdCity>) repository.findAll();
+			//超级管理员还回所有城市
+			if(role.getIsSys()){
+				resCityList=cityList;
+			}else{
+				//循环所有城市 
+				for (TdCity tdCity : cityList) {
+					//判断是否拥有当前城市的管理权限
+					if(role.getCityTree()!=null &&role.getCityTree().contains("["+tdCity.getId()+"]")){
+						resCityList.add(tdCity);
+					}
+				}
+			}
+		}
+		return resCityList;
 	}
 }

@@ -10,6 +10,7 @@ import javax.persistence.Id;
 
 /**
  * 出退货明细报表
+ * 增加门店id
  * @author zp
  *
  */
@@ -94,6 +95,9 @@ public class TdGoodsInOut {
 	//创建用户
 	@Column
 	private String createUsername;
+	//门店id
+	@Column
+	private Long diyId;
 	
 	public Long getId() {
 		return id;
@@ -250,6 +254,12 @@ public class TdGoodsInOut {
 	}
 	public void setCreateUsername(String createUsername) {
 		this.createUsername = createUsername;
+	}
+	public Long getDiyId() {
+		return diyId;
+	}
+	public void setDiyId(Long diyId) {
+		this.diyId = diyId;
 	}
 	
 }

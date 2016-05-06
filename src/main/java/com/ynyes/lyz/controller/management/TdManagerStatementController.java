@@ -1,5 +1,6 @@
 package com.ynyes.lyz.controller.management;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,15 +20,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ynyes.lyz.entity.TdAgencyFund;
+import com.ynyes.lyz.entity.TdCity;
+import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdGathering;
 import com.ynyes.lyz.entity.TdGoodsInOut;
 import com.ynyes.lyz.entity.TdManager;
+import com.ynyes.lyz.entity.TdManagerDiySiteRole;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdReturnReport;
 import com.ynyes.lyz.entity.TdSalesDetail;
 import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.service.TdAgencyFundService;
 import com.ynyes.lyz.service.TdCityService;
+import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGatheringService;
 import com.ynyes.lyz.service.TdGoodsInOutService;
@@ -65,6 +70,8 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	TdSalesDetailService tdSalesDetailService;
 	@Autowired
 	TdReturnReportService tdReturnReportService;
+	@Autowired
+	TdDiySiteRoleService tdDiySiteRoleService;
 	
 	
     /*
@@ -109,7 +116,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 			}
 		
 		//获取到导出的excel
-		HSSFWorkbook wb=acquireHSSWorkBook(statusId, begin, end, diyCode, cityName, username);
+		HSSFWorkbook wb=acquireHSSWorkBook(statusId, begin, end, diyCode, cityName, username,tdDiySiteRoleService.userRoleDiyId(tdManagerRole, tdManager));
 		
 
 		String exportAllUrl = SiteMagConstant.backupPath;
@@ -210,25 +217,23 @@ public class TdManagerStatementController extends TdManagerBaseController {
 			callProcedure(statusId, __EVENTTARGET, begin, end, username);
 		}
 		
-		
-		
-		//如果是门店管理员只能查询自己门店
-		String diySiteCode="";
-		if (tdManagerRole.getTitle().equalsIgnoreCase("门店")){
-			diySiteCode=tdManager.getDiyCode();
-		}else if(tdManagerRole.getIsSys()){
-			diySiteCode=diyCode;
-		}
-		
 		//根据报表类型 查询相应数据到map
-		addOrderListToMap(map, statusId, keywords, begin, end, diySiteCode, cityName, username, size, page);
+		addOrderListToMap(map, statusId, keywords, begin, end, diyCode, cityName, username, size, page,tdDiySiteRoleService.userRoleDiyId(tdManagerRole, tdManager));
 	
+		//查询用户管辖门店权限
+    	TdManagerDiySiteRole diySiteRole= tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
+    	//获取管理员管辖城市
+    	List<TdCity> cityList= new ArrayList<TdCity>();
+    	//获取管理员管辖门店
+    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
+    	
+    	//管理员获取管辖的城市和门店
+    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
+    	
+    	//城市和门店信息
+    	map.addAttribute("diySiteList",diyList);
+		map.addAttribute("cityList", cityList);
 		
-		//城市和门店信息
-		if (tdManagerRole.getIsSys()){
-			map.addAttribute("diySiteList",tdDiySiteService.findAll());
-			map.addAttribute("cityList", tdCityService.findAll());
-		}
 		// 参数注回
 		map.addAttribute("orderNumber", keywords);
 		map.addAttribute("orderStartTime", orderStartTime);
@@ -264,7 +269,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 				return tdWareHouse.getWhName();
 			}
 		}
-		return "未知编号：" + number;
+		return number;
 		
 //		if (name == null || name.equalsIgnoreCase(""))
 //		{
@@ -330,6 +335,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	
 	/**
 	 * 根据报表类型 查询相应数据到map
+	 * 增加门店id查询
 	 * @param map 
 	 * @param statusId 报表类型
 	 * @param keywords 订单号
@@ -338,20 +344,22 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	 * @param diySiteCode 门店编号
 	 * @param cityName 城市名称
 	 * @param username 当前用户
+	 * @param roleDiyIds 门店id集合
 	 * @param size
 	 * @param page
 	 */
-	private void addOrderListToMap(ModelMap map,Long statusId,String keywords,Date begin,Date end,String diySiteCode,String cityName,String username,int size,int page){
+	private void addOrderListToMap(ModelMap map,Long statusId,String keywords,Date begin,Date end,String diySiteCode,String cityName,String username,
+			int size,int page,List<String> roleDiyIds){
 		if(statusId==0){//出退货报表
-			map.addAttribute("order_page",tdGoodsInOutService.searchList(keywords,begin, end, diySiteCode, cityName,username, size, page));
+			map.addAttribute("order_page",tdGoodsInOutService.searchList(keywords,begin, end, diySiteCode, cityName,username, size, page,roleDiyIds));
 		}else if(statusId==1){//代收款报表
-			map.addAttribute("order_page",tdAgencyFundService.searchList(keywords,begin, end,cityName ,diySiteCode ,username, size, page));
+			map.addAttribute("order_page",tdAgencyFundService.searchList(keywords,begin, end,cityName ,diySiteCode ,username, size, page,roleDiyIds));
 		}else if(statusId==2){//收款报表
-			map.addAttribute("order_page",tdGatheringService.searchList(keywords,begin, end,cityName ,diySiteCode ,username, size, page));
+			map.addAttribute("order_page",tdGatheringService.searchList(keywords,begin, end,cityName ,diySiteCode ,username, size, page,roleDiyIds));
 		}else if(statusId==3){//销售明细报表
-			map.addAttribute("order_page",tdSalesDetailService.searchList(keywords,begin, end,cityName ,diySiteCode ,username, size, page));
+			map.addAttribute("order_page",tdSalesDetailService.searchList(keywords,begin, end,cityName ,diySiteCode ,username, size, page,roleDiyIds));
 		}else if(statusId==4){//退货报表
-			map.addAttribute("order_page",tdReturnReportService.searchList(keywords,begin, end,cityName ,diySiteCode ,username, size, page));
+			map.addAttribute("order_page",tdReturnReportService.searchList(keywords,begin, end,cityName ,diySiteCode ,username, size, page,roleDiyIds));
 		}
 
 	}
@@ -387,24 +395,25 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	 * @param username 当前用户
 	 * @return
 	 */
-	private HSSFWorkbook acquireHSSWorkBook(Long statusId,Date begin,Date end,String diyCode,String cityName,String username){
+	private HSSFWorkbook acquireHSSWorkBook(Long statusId,Date begin,Date end,String diyCode,String cityName,String username,List<String> roleDiyIds){
 		HSSFWorkbook wb= new HSSFWorkbook();  
 		if(statusId==0){//出退货明细报表
-			wb=goodsInOutWorkBook(begin, end, diyCode, cityName, username);
+			wb=goodsInOutWorkBook(begin, end, diyCode, cityName, username,roleDiyIds);
 //			wb=goodsInOutMoreWorkBook(begin, end, diyCode, cityName, username);
 		}else if(statusId==1){//代收款报表
-			wb=agencyFundWorkBook(begin, end, diyCode, cityName, username);
+			wb=agencyFundWorkBook(begin, end, diyCode, cityName, username,roleDiyIds);
 		}else if(statusId==2){//收款报表
-			wb=payWorkBook(begin, end, diyCode, cityName, username);
+			wb=payWorkBook(begin, end, diyCode, cityName, username,roleDiyIds);
 		}else if(statusId==3){//销售明细报表
-			wb=salesDetailWorkBook(begin, end, diyCode, cityName, username);
+			wb=salesDetailWorkBook(begin, end, diyCode, cityName, username,roleDiyIds);
 		}else if(statusId==4){//退货报表
-			wb=returnWorkBook(begin, end, diyCode, cityName, username);
+			wb=returnWorkBook(begin, end, diyCode, cityName, username,roleDiyIds);
 		}
 		return wb;
 	}
 	/**
 	 * 出退货明细报表
+	 * 查询条件增加管理员管辖门店
 	 * @param begin 开始时间
 	 * @param end 结束时间
 	 * @param diyCode 门店编号
@@ -412,13 +421,13 @@ public class TdManagerStatementController extends TdManagerBaseController {
  	 * @param username 当前用户
 	 * @return
 	 */
-	private HSSFWorkbook goodsInOutWorkBook(Date begin,Date end,String diyCode,String cityName,String username){
+	private HSSFWorkbook goodsInOutWorkBook(Date begin,Date end,String diyCode,String cityName,String username,List<String> roleDiyIds){
 		// 第一步，创建一个webbook，对应一个Excel文件 
         HSSFWorkbook wb = new HSSFWorkbook();  
         
  
         // 第五步，设置值  
-        List<TdGoodsInOut> goodsInOutList=tdGoodsInOutService.searchGoodsInOut(begin, end, cityName, diyCode,username);
+        List<TdGoodsInOut> goodsInOutList=tdGoodsInOutService.searchGoodsInOut(begin, end, cityName, diyCode,username,roleDiyIds);
         List<TdWareHouse> wareHouseList = tdWareHouseService.findAll();
 //        long startTimne = System.currentTimeMillis();
         
@@ -516,10 +525,10 @@ public class TdManagerStatementController extends TdManagerBaseController {
  	 * @param username 当前用户
 	 * @return
 	 */
-	private HSSFWorkbook agencyFundWorkBook(Date begin,Date end,String diyCode,String cityName,String username){
+	private HSSFWorkbook agencyFundWorkBook(Date begin,Date end,String diyCode,String cityName,String username,List<String> roleDiyIds){
 		// 第一步，创建一个webbook，对应一个Excel文件 
         HSSFWorkbook wb = new HSSFWorkbook();  
-        List<TdAgencyFund> agencyFundList = tdAgencyFundService.searchAgencyFund(begin, end, cityName, diyCode,username);
+        List<TdAgencyFund> agencyFundList = tdAgencyFundService.searchAgencyFund(begin, end, cityName, diyCode,username,roleDiyIds);
         List<TdWareHouse> wareHouseList = tdWareHouseService.findAll();
         //excel单表最大行数是65535
         int maxRowNum = 60000;
@@ -672,13 +681,13 @@ public class TdManagerStatementController extends TdManagerBaseController {
  	 * @param username 当前用户
 
 	 */
-	private HSSFWorkbook payWorkBook(Date begin,Date end,String diyCode,String cityName,String username){
+	private HSSFWorkbook payWorkBook(Date begin,Date end,String diyCode,String cityName,String username,List<String> roleDiyIds){
 		// 第一步，创建一个webbook，对应一个Excel文件 
         HSSFWorkbook wb = new HSSFWorkbook();  
         
  
         // 第五步，设置值  
-        List<TdGathering> gatheringList = tdGatheringService.searchGathering(begin, end, cityName, diyCode, username);
+        List<TdGathering> gatheringList = tdGatheringService.searchGathering(begin, end, cityName, diyCode, username,roleDiyIds);
         List<TdWareHouse> wareHouseList = tdWareHouseService.findAll();
 //        long startTimne = System.currentTimeMillis();
         
@@ -869,13 +878,13 @@ public class TdManagerStatementController extends TdManagerBaseController {
  	 * @param username 当前用户
 	 * @return
 	 */
-	private HSSFWorkbook salesDetailWorkBook(Date begin,Date end,String diyCode,String cityName,String username){
+	private HSSFWorkbook salesDetailWorkBook(Date begin,Date end,String diyCode,String cityName,String username,List<String> roleDiyIds){
 		// 第一步，创建一个webbook，对应一个Excel文件 
         HSSFWorkbook wb = new HSSFWorkbook();  
         
  
         // 第五步，设置值  
-        List<TdSalesDetail> salesDetailList = tdSalesDetailService.searchSalesDetail(begin, end, cityName, diyCode, username);
+        List<TdSalesDetail> salesDetailList = tdSalesDetailService.searchSalesDetail(begin, end, cityName, diyCode, username,roleDiyIds);
         List<TdWareHouse> wareHouseList = tdWareHouseService.findAll();
 //      long startTimne = System.currentTimeMillis();
 
@@ -1034,13 +1043,13 @@ public class TdManagerStatementController extends TdManagerBaseController {
  	 * @param username 当前用户
 	 * @return
 	 */
-	private HSSFWorkbook returnWorkBook(Date begin,Date end,String diyCode,String cityName,String username){
+	private HSSFWorkbook returnWorkBook(Date begin,Date end,String diyCode,String cityName,String username,List<String> roleDiyIds){
 		// 第一步，创建一个webbook，对应一个Excel文件 
         HSSFWorkbook wb = new HSSFWorkbook();  
         
  
         // 第五步，设置值  
-		List<TdReturnReport> returnReportList = tdReturnReportService.searchReturnReport(begin, end, cityName, diyCode, username);
+		List<TdReturnReport> returnReportList = tdReturnReportService.searchReturnReport(begin, end, cityName, diyCode, username,roleDiyIds);
 		List<TdWareHouse> wareHouseList = tdWareHouseService.findAll();
 //        long startTimne = System.currentTimeMillis();
         

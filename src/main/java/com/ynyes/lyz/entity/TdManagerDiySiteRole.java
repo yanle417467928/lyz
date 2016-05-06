@@ -35,6 +35,10 @@ public class TdManagerDiySiteRole {
     // 管理门店总数
     @Column
     private Integer totalDiySitePermission;
+    
+    //拥有控制权限的城市 zp
+    @Column
+    private String cityTree;
 
 	public Long getId() {
 		return id;
@@ -74,5 +78,13 @@ public class TdManagerDiySiteRole {
 
 	public void setDiySiteTree(String diySiteTree) {
 		this.diySiteTree = diySiteTree;
+	}
+
+	public String getCityTree() {
+		return cityTree;
+	}
+
+	public void setCityTree(String cityTree) {
+		this.cityTree = cityTree;
 	}
 }

@@ -1943,6 +1943,7 @@
 	line-height: 20px;
 	-webkit-flex-box: 1;
 	-webkit-flex: 1; /*flexbox弹性布局*/
+	width: 70%;
 }
 
 .order-list .li2 .product-info .div1 {

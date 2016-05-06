@@ -21,6 +21,14 @@ $(function () {
         }
     });
 });
+function checkCity(obj){
+	 if ($(obj).prop("checked") == true) {
+		 $("input[class='city"+$(obj).val()+"']").prop("checked",true);
+	 }else{
+		 $("input[class='city"+$(obj).val()+"']").prop("checked",false);
+	 }
+	
+}
 </script>
 </head>
 
@@ -76,29 +84,40 @@ $(function () {
       <table border="0" cellspacing="0" cellpadding="0" class="border-table" width="98%">
         <thead>
           <tr>
+            <th width="30%">所属城市</th>
             <th width="30%">门店名称</th>
             <th>权限分配</th>
-            <th width="10%">全选</th>
+            <#--> <th width="10%">全选</th> </#-->
           </tr>
         </thead>
         <tbody>
         	<#assign total_index=0>
+        	<#assign cityId=0>
         	<#if diysite_list??>
         		<#list diysite_list as item>
+        		
         			<tr>
+	        			<td style="white-space:nowrap;word-break:break-all;overflow:hidden;">
+	        					<#if cityId!=item.cityId>
+		        					<span class="folder-open"></span>
+		                            ${item.city!'' }
+		                            <input type="checkbox" name="cityChkIds" onclick="checkCity(this)" value="${item.cityId?c }" <#if tdDiySiteRole?? && tdDiySiteRole.cityTree?? && tdDiySiteRole.cityTree?contains("["+item.cityId?c+"]")>checked="checked"</#if> >
+	        					</#if>
+                        </td>
                         <td style="white-space:nowrap;word-break:break-all;overflow:hidden;">
-                            <span class="folder-open"></span>
+                        
                             ${item.title!''}
                         </td>
                         <td>
                             <span class="cbllist">
-                                <input type="checkbox" name="listChkId" <#if tdDiySiteRole?? && tdDiySiteRole.diySiteTree?? && tdDiySiteRole.diySiteTree?contains("["+item.id?c+"]")>checked="checked"</#if> value="${item.id?c}">
+                                <input type="checkbox" name="listChkId" class="city${item.cityId!'' }" <#if tdDiySiteRole?? && tdDiySiteRole.diySiteTree?? && tdDiySiteRole.diySiteTree?contains("["+item.id?c+"]")>checked="checked"</#if> value="${item.id?c}">
                                 <label> 可控 </label>
                             </span>
                             <#assign total_index=total_index+1>
                         </td>
-                        <td align="center"><input name="checkAll" type="checkbox"></td>
+                        <#--> <td align="center"><input name="checkAll" type="checkbox"></td> </#-->
                     </tr>
+                    <#assign cityId=item.cityId>
         		</#list>
     		</#if>
         </tbody>

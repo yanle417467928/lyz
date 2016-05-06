@@ -167,7 +167,7 @@ public class TdManagerBaseController {
         
         todayStart.set(Calendar.MONTH, todayStart.get(Calendar.MONTH));
         todayStart.set(Calendar.DAY_OF_MONTH,1);//设置为1号,当前日期既为本月第一天 
-        todayStart.set(Calendar.HOUR_OF_DAY, 0);  //设置时分秒
+        todayStart.set(Calendar.HOUR_OF_DAY, 1);  //设置时分秒
         todayStart.set(Calendar.MINUTE, 0);  
         todayStart.set(Calendar.SECOND, 0);  
         todayStart.set(Calendar.MILLISECOND, 0);  

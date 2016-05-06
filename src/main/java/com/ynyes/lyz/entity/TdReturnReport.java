@@ -99,7 +99,9 @@ public class TdReturnReport {
 	//配送方式
 	@Column
 	private String deliverTypeTitle;
-
+	//门店id
+	@Column
+	private Long diyId;
 
 	public Long getId() {
 		return id;
@@ -268,6 +270,12 @@ public class TdReturnReport {
 	}
 	public void setDeliverTypeTitle(String deliverTypeTitle) {
 		this.deliverTypeTitle = deliverTypeTitle;
+	}
+	public Long getDiyId() {
+		return diyId;
+	}
+	public void setDiyId(Long diyId) {
+		this.diyId = diyId;
 	}
 	
 }

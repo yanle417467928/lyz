@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.management;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,8 @@ import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
+import com.ynyes.lyz.entity.TdManagerDiySiteRole;
+import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdMessage;
 import com.ynyes.lyz.entity.TdMessageType;
 import com.ynyes.lyz.entity.TdOrder;
@@ -44,9 +47,11 @@ import com.ynyes.lyz.service.TdCartColorPackageService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCouponService;
+import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
+import com.ynyes.lyz.service.TdManagerRoleService;
 import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdMessageService;
 import com.ynyes.lyz.service.TdMessageTypeService;
@@ -108,6 +113,10 @@ public class TdManagerUserController {
 	
 	@Autowired
 	private TdManagerService tdManagerService;
+	@Autowired
+	private TdDiySiteRoleService tdDiySiteRoleService;
+	@Autowired
+	private TdManagerRoleService tdManagerRoleService;
 
 	/**
 	 * 修改账户名所用 2016-1-8 10:34:46
@@ -163,7 +172,7 @@ public class TdManagerUserController {
 
 		return res;
 	}
-
+	//增加权限判读 zp
 	@RequestMapping(value = "/list")
 	public String setting(Integer page, Integer size, String keywords, Long roleId, Long userType,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
@@ -172,6 +181,18 @@ public class TdManagerUserController {
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		//判断是否有权限
+		if (tdManagerRole == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
+    	
 		if (null != __EVENTTARGET) {
 			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
 				if (null != __EVENTARGUMENT) {
@@ -251,6 +272,7 @@ public class TdManagerUserController {
 		return map;
 	}
 	
+	//增加权限判读 zp
 	@RequestMapping(value = "/edit")
 	public String userEdit(Long id, Long roleId, String action, String __VIEWSTATE, ModelMap map,
 			HttpServletRequest req) {
@@ -258,12 +280,37 @@ public class TdManagerUserController {
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
+		
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+		}
+		//判断是否有权限
+		if (tdManagerRole == null)
+		{
+			return "redirect:/Verwalter/login";
+		}
+		//查询用户管辖门店权限
+    	TdManagerDiySiteRole diySiteRole= tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("roleId", roleId);
 
 		TdUser user = tdUserService.findOne(id);
 
+//		//获取管理员管辖城市
+//    	List<TdCity> cityList= new ArrayList<TdCity>();
+//    	//获取管理员管辖门店
+//    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
+//    	
+//    	//管理员获取管辖的城市和门店
+//    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
+//    	
+//    	map.addAttribute("city_list",cityList);
+//    	map.addAttribute("site_list", diyList);
+		
 		if (null != user) {
 			map.addAttribute("user", user);
 			List<TdCity> cities = tdCityService.findAll();
@@ -1620,4 +1667,5 @@ public class TdManagerUserController {
 			}
 		}
 	}
+	
 }

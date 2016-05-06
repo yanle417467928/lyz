@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
@@ -783,17 +784,18 @@ public class TdManagerOrderController {
 			return "redirect:/Verwalter/login";
 		}
 
-//		if (tdDiySite.getCityId() != null)
-//		{
-//			TdCity tdCity = tdCityService.findOne(tdDiySite.getCityId());
-//			tdDiySite.setRegionId(tdCity.getSobIdCity());
-//		}
+		if (tdDiySite.getCityId() != null)
+		{
+			TdCity tdCity = tdCityService.findOne(tdDiySite.getCityId());
+			tdDiySite.setCity(tdCity.getCityName());
+		}
 		
 		if (null == tdDiySite.getId()) {
 			tdManagerLogService.addLog("add", "新增门店", req);
 		} else {
 			tdManagerLogService.addLog("edit", "修改门店", req);
 		}
+		
 
 		tdDiySiteService.save(tdDiySite);
 

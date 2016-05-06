@@ -96,7 +96,9 @@ public class TdAgencyFund {
 	private String deliverTypeTitle;
 	//创建人
 	private String createUsername;
-	
+	//门店id
+	@Column
+	private Long diyId;
 	
 	public Long getId() {
 		return id;
@@ -259,6 +261,12 @@ public class TdAgencyFund {
 	}
 	public void setCreateUsername(String createUsername) {
 		this.createUsername = createUsername;
+	}
+	public Long getDiyId() {
+		return diyId;
+	}
+	public void setDiyId(Long diyId) {
+		this.diyId = diyId;
 	}
 	
 	

@@ -106,7 +106,7 @@
                 <section class="coupon">
                     <div class="div1">
                         <label>产品劵</label>
-                        <a class="target" <#if (product_coupon_list??&&product_coupon_list?size gt 0)>href="/order/coupon/1"</#if>>
+                        <a class="target" <#if (product_coupon_list??&&product_coupon_list?size gt 0&&!(order??&&order.isCoupon??&&order.isCoupon))>href="/order/coupon/1"</#if>>
                             <#if order??&&order.isCoupon??&&order.isCoupon>
                                                                                 禁止使用
                             <#else>

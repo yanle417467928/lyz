@@ -21,6 +21,7 @@ import com.ynyes.lyz.entity.TdManagerPermission;
 import com.ynyes.lyz.entity.TdManagerPermissionList;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdNavigationMenu;
+import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -56,6 +57,9 @@ public class TdManagerManagerController {
 
 	@Autowired
 	TdDiySiteService tdDiySiteService;
+	
+	@Autowired
+	TdCityService tdCityService;
 
 	@RequestMapping(value = "/list")
 	public String managerList(Integer page, Integer size, String __EVENTTARGET,
@@ -486,6 +490,9 @@ public class TdManagerManagerController {
 		return "/site_mag/manager_diysiterole_list";
 	}
 
+	/**
+	 * 增加城市列表
+	 */
 	@RequestMapping(value = "/diysiterole/edit")
 	public String diysiteRoleEdit(Long id, String __VIEWSTATE, ModelMap map,
 			HttpServletRequest req) {
@@ -503,15 +510,16 @@ public class TdManagerManagerController {
 		}
 
 		// 门店列表
-		Sort sort = new Sort(Direction.DESC, "disctrictId");
+		Sort sort = new Sort(Direction.DESC, "cityId");
 		map.addAttribute("diysite_list", tdDiySiteService.findAll(sort));
 
 		return "/site_mag/manager_diysiterole_edit";
 	}
 
+	//增加城市权限 zp
 	@RequestMapping(value = "/diysiterole/save")
 	public String diysiteRoleSave(TdManagerDiySiteRole tdManagerDiySiteRole, Integer[] listChkId,
-			String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
+			String __VIEWSTATE, ModelMap map, HttpServletRequest req,Integer[] cityChkIds) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -532,6 +540,21 @@ public class TdManagerManagerController {
 			}
 			
 			tdManagerDiySiteRole.setDiySiteTree(idstr);
+		}
+		//增加管理城市 
+		if (null == cityChkIds)
+		{
+			tdManagerDiySiteRole.setCityTree(null);
+		}
+		else
+		{
+			String idstr = "";
+			for (Integer chkId : cityChkIds)
+			{
+				idstr = idstr + "[" + chkId + "]";
+			}
+			
+			tdManagerDiySiteRole.setCityTree(idstr);
 		}
 		
 		tdDiySiteRoleService.save(tdManagerDiySiteRole);

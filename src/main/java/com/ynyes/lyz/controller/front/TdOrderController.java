@@ -1106,7 +1106,7 @@ public class TdOrderController {
 						}
 
 						// 如果使用的产品券已经等于商品的数量，那么就不能够再使用了
-						if (orderGoods.getQuantity() - orderGoods.getCashNumber() - orderGoods.getCashNumber() <= 0L) {
+						if (orderGoods.getQuantity() - orderGoods.getCashNumber() - orderGoods.getCouponNumber() <= 0L) {
 							res.put("message", "您不能使用更多对于<br>该件产品的优惠券了");
 							return res;
 						} else {
