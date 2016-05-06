@@ -79,16 +79,16 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 * 
 	 * @author dengxiao
 	 */
-	List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotOrderByGetTimeDesc(String username,
-			Long categoryId);
+	List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotAndCityNameOrderByGetTimeDesc(
+			String username, Long categoryId, String cityName);
 
 	/**
 	 * 获取用户未使用且未过期的产品券，按照获取时间倒序排序
 	 * 
 	 * @author dengxiao
 	 */
-	List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdOrderByGetTimeDesc(String username,
-			Long categoryId);
+	List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdAndCityNameOrderByGetTimeDesc(
+			String username, Long categoryId, String cityName);
 
 	/**
 	 * 查找指定用户未使用但已过期的现金券，按照过期时间倒序排序
@@ -103,24 +103,24 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 * 
 	 * @author dengxiao
 	 */
-	List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdNotAndExpireTimeBetweenOrderByExpireTimeDesc(
-			String username, Long categoryId, Date begin, Date finish);
+	List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdNotAndExpireTimeBetweenAndCityNameOrderByExpireTimeDesc(
+			String username, Long categoryId, Date begin, Date finish, String cityName);
 
 	/**
 	 * 获取最近一个月内已使用的现金券
 	 * 
 	 * @author dengxiao
 	 */
-	List<TdCoupon> findByUsernameAndIsUsedTrueAndTypeCategoryIdNotAndUseTimeBetweenOrderByUseTimeDesc(String username,
-			Long categoryId, Date begin, Date finish);
+	List<TdCoupon> findByUsernameAndIsUsedTrueAndTypeCategoryIdNotAndUseTimeBetweenAndCityNameOrderByUseTimeDesc(
+			String username, Long categoryId, Date begin, Date finish, String cityName);
 
 	/**
 	 * 获取最近一个月内已过期的产品券
 	 * 
 	 * @author dengxiao
 	 */
-	List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdAndExpireTimeBetweenOrderByExpireTimeDesc(
-			String username, Long categoryId, Date begin, Date finish);
+	List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdAndExpireTimeBetweenAndCityNameOrderByExpireTimeDesc(
+			String username, Long categoryId, Date begin, Date finish, String cityName);
 
 	/**
 	 * 获取最近一个月内已经使用的产品券
@@ -144,7 +144,7 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 * @author dengxiao
 	 */
 	List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdAndCityNameOrderByGetTimeDesc(
-			String username, Long typeCategoryId, Long goodsId,String cityName);
+			String username, Long typeCategoryId, Long goodsId, String cityName);
 
 	/**
 	 * 根据用户名查找指定品牌下未过期未使用的通用现金券
@@ -152,70 +152,92 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 	 * @author dengxiao
 	 */
 	List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdAndCityNameOrderByGetTimeDesc(
-			String username, Long typeCategoryId, Long brandId,String cityName);
-	
+			String username, Long typeCategoryId, Long brandId, String cityName);
+
 	// Max 根据类别和发放类型查找未过期 优惠券
-	List<TdCoupon> findByTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(Long typeId,Long cateId,Date date);
-	
+	List<TdCoupon> findByTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(Long typeId, Long cateId,
+			Date date);
+
 	/**
 	 * 查询已领取的优惠券,根据领取时间排序
+	 * 
 	 * @param page
 	 * @return
 	 */
 	Page<TdCoupon> findByIsDistributtedTrueOrderByGetTimeDesc(Pageable page);
-	
+
 	/**
 	 * 模糊查询优惠券名称,已领取,根据领取时间排序
+	 * 
 	 * @param keywords
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueOrUsernameContainingAndIsDistributtedTrueOrderByGetTimeDesc(String keywords,String username,Pageable page);
-	
+	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueOrUsernameContainingAndIsDistributtedTrueOrderByGetTimeDesc(
+			String keywords, String username, Pageable page);
+
 	/**
 	 * 查询已领取,已使用或未使用,根据领取时间排序
+	 * 
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(Boolean isUsed,Pageable page);
+	Page<TdCoupon> findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(Boolean isUsed, Pageable page);
+
 	/**
 	 * 模糊查询优惠券名称,已领取,已使用或未使用,根据领取时间排序
+	 * 
 	 * @param keywords
 	 * @param isUsed
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(String keywords,Boolean isUsed,String username,Boolean isuserd,Pageable page);
+	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(
+			String keywords, Boolean isUsed, String username, Boolean isuserd, Pageable page);
+
 	/**
 	 * 查询已领取,类型筛选,根据领取时间排序
+	 * 
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(Long typeCategoryId,Pageable page);
-	
+	Page<TdCoupon> findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(Long typeCategoryId, Pageable page);
+
 	/**
 	 * 模糊查询优惠券名称,已领取,类型筛选,根据领取时间排序
+	 * 
 	 * @param keywords
-	 * @param page
-	 * @return 
-	 */
-	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Long typeCategoryId,String username,Long typeCategoryid,Pageable page);
-	
-	/**
-	 * 查询已领取,已使用或未使用,类型筛选,根据领取时间排序
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(Boolean isUsed,Long typeCategoryId,Pageable page);
+	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(
+			String keywords, Long typeCategoryId, String username, Long typeCategoryid, Pageable page);
+
+	/**
+	 * 查询已领取,已使用或未使用,类型筛选,根据领取时间排序
+	 * 
+	 * @param page
+	 * @return
+	 */
+	Page<TdCoupon> findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(Boolean isUsed,
+			Long typeCategoryId, Pageable page);
+
 	/**
 	 * 模糊查询优惠券名称,已领取,已使用或未使用,类型筛选,根据领取时间排序
+	 * 
 	 * @param keywords
 	 * @param isUsed
 	 * @param page
 	 * @return
 	 */
-	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Boolean isUsed,Long typeCategoryId,String username,Boolean isused,Long typeCategoryid,Pageable page);
+	Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(
+			String keywords, Boolean isUsed, Long typeCategoryId, String username, Boolean isused, Long typeCategoryid,
+			Pageable page);
 
 	// Max 根据城市名类别和发放类型查找未过期 优惠券
-	List<TdCoupon> findByCityNameAndTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(String cityName,Long typeId,Long cateId,Date date);
+	List<TdCoupon> findByCityNameAndTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(String cityName,
+			Long typeId, Long cateId, Date date);
+
+	List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndCityNameOrderByGetTimeDesc(
+			String username, Long typeCategoryId, String cityName);
 }

@@ -1172,9 +1172,11 @@ public class TdUserController {
 		tdCommonService.checkUserCoupon(req);
 
 		List<TdCoupon> no_product_coupon_list = tdCouponService
-				.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotOrderByGetTimeDesc(username, 3L);
+				.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotOrderByGetTimeDesc(username, 3L,
+						user.getCityName());
 		List<TdCoupon> product_coupon_list = tdCouponService
-				.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdOrderByGetTimeDesc(username, 3L);
+				.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdOrderByGetTimeDesc(username, 3L,
+						user.getCityName());
 
 		Double no_product_total = 0.0;
 
@@ -1188,7 +1190,10 @@ public class TdUserController {
 		// 产品全张数
 		Long totalNummber = 0L;
 		for (TdCoupon tdCoupon : product_coupon_list) {
-			if (null != tdCoupon && null != tdCoupon.getGetNumber()) {
+			if (null != tdCoupon) {
+				if (null == tdCoupon.getGetNumber()) {
+					tdCoupon.setGetNumber(1L);
+				}
 				totalNummber += tdCoupon.getGetNumber();
 			}
 		}
@@ -1282,27 +1287,30 @@ public class TdUserController {
 		if (0L == type) {
 			// 获取所有未使用且未过期的现金券
 			List<TdCoupon> no_product_unused_list = tdCouponService
-					.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotOrderByGetTimeDesc(username, 3L);
+					.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotOrderByGetTimeDesc(username, 3L,
+							user.getCityName());
 			map.addAttribute("no_product_unused_list", no_product_unused_list);
 			// 获取最近一个月内已过期的现金券
 			List<TdCoupon> no_product_out_date_list = tdCouponService
 					.findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdNotAndExpireTimeBetweenOrderByExpireTimeDesc(
-							username, 3L);
+							username, 3L, user.getCityName());
 			map.addAttribute("no_product_out_date_list", no_product_out_date_list);
 			// 获取最近一个月内已使用的现金券
 			List<TdCoupon> no_product_used_list = tdCouponService
-					.findByUsernameAndIsUsedTrueAndTypeCategoryIdNotAndUseTimeBetweenOrderByUseTimeDesc(username, 3L);
+					.findByUsernameAndIsUsedTrueAndTypeCategoryIdNotAndUseTimeBetweenOrderByUseTimeDesc(username, 3L,
+							user.getCityName());
 			map.addAttribute("no_product_used_list", no_product_used_list);
 			return "/client/user_cash_coupon";
 		} else {
 			// 获取所有未使用且未过期的产品券
 			List<TdCoupon> product_unused_list = tdCouponService
-					.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdOrderByGetTimeDesc(username, 3L);
+					.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdOrderByGetTimeDesc(username, 3L,
+							user.getCityName());
 			map.addAttribute("product_unused_list", product_unused_list);
 			// 获取最近一个月内已过期的产品券
 			List<TdCoupon> product_out_date_list = tdCouponService
 					.findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdAndExpireTimeBetweenOrderByExpireTimeDesc(
-							username, 3L);
+							username, 3L, user.getCityName());
 			map.addAttribute("product_out_date_list", product_out_date_list);
 			// 获取最近一个月内已经使用的产品券
 			List<TdCoupon> product_used_list = tdCouponService

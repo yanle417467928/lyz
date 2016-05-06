@@ -257,12 +257,13 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotOrderByGetTimeDesc(
-			String username, Long categoryId) {
-		if (null == username || null == categoryId) {
+			String username, Long categoryId, String cityName) {
+		if (null == username || null == categoryId || null == cityName) {
 			return null;
 		}
-		return repository.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotOrderByGetTimeDesc(username,
-				categoryId);
+		return repository
+				.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdNotAndCityNameOrderByGetTimeDesc(
+						username, categoryId, cityName);
 	}
 
 	/**
@@ -271,12 +272,12 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdOrderByGetTimeDesc(
-			String username, Long categoryId) {
-		if (null == username || null == categoryId) {
+			String username, Long categoryId, String cityName) {
+		if (null == username || null == categoryId || null == cityName) {
 			return null;
 		}
-		return repository.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdOrderByGetTimeDesc(username,
-				categoryId);
+		return repository.findByUsernameAndIsUsedFalseAndIsOutDateFalseAndTypeCategoryIdAndCityNameOrderByGetTimeDesc(
+				username, categoryId, cityName);
 	}
 
 	/**
@@ -299,8 +300,8 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdNotAndExpireTimeBetweenOrderByExpireTimeDesc(
-			String username, Long categoryId) {
-		if (null == username || null == categoryId) {
+			String username, Long categoryId, String cityName) {
+		if (null == username || null == categoryId || null == cityName) {
 			return null;
 		}
 		Calendar cal = Calendar.getInstance();
@@ -315,8 +316,8 @@ public class TdCouponService {
 		}
 
 		return repository
-				.findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdNotAndExpireTimeBetweenOrderByExpireTimeDesc(
-						username, categoryId, begin, finish);
+				.findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdNotAndExpireTimeBetweenAndCityNameOrderByExpireTimeDesc(
+						username, categoryId, begin, finish, cityName);
 	}
 
 	/**
@@ -325,8 +326,8 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedTrueAndTypeCategoryIdNotAndUseTimeBetweenOrderByUseTimeDesc(
-			String username, Long categoryId) {
-		if (null == username || null == categoryId) {
+			String username, Long categoryId, String cityName) {
+		if (null == username || null == categoryId || null == cityName) {
 			return null;
 		}
 		Calendar cal = Calendar.getInstance();
@@ -340,8 +341,8 @@ public class TdCouponService {
 			return null;
 		}
 
-		return repository.findByUsernameAndIsUsedTrueAndTypeCategoryIdNotAndUseTimeBetweenOrderByUseTimeDesc(username,
-				categoryId, begin, finish);
+		return repository.findByUsernameAndIsUsedTrueAndTypeCategoryIdNotAndUseTimeBetweenAndCityNameOrderByUseTimeDesc(
+				username, categoryId, begin, finish, cityName);
 	}
 
 	/**
@@ -350,8 +351,8 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdAndExpireTimeBetweenOrderByExpireTimeDesc(
-			String username, Long categoryId) {
-		if (null == username || null == categoryId) {
+			String username, Long categoryId, String cityName) {
+		if (null == username || null == categoryId || null == cityName) {
 			return null;
 		}
 		Calendar cal = Calendar.getInstance();
@@ -366,8 +367,8 @@ public class TdCouponService {
 		}
 
 		return repository
-				.findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdAndExpireTimeBetweenOrderByExpireTimeDesc(
-						username, categoryId, begin, finish);
+				.findByUsernameAndIsUsedFalseAndIsOutDateTrueAndTypeCategoryIdAndExpireTimeBetweenAndCityNameOrderByExpireTimeDesc(
+						username, categoryId, begin, finish, cityName);
 	}
 
 	/**
@@ -415,12 +416,13 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryId3LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-			String username, Long goodsId,String cityName) {
-		if (null == username || null == goodsId || null==cityName) {
+			String username, Long goodsId, String cityName) {
+		if (null == username || null == goodsId || null == cityName) {
 			return null;
 		}
-		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdAndCityNameOrderByGetTimeDesc(
-				username, 3L, goodsId,cityName);
+		return repository
+				.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdAndCityNameOrderByGetTimeDesc(
+						username, 3L, goodsId, cityName);
 	}
 
 	/**
@@ -429,43 +431,74 @@ public class TdCouponService {
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseAndGoodsIdOrderByGetTimeDesc(
-			String username, Long goodsId,String cityName) {
-		if (null == username || null == goodsId || null==cityName) {
+			String username, Long goodsId, String cityName) {
+		if (null == username || null == goodsId || null == cityName) {
 			return null;
 		}
-		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdAndCityNameOrderByGetTimeDesc(
-				username, 2L, goodsId,cityName);
+		return repository
+				.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndGoodsIdAndCityNameOrderByGetTimeDesc(
+						username, 2L, goodsId, cityName);
 	}
-	
+
+	/**
+	 * 根据用户名，商品id获取指定用户未过期且未使用的产品券
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdNotAndIsOutDateFalseOrderByGetTimeDesc(
+			String username, String cityName) {
+		if (null == username || null == cityName) {
+			return null;
+		}
+		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndCityNameOrderByGetTimeDesc(
+				username, 2L, cityName);
+	}
+
+	/**
+	 * 根据用户名，获取指定用户未过期且未使用的产品券
+	 * 
+	 * @author dengxiao
+	 */
+	public List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryId2LAndIsOutDateFalseOrderByGetTimeDesc(
+			String username, String cityName) {
+		if (null == username || null == cityName) {
+			return null;
+		}
+		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndCityNameOrderByGetTimeDesc(
+				username, 2L, cityName);
+	}
+
 	/**
 	 * 根据用户名查找指定品牌下未过期未使用的通用现金券
 	 * 
 	 * @author dengxiao
 	 */
 	public List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdOrderByGetTimeDesc(
-			String username, Long typeCategoryId, Long brandId,String cityName) {
-		if (null == username || null == typeCategoryId || null == brandId || null ==cityName) {
+			String username, Long typeCategoryId, Long brandId, String cityName) {
+		if (null == username || null == typeCategoryId || null == brandId || null == cityName) {
 			return null;
 		}
-		return repository.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdAndCityNameOrderByGetTimeDesc(
-				username, typeCategoryId, brandId,cityName);
+		return repository
+				.findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndBrandIdAndCityNameOrderByGetTimeDesc(
+						username, typeCategoryId, brandId, cityName);
 	}
-	
+
 	/**
 	 * 查看可领取现金券
+	 * 
 	 * @author Max
 	 */
-	
-	public List<TdCoupon> findByTypeIdAndTypeCategoryId(Long typeId,Long cateId,Date date)
-	{
-		if(null == typeId || null == cateId)
-		{
+
+	public List<TdCoupon> findByTypeIdAndTypeCategoryId(Long typeId, Long cateId, Date date) {
+		if (null == typeId || null == cateId) {
 			return null;
 		}
 		return repository.findByTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(typeId, cateId, date);
 	}
+
 	/**
 	 * 查询领取的优惠券,根据领取时间排序
+	 * 
 	 * @param page
 	 * @return
 	 */
@@ -473,112 +506,143 @@ public class TdCouponService {
 		PageRequest pageRequest = new PageRequest(page, size);
 		return repository.findByIsDistributtedTrueOrderByGetTimeDesc(pageRequest);
 	}
+
 	/**
 	 * 模糊查询优惠券名称,已领取,根据领取时间排序
+	 * 
 	 * @param keywords
 	 * @param page
 	 * @return
 	 */
-	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueOrUsernameContainingAndIsDistributtedTrueOrderByGetTimeDesc(String keywords,int page, int size) 
-	{
+	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueOrUsernameContainingAndIsDistributtedTrueOrderByGetTimeDesc(
+			String keywords, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByTypeTitleContainingAndIsDistributtedTrueOrUsernameContainingAndIsDistributtedTrueOrderByGetTimeDesc(keywords,keywords,pageRequest);
+		return repository
+				.findByTypeTitleContainingAndIsDistributtedTrueOrUsernameContainingAndIsDistributtedTrueOrderByGetTimeDesc(
+						keywords, keywords, pageRequest);
 	}
+
 	/**
 	 * 查询已领取,已使用或未使用,根据领取时间排序
+	 * 
 	 * @param isUsed
 	 * @param page
 	 * @param size
 	 * @return
 	 */
-	public Page<TdCoupon> findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(Boolean isUsed,int page, int size) {
+	public Page<TdCoupon> findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(Boolean isUsed, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(isUsed,pageRequest);
+		return repository.findByIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(isUsed, pageRequest);
 	}
+
 	/**
 	 * 模糊查询优惠券名称,已领取,已使用或未使用,根据领取时间排序
+	 * 
 	 * @param keywords
 	 * @param isUsed
 	 * @param page
 	 * @param size
 	 * @return
 	 */
-	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(String keywords,Boolean isUsed,int page, int size) {
+	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(
+			String keywords, Boolean isUsed, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(keywords,isUsed,keywords,isUsed,pageRequest);
+		return repository
+				.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedOrUsernameContainingAndIsDistributtedTrueAndIsUsedOrderByGetTimeDesc(
+						keywords, isUsed, keywords, isUsed, pageRequest);
 	}
+
 	/**
 	 * 查询领取的优惠券,类型筛选,根据领取时间排序
+	 * 
 	 * @param page
 	 * @return
 	 */
-	public Page<TdCoupon> findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(Long typeCategoryId,int page, int size) {
+	public Page<TdCoupon> findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(Long typeCategoryId, int page,
+			int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(typeCategoryId,pageRequest);
+		return repository.findByIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(typeCategoryId, pageRequest);
 	}
+
 	/**
 	 * 模糊查询优惠券名称,已领取,类型筛选,根据领取时间排序
+	 * 
 	 * @param keywords
 	 * @param page
 	 * @return
 	 */
-	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Long typeCategoryId,int page, int size) {
+	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(
+			String keywords, Long typeCategoryId, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(keywords,typeCategoryId,keywords,typeCategoryId,pageRequest);
+		return repository
+				.findByTypeTitleContainingAndIsDistributtedTrueAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndTypeCategoryIdOrderByGetTimeDesc(
+						keywords, typeCategoryId, keywords, typeCategoryId, pageRequest);
 	}
+
 	/**
 	 * 查询已领取,已使用或未使用,类型筛选,根据领取时间排序
+	 * 
 	 * @param isUsed
 	 * @param page
 	 * @param size
 	 * @return
 	 */
-	public Page<TdCoupon> findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(Boolean isUsed,Long typeCategoryId,int page, int size) {
+	public Page<TdCoupon> findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(Boolean isUsed,
+			Long typeCategoryId, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(isUsed,typeCategoryId,pageRequest);
+		return repository.findByIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(isUsed, typeCategoryId,
+				pageRequest);
 	}
+
 	/**
 	 * 模糊查询优惠券名称,已领取,已使用或未使用,类型筛选,根据领取时间排序
+	 * 
 	 * @param keywords
 	 * @param isUsed
 	 * @param page
 	 * @param size
 	 * @return
 	 */
-	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(String keywords,Boolean isUsed,Long typeCategoryId,int page, int size) {
+	public Page<TdCoupon> findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(
+			String keywords, Boolean isUsed, Long typeCategoryId, int page, int size) {
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(keywords,isUsed,typeCategoryId,keywords,isUsed,typeCategoryId,pageRequest);
+		return repository
+				.findByTypeTitleContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrUsernameContainingAndIsDistributtedTrueAndIsUsedAndTypeCategoryIdOrderByGetTimeDesc(
+						keywords, isUsed, typeCategoryId, keywords, isUsed, typeCategoryId, pageRequest);
 	}
-	
+
 	/**
 	 * 根据领取时间和城市id查询优惠卷
+	 * 
 	 * @return
 	 */
-	public List<TdCoupon> findByGetTimeAndCityIdOrderByGetTimeDesc(Date begin,Date end,Long cityId){
+	public List<TdCoupon> findByGetTimeAndCityIdOrderByGetTimeDesc(Date begin, Date end, Long cityId) {
 		Criteria<TdCoupon> c = new Criteria<TdCoupon>();
-		if(null!=begin){
+		if (null != begin) {
 			c.add(Restrictions.gte("getTime", begin, true));
-		}if(null!=end){
+		}
+		if (null != end) {
 			c.add(Restrictions.lte("getTime", end, true));
 		}
-		if(null!=cityId && !cityId.equals(0L)){
-			c.add( Restrictions.eq("cityId", cityId, true));
+		if (null != cityId && !cityId.equals(0L)) {
+			c.add(Restrictions.eq("cityId", cityId, true));
 		}
 		c.setOrderByDesc("getTime");
 		return repository.findAll(c);
 	}
-	
+
 	/**
 	 * 查看可领取现金券区分城市
+	 * 
 	 * @author Max
 	 */
-	
-	public List<TdCoupon> findByCityNameAndTypeIdAndTypeCategoryId(String cityName,Long typeId,Long cateId,Date date)
-	{
-		if(null == typeId || null == cateId || null==cityName)
-		{
+
+	public List<TdCoupon> findByCityNameAndTypeIdAndTypeCategoryId(String cityName, Long typeId, Long cateId,
+			Date date) {
+		if (null == typeId || null == cateId || null == cityName) {
 			return null;
 		}
-		return repository.findByCityNameAndTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(cityName,typeId, cateId, date);
+		return repository.findByCityNameAndTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(cityName,
+				typeId, cateId, date);
 	}
 }

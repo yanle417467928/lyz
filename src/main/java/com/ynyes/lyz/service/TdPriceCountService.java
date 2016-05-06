@@ -448,7 +448,7 @@ public class TdPriceCountService {
 					if (null != sId) {
 						Long id = Long.valueOf(sId);
 						TdCoupon coupon = tdCouponService.findOne(id);
-						if (null != coupon) {
+						if (null != coupon && coupon.getTypeCategoryId().longValue() != 2L) {
 							coupon.setIsUsed(false);
 							tdCouponService.save(coupon);
 						}
