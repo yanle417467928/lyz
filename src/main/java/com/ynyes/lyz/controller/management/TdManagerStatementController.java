@@ -284,7 +284,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 				return tdWareHouse.getWhName();
 			}
 		}
-		return "未知编号：" + number;
+		return number;
 		
 //		if (name == null || name.equalsIgnoreCase(""))
 //		{
