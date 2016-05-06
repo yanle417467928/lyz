@@ -108,7 +108,9 @@ public class CallWMSImpl implements ICallWMS {
 			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
 		}
 		
-		String XMLStr = XML.replace("\n", "");
+		String XMLStr = XML.trim();
+		
+		XMLStr = XML.replace("\n", "");
 		
 		byte[] decoded = Base64.decode(XMLStr);
 
@@ -158,6 +160,7 @@ public class CallWMSImpl implements ICallWMS {
 			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
 		}
 		NodeList nodeList = document.getElementsByTagName("TABLE");
+		
 		if (STRTABLE.equalsIgnoreCase("tbw_send_task_m"))
 		{
 			for (int i = 0; i < nodeList.getLength(); i++)
@@ -1099,6 +1102,13 @@ public class CallWMSImpl implements ICallWMS {
 				
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
+		}
+		else if (STRTABLE.equalsIgnoreCase("tbw_back_d"))
+		{
+			for (int i = 0; i < nodeList.getLength(); i++)
+			{
+				String c_wh_no = null; // 仓库编号
+			}
 		}
 		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";
 	}

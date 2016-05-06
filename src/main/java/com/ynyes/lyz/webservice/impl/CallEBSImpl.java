@@ -94,7 +94,6 @@ public class CallEBSImpl implements ICallEBS {
 			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
 		}
 		
-		
 		String XMLStr = XML.trim();
 		
 		XMLStr = XML.replace("\n", "");
@@ -147,7 +146,6 @@ public class CallEBSImpl implements ICallEBS {
 			return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>解密后xml格式不对</MESSAGE></STATUS></RESULTS>";
 		}
 		NodeList nodeList = document.getElementsByTagName("TABLE");
-		
 
 		if (STRTABLE.equalsIgnoreCase("CUXAPP_AR_CUST_STORES_OUT")) //门店表
 		{
@@ -168,7 +166,7 @@ public class CallEBSImpl implements ICallEBS {
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
-
+				
 				for (int idx = 0; idx < childNodeList.getLength(); idx++)
 				{
  					Node childNode = childNodeList.item(idx);
@@ -299,9 +297,8 @@ public class CallEBSImpl implements ICallEBS {
 				diySite.setDeptCode(dept_code);
 				diySite.setDeptDesc(dept_desc);
 				tdDiySiteService.save(diySite);
-				
-				return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 			}
+			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
 		else if (STRTABLE.equalsIgnoreCase("CUXAPP_OM_PRICE_LIST_H_OUT"))//TdPriceList
 		{
