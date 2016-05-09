@@ -727,6 +727,11 @@ public class TdGoodsController {
 
 						// 获取价目表信息
 						TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
+						
+						if (priceListItem == null)
+						{
+							continue;
+						}
 
 						// 判断用户的购物车中是否已经存在该件商品
 						TdCartGoods existCart = tdCartGoodsService.findByUsernameAndGoodsId(username,

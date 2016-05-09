@@ -957,6 +957,10 @@ public class TdOrder {
 	}
 
 	public Long getRealUserId() {
+		if (this.realUserId == null)
+		{
+			return this.userId;
+		}
 		return realUserId;
 	}
 
