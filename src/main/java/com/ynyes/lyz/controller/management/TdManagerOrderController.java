@@ -346,7 +346,7 @@ public class TdManagerOrderController {
 			}
 			if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
 			{
-				diyCode = tdManagerRole.getTitle();
+				diyCode = tdManager.getDiyCode();
 			}
 		}
 		
