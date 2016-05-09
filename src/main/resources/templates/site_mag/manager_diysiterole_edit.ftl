@@ -98,7 +98,7 @@ function checkCity(obj){
         		
         			<tr>
 	        			<td style="white-space:nowrap;word-break:break-all;overflow:hidden;">
-	        					<#if cityId!=item.cityId>
+	        					<#if item.cityId?? && cityId!=item.cityId >
 		        					<span class="folder-open"></span>
 		                            ${item.city!'' }
 		                            <input type="checkbox" name="cityChkIds" onclick="checkCity(this)" value="${item.cityId?c }" <#if tdDiySiteRole?? && tdDiySiteRole.cityTree?? && tdDiySiteRole.cityTree?contains("["+item.cityId?c+"]")>checked="checked"</#if> >
@@ -117,7 +117,7 @@ function checkCity(obj){
                         </td>
                         <#--> <td align="center"><input name="checkAll" type="checkbox"></td> </#-->
                     </tr>
-                    <#assign cityId=item.cityId>
+                    <#assign cityId=item.cityId!''>
         		</#list>
     		</#if>
         </tbody>
