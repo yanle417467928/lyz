@@ -1653,7 +1653,7 @@ public class TdCommonService {
 			for (TdOrderGoods string : order.getOrderGoodsList()) {
 				System.err.println(string);
 			}
-			if (null != order && null != order.getTotalGoodsPrice() && order.getTotalGoodsPrice() > 0) {
+			if (null != order && ( (order.getOrderGoodsList() != null && order.getOrderGoodsList().size() > 0) || (order.getPresentedList() != null && order.getPresentedList().size() > 0) || (order.getGiftGoodsList() != null && order.getGiftGoodsList().size() > 0) )) {
 				BigDecimal b = new BigDecimal(order.getTotalPrice());
 				order.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 				if (null != order_temp.getIsCoupon() && order_temp.getIsCoupon()) {
