@@ -91,7 +91,7 @@ public class TdTbwRecM {
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
-	private String cEndDt;
+	private Date cEndDt;
 
 	// 备注
 	@Column(length = 50)
@@ -105,7 +105,7 @@ public class TdTbwRecM {
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
-	private String cMkDt;
+	private Date cMkDt;
 
 	// 修改人员
 	@Column(length = 10)
@@ -115,7 +115,7 @@ public class TdTbwRecM {
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
-	private String cModifiedDt;
+	private Date cModifiedDt;
 
 	// 采购单号
 	@Column(length = 30)
@@ -255,11 +255,11 @@ public class TdTbwRecM {
 		this.cBeginDt = cBeginDt;
 	}
 
-	public String getcEndDt() {
+	public Date getcEndDt() {
 		return cEndDt;
 	}
 
-	public void setcEndDt(String cEndDt) {
+	public void setcEndDt(Date cEndDt) {
 		this.cEndDt = cEndDt;
 	}
 
@@ -279,11 +279,11 @@ public class TdTbwRecM {
 		this.cMkUserno = cMkUserno;
 	}
 
-	public String getcMkDt() {
+	public Date getcMkDt() {
 		return cMkDt;
 	}
 
-	public void setcMkDt(String cMkDt) {
+	public void setcMkDt(Date cMkDt) {
 		this.cMkDt = cMkDt;
 	}
 
@@ -295,11 +295,11 @@ public class TdTbwRecM {
 		this.cModifiedUserno = cModifiedUserno;
 	}
 
-	public String getcModifiedDt() {
+	public Date getcModifiedDt() {
 		return cModifiedDt;
 	}
 
-	public void setcModifiedDt(String cModifiedDt) {
+	public void setcModifiedDt(Date cModifiedDt) {
 		this.cModifiedDt = cModifiedDt;
 	}
 
