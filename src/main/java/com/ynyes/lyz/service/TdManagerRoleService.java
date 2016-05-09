@@ -145,4 +145,13 @@ public class TdManagerRoleService {
     {
         return (List<TdManagerRole>) repository.save(entities);
     }
+    /**
+	 * 查询超级管理员货非超级管理员
+	 * @param isys 是否是超级管理员
+	 * @return结果列表
+	 * @author zp
+	 */
+	public List<TdManagerRole> findByIsSys(Boolean isys){
+		return repository.findByIsSys(isys);
+	}
 }

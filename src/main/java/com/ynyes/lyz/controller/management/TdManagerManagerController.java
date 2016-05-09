@@ -491,7 +491,7 @@ public class TdManagerManagerController {
 	}
 
 	/**
-	 * 增加城市列表
+	 * 增加城市列表 增加返回值:所有非超级管理员 zp
 	 */
 	@RequestMapping(value = "/diysiterole/edit")
 	public String diysiteRoleEdit(Long id, String __VIEWSTATE, ModelMap map,
@@ -512,6 +512,8 @@ public class TdManagerManagerController {
 		// 门店列表
 		Sort sort = new Sort(Direction.DESC, "cityId");
 		map.addAttribute("diysite_list", tdDiySiteService.findAll(sort));
+		//所有非超级管理员
+		map.addAttribute("manager_role",tdManagerRoleService.findByIsSys(false));
 
 		return "/site_mag/manager_diysiterole_edit";
 	}

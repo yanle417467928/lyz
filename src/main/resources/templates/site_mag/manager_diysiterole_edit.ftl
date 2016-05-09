@@ -76,7 +76,19 @@ function checkCity(obj){
   </dl>
   <dl>
     <dt>角色名称</dt>
-    <dd><input name="title" type="text" value="<#if tdDiySiteRole??>${tdDiySiteRole.title!''}</#if>" class="input normal" datatype="*" sucmsg=" "><span class="Validform_checktip">*角色中文名称，100字符内</span></dd>
+    <dd>
+    	<div class="rule-single-select">
+		    <select name="title"  datatype="*" errormsg="请选择角色类型！" sucmsg="">
+		    <option value="">请选择角色...</option>
+		    <#if manager_role??>
+	    		<#list manager_role as role>
+	    			<option value="${role.title!'' }" <#if tdDiySiteRole?? && role.title==tdDiySiteRole.title >selected</#if>  >${role.title!'' }</option>
+	    		</#list>
+	    	</#if>
+		    </select>
+   		</div>
+    </dd>
+    <#--不能让用户输入改为下拉列表选择 <dd><input name="title" type="text" value="<#if tdDiySiteRole??>${tdDiySiteRole.title!''}</#if>" class="input normal" datatype="*" sucmsg=" "><span class="Validform_checktip">*角色中文名称，100字符内</span></dd> -->
   </dl>   
   <dl>
     <dt>管理权限</dt>

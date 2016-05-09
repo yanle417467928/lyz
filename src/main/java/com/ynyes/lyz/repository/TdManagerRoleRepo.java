@@ -19,4 +19,11 @@ public interface TdManagerRoleRepo extends
 		JpaSpecificationExecutor<TdManagerRole> 
 {
 	List<TdManagerRole> findByTitle(String roleTitle);
+	/**
+	 * 查询超级管理员货非超级管理员
+	 * @param isys 是否是超级管理员
+	 * @return结果列表
+	 * @author zp
+	 */
+	List<TdManagerRole> findByIsSys(Boolean isys);
 }

@@ -40,6 +40,7 @@ public class TdManagerIndexController {
     @Autowired
     TdManagerRoleService tdManagerRoleService;
     
+    //增加返回值 manager_role:管理员角色 zp
     @RequestMapping(value = "/Verwalter")
     public String index(ModelMap map, HttpServletRequest req) {
         String username = (String) req.getSession().getAttribute("manager");
@@ -61,7 +62,6 @@ public class TdManagerIndexController {
         
         if (null != tdManagerRole && !tdManagerRole.getIsSys())
         {
-        	
         	// rootmenuList :数据库里面的list
         	// rootmenuList :根据角色提取的list
         	List<TdNavigationMenu> rootMenuList = tdNavigationMenuService.findByParentIdAndSort(0L);
@@ -249,7 +249,7 @@ public class TdManagerIndexController {
 
             map.addAttribute("root_menu_list", rootMenuList);
         }
-
+        map.addAttribute("manager_role", tdManagerRole);
         return "/site_mag/frame";
     }
 
