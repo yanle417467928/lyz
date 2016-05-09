@@ -40,7 +40,7 @@
                         </div>
                         <div class="div1">
                             <div>可提现余额：</div>
-                            <div><#if user.cashBalance??>${user.cashBalance?string("0.00")}<#else>0.00</#if><a href="余额充值.html">提现&gt;&gt;</a></div>
+                            <div><#if user.cashBalance??>${user.cashBalance?string("0.00")}<#else>0.00</#if><a href="/user/deposit">提现&gt;&gt;</a></div>
                         </div>
                     </div>
                 </section>
