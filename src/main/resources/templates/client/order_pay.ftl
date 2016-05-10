@@ -99,8 +99,12 @@
 	                </section>
                 </#if>
                 <!-- 留言 -->
-                <section class="leave-message">
+                <section class="leave-message" <#if user??&&user.userType==1>style="height: 80px;" </#if>>
                     <input id="remark" onblur="userRemark('${order.remark!''}');" type="text" maxlength="50" value="${order.remark!''}" placeholder="给商家留言">
+					<#if user??&&user.userType==1>
+						 <input id="otherIncome" onblur="sellerOtherIncome('${order.otherIncome!''}');" type="text" value="${order.otherIncome!'' }" placeholder="其他收入">
+					</#if>                    
+
                 </section>
                 <!-- 优惠劵 -->
                 <section class="coupon">
@@ -185,7 +189,7 @@
                 <span id="order_total_price"><#if order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span>
             </div>
             <#--<a class="btn-clearing" id="buyNow" href="javascript:orderPay();">去支付</a>-->
-            <a class="btn-clearing" id="buyNow" href="javascript:confirm();">去支付</a>
+            <a class="btn-clearing" id="buyNow" href="javascript:confirmPay();">去支付</a>
         </footer>
         <!-- 底部 END -->
     </body>

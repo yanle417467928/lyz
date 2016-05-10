@@ -109,7 +109,7 @@ function pay() {
 	});
 }
 
-function confirm() {
+function confirmPay() {
 	wait();
 	$.ajax({
 		url : "/order/coupon/confirm",
@@ -127,6 +127,71 @@ function confirm() {
 
 			if (0 === res.status) {
 				pay();
+			}
+		}
+	});
+}
+
+/**
+ * 填写其他收入之后存储其他收入的方法（失去焦点事件）
+ * 
+ * @author zp
+ */
+function sellerOtherIncome(old_income) {
+	var income = $("#otherIncome").val();
+	var totalPay=$("#order_total_price").html();
+	// 如果没有填写其他收入，则修改为0
+	if ("" == income) {
+		income=0;
+	}
+	// 如果跟上一次一样，也不需要存储
+	if (old_income == income) {
+		$("#otherIncome").val("");
+		return;
+	}
+	//判断是否是数字
+	if(isNaN(income)){
+		warning("亲，请输入数字");
+		$("#otherIncome").val("");
+		return;
+	}
+	//判断是否大于0
+	if(income<0){
+		warning("亲，请输入大于等于0的数字");
+		$("#otherIncome").val("");
+		return;
+	}
+	//判断是否大于支付金额
+	if(income>totalPay){
+		warning("亲，不能大于支付价格");
+		$("#otherIncome").val("");
+		return;
+	}
+
+	// 开启等待图标
+	wait();
+
+	// 发送异步请求
+	$.ajax({
+		url : "/order/otherIncome/save",
+		timeout : 10000,
+		type : "post",
+		data : {
+			otherIncome : income
+		},
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			// 关闭等待响应的图标
+			close(1);
+			warning("亲，您的网速不给力啊");
+		},
+		success : function(res) {
+			// 关闭等待图标
+			close(100);
+			if (0 == res.status) {
+				warning("已保存");
+				$("#otherIncome").attr("onblur", "sellerOtherIncome('" + res.otherIncome + "');")
+			} else {
+				warning("亲，请输入正确的数字");
 			}
 		}
 	});

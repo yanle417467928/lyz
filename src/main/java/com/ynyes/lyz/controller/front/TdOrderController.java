@@ -1918,6 +1918,35 @@ public class TdOrderController {
 		res.put("status", 0);
 		return res;
 	}
+	
+	/**
+	 * 对用户填写的其他收入进行存储的方法
+	 * 
+	 * @author zp
+	 */
+	@RequestMapping(value = "/otherIncome/save")
+	@ResponseBody
+	public Map<String, Object> otherIncomeSave(HttpServletRequest req, Double otherIncome) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+		//不能小于0或者为空
+		if(null==otherIncome || otherIncome<=0){
+			res.put("status", -1);
+		}
+		
+		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
+
+		if (null != order) {
+			order.setOtherIncome(otherIncome);
+			tdOrderService.save(order);
+		}
+
+		req.getSession().setAttribute("order_temp", order);
+
+		res.put("status", 0);
+		res.put("otherIncome", otherIncome);
+		return res;
+	}
 
 	/**
 	 * 修改订单商品的价格为最新价格
