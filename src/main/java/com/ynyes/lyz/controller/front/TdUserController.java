@@ -1425,7 +1425,7 @@ public class TdUserController {
 
 	/**
 	 * 跳转到订单详情的方法
-	 * 
+	 * 增加退货单信息 zp
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/order/detail/{id}")
@@ -1473,6 +1473,13 @@ public class TdUserController {
 				if (null != wareHouseList && wareHouseList.size() > 0) {
 					map.addAttribute("tdWareHouse", wareHouseList.get(0));
 				}
+			}
+		}
+		//退货单信息
+		if(order!=null && (order.getStatusId()==9 || order.getStatusId()==10) ){
+			List<TdReturnNote> returnNoteList=tdReturnNoteService.findByOrderNumberContaining(order.getOrderNumber());
+			if(returnNoteList!=null && returnNoteList.size()>0){
+				map.addAttribute("returnNote",returnNoteList.get(0));
 			}
 		}
 

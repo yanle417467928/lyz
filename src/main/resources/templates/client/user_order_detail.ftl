@@ -64,7 +64,14 @@
                             <li class="li2 bdbt-n">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                                 <div class="product-info">
-                                    <div class="div1">${item.goodsTitle!''}<#if item.isCoupon??&&item.isCoupon>【券】</#if></div>
+                                    <div class="div1">${item.goodsTitle!''}<#if item.isCoupon??&&item.isCoupon>【券】</#if>
+                                    	<#-- 判断是否是退货中 -->
+                                    	<#if returnNote??>
+                                    		<#list returnNote.returnGoodsList as returnGood>
+                                    			<#if returnGood.sku==item.sku><span style="color: red;;font-size:0.9em">(退货)</span></#if>
+                                    		</#list>
+                                    	</#if>
+                                    </div>
                                     <div class="div1">${item.sku!''}</div>
                                     <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}<#else>0.00</#if></span><label>数量：<span>${item.quantity!'0'}</span></label></div>
                                 </div>
@@ -77,7 +84,14 @@
                             <li class="li2 bdbt-n">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                                 <div class="product-info">
-                                    <div class="div1">${item.goodsTitle!''}<span style="color:red"><#if item.isCoupon??&&item.isCoupon>【赠品-券】<#else>【赠品】</#if></span></div>
+                                    <div class="div1">${item.goodsTitle!''}<span style="color:red"><#if item.isCoupon??&&item.isCoupon>【赠品-券】<#else>【赠品】</#if></span>
+                                    	<#-- 判断是否是退货中 -->
+                                    	<#if returnNote??>
+                                    		<#list returnNote.returnGoodsList as returnGood>
+                                    			<#if returnGood.sku==item.sku><span style="color: red;;font-size:0.9em">(退货)</span></#if>
+                                    		</#list>
+                                    	</#if>
+                                    </div>
                                     <div class="div1">${item.sku!''}</div>
                                     <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}<#else>0.00</#if></span><label>数量：<span>${item.quantity!'0'}</span></label></div>
                                 </div>
@@ -89,13 +103,27 @@
                             <li class="li2 bdbt-n">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                                 <div class="product-info">
-                                    <div class="div1">${item.goodsTitle!''}<span style="color:red"><#if item.isCoupon??&&item.isCoupon>【小辅料-券】<#else>【小辅料】</#if></span></div>
+                                    <div class="div1">${item.goodsTitle!''}<span style="color:red;font-size:0.9em;"><#if item.isCoupon??&&item.isCoupon>【小辅料-券】<#else>【小辅料】</#if></span>
+                                    	<#-- 判断是否是退货中 -->
+                                    	<#if returnNote??>
+                                    		<#list returnNote.returnGoodsList as returnGood>
+                                    			<#if returnGood.sku==item.sku><span style="color: red;">(退货中)</span></#if>
+                                    		</#list>
+                                    	</#if>
+                                    </div>
                                     <div class="div1">${item.sku!''}</div>
                                     <div class="div2">￥<span><#if item.price??>${item.price?string("0.00")}<#else>0.00</#if></span><label>数量：<span>${item.quantity!'0'}</span></label></div>
                                 </div>
                             </li>
                         </#list>
                     </#if>
+                    <#-- 退货金额 -->
+                    <#if order.statusId==9 || order.statusId=10>
+                    	<#if returnNote??>
+                    		<li class="li5">退货金额：<div class="div1"><p>￥<span><#if returnNote.turnPrice??>${returnNote.turnPrice?string("0.00")}<#else>0.00</#if></span></p></div></li>
+                    	</#if>
+                    </#if>
+                    
                     <li class="li5">支付方式：${order.payTypeTitle!''}<div class="div1">实付款：<p>￥<span><#if order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if></span></p></div></li>
                     <li class="li5">是否代下单：<#if order.isSellerOrder??&&order.isSellerOrder>是<#else>否</#if></li>
                     <li class="li5" style="overflow: visible;height: auto;">订单备注：${order.remark!''}</li>
