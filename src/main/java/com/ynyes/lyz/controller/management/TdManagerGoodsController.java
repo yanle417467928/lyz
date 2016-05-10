@@ -1232,7 +1232,6 @@ public class TdManagerGoodsController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("city_list", tdCityService.findAll());
 		List<TdDiySite> diysite_list = new ArrayList<>();
-		map.addAttribute("site_list", diysite_list);
 		if (regionId != null)
 		{
 			diysite_list = tdDiySiteService.findByRegionIdAndIsEnableOrderBySortIdAsc(regionId);
@@ -1241,18 +1240,26 @@ public class TdManagerGoodsController {
 		{
 			diysite_list = tdDiySiteService.findAll();
 		}
-		if (siteId != null)
+		if (siteId != null && siteId != -1)
 		{
 			map.addAttribute("inventory_page", tdDiySiteInventoryService.findBySiteIdAndKeywords(siteId, keywords, page, size));
 		}
-		else if (regionId !=null)
+		else if (regionId != null)
 		{
-			map.addAttribute("inventory_page", tdDiySiteInventoryService.findByRegionIdAndKeywords(regionId,keywords, page, size));
+			if (siteId != null && siteId == -1)
+			{
+				map.addAttribute("inventory_page", tdDiySiteInventoryService.findByRegionIdOnlyAndKeywords(regionId,keywords, page, size));
+			}
+			else
+			{
+				map.addAttribute("inventory_page", tdDiySiteInventoryService.findByRegionIdAndKeywords(regionId,keywords, page, size));
+			}
 		}
 		else
 		{
 			map.addAttribute("inventory_page", tdDiySiteInventoryService.findAll(keywords, page,size));
 		}
+		map.addAttribute("site_list", diysite_list);
 		
 		return "site_mag/inventory_list";
 	}

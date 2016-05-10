@@ -64,6 +64,7 @@ var theForm = document.forms['form1'];
             <div class="rule-single-select">
                 <select name="siteId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
                     <option <#if !siteId??>selected="selected"</#if> value="" >所有门店</option>
+                    <option <#if siteId?? && siteId = -1>selected="selected"</#if> value="-1">仅城市库存</option>
                     <#if site_list??>
                         <#list site_list as site>
                             <option value='${site.id?c}' <#if siteId?? && site.id==siteId>selected="selected"</#if> >${site.title!""}</option>
@@ -86,7 +87,7 @@ var theForm = document.forms['form1'];
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ltable">
   <tbody>
   <tr class="odd_bg">
-    <#--<th width="6%">选择</th>-->
+    <th width="6%">选择</th>
     <th align="left">商品名称</th>
     <th align="left" width="15%">商品编码</th>
     <th align="left" width="15%">所属门店</th>
@@ -97,12 +98,12 @@ var theForm = document.forms['form1'];
     <#if inventory_page??>
         <#list inventory_page.content as item>
             <tr>
-                <#--<td align="center">-->
-                    <#--<span class="checkall" style="vertical-align:middle;">
+                <td align="center">
+                    <span class="checkall" style="vertical-align:middle;">
                         <input id="listChkId" type="checkbox" name="listChkId" value="${item_index}" >
-                    </span>-->
+                    </span>
                     <input type="hidden" name="listId" id="listId" value="${item.id?c}">
-                <#--</td>-->
+                </td>
                 <td align="left">${item.goodsTitle!""}</td>
                 <td align="left"><#if item.goodsCode??>${item.goodsCode!""}</#if></td>
                 <td align="left">${item.diySiteName!"城市库存"}</td>

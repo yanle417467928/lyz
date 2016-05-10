@@ -100,6 +100,14 @@ public class TdDiySiteInventoryService {
 		return repository.findByRegionIdAndGoodsCodeContainingOrRegionIdAndGoodsTitleContainingOrderByIdAsc(regionId, keywords, regionId, keywords, pageable);
 	}
 	
+	public Page<TdDiySiteInventory> findByRegionIdOnlyAndKeywords(Long regionId,String keywords,int page,int size) 
+	{
+		PageRequest pageable = new PageRequest(page, size);
+		if (StringUtils.isBlank(keywords)) 
+			return repository.findByRegionIdAndDiySiteIdIsNull(regionId, pageable);
+		return repository.findByRegionIdAndDiySiteIdIsNullAndGoodsCodeContainingOrRegionIdAndDiySiteIdIsNullAndGoodsTitleContainingOrderByIdAsc(regionId, keywords, regionId, keywords, pageable);
+	}
+	
 	public List<TdDiySiteInventory> findByDiySiteId(Long code)
 	{
 		return repository.findByDiySiteId(code);
