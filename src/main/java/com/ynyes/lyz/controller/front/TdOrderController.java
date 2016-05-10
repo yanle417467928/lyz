@@ -1442,9 +1442,10 @@ public class TdOrderController {
 		String shippingPhone = order_temp.getShippingPhone();
 
 		// System.err.println("判断是否填写收货地址");
+		// 修改不为空 zp
 		if ((null == address || null == shippingName || null == shippingPhone)) {
 			if (!"门店自提".equals(order_temp.getDeliverTypeTitle())
-					&& !(order_temp.getIsCoupon() && order_temp.getIsCoupon())) {
+					&& !(order_temp.getIsCoupon()!=null && order_temp.getIsCoupon())) {
 				res.put("message", "请填写收货地址");
 				return res;
 			}
