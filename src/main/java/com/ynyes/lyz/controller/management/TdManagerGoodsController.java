@@ -32,6 +32,7 @@ import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdCityService;
+import com.ynyes.lyz.service.TdDiySiteInventoryLogService;
 import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
@@ -101,6 +102,9 @@ public class TdManagerGoodsController {
 	
 	@Autowired
 	private TdDiySiteService tdDiySiteService;
+	
+	@Autowired
+	private TdDiySiteInventoryLogService tdDiySiteInventoryLogService;
 
 	@RequestMapping(value = "/refresh")
 	public String refreshCategorg() 
@@ -1285,8 +1289,12 @@ public class TdManagerGoodsController {
 			TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findOne(ids[listCheckId[i]]);
 			if (diySiteInventory != null)
 			{
-				diySiteInventory.setInventory(listInventory[i]);
-				tdDiySiteInventoryService.save(diySiteInventory);
+				if (listInventory[i] != diySiteInventory.getInventory()) 
+				{
+					diySiteInventory.setInventory(listInventory[i]);
+					tdDiySiteInventoryService.save(diySiteInventory);
+					tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, listInventory[i] - diySiteInventory.getInventory(), null, req);
+				}
 			}
 		}
 	}

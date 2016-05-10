@@ -26,11 +26,14 @@ public class TdDiySiteInventoryLog {
 	// 门店名称
 	@Column
 	private String diySiteTitle;
-
-	// 门店城市编号
+	
+	// 城市名
 	@Column
-	private String diySiteSobId;
-
+	private String regionName;
+	
+	// 城市编码 由ebs给的
+	@Column
+	private Long regionId;
 	// 门店id
 	@Column
 	private Long diySiteId;
@@ -46,6 +49,10 @@ public class TdDiySiteInventoryLog {
 	// 商品SKU
 	@Column
 	private String goodsSku;
+	
+	// 变更数量
+	@Column
+	private Long changeValue;
 
 	// 变更时间
 	@Column
@@ -55,6 +62,9 @@ public class TdDiySiteInventoryLog {
 	// 描述
 	@Column(length = 255)
 	private String description;
+	
+	@Column
+	private String orderNumber;
 
 	public Long getId() {
 		return id;
@@ -72,13 +82,6 @@ public class TdDiySiteInventoryLog {
 		this.diySiteTitle = diySiteTitle;
 	}
 
-	public String getDiySiteSobId() {
-		return diySiteSobId;
-	}
-
-	public void setDiySiteSobId(String diySiteSobId) {
-		this.diySiteSobId = diySiteSobId;
-	}
 
 	public Long getDiySiteId() {
 		return diySiteId;
@@ -128,10 +131,43 @@ public class TdDiySiteInventoryLog {
 		this.description = description;
 	}
 
+	public String getRegionName() {
+		return regionName;
+	}
+
+	public void setRegionName(String regionName) {
+		this.regionName = regionName;
+	}
+
+	public Long getRegionId() {
+		return regionId;
+	}
+
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public Long getChangeValue() {
+		return changeValue;
+	}
+
+	public void setChangeValue(Long changeValue) {
+		this.changeValue = changeValue;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+
 	@Override
 	public String toString() {
-		return "TdDiySiteInventoryLog [id=" + id + ", diySiteTitle=" + diySiteTitle + ", diySiteSobId=" + diySiteSobId
-				+ ", diySiteId=" + diySiteId + ", goodsId=" + goodsId + ", goodsTitle=" + goodsTitle + ", goodsSku="
-				+ goodsSku + ", changeDate=" + changeDate + ", description=" + description + "]";
+		return "TdDiySiteInventoryLog [id=" + id + ", diySiteTitle=" + diySiteTitle + ", regionName=" + regionName
+				+ ", regionId=" + regionId + ", diySiteId=" + diySiteId + ", goodsId=" + goodsId + ", goodsTitle="
+				+ goodsTitle + ", goodsSku=" + goodsSku + ", changeDate=" + changeDate + ", description=" + description
+				+ "]";
 	}
 }

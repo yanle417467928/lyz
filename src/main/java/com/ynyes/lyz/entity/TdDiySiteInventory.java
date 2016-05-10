@@ -51,10 +51,6 @@ public class TdDiySiteInventory {
 	@Column
 	private String goodsCode;
 
-	// 门店的地区编号
-	@Column
-	private String diySiteSobId;
-
 	// 库存量
 	@Column
 	private Long inventory;
@@ -179,14 +175,6 @@ public class TdDiySiteInventory {
 		this.inventory = inventory;
 	}
 
-	public String getDiySiteSobId() {
-		return diySiteSobId;
-	}
-
-	public void setDiySiteSobId(String diySiteSobId) {
-		this.diySiteSobId = diySiteSobId;
-	}
-
 	public String getDiyCode() {
 		return diyCode;
 	}
@@ -194,4 +182,5 @@ public class TdDiySiteInventory {
 	public void setDiyCode(String diyCode) {
 		this.diyCode = diyCode;
 	}
+	
 }
