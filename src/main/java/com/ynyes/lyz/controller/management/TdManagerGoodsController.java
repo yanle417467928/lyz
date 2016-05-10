@@ -414,28 +414,30 @@ public class TdManagerGoodsController {
 
 	@RequestMapping(value = "/setting/goodsleft/numbers")
 	@ResponseBody
-	public String setGoodsLeftNumbers(Integer page)
+	public String setGoodsLeftNumbers(Integer page,Long type)
 	{
 		if (page == null)
 		{
 			page = 0;
 		}
-		
-//		//设置门店库存
-//		List<TdDiySite> diySites = tdDiySiteService.findAll();
-//		for (TdDiySite tdDiySite : diySites) 
-//		{
-//			setInventoryByDiySite(tdDiySite,page);
-//		}
-		
-		
-		//设置城市库存
-		List<TdCity> cityList = tdCityService.findAll();
-		for (TdCity tdCity : cityList)
+		if (type == 0) 
 		{
-			this.setInventoryByCity(tdCity, 0);
+			//设置门店库存
+			List<TdDiySite> diySites = tdDiySiteService.findAll();
+			for (TdDiySite tdDiySite : diySites) 
+			{
+				setInventoryByDiySite(tdDiySite,page);
+			}
 		}
-		
+		else
+		{
+			//设置城市库存
+			List<TdCity> cityList = tdCityService.findAll();
+			for (TdCity tdCity : cityList)
+			{
+				this.setInventoryByCity(tdCity, 0);
+			}
+		}
 		return "yes";
 	}
 	
@@ -446,7 +448,11 @@ public class TdManagerGoodsController {
 	 */
 	public void setInventoryByCity(TdCity city,int page)
 	{
-		Page<TdGoods> goods = tdGoodsService.findAll(page, 1000000);
+		if (city == null || city.getSobIdCity() == null)
+		{
+			return ;
+		}
+		List<TdGoods> goods = tdGoodsService.findBySobId(city.getSobIdCity());
 		for (TdGoods tdGoods : goods) 
 		{
 			TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(tdGoods.getCode(), city.getSobIdCity());
@@ -473,7 +479,11 @@ public class TdManagerGoodsController {
 	 */
 	public void setInventoryByDiySite(TdDiySite site,int page)
 	{
-		Page<TdGoods> goods = tdGoodsService.findAll(page, 1000000);
+		if (site == null || site.getCity() == null)
+		{
+			return ;
+		}
+		List<TdGoods> goods = tdGoodsService.findBySobId(site.getCityId());
 		for (TdGoods tdGoods : goods) 
 		{
 			tdDiySiteInventoryService.findAll();
@@ -1196,7 +1206,7 @@ public class TdManagerGoodsController {
 		{
 			if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
 			{
-				btnDeleteLog(listId, listChkId);
+//				btnDeleteLog(listId, listChkId);
 				tdManagerLogService.addLog("delete", "删除管理日志", req);
 			} 
 			else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
@@ -1208,7 +1218,7 @@ public class TdManagerGoodsController {
 			}
 			else if (__EVENTTARGET.equalsIgnoreCase("btnInventory")) 
 			{
-				this.btnChangeInventory(listId,listInventory,req);
+				this.btnChangeInventory(listChkId,listId,listInventory,req);
 			}
 		}
 
@@ -1264,15 +1274,15 @@ public class TdManagerGoodsController {
 		return "site_mag/inventory_list";
 	}
 	
-	private void btnChangeInventory(Long[] ids,Long[] listInventory,HttpServletRequest req)
+	private void btnChangeInventory(Integer listCheckId[],Long[] ids,Long[] listInventory,HttpServletRequest req)
 	{
-		if (null == ids || null == listInventory || ids.length < 1 || listInventory.length < 1 || ids.length != listInventory.length)
+		if (null == ids || null == listInventory || ids.length < 1 || listInventory.length < 1 || ids.length != listInventory.length || listCheckId == null || listCheckId.length < 1)
 		{
 			return;
 		}
-		for (int i = 0; i < ids.length; i++)
+		for (int i = 0; i < listCheckId.length; i++)
 		{
-			TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findOne(ids[i]);
+			TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findOne(ids[listCheckId[i]]);
 			if (diySiteInventory != null)
 			{
 				diySiteInventory.setInventory(listInventory[i]);

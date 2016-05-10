@@ -37,9 +37,6 @@ public class TdGoodsService {
 	@Autowired
 	TdProductCategoryService tdProductCategoryService;
 
-	// @Autowired
-	// TdBrandService tdBrandService;
-
 	@Autowired
 	TdArticleService tdArticleService;
 
@@ -48,12 +45,6 @@ public class TdGoodsService {
 
 	@Autowired
 	TdPriceListItemService tdPriceListItemService;
-
-	// @Autowired
-	// TdGoodsParameterService tdGoodsParameterService;
-	//
-	// @Autowired
-	// TdWarehouseService tdWarehouseService;
 
 	@Autowired
 	TdGoodsGiftService tdGoodsGiftService;
@@ -66,22 +57,7 @@ public class TdGoodsService {
 
 	@Autowired
 	private TdBrandService tdBrandService;
-
-	// @Autowired
-	// private TdUserRecentVisitService tdUserRecentVisitService;
-	//
-	// @Autowired
-	// private TdUserService tdUserService;
-	//
-	// @Autowired
-	// private TdUserConsultService tdUserConsultService;
-	//
-	// @Autowired
-	// private TdUserCommentService tdUserCommentService;
-	//
-	// @Autowired
-	// private TdUserCollectService tdUserCollectService;
-
+	
 	/******** 功能部分 ***********/
 
 	/**
@@ -1445,8 +1421,12 @@ public class TdGoodsService {
 		if (null == categoryId) {
 			return null;
 		}
-		return repository
-				.findByCategoryIdAndIsOnSaleTrueAndIsCouponFalseOrCategoryIdAndIsOnSaleTrueAndIsCouponIsNullOrderBySortIdAsc(
+		return repository.findByCategoryIdAndIsOnSaleTrueAndIsCouponFalseOrCategoryIdAndIsOnSaleTrueAndIsCouponIsNullOrderBySortIdAsc(
 						categoryId, categoryId);
+	}
+	
+	public List<TdGoods> findBySobId(Long sobId)
+	{
+		return repository.findBySobId(sobId);
 	}
 }
