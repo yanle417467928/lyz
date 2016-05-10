@@ -1412,7 +1412,8 @@ public class TdCommonService {
 				order.setAllTotalPay(order_temp.getTotalPrice());
 				// 设置是否是电子券
 				order.setIsCoupon(order_temp.getIsCoupon());
-
+				// 设置其他收入
+				order.setOtherIncome(order_temp.getOtherIncome());
 				order_map.put(brand.getId(), order);
 
 			}

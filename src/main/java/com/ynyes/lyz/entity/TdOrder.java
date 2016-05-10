@@ -355,6 +355,9 @@ public class TdOrder {
 	//有效时间(超过有效时间未支付将重新计算价格)
 	@Column
 	private Date validTime;
+	//其他收入(不参与其他计算 只影响代收金额) zp
+	@Column
+	private Double otherIncome;
 	
 	public Double getRefund() {
 		return refund;
@@ -990,5 +993,13 @@ public class TdOrder {
 
 	public void setValidTime(Date validTime) {
 		this.validTime = validTime;
+	}
+
+	public Double getOtherIncome() {
+		return otherIncome;
+	}
+
+	public void setOtherIncome(Double otherIncome) {
+		this.otherIncome = otherIncome;
 	}
 }
