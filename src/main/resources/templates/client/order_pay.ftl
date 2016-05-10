@@ -99,12 +99,13 @@
 	                </section>
                 </#if>
                 <!-- 留言 -->
-                <section class="leave-message" <#if user??&&user.userType==1>style="height: 80px;" </#if>>
+                <section class="leave-message" <#--暂时隐藏 <#if user??&&user.userType==1>style="height: 80px;" </#if> --> >
                     <input id="remark" onblur="userRemark('${order.remark!''}');" type="text" maxlength="50" value="${order.remark!''}" placeholder="给商家留言">
+					<#-- 暂时隐藏
 					<#if user??&&user.userType==1>
 						 <input id="otherIncome" onblur="sellerOtherIncome('${order.otherIncome!''}');" type="text" value="${order.otherIncome!'' }" placeholder="其他收入">
 					</#if>                    
-
+					-->
                 </section>
                 <!-- 优惠劵 -->
                 <section class="coupon">
