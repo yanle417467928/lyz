@@ -37,11 +37,22 @@
                 if(0 == res.status){
                     warning("操作成功");
                     setTimeout(function(){
-                        window.location.reload();
-                    },1000)
+                    	//window.location.reload(); 修改门店后自动弹出修改导购窗口 
+                    	//修改门店和导购信息
+                    	$("#now_seller").html('');
+						$("#sellerId").val('');
+						$("#now_diy").html(res.user.diyName);
+						$("#diyId").val(res.user.upperDiySiteId);
+                    	//关闭门店信息
+                    	pupclose();
+                    	info_no(0);
+                    	//弹出导购信息
+                    	service.getSeller();
+                    },1000);
                 }else{
                     warning(res.message);
                 }
+                
             }
         });
     }     
@@ -73,6 +84,17 @@
 </script>
 <#if all_site??>
     <#list all_site as item>
-        <div class="stores-list" onclick="pupopen(${item_index?c});">${item.title!''}</div>
+        <div class="swiper-slide stores-list" onclick="pupopen(${item_index?c});">${item.title!''}</div>
     </#list>
 </#if>
+<script src="/client/js/swiper.min.js"></script>
+<script>
+    var swiper = new Swiper('.swiper-container', {
+        pagination: '.swiper-pagination',
+        paginationClickable: true,
+        direction: 'vertical',
+        slidesPerView: 6
+    });
+    function info_no(time){ $('#diy_window').animate({height:0},time);}
+    function info_yes(){ $('#diy_window').animate({height:'100%'});}
+</script>

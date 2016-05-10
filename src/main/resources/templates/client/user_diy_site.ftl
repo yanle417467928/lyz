@@ -22,6 +22,67 @@
             select{
                 -webkit-appearance:none;
             }
+            #info_window{
+             	overflow: hidden;
+			    width: 80%;
+			    padding: 0 5%;
+			    padding-bottom: 40px;
+			    padding-top: 23px;
+			    height: 240px;
+			    margin: auto;
+			    border-radius: 8px;
+			    background: white;
+			    margin-top: 64px;
+            }   
+            #site_by_district_div{
+		    height: 25px;
+		    line-height: 25px;
+		    font-size: 0.9em;
+		    color: #666;
+		    background: #fff;
+            border: 1px solid #ddd;
+            }
+            .swiper-container .stores-list{
+            padding: 2%;
+		    height: 0.9em;
+		    line-height: 0.9em;
+		    font-size: 0.6em;
+		    color: #666;
+		    background: #fff;
+            border-bottom: #EEEEEE 1px dashed;
+            overflow: hidden;
+            font-weight: normal;
+            }
+            #info_window .swiper-container{
+            	border: none;
+            	height:180px;
+            	overflow:hidden;
+            }
+            #info_window .btn_no{
+            	margin: auto;
+			    border: none;
+			    outline: none;
+			    color: white;
+			    width: 60px;
+			    height: 26px;
+			    border-radius: 4px;
+			    background: #cc1421;
+			    z-index: 99999;
+			    border: none;
+            }
+            #diy_window{
+             	overflow: hidden;
+			   	position: fixed;
+			    left: 0px;
+			    top: 0px;
+			    width: 100%;
+			    height: 0;
+			    background: rgba(0,0,0,0.3);
+			    /* display: none; */
+			    z-index: 8;
+			    padding: 0;
+            }
+              
         </style>
     </head>
     <body class="bgc-f3f4f6">
@@ -48,6 +109,7 @@
         <#include "/client/common_wait.ftl">  
 		<#-- 引入公共导购列表弹窗 -->
 		<#include "/client/user_seller_list.ftl">
+		
         <!-- 头部 -->
         <header>
             <a class="back" href="javascript:history.go(-1);"></a>
@@ -57,26 +119,38 @@
         
         <!-- 门店归属 -->
         <article class="home-stores">
+        
+        	<div id="diy_window">
+	        	<div id="info_window">
+		            <#if !(isSelected??&&isSelected==false)>
+		                <div id="site_by_district_div">
+		                    <select id="site_district" onchange="changeDistrict();" style="width:98%;height:25px;font-size:0.9em;color:#666;margin:0 1%;border:none;background:url('/client/images/icon_bottom.png') no-repeat right;">
+		                        <#if district_list??>
+		                            <#list district_list as item>
+		                                <option value="${item.id?c}">${item.name!''}</option>
+		                            </#list>
+		                        </#if>
+		                    </select>
+		                </div>
+		                <div class="swiper-container">
+		                <span class="swiper-wrapper" id="site_by_district" style="margin-top:10px;display:block;" >
+		                    <#include "/client/site_in_district.ftl">
+		                </span>
+		                </div>
+		                <div style="position:relative;bottom:8px;left:0px;width:100%;text-align:center;border: none"> 
+				            <input class="btn_no" type="button" name="" id="" value="关闭" onclick="info_no()">
+				        </div>
+		            </#if>
+		        </div>
+	        </div>
             <#if user??>
                 <div>当前所属门店：<span id="now_diy">${user.diyName!''}</span></div>
-                <div onclick="service.getSeller();">当前服务导购：<span id="now_seller">${user.sellerName!''}</span></div>
+                <div>当前服务导购：<span id="now_seller">${user.sellerName!''}</span></div>
                 <input id="diyId" type="hidden" value="${user.upperDiySiteId?c}">
                 <input id="sellerId" type="hidden" value="<#if user.sellerId??>${user.sellerId?c}<#else>0</#if>">
             </#if>
-            <#if !(isSelected??&&isSelected==false)>
-                <div>
-                    <select id="site_district" onchange="changeDistrict();" style="width:98%;height:35px;font-size:0.9em;color:#666;margin:0 1%;border:none;background:url('/client/images/icon_bottom.png') no-repeat right;">
-                        <#if district_list??>
-                            <#list district_list as item>
-                                <option value="${item.id?c}">${item.name!''}</option>
-                            </#list>
-                        </#if>
-                    </select>
-                </div>
-                <span id="site_by_district" style="margin-top:10px;display:block;">
-                    <#include "/client/site_in_district.ftl">
-                </span>
-            </#if>
+            <input style="background-color:#EA5D0E;border-radius:3px;" class="btn-submit-save" type="button" value="修改门店归属" onclick="info_yes(1000);">
+            <input style="background-color:#EA5D0E;border-radius:3px;" class="btn-submit-save" type="button" value="修改导购"  onclick="service.getSeller();">
         </article>
         <!-- 门店归属 END -->
         
@@ -168,7 +242,14 @@
 						}
 					});
 				}
+			},
+			<#-- 显示门店归属方法 -->
+			showDiySite : function(){
+				$('#site_by_district_div').show();
+				$('#site_by_district').show();
+				
 			}
 		};
+		
 	</script>
 </html>

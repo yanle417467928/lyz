@@ -1515,7 +1515,7 @@ public class TdUserController {
 
 	/**
 	 * 用户修改归属门店并且保存的方法
-	 * 
+	 * 修改门店后清空导购  zp
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/diy/save")
@@ -1541,8 +1541,14 @@ public class TdUserController {
 		user.setUpperDiySiteId(site.getId());
 		user.setDiyName(site.getTitle());
 		user.setCustomerId(site.getCustomerId());
+		//修改门店后清空导购
+		user.setSellerId(null);
+		user.setSellerName(null);
+		user.setReferPhone(null);
+		
 		tdUserService.save(user);
 		res.put("status", 0);
+		res.put("user",user);
 		return res;
 	}
 
