@@ -20,7 +20,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 
 @Entity
-public class TdTbwRecM {
+public class TdTbwRecm {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
