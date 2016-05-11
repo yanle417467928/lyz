@@ -65,6 +65,9 @@ public class TdDiySiteInventoryLog {
 	
 	@Column
 	private String orderNumber;
+	
+	@Column
+	private String manager;
 
 	public Long getId() {
 		return id;
@@ -161,6 +164,14 @@ public class TdDiySiteInventoryLog {
 
 	public void setOrderNumber(String orderNumber) {
 		this.orderNumber = orderNumber;
+	}
+	
+	public String getManager() {
+		return manager;
+	}
+
+	public void setManager(String manager) {
+		this.manager = manager;
 	}
 
 	@Override

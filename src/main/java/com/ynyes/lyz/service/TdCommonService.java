@@ -555,9 +555,12 @@ public class TdCommonService {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser tdUser = tdUserService.findByUsername(username);
 		Long siteId = 0L;
+		Long sobId = 0L;
 		if (tdUser != null) {
 			siteId = tdUser.getUpperDiySiteId();
+			sobId = tdUser.getCityId();
 		}
+		
 
 		// 创建一个集合存储有价格的商品
 		List<TdGoods> actual_goods = new ArrayList<>();
@@ -575,10 +578,14 @@ public class TdCommonService {
 					// 开始判断此件商品是否参加活动
 					priceListItem.setIsPromotion(this.isJoinActivity(req, goods));
 					map.addAttribute("priceListItem" + i, priceListItem);
-					List<TdDiySiteInventory> inventories = tdDiySiteInventoryService.findByDiySiteId(siteId);
-					if (inventories.size() == 1) {
-						map.addAttribute("goodInventory" + i, inventories.get(0).getInventory());
-					} else {
+//					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(goods.getCode(),siteId);
+					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), sobId);
+					if (inventory != null)
+					{
+						map.addAttribute("goodInventory" + i, inventory.getInventory());
+					}
+					else
+					{
 						map.addAttribute("goodInventory" + i, 0);
 					}
 				} else {

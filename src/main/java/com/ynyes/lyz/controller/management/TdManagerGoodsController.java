@@ -1206,6 +1206,23 @@ public class TdManagerGoodsController {
 		{
 			return "redirect:/Verwalter/login";
 		}
+		
+		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+		TdManagerRole tdManagerRole = null;
+		String diyCode = null;
+		if (null != tdManager && null != tdManager.getRoleId())
+		{
+			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+			if (tdManagerRole == null)
+			{
+				return "redirect:/Verwalter/login";
+			}
+			if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
+			{
+				diyCode = tdManager.getDiyCode();
+			}
+		}
+		
 		if (null != __EVENTTARGET) 
 		{
 			if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
@@ -1222,7 +1239,10 @@ public class TdManagerGoodsController {
 			}
 			else if (__EVENTTARGET.equalsIgnoreCase("btnInventory")) 
 			{
-				this.btnChangeInventory(listChkId,listId,listInventory,req);
+				if (diyCode != null)
+				{
+					this.btnChangeInventory(listChkId,listId,listInventory,req);
+				}
 			}
 		}
 
@@ -1254,6 +1274,7 @@ public class TdManagerGoodsController {
 		{
 			diysite_list = tdDiySiteService.findAll();
 		}
+		
 		if (siteId != null && siteId != -1)
 		{
 			map.addAttribute("inventory_page", tdDiySiteInventoryService.findBySiteIdAndKeywords(siteId, keywords, page, size));
@@ -1273,7 +1294,19 @@ public class TdManagerGoodsController {
 		{
 			map.addAttribute("inventory_page", tdDiySiteInventoryService.findAll(keywords, page,size));
 		}
+		
 		map.addAttribute("site_list", diysite_list);
+		
+		TdDiySite diySite = tdDiySiteService.findByStoreCode(diyCode);
+		if (diySite != null)
+		{
+			map.addAttribute("inventory_page", tdDiySiteInventoryService.findBySiteIdAndKeywords(diySite.getId(), keywords, page, size));
+			map.addAttribute("is_diy_site_bool",true);
+			diysite_list.clear();
+			diysite_list.add(diySite);
+			map.addAttribute("site_list", diysite_list);
+		}
+		
 		
 		return "site_mag/inventory_list";
 	}

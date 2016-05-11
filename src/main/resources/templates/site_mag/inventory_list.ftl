@@ -51,6 +51,7 @@ var theForm = document.forms['form1'];
           <li><a id="btnSave" class="save" href="javascript:__doPostBack('btnInventory','')"><i></i><span>保存</span></a></li>
         </ul>
         <div class="menu-list">
+        <#if !is_diy_site_bool??>
             <div class="rule-single-select">
                 <select name="regionId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
                     <option <#if !regionId??>selected="selected"</#if> value="" >所有城市</option>
@@ -61,10 +62,13 @@ var theForm = document.forms['form1'];
                     </#if>
                 </select>
             </div>
+            </#if>
             <div class="rule-single-select">
                 <select name="siteId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
+                <#if !is_diy_site_bool??>
                     <option <#if !siteId??>selected="selected"</#if> value="" >所有门店</option>
                     <option <#if siteId?? && siteId = -1>selected="selected"</#if> value="-1">仅城市库存</option>
+                </#if>
                     <#if site_list??>
                         <#list site_list as site>
                             <option value='${site.id?c}' <#if siteId?? && site.id==siteId>selected="selected"</#if> >${site.title!""}</option>
@@ -108,7 +112,7 @@ var theForm = document.forms['form1'];
                 <td align="left"><#if item.goodsCode??>${item.goodsCode!""}</#if></td>
                 <td align="left">${item.diySiteName!"城市库存"}</td>
                 <td align="left">${item.regionName!""}</td>
-                <td align="center"><input name="listInventory" type="text" value="<#if item.inventory??>${item.inventory?c}<#else>0</#if>" id="listSortId" class="sort" onkeydown="return checkNumber(event);"></td>
+                <td align="center"><input name="listInventory" type="text" <#if is_diy_site_bool??>readonly="readonly"</#if> value="<#if item.inventory??>${item.inventory?c}<#else>0</#if>" id="listSortId" class="sort" onkeydown="return checkNumber(event);"></td>
             </tr>
         </#list>
     </#if>

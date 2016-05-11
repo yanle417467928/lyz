@@ -128,7 +128,13 @@ public class TdTbwRecd {
 	
 	// 分播数量
 	@Column
-	private String c_dps_qty;
+	private String dpsQty;
+	
+	// 修改时间
+	@Column
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date initTime;
 
 	public Long getId() {
 		return id;
@@ -330,12 +336,21 @@ public class TdTbwRecd {
 		this.modifiedDt = modifiedDt;
 	}
 
-	public String getC_dps_qty() {
-		return c_dps_qty;
+	public String getDpsQty() {
+		return dpsQty;
 	}
 
-	public void setC_dps_qty(String c_dps_qty) {
-		this.c_dps_qty = c_dps_qty;
+	public void setDpsQty(String dpsQty) {
+		this.dpsQty = dpsQty;
 	}
+
+	public Date getInitTime() {
+		return initTime;
+	}
+
+	public void setInitTime(Date initTime) {
+		this.initTime = initTime;
+	}
+
 	
 }

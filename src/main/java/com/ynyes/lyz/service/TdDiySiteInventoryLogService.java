@@ -59,18 +59,14 @@ public class TdDiySiteInventoryLogService {
 		String username = null;
 		
 		String changeType = "管理员修改";
-		if (orderNumber == null)
+		if (orderNumber == null && req != null)
 		{
 			username = (String) req.getSession().getAttribute("manager");
 			changeType = "订单修改";
-		}
-		else
-		{
-			username = (String)req.getSession().getAttribute("username");
-		}
-		if (username == null)
-		{
-			return false;
+			if (username == null)
+			{
+				return false;
+			}
 		}
 		
 		TdDiySiteInventoryLog log = new TdDiySiteInventoryLog();
@@ -85,6 +81,7 @@ public class TdDiySiteInventoryLogService {
 		log.setChangeDate(new Date());
 		log.setDescription(changeType);
 		log.setOrderNumber(orderNumber);
+		log.setManager(username);
 		return true;
 		
 	}
