@@ -54,4 +54,19 @@ public interface TdReturnNoteRepo extends PagingAndSortingRepository<TdReturnNot
 	 * @author zp
 	 */
 	List<TdReturnNote> findByDriverAndOrderNumberContainingOrDriverAndReturnNumberContainingOrDriverAndDiySiteTelContainingOrDriverAndDiySiteTitleContainingOrDriverAndDiySiteAddressContainingOrderByIdDesc(String driver1,String keyword1,String driver2,String keyword2,String driver3,String keyword3,String driver4,String keyword4,String driver5,String keyword5);
+	/**
+	 * 根据用户名分页查询
+	 * @param username 用户名
+	 * @param page 分页
+	 * @return 结果列表
+	 * @author zp
+	 */
+	Page<TdReturnNote> findByUsername(String username,Pageable page);
+	
+	/**
+	 * 根据退货单号或者订单号查询退货单
+	 * @author zp
+	 */
+	List<TdReturnNote> findByReturnNumberContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(String keywords1,String username1,String keywords2,String username2);
+	
 }

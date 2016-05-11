@@ -281,6 +281,25 @@ public class TdReturnNoteService {
 	public List<TdReturnNote> findReturnSearch(String driver,String keyword){
 		return repository.findByDriverAndOrderNumberContainingOrDriverAndReturnNumberContainingOrDriverAndDiySiteTelContainingOrDriverAndDiySiteTitleContainingOrDriverAndDiySiteAddressContainingOrderByIdDesc(driver, keyword,driver, keyword,driver, keyword,driver, keyword,driver, keyword);
 	}
-
+	
+	/**
+	 * 根据用户名分页查询
+	 * @param username 用户名
+	 * @param page 分页
+	 * @return 结果列表
+	 * @author zp
+	 */
+	public Page<TdReturnNote> findByUsername(String username,Integer page,Integer size){
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
+		return repository.findByUsername(username, pageRequest);
+	}
+	
+	/**
+	 * 根据退货单号或者订单号查询退货单
+	 * @author zp
+	 */
+	public List<TdReturnNote> findByReturnNumberContainingOrorderNumberContaining(String keywords,String username){
+		return repository.findByReturnNumberContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(keywords,username, keywords,username);
+	}
 
 }

@@ -1,6 +1,6 @@
 <!-- 订单列表 -->
 <#if all_order_list??>
-    <div id="all_orders" class="some_orders">
+    <div id="all_orders" class="some_orders" style="background: #f3f4f6">
         <#list all_order_list as item>
             <ol class="order-list">
                 <li class="li1">
