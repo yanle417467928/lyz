@@ -150,6 +150,12 @@ function __doPostBack(eventTarget, eventArgument) {
 </tbody></table>
 
 <!--/列表-->
+<!--内容底部-->
+<#if module_page??>
+<#assign PAGE_DATA=module_page />
+<#include "/site_mag/list_footer.ftl" />
+</#if>
+<!--/内容底部-->
 </form>
 </body>
 </html>

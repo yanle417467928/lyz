@@ -217,7 +217,7 @@ function __doPostBack(eventTarget, eventArgument) {
               </div>
             </td>-->
             <td align="center">
-                <a href="/Verwalter/activity/edit?id=${activity.id?c}">修改</a>
+                <a href="/Verwalter/activity/gift/edit?id=${activity.id?c}">修改</a>
             </td>
         </tr>
     </#list>

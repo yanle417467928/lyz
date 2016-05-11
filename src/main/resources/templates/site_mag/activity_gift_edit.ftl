@@ -180,11 +180,11 @@ function getDiySiteList(object)
             <dd>
                 <div class="rule-single-select">
                     <select name="giftType" datatype="*" sucmsg=" ">
-                        <#if !activity??>
+                        <#if !activity_gift??>
                         <option value="">请选择类别...</option>
                         </#if>
-                        <option value="0" <#if activity?? && activity.giftType?? && activity.giftType == 0>selected="selected"</#if> >赠送商品</option>
-                        <option value="1" <#if activity?? && activity.giftType?? && activity.giftType == 1>selected="selected"</#if> >赠送产品卷</option>
+                        <option value="0" <#if activity_gift?? && activity_gift.giftType?? && activity_gift.giftType == 0>selected="selected"</#if> >赠送商品</option>
+                        <option value="1" <#if activity_gift?? && activity_gift.giftType?? && activity_gift.giftType == 1>selected="selected"</#if> >赠送产品卷</option>
                     </select>
                 </div>
             </dd>
