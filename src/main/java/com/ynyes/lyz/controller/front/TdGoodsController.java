@@ -23,6 +23,7 @@ import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPriceListItem;
+import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.entity.TdSetting;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserCollect;
@@ -32,6 +33,7 @@ import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
+import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdUserCollectService;
 import com.ynyes.lyz.service.TdUserCommentService;
@@ -67,6 +69,9 @@ public class TdGoodsController {
 
 	@Autowired
 	private TdOrderService tdOrderService;
+	
+	@Autowired
+	private TdProductCategoryService tdProductCategoryService;
 
 	/*
 	 *********************************** 普通下单模式的控制器和方法********************************************
@@ -505,6 +510,13 @@ public class TdGoodsController {
 		}
 
 		map.addAttribute("user", user);
+		//查询一级分类 不准确 
+		String cateId="";
+		TdProductCategory cateList= tdProductCategoryService.findByTitle(keywords);
+		if(cateList!=null ){
+			cateId="["+cateList.getId()+"]";
+		}
+		
 
 		// 获取用户的门店
 		TdDiySite diySite = tdCommonService.getDiySite(req);
@@ -528,26 +540,26 @@ public class TdGoodsController {
 
 		if ("0".equals(sortFiled)) {
 			if ("0".equals(rule1)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySortIdAsc(keywords);
+				goods_list = tdGoodsService.searchGoodsOrderBySortIdAsc(keywords,cateId);
 				rule1 = "1";
 			} else if ("1".equals(rule1)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySortIdDesc(keywords);
+				goods_list = tdGoodsService.searchGoodsOrderBySortIdDesc(keywords,cateId);
 				rule1 = "0";
 			}
 		} else if ("1".equals(sortFiled)) {
 			if ("0".equals(rule2)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySalePriceAsc(keywords, diySite.getPriceListId());
+				goods_list = tdGoodsService.searchGoodsOrderBySalePriceAsc(keywords, diySite.getPriceListId(),cateId);
 				rule2 = "1";
 			} else if ("1".equals(rule2)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySalePriceDesc(keywords, diySite.getPriceListId());
+				goods_list = tdGoodsService.searchGoodsOrderBySalePriceDesc(keywords, diySite.getPriceListId(),cateId);
 				rule2 = "0";
 			}
 		} else if ("2".equals(sortFiled)) {
 			if ("0".equals(rule3)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySoldNumberAsc(keywords);
+				goods_list = tdGoodsService.searchGoodsOrderBySoldNumberAsc(keywords,cateId);
 				rule3 = "1";
 			} else if ("1".equals(rule3)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySoldNumberDesc(keywords);
+				goods_list = tdGoodsService.searchGoodsOrderBySoldNumberDesc(keywords,cateId);
 				rule3 = "0";
 			}
 		}

@@ -1280,13 +1280,13 @@ public class TdGoodsService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdGoods> searchGoodsOrderBySortIdAsc(String keywords) {
+	public List<TdGoods> searchGoodsOrderBySortIdAsc(String keywords,String cateId) {
 		if (null == keywords) {
 			return null;
 		}
 		return repository
 				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySortIdAsc(
-						keywords);
+						keywords,cateId);
 	}
 
 	/**
@@ -1294,13 +1294,13 @@ public class TdGoodsService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdGoods> searchGoodsOrderBySortIdDesc(String keywords) {
+	public List<TdGoods> searchGoodsOrderBySortIdDesc(String keywords,String cateId) {
 		if (null == keywords) {
 			return null;
 		}
 		return repository
 				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySortIdDesc(
-						keywords);
+						keywords,cateId);
 	}
 
 	/**
@@ -1308,11 +1308,11 @@ public class TdGoodsService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdGoods> searchGoodsOrderBySalePriceAsc(String keywords, Long priceListId) {
+	public List<TdGoods> searchGoodsOrderBySalePriceAsc(String keywords, Long priceListId,String cateId) {
 		if (null == keywords || null == priceListId) {
 			return null;
 		}
-		return repository.searchGoodsOrderBySalePriceAsc(keywords, priceListId);
+		return repository.searchGoodsOrderBySalePriceAsc(keywords, priceListId,cateId);
 	}
 
 	/**
@@ -1320,11 +1320,11 @@ public class TdGoodsService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdGoods> searchGoodsOrderBySalePriceDesc(String keywords, Long priceListId) {
+	public List<TdGoods> searchGoodsOrderBySalePriceDesc(String keywords, Long priceListId,String cateId) {
 		if (null == keywords || null == priceListId) {
 			return null;
 		}
-		return repository.searchGoodsOrderBySalePriceDesc(keywords, priceListId);
+		return repository.searchGoodsOrderBySalePriceDesc(keywords, priceListId,cateId);
 	}
 
 	/**
@@ -1332,13 +1332,13 @@ public class TdGoodsService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdGoods> searchGoodsOrderBySoldNumberAsc(String keywords) {
+	public List<TdGoods> searchGoodsOrderBySoldNumberAsc(String keywords,String cateId) {
 		if (null == keywords) {
 			return null;
 		}
 		return repository
 				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySoldNumberAsc(
-						keywords);
+						keywords,cateId);
 	}
 
 	/**
@@ -1346,13 +1346,13 @@ public class TdGoodsService {
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdGoods> searchGoodsOrderBySoldNumberDesc(String keywords) {
+	public List<TdGoods> searchGoodsOrderBySoldNumberDesc(String keywords,String cateId) {
 		if (null == keywords) {
 			return null;
 		}
 		return repository
 				.findByNameContainingOrTitleContainingOrSubTitleContainingOrCodeContainingOrCategoryTitleContainingOrderBySoldNumberDesc(
-						keywords);
+						keywords,cateId);
 	}
 
 	public List<TdGoods> searchGoods(String keywords) {

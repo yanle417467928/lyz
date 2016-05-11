@@ -84,4 +84,12 @@ public class TdCategoryLimitService {
 		}
 		return repository.findBySobIdAndParentIdOrderBySortIdAsc(sobId, parentId);
 	}
+	
+	/**
+	 * 根据分类名称模糊查询
+	 * @author zp
+	 */
+	public List<TdCategoryLimit> findByTitleContaining(String title){
+		return repository.findByTitleContaining(title);
+	}
 }

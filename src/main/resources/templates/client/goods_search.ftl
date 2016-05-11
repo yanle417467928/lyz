@@ -63,9 +63,9 @@
             	描述：nav_end
             -->    
             <ul class="switch-title-group">
-                <li <#if selected_rule??&&selected_rule==0>class="current"</#if>><a href="/goods/search?param=0-${rule1!'0'}-${rule2!'0'}-${rule3!'0'}&keywords=${keywords!''}">默认</a></li>
-                <li <#if selected_rule??&&selected_rule==1>class="current"</#if>><a href="/goods/search?param=1-${rule1!'0'}-${rule2!'0'}-${rule3!'0'}&keywords=${keywords!''}">按价格</a></li>
-                <li <#if selected_rule??&&selected_rule==2>class="current"</#if>><a href="/goods/search?param=2-${rule1!'0'}-${rule2!'0'}-${rule3!'0'}&keywords=${keywords!''}">按销量</a></li>
+                <li style="width:45%; " <#if selected_rule??&&selected_rule==0>class="current"</#if>><a href="/goods/search?param=0-${rule1!'0'}-${rule2!'0'}-${rule3!'0'}&keywords=${keywords!''}">默认</a></li>
+              <#-- 有问题暂时注释  <li <#if selected_rule??&&selected_rule==1>class="current"</#if>><a href="/goods/search?param=1-${rule1!'0'}-${rule2!'0'}-${rule3!'0'}&keywords=${keywords!''}">按价格</a></li> -->
+                <li style="width:45%; " <#if selected_rule??&&selected_rule==2>class="current"</#if>><a href="/goods/search?param=2-${rule1!'0'}-${rule2!'0'}-${rule3!'0'}&keywords=${keywords!''}">按销量</a></li>
             </ul>
             
             <div class="new_goodbox">					

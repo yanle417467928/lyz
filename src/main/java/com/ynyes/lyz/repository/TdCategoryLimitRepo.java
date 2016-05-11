@@ -30,4 +30,9 @@ public interface TdCategoryLimitRepo
 	 * @author DengXiao
 	 */
 	List<TdCategoryLimit> findBySobIdAndParentIdOrderBySortIdAsc(Long sobId, Long parentId);
+	/**
+	 * 根据分类名称模糊查询
+	 * @author zp
+	 */
+	List<TdCategoryLimit> findByTitleContaining(String title);
 }
