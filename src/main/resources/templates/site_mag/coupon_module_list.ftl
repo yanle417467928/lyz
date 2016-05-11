@@ -143,7 +143,7 @@ function __doPostBack(eventTarget, eventArgument) {
                 <td align="center">
                     <a href="/Verwalter/coupon/module/edit?id=${item.id?c}">修改</a>
                 </td>
-              </tr>
+              </tr> 
         </#list>
     </#if>
  
