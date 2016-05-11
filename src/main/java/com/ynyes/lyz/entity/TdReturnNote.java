@@ -37,6 +37,10 @@ public class TdReturnNote {
 	@Column
 	private Long statusId;
 
+	//状态名称 zp
+	@SuppressWarnings("unused")
+	private String statusName;
+	
 	// 支付方式
 	@Column
 	private Long payTypeId;
@@ -116,6 +120,9 @@ public class TdReturnNote {
 	// 退货方式 1 到店退货， 2 物流取货
 	@Column
 	private Long turnType;
+	
+	@SuppressWarnings("unused")
+	private String turnTypeName;
 	
 	// 原订单配送方式
 	@Column
@@ -372,6 +379,34 @@ public class TdReturnNote {
 	public void setRecvTime(Date recvTime) {
 		this.recvTime = recvTime;
 	}
+	
+	public String getStatusName() {
+		//1:待通知物流 2:待取货 3: 待确认收货  4 待退款（物流确认） 5 已完成
+		if(this.statusId==1L){
+			return "待通知物流";
+		}else if(this.statusId==2L){
+			return "待取货";
+		}else if(this.statusId==3L){
+			return "待确认收货";
+		}else if(this.statusId==4L){
+			return "待退款";
+		}else if(this.statusId==5L){
+			return "已完成";
+		}
+		
+		return "";
+	}
+
+	public String getTurnTypeName() {
+		//1 到店退货， 2 物流取货
+		if(this.turnType==1L){
+			return "到店退货";
+		}else if(this.turnType==2L){
+			return "物流取货";
+		}
+		return "";
+	}
+
 
 	@Override
 	public String toString() {

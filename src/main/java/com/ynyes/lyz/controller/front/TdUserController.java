@@ -2211,4 +2211,100 @@ public class TdUserController {
 		res.put("status", 0);
 		return res;
 	}
+	/**
+	 * 退换货
+	 * @author zp
+	 */
+	@RequestMapping(value="/return/list")
+	public String returnList(HttpServletRequest req, ModelMap map,Integer page,Integer size){
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
+		//设置默认值
+		if(null==page || page<=0){
+			page=0;
+		}
+		if(null ==size || size<=0){
+			size=20;
+		}
+		
+		// 分页查询退货单
+		Page<TdReturnNote> returnNoteList = tdReturnNoteService.findByUsername(username,page,size);
+//		List<TdReturnNote> returnNoteList=tdReturnNoteService.findByUsername(username);
+		
+		map.addAttribute("all_return_list",returnNoteList.getContent());
+		return "/client/user_return_list";
+	} 
+	
+	/**
+	 * 退货单详情
+	 * @author zp
+	 */
+	@RequestMapping(value = "/return/detail/{id}")
+	public String userReturnDetail(HttpServletRequest req, ModelMap map, @PathVariable Long id) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
+		// 获取指定id的退货单信息
+		TdReturnNote returnNote = tdReturnNoteService.findOne(id);
+		map.addAttribute("returnNote", returnNote);
+
+		// 获取配送的信息
+		if (null != returnNote) {
+			// 查找配送员的一系列信息
+			TdUser opUser = tdUserService.findByOpUser(returnNote.getDriver());
+			map.addAttribute("opUser", opUser);
+			List<TdGeoInfo> geoInfo_list = tdGeoInfoService.findByOpUserOrderByTimeDesc(returnNote.getDriver());
+			TdUser tdUser = tdUserService.findByOpUser(returnNote.getDriver());
+			if (null != geoInfo_list && geoInfo_list.size() > 0) {
+				TdGeoInfo geoInfo = geoInfo_list.get(0);
+				map.addAttribute("geoInfo", geoInfo);
+				map.addAttribute("tdUser", tdUser);
+			}
+		}
+		// 获取导购 可能不准确 真是姓名可能重复
+		if (null != returnNote) {
+			List<TdUser> userList= tdUserService.findByRealName(returnNote.getSellerRealName());
+			if(userList!=null && userList.size()>0){
+				map.addAttribute("sellerUser", userList.get(0));
+			}
+		}
+		
+		//退货单仓库暂时没有记录 后面增加
+//		// 仓库
+//		if (null != returnNote) {
+//			List<TdDeliveryInfo> deliveryList = tdDeliveryInfoService
+//					.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+//			if (null != deliveryList && deliveryList.size() > 0) {
+//				List<TdWareHouse> wareHouseList = TdWareHouseService
+//						.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
+//				if (null != wareHouseList && wareHouseList.size() > 0) {
+//					map.addAttribute("tdWareHouse", wareHouseList.get(0));
+//				}
+//			}
+//		}
+
+		map.addAttribute("returnId", id);
+		return "/client/user_return_detail";
+	}
+	
+	/**
+	 * 模糊查询指定退货单的方法（异步刷新）
+	 * 
+	 * @author zp
+	 */
+	@RequestMapping(value = "/return/search")
+	public String userReturnSearch(HttpServletRequest req, ModelMap map, String keywords) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null != user) {
+			List<TdReturnNote> returnList= tdReturnNoteService.findByReturnNumberContainingOrorderNumberContaining(keywords,username);
+			map.addAttribute("all_return_list", returnList);
+		}
+		return "/client/user_all_return";
+	}
 }
