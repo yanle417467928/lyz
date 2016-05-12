@@ -53,9 +53,14 @@
                             <img class="bg" src="/client/images/x_bg_select_coupons.png" alt="">
                             <div class="floatbox">
                                 <img class="pro-pic" src="${item.picUri!''}" alt="">
-                                <div class="tips">
+                                <div class="tips" style="margin-left:80px;float: none;overflow: hidden;">
                                     <div class="div1">产品劵</div>
-                                    <div class="div2">${item.goodsName!''}</div>
+                                    <div class="div2" id="name${item.id?c }" style="font-size:1.2em" >${item.goodsName!''}</div>
+                                    <script type="text/javascript">
+                                       if(parseInt(($('#name${item.id?c}').width()+15))>=parseInt($('#name${item.id?c}').parent().width())){
+                                           $('#name${item.id?c}').css('font-size','0.9em');
+                                       }
+                                    </script>
                                 </div>
                                 <div class="clear"></div>
                                 <div class="time">有效期：<span><#if item.getTime??>${item.getTime?string("yyyy.MM.dd")}</#if></span> - <span><#if item.expireTime??>${item.expireTime?string("yyyy.MM.dd")}</#if></span></div>
