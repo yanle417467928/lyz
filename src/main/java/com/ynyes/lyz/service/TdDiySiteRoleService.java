@@ -36,7 +36,11 @@ public class TdDiySiteRoleService {
 	TdDiySiteService tdDiySiteService;
 	@Autowired
 	TdCityService tdCityService;
-    
+	@Autowired
+	TdManagerService tdManagerService;
+	@Autowired
+	TdManagerRoleService tdManagerRoleService;
+	
     /**
      * 删除
      * 
@@ -174,7 +178,7 @@ public class TdDiySiteRoleService {
     	return roleDiyIds;
 	}
     /**
-     * 管理员获取管辖的城市和门店
+     * 管理员获取管辖的城市和门店  
      * @param cityList 城市列表
      * @param diyList 门店列表
      * @param diySiteRole 管理员
@@ -198,7 +202,7 @@ public class TdDiySiteRoleService {
     	if(tdManager.getDiyCode()!=null){
     		TdDiySite diy= tdDiySiteService.findByStoreCode(tdManager.getDiyCode());
     		//判断是否重复
-    		if(tdDiyList.contains(diy)){
+    		if(!tdDiyList.contains(diy)){
     			tdDiyList.add(diy);
     		}
     	}
@@ -210,5 +214,30 @@ public class TdDiySiteRoleService {
     	for (TdCity tdCity : tdCityList) {
     		cityList.add(tdCity);
 		}
+    }
+    
+    /**
+     * 管理员获取管辖的城市和门店
+     * @param cityList 城市列表
+     * @param diyList 门店列表
+     * @param username 管理员帐号
+     * @author zp
+     */
+    public void userRoleCityAndDiy(List<TdCity> cityList,List<TdDiySite> diyList,String username){
+    	//获取管理员信息
+    	TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
+    	if(tdManager==null){
+    		return;
+    	}
+    	//管理员权限
+    	TdManagerRole tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
+    	if(tdManagerRole==null){
+    		return;
+    	}
+		//查询用户管辖门店权限
+    	TdManagerDiySiteRole diySiteRole= this.findByTitle(tdManagerRole.getTitle());
+    	
+    	userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
+    	
     }
 }

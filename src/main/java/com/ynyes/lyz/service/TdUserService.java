@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-import com.ynyes.lyz.entity.TdAgencyFund;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.repository.TdUserRepo;
 import com.ynyes.lyz.util.Criteria;
@@ -352,21 +351,25 @@ public class TdUserService {
 	 * @return
 	 * @author zp
 	 */
-	public Page<TdUser> searchList(String keywords,List<String> roleDiyIds,Long userType,int size,int page){
+	public Page<TdUser> searchList(String keywords,List<Long> roleDiyIds,Long userType,Long city,Long diyCode,int size,int page){
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdUser> c = new Criteria<TdUser>();
-		
-		Criteria<TdUser> criteriaUsername = new Criteria<TdUser>();
+		//用户名
 		if (StringUtils.isNotBlank(keywords)) {
-			criteriaUsername.add(Restrictions.like("username", keywords, true));
+			c.add(Restrictions.or(Restrictions.like("realName",keywords, true),Restrictions.like("username", keywords, true)));
 		}
 		if(roleDiyIds!=null && roleDiyIds.size()>0){
 			c.add(Restrictions.in("upperDiySiteId", roleDiyIds, true));
 		}
-		if (userType==null) {
-			criteriaUsername.add(Restrictions.eq("userType", userType, true));
+		if (userType!=null) {
+			c.add(Restrictions.eq("userType", userType, true));
 		}
-		
+		if (city!=null) {
+			c.add(Restrictions.eq("cityId", city, true));
+		}
+		if (diyCode!=null) {
+			c.add(Restrictions.eq("upperDiySiteId", diyCode, true));
+		}
 		
 		c.setOrderByDesc("upperDiySiteId");
 		return repository.findAll(c,pageRequest);

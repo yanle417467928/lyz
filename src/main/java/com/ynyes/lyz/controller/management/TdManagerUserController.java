@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.management;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +30,6 @@ import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
-import com.ynyes.lyz.entity.TdManagerDiySiteRole;
-import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdMessage;
 import com.ynyes.lyz.entity.TdMessageType;
 import com.ynyes.lyz.entity.TdOrder;
@@ -171,26 +170,22 @@ public class TdManagerUserController {
 
 		return res;
 	}
-	//增加权限判读 zp
+	//增加权限判读 增加城市和门店搜索  zp
 	@RequestMapping(value = "/list")
 	public String setting(Integer page, Integer size, String keywords, Long roleId, Long userType,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
-			ModelMap map, HttpServletRequest req) {
+			ModelMap map, HttpServletRequest req,Long cityCode,Long diyCode) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
-		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
-		TdManagerRole tdManagerRole = null;
-		if (null != tdManager && null != tdManager.getRoleId())
-		{
-			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
-		}
-		//判断是否有权限
-		if (tdManagerRole == null)
-		{
-			return "redirect:/Verwalter/login";
-		}
+		//获取管理员管辖城市
+    	List<TdCity> cityList= new ArrayList<TdCity>();
+    	//获取管理员管辖门店
+    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
+    	
+    	//管理员获取管辖的城市和门店
+    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, username);
     	
 		if (null != __EVENTTARGET) {
 			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
@@ -200,6 +195,8 @@ public class TdManagerUserController {
 			} else if (__EVENTTARGET.equalsIgnoreCase("btnDelete")) {
 				btnDelete("user", listId, listChkId);
 				tdManagerLogService.addLog("delete", "删除用户", req);
+			}else if(__EVENTTARGET.equalsIgnoreCase("btnSearch")){
+				page=0;
 			}
 		}
 
@@ -216,6 +213,10 @@ public class TdManagerUserController {
 			keywords = keywords.trim();
 		}
 
+		map.addAttribute("cityList", cityList);
+		map.addAttribute("diySiteList", diyList);
+		map.addAttribute("cityCode", cityCode);
+		map.addAttribute("diyCode", diyCode);
 		map.addAttribute("page", page);
 		map.addAttribute("size", size);
 		map.addAttribute("keywords", keywords);
@@ -232,28 +233,15 @@ public class TdManagerUserController {
 		Page<TdUser> userPage = null;
 
 		if (null == roleId) {
-			if (null == keywords || "".equalsIgnoreCase(keywords)) 
-			{
-				if (null == userType) 
-				{
-					userPage = tdUserService.findAllOrderByIdDesc(page, size);
-				} 
-				else 
-				{
-					userPage = tdUserService.findByUserTypeOrderByIdDesc(userType, page, size);
-				}
-			} 
-			else 
-			{
-				if (null == userType) 
-				{
-					userPage = tdUserService.searchAndOrderByIdDesc(keywords, page, size);
-				}
-				else
-				{
-					userPage = tdUserService.searchAndfindByUserTypeOrderByIdDesc(keywords, userType, page, size);
+			//获取管辖门店id列表
+			List<Long> roleDiyIds=new ArrayList<Long>();
+			if(diyList!=null && diyList.size()>0){
+				for (TdDiySite diy : diyList) {
+					roleDiyIds.add(diy.getId());
 				}
 			}
+			//获取分页数据
+			userPage=tdUserService.searchList(keywords, roleDiyIds, userType,cityCode,diyCode, size, page);
 		}
 
 		map.addAttribute("user_page", userPage);
@@ -280,60 +268,47 @@ public class TdManagerUserController {
 			return "redirect:/Verwalter/login";
 		}
 		
-		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
-		TdManagerRole tdManagerRole = null;
-		if (null != tdManager && null != tdManager.getRoleId())
-		{
-			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
-		}
-		//判断是否有权限
-		if (tdManagerRole == null)
-		{
-			return "redirect:/Verwalter/login";
-		}
-		//查询用户管辖门店权限
-    	TdManagerDiySiteRole diySiteRole= tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
-
+		
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("roleId", roleId);
 
 		TdUser user = tdUserService.findOne(id);
 
-//		//获取管理员管辖城市
-//    	List<TdCity> cityList= new ArrayList<TdCity>();
-//    	//获取管理员管辖门店
-//    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
-//    	
-//    	//管理员获取管辖的城市和门店
-//    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
-//    	
-//    	map.addAttribute("city_list",cityList);
-//    	map.addAttribute("site_list", diyList);
+		//获取管理员管辖城市
+    	List<TdCity> cityList= new ArrayList<TdCity>();
+    	//获取管理员管辖门店
+    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
+    	
+    	//管理员获取管辖的城市和门店
+    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, username);
+    	
+    	map.addAttribute("city_list",cityList);
+    	map.addAttribute("site_list", diyList);
 		
 		if (null != user) {
 			map.addAttribute("user", user);
-			List<TdCity> cities = tdCityService.findAll();
-			map.addAttribute("city_list",cities);
-			// 获取用户所在城市
-			Long cityId = user.getCityId();
-
-			if (null != cityId) {
-				TdCity city = tdCityService.findBySobIdCity(cityId);
-
-				if (null != city) {
-					// 获取指定id城市下的所有门店
-					List<TdDiySite> site_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(city.getSobIdCity());
-
-					map.addAttribute("site_list", site_list);
-				}
+//			List<TdCity> cities = tdCityService.findAll();
+//			map.addAttribute("city_list",cities);
+//			// 获取用户所在城市
+//			Long cityId = user.getCityId();
+//
+//			if (null != cityId) {
+//				TdCity city = tdCityService.findBySobIdCity(cityId);
+//
+//				if (null != city) {
+//					// 获取指定id城市下的所有门店
+//					List<TdDiySite> site_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(city.getSobIdCity());
+//
+//					map.addAttribute("site_list", site_list);
+//				}
 			}
-		} else {
-			List<TdCity> cities = tdCityService.findAll();
-			map.addAttribute("city_list",cities);
-			List<TdDiySite> site_list = tdDiySiteService.findAll();
-			// 获取所有的门店
-			map.addAttribute("site_list", site_list);
-		}
+//		} else {
+//			List<TdCity> cities = tdCityService.findAll();
+//			map.addAttribute("city_list",cities);
+//			List<TdDiySite> site_list = tdDiySiteService.findAll();
+//			// 获取所有的门店
+//			map.addAttribute("site_list", site_list);
+//		}
 		return "/site_mag/user_edit";
 	}
 

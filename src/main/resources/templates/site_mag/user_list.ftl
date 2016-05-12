@@ -115,6 +115,30 @@ var theForm = document.forms['form1'];
         </select>
         </div>
       </div>
+            <#if cityList?? && cityList?size gt 0 >
+           	<div class="odiv" style="float:left;width:310px;"><span class="span1">城市名称：</span>
+               	<div class="rule-single-select">
+                       <select name="cityCode" id="cityCode">
+                       <option value="" >请选择</option>      
+                       <#list cityList as city>
+                       	<option value="${city.sobIdCity?c }" <#if cityCode?? && cityCode==city.sobIdCity>selected</#if> >${city.cityName }</option>
+                       </#list>
+                       </select>
+           		</div>
+           	</div>
+           	</#if>
+            <#if diySiteList?? && diySiteList?size gt 0 >
+            <div class="odiv" style="float:left;width:310px;"><span class="span1">门店名称：</span>
+                	<div class="rule-single-select">
+                        <select name="diyCode" id="diyCode">
+                        <option value="" >请选择</option>      
+                        <#list diySiteList as diySite>
+                        	<option value="${diySite.id?c }" <#if diyCode?? && diyCode==diySite.id>selected</#if> >${diySite.title }</option>
+                        </#list>
+                        </select>
+            		</div>
+            	</div>
+            	</#if>
     </div>
     <div class="r-list">
       <input name="keywords" type="text" class="keyword" value="${keywords!""}">
