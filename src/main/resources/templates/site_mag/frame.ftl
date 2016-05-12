@@ -246,7 +246,7 @@
               <div class="icon-info">
                 <span>
                   您好，${manager!''}<br>
-                 ${manager_role.title!"" }
+                 ${manager_title!"" }
                 </span>
               </div>
               <div class="icon-option">

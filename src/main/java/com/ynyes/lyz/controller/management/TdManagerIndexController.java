@@ -250,6 +250,7 @@ public class TdManagerIndexController {
             map.addAttribute("root_menu_list", rootMenuList);
         }
         map.addAttribute("manager_role", tdManagerRole);
+        map.addAttribute("manager_title", tdManager.getRealName());
         return "/site_mag/frame";
     }
 
