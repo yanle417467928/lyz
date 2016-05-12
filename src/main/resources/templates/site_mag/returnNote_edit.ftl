@@ -335,7 +335,7 @@
                 <#elseif returnNote.statusId==4>
                     <input type="button" id="btnOrderExpress" value="验货确认" class="btn">
                 <#elseif returnNote.statusId==5>
-                     <input type="button" class="btn yellow" value="已完成" class="btn"> 
+                     <#-- <input type="button" class="btn yellow" value="已完成" class="btn"> -->
                 </#if>
             </#if>
             <#--
