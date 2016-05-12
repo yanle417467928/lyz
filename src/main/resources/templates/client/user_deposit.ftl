@@ -50,7 +50,7 @@
                 <label>金额</label>
                     <input class="text" type="text" placeholder="提现金额">
                 </div>
-                <input class="btn-submit-save" type="submit" value="下一步">
+                <input class="btn-submit-save" style="background-color:#cc1421;" type="submit" value="下一步">
                 <div class="tips">可提现余额：<span>250</span>元</div>
             </form>
         </article>
