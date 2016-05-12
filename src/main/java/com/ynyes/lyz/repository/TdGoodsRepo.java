@@ -414,7 +414,7 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 			+ "g.title like %?1 and g.categoryId = c.id and g.id = p.goodsId and p.priceListId = ?2 and ifnull(g.isCoupon,0)=0 or "
 			+ "g.subTitle like %?1 and g.categoryId = c.id and g.id = p.goodsId and p.priceListId = ?2 and ifnull(g.isCoupon,0)=0 or "
 			+ "g.code like %?1 and g.categoryId = c.id and g.id = p.goodsId and p.priceListId = ?2 and ifnull(g.isCoupon,0)=0 or "
-			+ "c.title like %?1 and g.categoryId = c.id and g.id = p.goodsId and p.priceListId = ?2 and ifnull(g.isCoupon,0)=0 "
+			+ "c.title like %?1 and g.categoryId = c.id and g.id = p.goodsId and p.priceListId = ?2 and ifnull(g.isCoupon,0)=0 or "
 			+ "g.categoryIdTree like %?3% and g.categoryId = c.id and g.id = p.goodsId and p.priceListId = ?2 and ifnull(g.isCoupon,0)=0 "
 			+ "order by p.salePrice desc")
 	List<TdGoods> searchGoodsOrderBySalePriceDesc(String keywords, Long priceListId,String keywords2);
