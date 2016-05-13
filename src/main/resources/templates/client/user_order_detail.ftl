@@ -61,9 +61,9 @@
                     </li>
                     <#if order.orderGoodsList??>
                         <#list order.orderGoodsList as item>
-                            <li class="li2 bdbt-n">
+                            <li class="li2 bdbt-n" style="height: auto;">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
-                                <div class="product-info">
+                                <div class="product-info" style="height: auto;">
                                     <div class="div1">${item.goodsTitle!''}<#if item.isCoupon??&&item.isCoupon>【券】</#if>
                                     	<#-- 判断是否是退货中 -->
                                     	<#if returnNote??>
