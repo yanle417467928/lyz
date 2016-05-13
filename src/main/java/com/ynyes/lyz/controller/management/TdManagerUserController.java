@@ -197,6 +197,18 @@ public class TdManagerUserController {
 				tdManagerLogService.addLog("delete", "删除用户", req);
 			}else if(__EVENTTARGET.equalsIgnoreCase("btnSearch")){
 				page=0;
+			}else if(__EVENTTARGET.equals("changeCity")){
+				//修改城市刷新门店列表
+				if(cityCode!=null){
+					//需要删除的diy
+					List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
+					for (TdDiySite tdDiySite : diyList) {
+						if(!cityCode.equals(tdDiySite.getRegionId())){
+							diyRemoveList.add(tdDiySite);
+						}
+					}
+					diyList.removeAll(diyRemoveList);
+				}
 			}
 		}
 
