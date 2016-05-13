@@ -210,7 +210,7 @@ public class TdOwnMoneyRecordService {
 		if(null!=isPayed){
 			c.add(Restrictions.eq("isPayed", isPayed, true));
 		}
-		c.add(Restrictions.eq("isOwn", null, true));
+		c.add(Restrictions.eq("isOwn",true, true));
 		
 		c.setOrderByDesc("createTime");
 		return repository.findAll(c,pageRequest);

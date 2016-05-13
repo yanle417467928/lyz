@@ -66,7 +66,7 @@ public class TdOwnMoneyRecord {
     @Column
     private Boolean ispassed;
     
-    //是否是欠款记录 （ 后面添加的字段 默认为null表示为欠款记录）
+    //是否是欠款记录 （ 后面添加的字段 默认为true表示为欠款记录） zp
     @Column
     private Boolean isOwn;
     

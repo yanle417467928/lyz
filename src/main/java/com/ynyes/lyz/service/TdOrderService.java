@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.repository.TdOrderRepo;
 import com.ynyes.lyz.util.Criteria;

@@ -46,6 +46,7 @@ import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDeliveryTypeService;
 import com.ynyes.lyz.service.TdDistrictService;
+import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -139,6 +140,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdPriceCountService tdPriceCountService;
+	
+	@Autowired
+	private TdDiySiteRoleService tdDiySiteRoleService;
 	
 	 /**
 	 * @author lc
@@ -404,6 +408,7 @@ public class TdManagerOrderController {
 			}
 		}
 		
+		
 		map.addAttribute("own_page",tdOwnMoneyRecordService.searchOwnList(diyCode, keywords, statusId,payLeft , size, page));
 		
 		
@@ -532,6 +537,7 @@ public class TdManagerOrderController {
 	}
 
 	// 订单列表
+	// 修改权限设置
 	@RequestMapping(value = "/list/{statusId}")
 	public String goodsListDialog(String keywords, @PathVariable Long statusId, Integer page, Integer size,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
@@ -589,43 +595,18 @@ public class TdManagerOrderController {
 				page=0;
 			}
 		}
+		//获取管理员管辖城市
+    	List<TdCity> cityList= new ArrayList<TdCity>();
+    	//获取管理员管辖门店
+    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
+    	
+    	//管理员获取管辖的城市和门店
+    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, username);
 
-//		if (tdManagerRole.getTitle().equalsIgnoreCase("门店"))
-//		{
-//			if (null != statusId) 
-//			{
-//				if (null != keywords && !keywords.equalsIgnoreCase("")) 
-//				{
-//					map.addAttribute("order_page",tdOrderService.findByDiySiteCodeAndOrderNumberContainingOrDiySiteCodeAndUsernameContainingOrderByIdDesc(tdManager.getDiyCode(), keywords, keywords, 0, 0));
-//				}
-//				else
-//				{
-//					if (statusId.equals(0L)) // 全部订单
-//					{
-//						map.addAttribute("order_page", tdOrderService.findByDiyCode(tdManager.getDiyCode(), page, size));
-//					}
-//					else
-//					{
-//						map.addAttribute("order_page", tdOrderService.findByDiyCodeAndStatusIdOrderByIdDesc(tdManager.getDiyCode(), statusId, page, size));
-//					}
-//				}
-//			}
-//		}
-//		else 
-//		{
 			if (null != statusId)
 			{
-				//判断用户是否输入了查询条件
-//				Boolean searchCondition= judgeSearchCondition(keywords,orderStartTime,orderEndTime, realName, sellerRealName, shippingAddress, shippingPhone,
-//						 deliveryTime, userPhone, shippingName, sendTime);
-//				if (searchCondition) 
-//				{
-				String diySiteCode="";
-				if (tdManagerRole.getTitle().equalsIgnoreCase("门店")){
-					diySiteCode=tdManager.getDiyCode();
-				}else if(tdManagerRole.getIsSys()){
-					diySiteCode=diyCode;
-				}
+				
+		    	
 				List<String> usernameList=new ArrayList<String>();
 				Boolean isNotFindUser=false;
 				if(StringUtils.isNotBlank(realName)){ //根据会员真实姓名查询用户名
@@ -640,22 +621,9 @@ public class TdManagerOrderController {
 				}
 				if(!isNotFindUser){
 						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, usernameList, sellerRealName, shippingAddress, shippingPhone,
-					 deliveryTime, userPhone, shippingName, sendTime,statusId,diySiteCode,city, size, page));
+					 deliveryTime, userPhone, shippingName, sendTime,statusId,diyCode,city, size, page));
 				}
-//				}
-//				else
-//				{
-//					if (statusId.equals(0L)) // 全部订单
-//					{
-//						map.addAttribute("order_page", tdOrderService.findAllOrderByIdDesc(page, size));
-//					} 
-//					else 
-//					{
-//						map.addAttribute("order_page", tdOrderService.findByStatusIdOrderByIdDesc(statusId, page, size));
-//					}
-//				}
 			}
-//		}
 		
 		@SuppressWarnings("unchecked")
 		Page<TdOrder> orders1 = (Page<TdOrder>)map.get("order_page");
@@ -668,11 +636,9 @@ public class TdManagerOrderController {
 				map.addAttribute("name_map",nameMap);
 			}
 		}
-		//城市和门店信息
-		if (tdManagerRole.getIsSys()){
-			map.addAttribute("diySiteList",tdDiySiteService.findAll());
-			map.addAttribute("cityList", tdCityService.findAll());
-		}
+		//用户管辖的门店和城市
+		map.addAttribute("diySiteList",diyList);
+		map.addAttribute("cityList", cityList);
 		// 参数注回
 		map.addAttribute("orderNumber", keywords);
 		map.addAttribute("orderStartTime", orderStartTime);

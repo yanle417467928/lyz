@@ -64,6 +64,7 @@ function downloaddate(type)
     }
     window.open("/Verwalter/statement/downdata?begindata="+ begain + "&enddata=" + end+"&diyCode="+diyCode+"&cityName="+city+"&statusId="+type);
 }
+
 </script>
     <!--导航栏-->
     <div class="location">
@@ -116,26 +117,12 @@ function downloaddate(type)
 							errormsg="请选择正确的日期" sucmsg=" " />
 							<input type="hidden" name="oldOrderEndTime" id="oldOrderEndTime" value="${oldOrderEndTime!"" }" /> 
 					</div>
-
-					<#if diySiteList?? && diySiteList?size gt 0 >
-					<div class="odiv" style="float: left; width: 310px;">
-						<span class="span1">门店名称：</span>
-						<div class="rule-single-select">
-							<select name="diyCode" id="diyCode">
-								<option value="">请选择</option> 
-								<#list diySiteList as diySite>
-								<option value="${diySite.storeCode }"<#if diyCode?? && diyCode==diySite.storeCode>selected</#if> >${diySite.title }</option>
-								</#list>
-							</select>
-						</div>
-					</div>
-					</#if> 
 					
 					<#if cityList?? && cityList?size gt 0 >
 					<div class="odiv" style="float: left; width: 310px;">
 						<span class="span1">城市名称：</span>
 						<div class="rule-single-select">
-							<select name="cityName" id="cityName">
+							<select name="cityName" id="cityName" onchange="javascript:setTimeout(__doPostBack('changeCity',''), 0)">
 								<option value="">请选择</option> 
 								<#list cityList as city>
 								<option value="${city.cityName }"<#if cityName?? && cityName==city.cityName>selected</#if> >${city.cityName }</option>
@@ -144,6 +131,21 @@ function downloaddate(type)
 						</div>
 					</div>
 					</#if>
+
+					<#if diySiteList?? && diySiteList?size gt 0 >
+					<div class="odiv" style="float: left; width: 310px;">
+						<span class="span1">门店名称：</span>
+						<div class="rule-single-select">
+							<select name="diyCode" id="diyCode" onchange="javascript:setTimeout(__doPostBack('changeDiy',''), 0)">
+								<option value="" >请选择</option> 
+								<#list diySiteList as diySite>
+								<option city="${diySite.city!'' }" value="${diySite.storeCode }"<#if diyCode?? && diyCode==diySite.storeCode>selected</#if> >${diySite.title }</option>
+								</#list>
+							</select>
+						</div>
+					</div>
+					</#if> 
+					
 					<div class="odiv" style="width: 420px; float: right">
 						<div style="float: left;">
 							<span class="span1">订单号：</span><input name="keywords" type="text"

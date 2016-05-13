@@ -57,7 +57,7 @@ var theForm = document.forms['form1'];
       <div class="menu-list">
         <div class="rule-single-select single-select">
         <select name="statusId" onchange="javascript:setTimeout(__doPostBack('statusId',''), 0)" style="display: none;">
-            <option <#if !statusId??>selected="selected"</#if> value="">所有状态</option>
+            <option <#if !statusId??>selected="selected"</#if> value="">审批状态</option>
             <option <#if statusId?? && statusId==0>selected="selected"</#if> value="0">待审批</option>
             <option <#if statusId?? && statusId==1>selected="selected"</#if> value="1">已审批</option>
         </select>
@@ -66,9 +66,9 @@ var theForm = document.forms['form1'];
       <div class="menu-list">
         <div class="rule-single-select single-select">
         <select name="payLeft" onchange="javascript:setTimeout(__doPostBack('payLeft',''), 0)" style="display: none;">
-            <option <#if !payLeft??>selected="selected"</#if> value="">所有状态</option>
-            <option <#if payLeft?? && payLeft==0>selected="selected"</#if> value="0">未付清</option>
-            <option <#if payLeft?? && payLeft==1>selected="selected"</#if> value="1">已付清</option>
+            <option <#if !payLeft??>selected="selected"</#if> value="">还款状态</option>
+            <option <#if payLeft?? && payLeft==0>selected="selected"</#if> value="0">未还清</option>
+            <option <#if payLeft?? && payLeft==1>selected="selected"</#if> value="1">已还清</option>
         </select>
         </div>
       </div>

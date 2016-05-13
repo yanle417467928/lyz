@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -126,6 +127,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	
 	/**
 	 * 报表 展示
+	 * 选择城市 刷新门店列表
 	 * @param keywords 订单号
 	 * @param page 当前页
 	 * @param size 每页显示行数
@@ -165,7 +167,17 @@ public class TdManagerStatementController extends TdManagerBaseController {
 		{
 			return "redirect:/Verwalter/login";
 		}
-
+		//查询用户管辖门店权限
+    	TdManagerDiySiteRole diySiteRole= tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
+    	//获取管理员管辖城市
+    	List<TdCity> cityList= new ArrayList<TdCity>();
+    	//获取管理员管辖门店
+    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
+    	
+    	//管理员获取管辖的城市和门店
+    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
+    	
+    	
 		if (null == page || page < 0) {
 			page = 0;
 		}
@@ -192,6 +204,18 @@ public class TdManagerStatementController extends TdManagerBaseController {
 				}
 			}else if(__EVENTTARGET.equals("btnSearch")){
 				page=0;
+			}else if(__EVENTTARGET.equals("changeCity")){
+				//修改城市刷新门店列表
+				if(StringUtils.isNotBlank(cityName)){
+					//需要删除的diy
+					List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
+					for (TdDiySite tdDiySite : diyList) {
+						if(!cityName.equals(tdDiySite.getCity())){
+							diyRemoveList.add(tdDiySite);
+						}
+					}
+					diyList.removeAll(diyRemoveList);
+				}
 			}
 		}
 		
@@ -220,16 +244,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 		//根据报表类型 查询相应数据到map
 		addOrderListToMap(map, statusId, keywords, begin, end, diyCode, cityName, username, size, page,tdDiySiteRoleService.userRoleDiyId(tdManagerRole, tdManager));
 	
-		//查询用户管辖门店权限
-    	TdManagerDiySiteRole diySiteRole= tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
-    	//获取管理员管辖城市
-    	List<TdCity> cityList= new ArrayList<TdCity>();
-    	//获取管理员管辖门店
-    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
-    	
-    	//管理员获取管辖的城市和门店
-    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
-    	
+		
     	//城市和门店信息
     	map.addAttribute("diySiteList",diyList);
 		map.addAttribute("cityList", cityList);

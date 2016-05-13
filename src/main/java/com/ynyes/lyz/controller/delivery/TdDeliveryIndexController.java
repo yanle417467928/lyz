@@ -773,8 +773,8 @@ public class TdDeliveryIndexController {
 	}
 
 	/*
-	 * 申请欠款
-	 * 
+	 * 申请欠款 
+	 * isOwn 默认为true 
 	 */
 	@RequestMapping(value = "/submitOwnMoney/{id}", method = RequestMethod.POST)
 	@ResponseBody
@@ -815,6 +815,8 @@ public class TdDeliveryIndexController {
 			rec.setUsername(order.getUsername());
 			if(owned != null && owned==0){
 				rec.setIsOwn(false);
+			}else{
+				rec.setIsOwn(true);
 			}
 			rec.setIsEnable(false);
 			rec.setIsPayed(false);
