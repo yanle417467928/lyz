@@ -289,17 +289,17 @@ public class TdReturnNoteService {
 	 * @return 结果列表
 	 * @author zp
 	 */
-	public Page<TdReturnNote> findByUsername(String username,Integer page,Integer size){
+	public Page<TdReturnNote> findByUsername(String username,String remark,Integer page,Integer size){
 		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "id"));
-		return repository.findByUsername(username, pageRequest);
+		return repository.findByUsernameAndRemarkInfoNot(username,remark, pageRequest);
 	}
 	
 	/**
 	 * 根据退货单号或者订单号查询退货单
 	 * @author zp
 	 */
-	public List<TdReturnNote> findByReturnNumberContainingOrorderNumberContaining(String keywords,String username){
-		return repository.findByReturnNumberContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(keywords,username, keywords,username);
+	public List<TdReturnNote> findByReturnNumberContainingOrorderNumberContaining(String keywords,String remark,String username){
+		return repository.findByReturnNumberContainingAndUsernameAndRemarkInfoNotOrOrderNumberContainingAndUsernameAndRemarkInfoNotOrderByOrderTimeDesc(keywords,username,remark, keywords,username,remark);
 	}
 
 }

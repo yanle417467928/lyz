@@ -2231,7 +2231,7 @@ public class TdUserController {
 		}
 		
 		// 分页查询退货单
-		Page<TdReturnNote> returnNoteList = tdReturnNoteService.findByUsername(username,page,size);
+		Page<TdReturnNote> returnNoteList = tdReturnNoteService.findByUsername(username,"用户取消订单，退货",page,size);
 //		List<TdReturnNote> returnNoteList=tdReturnNoteService.findByUsername(username);
 		
 		map.addAttribute("all_return_list",returnNoteList.getContent());
@@ -2302,7 +2302,7 @@ public class TdUserController {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null != user) {
-			List<TdReturnNote> returnList= tdReturnNoteService.findByReturnNumberContainingOrorderNumberContaining(keywords,username);
+			List<TdReturnNote> returnList= tdReturnNoteService.findByReturnNumberContainingOrorderNumberContaining(keywords,"用户取消订单，退货",username);
 			map.addAttribute("all_return_list", returnList);
 		}
 		return "/client/user_all_return";

@@ -61,12 +61,12 @@ public interface TdReturnNoteRepo extends PagingAndSortingRepository<TdReturnNot
 	 * @return 结果列表
 	 * @author zp
 	 */
-	Page<TdReturnNote> findByUsername(String username,Pageable page);
+	Page<TdReturnNote> findByUsernameAndRemarkInfoNot(String username,String remark,Pageable page);
 	
 	/**
 	 * 根据退货单号或者订单号查询退货单
 	 * @author zp
 	 */
-	List<TdReturnNote> findByReturnNumberContainingAndUsernameOrOrderNumberContainingAndUsernameOrderByOrderTimeDesc(String keywords1,String username1,String keywords2,String username2);
+	List<TdReturnNote> findByReturnNumberContainingAndUsernameAndRemarkInfoNotOrOrderNumberContainingAndUsernameAndRemarkInfoNotOrderByOrderTimeDesc(String keywords1,String username1,String remark1,String keywords2,String username2,String remark2);
 	
 }
