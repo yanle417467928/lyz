@@ -41,6 +41,7 @@ import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
+import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
 import com.ynyes.lyz.service.TdUserService;
@@ -90,6 +91,9 @@ public class TdOrderController {
 
 	@Autowired
 	TdGoodsService tdGoodsService;
+	
+	@Autowired
+	TdSettingService tdSettingService;
 
 	/**
 	 * 清空部分信息的控制器
@@ -1281,7 +1285,13 @@ public class TdOrderController {
 		Long realUserId = order.getRealUserId();
 		// 获取真实用户
 		TdUser realUser = tdUserService.findOne(realUserId);
+		
 		if (null != realUser) {
+			//判断是否超过最大限制数量
+			if(tdSettingService.checkMaxShipping(res, realUser,0L)){
+				return res;
+			}
+	
 			TdDistrict tdDistrict = tdDistrictService.findOne(district);
 			TdSubdistrict tdSubdistrict = tdSubdistrictService.findOne(subdistrict);
 

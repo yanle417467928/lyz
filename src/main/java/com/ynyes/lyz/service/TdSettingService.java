@@ -1,6 +1,7 @@
 package com.ynyes.lyz.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ynyes.lyz.entity.TdSetting;
+import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.repository.TdSettingRepo;
 
 /**
@@ -125,5 +127,28 @@ public class TdSettingService {
     {
         
         return (List<TdSetting>) repository.save(entities);
+    }
+    /**
+     * 判断是否超过最大限制数量
+     * @param res 放回的结果集
+     * @param user 会员
+     * @param operation 0添加 1修改
+     * @return true:超过 false:没超过
+     */
+    public Boolean checkMaxShipping(Map<String, Object> res,TdUser user,Long operation){
+    	//判断是否超过限制数量
+    	Long maxShipping= this.findTopBy().getMaxShipping();
+    	int shippingCount= user.getShippingAddressList().size();
+    	if(operation==0L){
+    		shippingCount+=1;
+    	}
+    	//为空或者0 默认不限制
+    	if(maxShipping!=null && maxShipping>0){
+    		if(shippingCount>maxShipping){
+    			res.put("message", "亲，只能添加"+maxShipping+"条收货地址");
+    			return true;
+    		}
+    	}
+    	return false;
     }
 }

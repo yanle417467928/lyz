@@ -903,7 +903,7 @@ public class TdUserController {
 
 	/**
 	 * 保存新增的收货地址的方法
-	 * 
+	 * 增加收货地址限制
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/address/add/save")
@@ -948,6 +948,10 @@ public class TdUserController {
 
 		if (null == detailAddress || "".equals(detailAddress)) {
 			res.put("message", "亲，请添加详细地址");
+			return res;
+		}
+		//判断是否超过最大限制数量
+		if(tdSettingService.checkMaxShipping(res, user,operation)){
 			return res;
 		}
 

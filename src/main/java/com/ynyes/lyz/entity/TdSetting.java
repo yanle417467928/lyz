@@ -138,6 +138,9 @@ public class TdSetting {
     //订单取消时间 zhangji 2016-1-7 17:36:10
     @Column
     private Long cancelTime;
+    //收货地址最大限制 zp
+    @Column
+    private Long maxShipping;
 
     public Long getId() {
         return id;
@@ -386,5 +389,14 @@ public class TdSetting {
 	public void setGoodsCouponGuide(String goodsCouponGuide) {
 		this.goodsCouponGuide = goodsCouponGuide;
 	}
+
+	public Long getMaxShipping() {
+		return maxShipping;
+	}
+
+	public void setMaxShipping(Long maxShipping) {
+		this.maxShipping = maxShipping;
+	}
+	
     
 }

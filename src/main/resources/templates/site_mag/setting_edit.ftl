@@ -245,6 +245,12 @@ $(function () {
             <input name="cancelTime" rows="2" cols="6" class="input" datatype="*0-255" sucmsg=" " value="<#if setting??&&setting.cancelTime??>${setting.cancelTime?c}<#else>0</#if>" />&nbsp;&nbsp;分钟
         </dd>
     </dl>
+    <dl>
+        <dt>最大收货地址数量</dt>
+        <dd>
+            <input name="maxShipping" rows="2" cols="6" class="input" datatype="*0-255" sucmsg=" " value="<#if setting??&&setting.maxShipping??>${setting.maxShipping?c}<#else>0</#if>" />&nbsp;&nbsp;
+        </dd>
+    </dl>
 </div>
 <div class="tab-content" style="display: none;">
     <dl>

@@ -105,7 +105,7 @@ var theForm = document.forms['form1'];
       <div class="menu-list">      
         <div class="rule-single-select single-select">
         <select name="userType" onchange="javascript:setTimeout(__doPostBack('userType',''), 0)" style="display: none;">
-            <option <#if !userType??>selected="selected"</#if> value="">所有用户</option>
+            <option <#if !userType??>selected="selected"</#if> value="">用户类型</option>
                     <option <#if userType?? && userType==0>selected="selected"</#if> value="0">普通会员</option>
                     <option <#if userType?? && userType==1>selected="selected"</#if> value="1">销售顾问</option>
                     <option <#if userType?? && userType==2>selected="selected"</#if> value="2">店长</option>
