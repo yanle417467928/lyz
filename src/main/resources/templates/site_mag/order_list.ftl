@@ -190,22 +190,10 @@ function downloaddate(type)
             	</div>
                 <div class="odiv" ><span class="span1">中转仓库：</span><input name="tt" type="text" class="input"></div>
  -->                <div class="odiv" ><span class="span1">实际送货时间：</span><input value="${sendTime!"" }" name="sendTime" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" "></div>
-            <#if diySiteList?? && diySiteList?size gt 0 >
-            <div class="odiv" style="float:left;width:310px;"><span class="span1">门店名称：</span>
-                	<div class="rule-single-select">
-                        <select name="diyCode" id="diyCode">
-                        <option value="" >请选择</option>      
-                        <#list diySiteList as diySite>
-                        	<option value="${diySite.storeCode }" <#if diyCode?? && diyCode==diySite.storeCode>selected</#if> >${diySite.title }</option>
-                        </#list>
-                        </select>
-            		</div>
-            	</div>
-            	</#if>
-            	<#if cityList?? && cityList?size gt 0 >
+           <#if cityList?? && cityList?size gt 0 >
             	<div class="odiv" style="float:left;width:310px;"><span class="span1">城市名称：</span>
                 	<div class="rule-single-select">
-                        <select name="city" id="city">
+                        <select name="city" id="city" onchange="javascript:setTimeout(__doPostBack('changeCity',''), 0)" >
                         <option value="" >请选择</option>      
                         <#list cityList as city>
                         	<option value="${city.cityName }" <#if cityname?? && cityname==city.cityName>selected</#if> >${city.cityName }</option>
@@ -214,6 +202,20 @@ function downloaddate(type)
             		</div>
             	</div>
             	</#if>
+           
+            <#if diySiteList?? && diySiteList?size gt 0 >
+            <div class="odiv" style="float:left;width:310px;"><span class="span1">门店名称：</span>
+                	<div class="rule-single-select">
+                        <select name="diyCode" id="diyCode" onchange="javascript:setTimeout(__doPostBack('changeDiy',''), 0)" >
+                        <option value="" >请选择</option>      
+                        <#list diySiteList as diySite>
+                        	<option value="${diySite.storeCode }" <#if diyCode?? && diyCode==diySite.storeCode>selected</#if> >${diySite.title }</option>
+                        </#list>
+                        </select>
+            		</div>
+            	</div>
+            	</#if>
+            	
             	<div class="odiv" style="width:350px;float:right"><div style="float:left;"><span class="span1">订单号：</span><input name="keywords" type="text" class="input" value="${orderNumber!"" }">
                 </div>
                 <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>

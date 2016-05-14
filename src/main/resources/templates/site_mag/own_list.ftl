@@ -56,7 +56,7 @@ var theForm = document.forms['form1'];
       </ul>
       <div class="menu-list">
         <div class="rule-single-select single-select">
-        <select name="statusId" onchange="javascript:setTimeout(__doPostBack('statusId',''), 0)" style="display: none;">
+        <select name="isEnable" onchange="javascript:setTimeout(__doPostBack('isEnable',''), 0)" style="display: none;">
             <option <#if !statusId??>selected="selected"</#if> value="">审批状态</option>
             <option <#if statusId?? && statusId==0>selected="selected"</#if> value="0">待审批</option>
             <option <#if statusId?? && statusId==1>selected="selected"</#if> value="1">已审批</option>
@@ -65,14 +65,48 @@ var theForm = document.forms['form1'];
       </div>
       <div class="menu-list">
         <div class="rule-single-select single-select">
-        <select name="payLeft" onchange="javascript:setTimeout(__doPostBack('payLeft',''), 0)" style="display: none;">
+        <select name=ispassed onchange="javascript:setTimeout(__doPostBack('ispassed',''), 0)" style="display: none;">
+            <option <#if !ispassed??>selected="selected"</#if> value="">是否通过</option>
+            <option <#if ispassed?? && ispassed==0>selected="selected"</#if> value="0">未通过</option>
+            <option <#if ispassed?? && ispassed==1>selected="selected"</#if> value="1">已通过</option>
+        </select>
+        </div>
+      </div>
+      <div class="menu-list">
+        <div class="rule-single-select single-select">
+        <select name=isPayed onchange="javascript:setTimeout(__doPostBack('isPayed',''), 0)" style="display: none;">
             <option <#if !payLeft??>selected="selected"</#if> value="">还款状态</option>
             <option <#if payLeft?? && payLeft==0>selected="selected"</#if> value="0">未还清</option>
             <option <#if payLeft?? && payLeft==1>selected="selected"</#if> value="1">已还清</option>
         </select>
         </div>
       </div>
+      <#if cityList?? && cityList?size gt 0 >
+          	<div class="menu-list">
+              	<div class="rule-single-select">
+                       <select name="city" id="cityCode" onchange="javascript:setTimeout(__doPostBack('changeCity',''), 0)">
+                       <option value="" >选择城市</option>      
+                       <#list cityList as city>
+                       	<option value="${city.cityName }" <#if cityName?? && cityName==city.cityName>selected</#if> >${city.cityName }</option>
+                       </#list>
+                       </select>
+           		</div>
+           	</div>
+           	</#if>
+            <#if diySiteList?? && diySiteList?size gt 0 >
+            <div class="menu-list" >
+                <div class="rule-single-select">
+                       <select name="diyCode" id="diyCode" onchange="javascript:setTimeout(__doPostBack('changeDiy',''), 0)">
+                       <option value="" >选择门店</option>      
+                       <#list diySiteList as diySite>
+                       	<option value="${diySite.storeCode }" <#if diyCode?? && diyCode==diySite.storeCode>selected</#if> >${diySite.title }</option>
+                       </#list>
+                       </select>
+           		</div>
+           	</div>
+           	</#if> 
     </div>
+    
     <div class="r-list">
       <input name="keywords" type="text" class="keyword" value="${keywords!""}">
       <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
@@ -92,6 +126,14 @@ var theForm = document.forms['form1'];
                 <td class="comment">
                   <div class="title">
                     <span class="note">
+								<#if diySiteList?? && diySiteList?size gt 0 >
+									<#list diySiteList as diySite>
+										<#if diySite.storeCode==consult.diyCode>
+										<i>门店名称：${diySite.title!"" }</i>
+										<i>门店电话：${diySite.serviceTele!""}</i>
+										</#if>
+									</#list>
+								</#if>
                         <i>联系电话：${consult.username!""}</i>
                         <i>时间：${consult.createTime!""}</i>
                         <#--<i class="reply">

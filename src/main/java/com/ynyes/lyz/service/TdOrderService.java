@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.repository.TdOrderRepo;
 import com.ynyes.lyz.util.Criteria;
@@ -527,7 +526,8 @@ public class TdOrderService {
 	 */
 	public Page<TdOrder> findAll(String keywords, String orderStartTime, String orderEndTime, List<String> usernameList,
 			String sellerRealName, String shippingAddress, String shippingPhone, String deliveryTime, String userPhone,
-			String shippingName, String sendTime, Long statusId, String diyCode,String city, int size, int page) {
+			String shippingName, String sendTime, Long statusId, String diyCode,String city,List<String> roleCitys,
+			List<String> roleDiys, int size, int page) {
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdOrder> c = new Criteria<TdOrder>();
 		if (null != keywords && !keywords.equalsIgnoreCase("")) {
@@ -574,6 +574,12 @@ public class TdOrderService {
 		}
 		if (null != city && !"".equals(city)) {
 			c.add(Restrictions.eq("city", city, true));
+		}
+		if (null != roleCitys && roleCitys.size()>0) {
+			c.add(Restrictions.in("city", roleCitys, true));
+		}
+		if (null != roleDiys && roleDiys.size()>0) {
+			c.add(Restrictions.in("diySiteCode", roleDiys, true));
 		}
 		c.setOrderByDesc("orderTime");
 		return repository.findAll(c, pageRequest);

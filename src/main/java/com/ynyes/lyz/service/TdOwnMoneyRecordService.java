@@ -194,7 +194,7 @@ public class TdOwnMoneyRecordService {
      * @return 结果集
      * @author zp
      */
-	public Page<TdOwnMoneyRecord> searchOwnList(String diyCode,String orderNumber,Long isEnable,Long isPayed,int size,int page){
+	public Page<TdOwnMoneyRecord> searchOwnList(String diyCode,String orderNumber,Long isEnable,Long isPayed,Long ispassed,List<String> roleDiyCodes,List<String> cityDiyCodes,int size,int page){
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdOwnMoneyRecord> c = new Criteria<TdOwnMoneyRecord>();
 		
@@ -209,6 +209,15 @@ public class TdOwnMoneyRecordService {
 		}
 		if(null!=isPayed){
 			c.add(Restrictions.eq("isPayed", isPayed, true));
+		}
+		if(null!=ispassed){
+			c.add(Restrictions.eq("ispassed", ispassed, true));
+		}
+		if(null!=roleDiyCodes && roleDiyCodes.size()>0){
+			c.add(Restrictions.in("diyCode", roleDiyCodes, true));
+		}
+		if(null!=cityDiyCodes && cityDiyCodes.size()>0){
+			c.add(Restrictions.in("diyCode", cityDiyCodes, true));
 		}
 		c.add(Restrictions.eq("isOwn",true, true));
 		
