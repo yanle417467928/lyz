@@ -3,6 +3,7 @@ package com.ynyes.lyz.service;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,13 +60,13 @@ import com.ynyes.lyz.util.StringUtils;
 
 @Service
 public class TdCommonService {
-
-//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
-	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
+	
+	static String wmsUrlReal = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+	static String wmsUrlTest = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
-	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
+	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(getWmsUrlByLocalHost());
 	static QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
-
+	
 	@Autowired
 	private TdUserService tdUserService;
 
@@ -138,6 +139,31 @@ public class TdCommonService {
 	@Autowired
 	private TdCategoryLimitService tdCategoryLimitService;
 
+	static private String getWmsUrlByLocalHost()
+	{
+		try
+		{
+			InetAddress address = InetAddress.getLocalHost();
+			String hostAddress = address.getHostAddress();
+			if (hostAddress.equalsIgnoreCase("101.200.128.65")) 
+			{
+				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
+				return wmsUrlReal;
+			}
+			else
+			{
+				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
+				return wmsUrlTest;
+			}
+		}
+		catch(Exception e)
+		{
+			System.out.println(e.getMessage());
+			System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
+			return wmsUrlTest;
+		}
+	}
+	
 	/**
 	 * 根据仓库编号获取仓库名
 	 * 
@@ -1375,6 +1401,9 @@ public class TdCommonService {
 				order.setSubdistrict(order_temp.getSubdistrict());
 				order.setDetailAddress(order_temp.getDetailAddress());
 
+				//add MDJ 物流需要支付时间
+				order.setPayTime(new Date());
+				
 				order.setDiySiteId(order_temp.getDiySiteId());
 				order.setDiySiteCode(order_temp.getDiySiteCode());
 				order.setDiySiteName(order_temp.getDiySiteName());
@@ -1965,11 +1994,16 @@ public class TdCommonService {
 	}
 
 	public Map<String, String> sendWmsMst(TdRequisition requisition) {
-		String mainOrderNumber = "";
-
+		String mainOrderNumber = null;
+		Boolean isSuccess = true;
 		Map<String, String> map = new HashMap<>();
 		Object[] objects = null;
 		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
+			mainOrderNumber = requisition.getOrderNumber();
+			if (mainOrderNumber != null)
+			{
+				mainOrderNumber = mainOrderNumber.replace("XN", "");
+			}
 			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
 				String xmlGoodsEncode = XMLMakeAndEncode(requisitionGoods, 2);
 				System.err.println("MDJWS:Detail:invoke" + mainOrderNumber);
@@ -1977,6 +2011,7 @@ public class TdCommonService {
 					objects = WMSClient.invoke(WMSName, "td_requisition_goods", "1", xmlGoodsEncode);
 				} catch (Exception e) {
 					e.printStackTrace();
+					isSuccess = false;
 					System.out.println("MDJWMS: " + mainOrderNumber + " 发送失败");
 					map.put(requisitionGoods.getGoodsCode(),
 							requisitionGoods.getOrderNumber() + requisitionGoods.getSubOrderNumber() + "失败");
@@ -1989,6 +2024,7 @@ public class TdCommonService {
 				}
 				String errorMsg = chectResult1(result);
 				if (errorMsg != null) {
+					isSuccess = false;
 					map.put(requisitionGoods.getGoodsCode(), requisitionGoods.getOrderNumber()
 							+ requisitionGoods.getSubOrderNumber() + "失败-code:" + errorMsg);
 				} else {
@@ -2002,6 +2038,7 @@ public class TdCommonService {
 				objects = WMSClient.invoke(WMSName, "td_requisition", "1", xmlEncode);
 			} catch (Exception e) {
 				e.printStackTrace();
+				isSuccess = false;
 				map.put(requisition.getOrderNumber(), "失败");
 			}
 			String result = null;
@@ -2012,9 +2049,19 @@ public class TdCommonService {
 			}
 			String errorMsg = chectResult1(result);
 			if (errorMsg != null) {
+				isSuccess = false;
 				map.put(requisition.getOrderNumber(), "失败:" + errorMsg);
 			} else {
 				map.put(requisition.getOrderNumber(), "成功");
+			}
+			
+			List<TdOrder> orders = tdOrderService.findByOrderNumberContaining(mainOrderNumber);
+			if (isSuccess)
+			{
+				for (int i = 0; i < orders.size(); i++) 
+				{
+					orders.get(i).setRemark("重发成功");
+				}
 			}
 		}
 		return map;
