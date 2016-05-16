@@ -96,6 +96,7 @@
                                                     <script type="text/javascript">
                                                         if(parseInt(($('#name${item.id?c}').width()+15))>=parseInt($('#name${item.id?c}').parent().width())){
                                                         	$('#name${item.id?c}').css('font-size','0.9em');
+                                                        	$('#name${item.id?c}').prev().css('line-height','normal');
                                                         }
                                                     </script>
                                                 </div>        
