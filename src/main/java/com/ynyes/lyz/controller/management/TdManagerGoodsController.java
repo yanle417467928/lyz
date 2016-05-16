@@ -1239,7 +1239,7 @@ public class TdManagerGoodsController {
 			}
 			else if (__EVENTTARGET.equalsIgnoreCase("btnInventory")) 
 			{
-				if (diyCode != null)
+				if (diyCode == null)
 				{
 					this.btnChangeInventory(listChkId,listId,listInventory,req);
 				}

@@ -66,7 +66,7 @@ var theForm = document.forms['form1'];
             <div class="rule-single-select">
                 <select name="siteId" onchange="javascript:setTimeout(__doPostBack('categoryId', ''), 0)">
                 <#if !is_diy_site_bool??>
-                    <option <#if !siteId??>selected="selected"</#if> value="" >所有门店</option>
+                    <option <#if !siteId??>selected="selected"</#if> value="" >所有库存</option>
                     <option <#if siteId?? && siteId = -1>selected="selected"</#if> value="-1">仅城市库存</option>
                 </#if>
                     <#if site_list??>

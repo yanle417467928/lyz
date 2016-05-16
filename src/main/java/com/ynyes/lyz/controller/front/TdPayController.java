@@ -266,7 +266,7 @@ public class TdPayController {
 		Random random = new Random();
 		Integer suiji = random.nextInt(900) + 100;
 		String orderNum = sDate + suiji;
-		order.setOrderNumber(orderNum);
+		order.setOrderNumber("XN" + orderNum);
 		tdOrderService.save(order);
 
 		// 开始组合参数
