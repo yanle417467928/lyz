@@ -415,19 +415,22 @@ public class TdManagerOrderController {
 			}
 			else if(__EVENTTARGET.equalsIgnoreCase("btnSearch")){
 				page=0;
-			}else if(__EVENTTARGET.equals("changeCity")){
-				//修改城市刷新门店列表
-				if(StringUtils.isNotBlank(city)){
-					//需要删除的diy
-					List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
-					for (TdDiySite tdDiySite : diyList) {
-						if(!city.equals(tdDiySite.getCity())){
-							diyRemoveList.add(tdDiySite);
-						}
+			}
+		}
+		
+		//修改城市刷新门店列表
+		if(StringUtils.isNotBlank(city)){
+			//需要删除的diy
+			List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
+			for (TdDiySite tdDiySite : diyList) {
+				if(!city.equals(tdDiySite.getCity())){
+					diyRemoveList.add(tdDiySite);
+					if(tdDiySite.getStoreCode().equals(diyCode)){
+						diyCode=null;
 					}
-					diyList.removeAll(diyRemoveList);
 				}
 			}
+			diyList.removeAll(diyRemoveList);
 		}
 		
 		//权限门店
@@ -654,21 +657,22 @@ public class TdManagerOrderController {
 				}
 			}else if(__EVENTTARGET.equals("btnSearch")){
 				page=0;
-			}else if(__EVENTTARGET.equals("changeCity")){
-				//修改城市刷新门店列表
-				if(StringUtils.isNotBlank(city)){
-					//需要删除的diy
-					List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
-					for (TdDiySite tdDiySite : diyList) {
-						if(!city.equals(tdDiySite.getCity())){
-							diyRemoveList.add(tdDiySite);
-						}
-					}
-					diyList.removeAll(diyRemoveList);
-				}
 			}
 		}
-		
+		//修改城市刷新门店列表
+		if(StringUtils.isNotBlank(city)){
+			//需要删除的diy
+			List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
+			for (TdDiySite tdDiySite : diyList) {
+				if(!city.equals(tdDiySite.getCity())){
+					diyRemoveList.add(tdDiySite);
+					if(tdDiySite.getStoreCode().equals(diyCode)){
+						diyCode=null;
+					}
+				}
+			}
+			diyList.removeAll(diyRemoveList);
+		}
 
 			if (null != statusId)
 			{

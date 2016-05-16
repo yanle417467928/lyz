@@ -204,19 +204,22 @@ public class TdManagerStatementController extends TdManagerBaseController {
 				}
 			}else if(__EVENTTARGET.equals("btnSearch")){
 				page=0;
-			}else if(__EVENTTARGET.equals("changeCity")){
-				//修改城市刷新门店列表
-				if(StringUtils.isNotBlank(cityName)){
-					//需要删除的diy
-					List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
-					for (TdDiySite tdDiySite : diyList) {
-						if(!cityName.equals(tdDiySite.getCity())){
-							diyRemoveList.add(tdDiySite);
-						}
+			}
+		}
+		
+		//修改城市刷新门店列表
+		if(StringUtils.isNotBlank(cityName)){
+			//需要删除的diy
+			List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
+			for (TdDiySite tdDiySite : diyList) {
+				if(!cityName.equals(tdDiySite.getCity())){
+					diyRemoveList.add(tdDiySite);
+					if(tdDiySite.getStoreCode().equals(diyCode)){
+						diyCode=null;
 					}
-					diyList.removeAll(diyRemoveList);
 				}
 			}
+			diyList.removeAll(diyRemoveList);
 		}
 		
 		Date begin=null;
