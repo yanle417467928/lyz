@@ -147,16 +147,19 @@ public class TdCommonService {
 			String hostAddress = address.getHostAddress();
 			if (hostAddress.equalsIgnoreCase("101.200.128.65")) 
 			{
+				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
 				return wmsUrlReal;
 			}
-			else 
+			else
 			{
+				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
 				return wmsUrlTest;
 			}
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
+			System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
 			return wmsUrlTest;
 		}
 	}

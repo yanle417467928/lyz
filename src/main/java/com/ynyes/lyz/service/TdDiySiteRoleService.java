@@ -202,7 +202,7 @@ public class TdDiySiteRoleService {
     	if(tdManager.getDiyCode()!=null){
     		TdDiySite diy= tdDiySiteService.findByStoreCode(tdManager.getDiyCode());
     		//判断是否重复
-    		if(!tdDiyList.contains(diy)){
+    		if(diy !=null && !tdDiyList.contains(diy)){
     			tdDiyList.add(diy);
     		}
     	}
