@@ -457,10 +457,31 @@ public class TdManagerOrderController {
 				 cityDiyCodes.add("null");
 			 }
 		}
+		Page<TdOwnMoneyRecord> ownMoneyPage=  tdOwnMoneyRecordService.searchOwnList(diyCode, keywords, isEnable,isPayed,ispassed,roleDiyCodes,cityDiyCodes, size, page);
 		
+		map.addAttribute("own_page",ownMoneyPage);
 		
-		map.addAttribute("own_page",tdOwnMoneyRecordService.searchOwnList(diyCode, keywords, isEnable,isPayed,ispassed,roleDiyCodes,cityDiyCodes, size, page));
+		List<TdOwnMoneyRecord> ownList= ownMoneyPage.getContent();
+		//循环获取用户名称
+		Map<String, Object> nameMap=new HashMap<String, Object>();
+		if(ownList!=null && ownList.size()>0){
+			for (TdOwnMoneyRecord own : ownList) {
+				String ownUsername = own.getUsername();
+				if(nameMap.containsKey(ownUsername))
+				{
+					continue;
+				}
+				else
+				{
+					TdUser tdUser = tdUserService.findByUsername(ownUsername);
+					if(null != tdUser && StringUtils.isNotBlank(ownUsername)){
+						nameMap.put(ownUsername, tdUser.getRealName());
+					}
+				}
+			}
+		}
 		
+		map.addAttribute("name_map",nameMap);
 		
 		//用户管辖的门店和城市
 		map.addAttribute("diySiteList",diyList);

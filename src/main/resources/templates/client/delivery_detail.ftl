@@ -216,7 +216,7 @@ function payedChange(){
     <form>
       <div class="title" id="titleName">填写代收金额</div>   
       <div class="text1">已交款<input type="text" id="payed" value="0" oninput="payedChange()">元</div>
-      <div class="text1">欠款&nbsp;&nbsp;<input type="text" id="owned" value="0" readonly="readonly">元</div>
+      <div class="text1">欠款&nbsp;&nbsp;<input type="text" id="owned" value="<#if td_order.allTotalPay??>${td_order.allTotalPay?c}<#else>0</#if>" readonly="readonly">元</div>
       <div class="button-group">
         <a class="sure" href="#" onclick="pupclose()">关闭</a>
         <a class="cancle" href="#" onclick="submitOwnMoney()">提交</a>

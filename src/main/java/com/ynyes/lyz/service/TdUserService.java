@@ -371,7 +371,7 @@ public class TdUserService {
 			c.add(Restrictions.eq("upperDiySiteId", diyCode, true));
 		}
 		
-		c.setOrderByDesc("upperDiySiteId");
+		c.setOrderByDesc("registerTime");
 		return repository.findAll(c,pageRequest);
 	}
 

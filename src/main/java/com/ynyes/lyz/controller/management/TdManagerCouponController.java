@@ -195,6 +195,10 @@ public class TdManagerCouponController extends TdManagerBaseController {
 			} else if (__EVENTTARGET.equalsIgnoreCase("btnSave")) {
 				btnModuleSave(listId, listSortId);
 				tdManagerLogService.addLog("edit", "修改优惠券模板", req);
+			}else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
+				if (null != __EVENTARGUMENT) {
+					page = Integer.parseInt(__EVENTARGUMENT);
+				}
 			}
 		}
 

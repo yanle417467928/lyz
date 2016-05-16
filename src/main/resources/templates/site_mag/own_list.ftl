@@ -130,10 +130,10 @@ var theForm = document.forms['form1'];
 									<#list diySiteList as diySite>
 										<#if diySite.storeCode==consult.diyCode>
 										<i>门店名称：${diySite.title!"" }</i>
-										<i>门店电话：${diySite.serviceTele!""}</i>
 										</#if>
 									</#list>
 								</#if>
+						<i>会员名称：<#if name_map??>${name_map[consult.username]!''}</#if></i>
                         <i>联系电话：${consult.username!""}</i>
                         <i>时间：${consult.createTime!""}</i>
                         <#--<i class="reply">
