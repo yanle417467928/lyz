@@ -3,7 +3,6 @@ package com.ynyes.lyz.service;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -165,6 +164,7 @@ public class TdCommonService {
 //			return wmsUrlTest;
 //		}
 //	}
+
 
 	/**
 	 * 根据仓库编号获取仓库名
@@ -572,10 +572,10 @@ public class TdCommonService {
 		// 获取门店
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser tdUser = tdUserService.findByUsername(username);
-		Long siteId = 0L;
+//		Long siteId = 0L;
 		Long sobId = 0L;
 		if (tdUser != null) {
-			siteId = tdUser.getUpperDiySiteId();
+//			siteId = tdUser.getUpperDiySiteId();
 			sobId = tdUser.getCityId();
 		}
 
@@ -798,8 +798,8 @@ public class TdCommonService {
 	}
 
 	/**
-	 * 获取已选商品能够得到的小辅料
-	 * 增加活动id zp
+	 * 获取已选商品能够得到的小辅料 增加活动id zp
+	 * 
 	 * @author dengxiao
 	 */
 	public TdOrder getGift(HttpServletRequest req, TdOrder order) {
@@ -839,13 +839,14 @@ public class TdCommonService {
 						goods.setGoodsId(tdGoods.getId());
 						goods.setGoodsCoverImageUri(tdGoods.getCoverImageUri());
 						goods.setSku(tdGoods.getCode());
-						//记录活动id
-						goods.setActivityId("B"+activity.getId().toString()+"_"+gift.getNumber());
-						//修改订单商品归属活动
-						//和活动商品同一
-						Map<Long, Long> cost=new HashMap<Long, Long>();
+						// 记录活动id
+						goods.setActivityId("B" + activity.getId().toString() + "_" + gift.getNumber());
+						// 修改订单商品归属活动
+						// 和活动商品同一
+						Map<Long, Long> cost = new HashMap<Long, Long>();
 						cost.put(categoryId, quantity);
-						tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(),gift.getNumber(),2L);
+						tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(), gift.getNumber(),
+								2L);
 						// 创建一个布尔变量用于判断此件商品是否已经加入了小辅料
 						Boolean isHave = false;
 						for (TdOrderGoods orderGoods : giftGoodsList) {
@@ -853,8 +854,9 @@ public class TdCommonService {
 									&& orderGoods.getGoodsId().longValue() == gift.getGoodsId().longValue()) {
 								isHave = true;
 								orderGoods.setQuantity(orderGoods.getQuantity() + goods.getQuantity());
-								//记录活动id
-								orderGoods.setActivityId(orderGoods.getActivityId()+",B"+activity.getId().toString()+"_"+gift.getNumber());
+								// 记录活动id
+								orderGoods.setActivityId(orderGoods.getActivityId() + ",B" + activity.getId().toString()
+										+ "_" + gift.getNumber());
 							}
 						}
 						if (!isHave) {
@@ -1225,8 +1227,8 @@ public class TdCommonService {
 	}
 
 	/**
-	 * 查找用户已选获得的赠品
-	 * 增加活动id zp
+	 * 查找用户已选获得的赠品 增加活动id zp
+	 * 
 	 * @author dengxiao
 	 */
 	public TdOrder getPresent(HttpServletRequest req, TdOrder order) {
@@ -1254,6 +1256,16 @@ public class TdCommonService {
 		String buyCouponId = order.getBuyCouponId();
 		if (null != buyCouponId && !"".equals(buyCouponId)) {
 			presentedList = new ArrayList<>();
+
+			List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+			if (null != orderGoodsList && orderGoodsList.size() > 0) {
+				for (TdOrderGoods orderGoods : orderGoodsList) {
+					Long id = orderGoods.getGoodsId();
+					Long quantity = orderGoods.getQuantity();
+					selected_map.put(id, quantity);
+				}
+			}
+
 			String[] ids = buyCouponId.split(",");
 			if (null != ids && ids.length > 0) {
 				for (String sid : ids) {
@@ -1359,10 +1371,12 @@ public class TdCommonService {
 											orderGoods.setGiftPrice(priceListItem.getPrice());
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
-											//记录活动id
-											orderGoods.setActivityId("A"+activity.getId().toString()+"_"+quantity*min);
-											//修改订单商品归属活动
-											tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(),min,1L);
+											// 记录活动id
+											orderGoods.setActivityId(
+													"A" + activity.getId().toString() + "_" + quantity * min);
+											// 修改订单商品归属活动
+											tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(),
+													min, 1L);
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
 											Boolean isHave = false;
 											for (TdOrderGoods single : presentedList) {
@@ -1370,8 +1384,9 @@ public class TdCommonService {
 														&& single.getGoodsId() == orderGoods.getGoodsId()) {
 													isHave = true;
 													single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
-													//记录活动id
-													single.setActivityId(single.getActivityId()+",A"+activity.getId().toString()+"_"+min);
+													// 记录活动id
+													single.setActivityId(single.getActivityId() + ",A"
+															+ activity.getId().toString() + "_" + min);
 												}
 											}
 
