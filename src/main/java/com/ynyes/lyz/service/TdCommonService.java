@@ -144,22 +144,25 @@ public class TdCommonService {
 		try
 		{
 			InetAddress address = InetAddress.getLocalHost();
+			System.out.println(address.getAddress());
+			System.out.println(address.getHostName());
 			String hostAddress = address.getHostAddress();
-			if (hostAddress.equalsIgnoreCase("101.200.128.65")) 
+			System.out.println("MDJ:WSL:INTERFACE:" + hostAddress);
+			if (hostAddress.equalsIgnoreCase("123.57.32.143"))
 			{
-				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
-				return wmsUrlReal;
+				System.out.println("MDJ:WSL:INTERFACE+1:" + wmsUrlReal);
+				return wmsUrlTest;
 			}
 			else
 			{
-				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
+				System.out.println("MDJ:WSL:INTERFACE+2:" + wmsUrlReal);
 				return wmsUrlTest;
 			}
 		}
 		catch(Exception e)
 		{
 			System.out.println(e.getMessage());
-			System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
+			System.out.println("MDJ:WSL:INTERFACE+3:" + wmsUrlTest);
 			return wmsUrlTest;
 		}
 	}
