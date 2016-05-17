@@ -60,13 +60,13 @@ import com.ynyes.lyz.util.StringUtils;
 
 @Service
 public class TdCommonService {
-	
-	static String wmsUrlReal = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; //正式
+
+	static String wmsUrlReal = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
 	static String wmsUrlTest = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(getWmsUrlByLocalHost());
 	static QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
-	
+
 	@Autowired
 	private TdUserService tdUserService;
 
@@ -139,31 +139,24 @@ public class TdCommonService {
 	@Autowired
 	private TdCategoryLimitService tdCategoryLimitService;
 
-	static private String getWmsUrlByLocalHost()
-	{
-		try
-		{
+	static private String getWmsUrlByLocalHost() {
+		try {
 			InetAddress address = InetAddress.getLocalHost();
 			String hostAddress = address.getHostAddress();
-			if (hostAddress.equalsIgnoreCase("101.200.128.65")) 
-			{
+			if (hostAddress.equalsIgnoreCase("101.200.128.65")) {
 				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
 				return wmsUrlReal;
-			}
-			else
-			{
+			} else {
 				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
 				return wmsUrlTest;
 			}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
 			return wmsUrlTest;
 		}
 	}
-	
+
 	/**
 	 * 根据仓库编号获取仓库名
 	 * 
@@ -188,8 +181,10 @@ public class TdCommonService {
 
 	/**
 	 * 取消订单产生的退货单
+	 * 
 	 * @param order
-	 * @param type 1:用户取消订单 2：管理员取消订单 
+	 * @param type
+	 *            1:用户取消订单 2：管理员取消订单
 	 * @param msg
 	 * @return
 	 */
@@ -218,8 +213,7 @@ public class TdCommonService {
 		// 门店信息
 		if (null != order.getDiySiteId()) {
 			TdDiySite diySite = tdDiySiteService.findOne(order.getDiySiteId());
-			if (diySite != null)
-			{
+			if (diySite != null) {
 				returnNote.setDiySiteId(order.getDiySiteId());
 				returnNote.setDiyCode(diySite.getStoreCode());
 				returnNote.setDiySiteTel(diySite.getServiceTele());
@@ -230,24 +224,19 @@ public class TdCommonService {
 
 		// 退货信息
 		returnNote.setUsername(order.getUsername());
-		if (type == 0L)
-		{
+		if (type == 0L) {
 			returnNote.setRemarkInfo("用户取消订单，退货");
-		}
-		else if (type == 1L)
-		{
+		} else if (type == 1L) {
 			returnNote.setRemarkInfo("管理员 " + msg + " 取消订单,退货");
 		}
 
-		if (org.apache.commons.lang3.StringUtils.isNotBlank(order.getDeliverTypeTitle()) && "门店自提".equals(order.getDeliverTypeTitle())) 
-		{
+		if (org.apache.commons.lang3.StringUtils.isNotBlank(order.getDeliverTypeTitle())
+				&& "门店自提".equals(order.getDeliverTypeTitle())) {
 			returnNote.setTurnType(1L);
-		}
-		else
-		{
+		} else {
 			returnNote.setTurnType(2L);
 		}
-		
+
 		returnNote.setStatusId(5L);
 
 		returnNote.setDeliverTypeTitle(order.getDeliverTypeTitle());
@@ -256,12 +245,10 @@ public class TdCommonService {
 
 		returnNote.setTurnPrice(order.getTotalGoodsPrice());
 		List<TdOrderGoods> orderGoodsList = new ArrayList<>();
-		
-		//商品
-		if (null != order.getOrderGoodsList())
-		{
-			for (TdOrderGoods oGoods : order.getOrderGoodsList()) 
-			{
+
+		// 商品
+		if (null != order.getOrderGoodsList()) {
+			for (TdOrderGoods oGoods : order.getOrderGoodsList()) {
 				TdOrderGoods orderGoods = new TdOrderGoods();
 
 				orderGoods.setBrandId(oGoods.getBrandId());
@@ -291,11 +278,9 @@ public class TdCommonService {
 				tdOrderGoodsService.save(oGoods);
 			}
 		}
-		//小辅料赠送
-		if (null != order.getOrderGoodsList())
-		{
-			for (TdOrderGoods oGoods : order.getGiftGoodsList()) 
-			{
+		// 小辅料赠送
+		if (null != order.getOrderGoodsList()) {
+			for (TdOrderGoods oGoods : order.getGiftGoodsList()) {
 				TdOrderGoods orderGoods = new TdOrderGoods();
 
 				orderGoods.setBrandId(oGoods.getBrandId());
@@ -325,11 +310,9 @@ public class TdCommonService {
 				tdOrderGoodsService.save(oGoods);
 			}
 		}
-		//促销活动赠送
-		if (null != order.getPresentedList())
-		{
-			for (TdOrderGoods oGoods : order.getPresentedList()) 
-			{
+		// 促销活动赠送
+		if (null != order.getPresentedList()) {
+			for (TdOrderGoods oGoods : order.getPresentedList()) {
 				TdOrderGoods orderGoods = new TdOrderGoods();
 
 				orderGoods.setBrandId(oGoods.getBrandId());
@@ -586,7 +569,6 @@ public class TdCommonService {
 			siteId = tdUser.getUpperDiySiteId();
 			sobId = tdUser.getCityId();
 		}
-		
 
 		// 创建一个集合存储有价格的商品
 		List<TdGoods> actual_goods = new ArrayList<>();
@@ -604,14 +586,13 @@ public class TdCommonService {
 					// 开始判断此件商品是否参加活动
 					priceListItem.setIsPromotion(this.isJoinActivity(req, goods));
 					map.addAttribute("priceListItem" + i, priceListItem);
-//					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(goods.getCode(),siteId);
-					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), sobId);
-					if (inventory != null)
-					{
+					// TdDiySiteInventory inventory =
+					// tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(goods.getCode(),siteId);
+					TdDiySiteInventory inventory = tdDiySiteInventoryService
+							.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), sobId);
+					if (inventory != null) {
 						map.addAttribute("goodInventory" + i, inventory.getInventory());
-					}
-					else
-					{
+					} else {
 						map.addAttribute("goodInventory" + i, 0);
 					}
 				} else {
@@ -1252,6 +1233,26 @@ public class TdCommonService {
 			selected_map.put(id, quantity);
 		}
 
+		String buyCouponId = order.getBuyCouponId();
+		if (null != buyCouponId && !"".equals(buyCouponId)) {
+			presentedList = new ArrayList<>();
+			String[] ids = buyCouponId.split(",");
+			if (null != ids && ids.length > 0) {
+				for (String sid : ids) {
+					if (null != sid && !"".equals(sid)) {
+						Long id = Long.parseLong(sid);
+						TdCoupon coupon = tdCouponService.findOne(id);
+						if (null != coupon) {
+							Long goodsId = coupon.getGoodsId();
+							if (null != goodsId) {
+								selected_map.put(goodsId, selected_map.get(goodsId) - 1);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		Long giftType = 0L;
 
 		if (null != order.getIsCoupon() && order.getIsCoupon()) {
@@ -1401,9 +1402,9 @@ public class TdCommonService {
 				order.setSubdistrict(order_temp.getSubdistrict());
 				order.setDetailAddress(order_temp.getDetailAddress());
 
-				//add MDJ 物流需要支付时间
+				// add MDJ 物流需要支付时间
 				order.setPayTime(new Date());
-				
+
 				order.setDiySiteId(order_temp.getDiySiteId());
 				order.setDiySiteCode(order_temp.getDiySiteCode());
 				order.setDiySiteName(order_temp.getDiySiteName());
@@ -1690,7 +1691,9 @@ public class TdCommonService {
 			for (TdOrderGoods string : order.getOrderGoodsList()) {
 				System.err.println(string);
 			}
-			if (null != order && ( (order.getOrderGoodsList() != null && order.getOrderGoodsList().size() > 0) || (order.getPresentedList() != null && order.getPresentedList().size() > 0) || (order.getGiftGoodsList() != null && order.getGiftGoodsList().size() > 0) )) {
+			if (null != order && ((order.getOrderGoodsList() != null && order.getOrderGoodsList().size() > 0)
+					|| (order.getPresentedList() != null && order.getPresentedList().size() > 0)
+					|| (order.getGiftGoodsList() != null && order.getGiftGoodsList().size() > 0))) {
 				BigDecimal b = new BigDecimal(order.getTotalPrice());
 				order.setTotalPrice(b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 				if (null != order_temp.getIsCoupon() && order_temp.getIsCoupon()) {
@@ -2000,8 +2003,7 @@ public class TdCommonService {
 		Object[] objects = null;
 		if (requisition != null && null != requisition.getRequisiteGoodsList()) {
 			mainOrderNumber = requisition.getOrderNumber();
-			if (mainOrderNumber != null)
-			{
+			if (mainOrderNumber != null) {
 				mainOrderNumber = mainOrderNumber.replace("XN", "");
 			}
 			for (TdRequisitionGoods requisitionGoods : requisition.getRequisiteGoodsList()) {
@@ -2054,12 +2056,10 @@ public class TdCommonService {
 			} else {
 				map.put(requisition.getOrderNumber(), "成功");
 			}
-			
+
 			List<TdOrder> orders = tdOrderService.findByOrderNumberContaining(mainOrderNumber);
-			if (isSuccess)
-			{
-				for (int i = 0; i < orders.size(); i++) 
-				{
+			if (isSuccess) {
+				for (int i = 0; i < orders.size(); i++) {
 					orders.get(i).setRemark("重发成功");
 				}
 			}
@@ -2321,14 +2321,12 @@ public class TdCommonService {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
 			String orderDate = sdf.format(returnNote.getOrderTime());
 			String returnDate = null;
-			if (returnNote.getReturnTime() !=null)
-			{
+			if (returnNote.getReturnTime() != null) {
 				returnDate = sdf.format(returnNote.getReturnTime());
 			}
-			
+
 			Long statusId = returnNote.getStatusId();
-			if (returnNote.getRemarkInfo().equalsIgnoreCase("拒签退货"))
-			{
+			if (returnNote.getRemarkInfo().equalsIgnoreCase("拒签退货")) {
 				statusId = 1L;
 			}
 
@@ -2343,13 +2341,13 @@ public class TdCommonService {
 					+ "</pay_type_id>" + "<pay_type_title>" + returnNote.getPayTypeTitle() + "</pay_type_title>"
 					+ "<remark_info>" + returnNote.getRemarkInfo() + "</remark_info>" + "<return_number>"
 					+ returnNote.getReturnNumber() + "</return_number>" + "<return_time>" + returnDate
-					+ "</return_time>" + "<sort_id>" + returnNote.getSortId() + "</sort_id>" + "<status_id>"
-					+ statusId + "</status_id>" + "<username>" + returnNote.getUsername()
-					+ "</username>" + "<deliver_type_title>" + returnNote.getDeliverTypeTitle()
-					+ "</deliver_type_title>" + "<turn_price>" + returnNote.getTurnPrice() + "</turn_price>"
-					+ "<turn_type>" + returnNote.getTurnType() + "</turn_type>" + "<shopping_address>"
-					+ returnNote.getShoppingAddress() + "</shopping_address>" + "<seller_real_name>"
-					+ returnNote.getSellerRealName() + "</seller_real_name>" + "</TABLE>" + "</ERP>";
+					+ "</return_time>" + "<sort_id>" + returnNote.getSortId() + "</sort_id>" + "<status_id>" + statusId
+					+ "</status_id>" + "<username>" + returnNote.getUsername() + "</username>" + "<deliver_type_title>"
+					+ returnNote.getDeliverTypeTitle() + "</deliver_type_title>" + "<turn_price>"
+					+ returnNote.getTurnPrice() + "</turn_price>" + "<turn_type>" + returnNote.getTurnType()
+					+ "</turn_type>" + "<shopping_address>" + returnNote.getShoppingAddress() + "</shopping_address>"
+					+ "<seller_real_name>" + returnNote.getSellerRealName() + "</seller_real_name>" + "</TABLE>"
+					+ "</ERP>";
 
 			xmlStr = xmlStr.replace("null", "");
 			byte[] bs = xmlStr.getBytes();
@@ -2688,6 +2686,8 @@ public class TdCommonService {
 						coupon.setSellerId(order.getSellerId());
 						coupon.setSellerRealName(order.getSellerRealName());
 						coupon.setSellerUsername(order.getSellerUsername());
+
+						coupon.setIsBuy(true);
 
 						tdCouponService.save(coupon);
 					}

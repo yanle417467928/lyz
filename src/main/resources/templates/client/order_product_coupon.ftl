@@ -22,7 +22,7 @@
         <#include "/client/common_wait.ftl">  
         <!-- 头部 -->
         <header>
-            <a class="back" href="/order"></a>
+            <a class="back" href="/order?count=1"></a>
             <p>选择产品劵</p>
         </header>
         <!-- 头部 END -->
