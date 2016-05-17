@@ -61,10 +61,10 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	static String wmsUrlReal = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
-	static String wmsUrlTest = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
+//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
+	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
-	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(getWmsUrlByLocalHost());
+	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
 	static QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
 
 	@Autowired
@@ -139,32 +139,32 @@ public class TdCommonService {
 	@Autowired
 	private TdCategoryLimitService tdCategoryLimitService;
 
-	static private String getWmsUrlByLocalHost() 
-	{
-		try 
-		{
-			InetAddress address = InetAddress.getLocalHost();
-			System.out.println(address.getAddress());
-			System.out.println(address.getHostName());
-			String hostAddress = address.getHostAddress();
-			if (hostAddress.equalsIgnoreCase("101.200.128.65")) 
-			{
-				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
-				return wmsUrlReal;
-			} 
-			else
-			{
-				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
-				return wmsUrlTest;
-			}
-		} 
-		catch (Exception e) 
-		{
-			System.out.println(e.getMessage());
-			System.out.println("MDJ:WSL:INTERFACE+3:" + wmsUrlTest);
-			return wmsUrlTest;
-		}
-	}
+//	static private String getWmsUrlByLocalHost() 
+//	{
+//		try 
+//		{
+//			InetAddress address = InetAddress.getLocalHost();
+//			System.out.println(address.getAddress());
+//			System.out.println(address.getHostName());
+//			String hostAddress = address.getHostAddress();
+//			if (hostAddress.equalsIgnoreCase("101.200.128.65")) 
+//			{
+//				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
+//				return wmsUrlReal;
+//			} 
+//			else
+//			{
+//				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
+//				return wmsUrlTest;
+//			}
+//		} 
+//		catch (Exception e) 
+//		{
+//			System.out.println(e.getMessage());
+//			System.out.println("MDJ:WSL:INTERFACE+3:" + wmsUrlTest);
+//			return wmsUrlTest;
+//		}
+//	}
 
 	/**
 	 * 根据仓库编号获取仓库名
