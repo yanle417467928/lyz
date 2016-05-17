@@ -140,6 +140,9 @@ public class TdOrderGoods {
 	//调色包归属商品SKU zp
 	@Column
 	private String ownerGoodsSku;
+	//活动id(可以为多个) zp
+	@Column
+	private String activityId;
 
 	public String getSubOrderNumber() {
 		return subOrderNumber;
@@ -387,5 +390,13 @@ public class TdOrderGoods {
 
 	public void setOwnerGoodsSku(String ownerGoodsSku) {
 		this.ownerGoodsSku = ownerGoodsSku;
+	}
+
+	public String getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(String activityId) {
+		this.activityId = activityId;
 	}
 }

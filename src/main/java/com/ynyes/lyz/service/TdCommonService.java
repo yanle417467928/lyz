@@ -809,7 +809,7 @@ public class TdCommonService {
 
 	/**
 	 * 获取已选商品能够得到的小辅料
-	 * 
+	 * 增加活动id 小辅料活动暂时不记录 zp
 	 * @author dengxiao
 	 */
 	public TdOrder getGift(HttpServletRequest req, TdOrder order) {
@@ -849,6 +849,8 @@ public class TdCommonService {
 						goods.setGoodsId(tdGoods.getId());
 						goods.setGoodsCoverImageUri(tdGoods.getCoverImageUri());
 						goods.setSku(tdGoods.getCode());
+//						//记录活动id
+//						goods.setActivityId(activity.getId().toString());
 						// 创建一个布尔变量用于判断此件商品是否已经加入了小辅料
 						Boolean isHave = false;
 						for (TdOrderGoods orderGoods : giftGoodsList) {
@@ -856,6 +858,8 @@ public class TdCommonService {
 									&& orderGoods.getGoodsId().longValue() == gift.getGoodsId().longValue()) {
 								isHave = true;
 								orderGoods.setQuantity(orderGoods.getQuantity() + goods.getQuantity());
+//								//记录活动id
+//								orderGoods.setActivityId(orderGoods.getActivityId()+","+activity.getId().toString());
 							}
 						}
 						if (!isHave) {
@@ -1227,7 +1231,7 @@ public class TdCommonService {
 
 	/**
 	 * 查找用户已选获得的赠品
-	 * 
+	 * 增加活动id zp
 	 * @author dengxiao
 	 */
 	public TdOrder getPresent(HttpServletRequest req, TdOrder order) {
@@ -1340,6 +1344,10 @@ public class TdCommonService {
 											orderGoods.setGiftPrice(priceListItem.getPrice());
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
+											//记录活动id
+											orderGoods.setActivityId(activity.getId().toString());
+											//修改订单商品归属活动
+											tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId());
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
 											Boolean isHave = false;
 											for (TdOrderGoods single : presentedList) {
@@ -1347,6 +1355,8 @@ public class TdCommonService {
 														&& single.getGoodsId() == orderGoods.getGoodsId()) {
 													isHave = true;
 													single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
+													//记录活动id
+													single.setActivityId(single.getActivityId()+","+activity.getId().toString());
 												}
 											}
 
