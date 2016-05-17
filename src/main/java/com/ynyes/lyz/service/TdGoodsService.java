@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,8 @@ import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.repository.TdGoodsRepo;
+import com.ynyes.lyz.util.Criteria;
+import com.ynyes.lyz.util.Restrictions;
 import com.ynyes.lyz.util.SiteMagConstant;
 
 /**
@@ -1429,4 +1432,49 @@ public class TdGoodsService {
 	{
 		return repository.findBySobId(sobId);
 	}
+	
+	/**
+	 * app 商品搜索
+	 * @param keywords 搜索关键字
+	 * @param sortFiled 排序字段
+	 * @param rule 正序反序
+	 * @param categoryTitle 一级类别
+	 * @return 结果集
+	 * @author zp
+	 */
+	public List<TdGoods> searchGoodsList(String keywords,String sortFiled,String rule,List<String> categoryTitle){
+		Criteria<TdGoods> c = new Criteria<TdGoods>();
+		//查询条件
+		if(StringUtils.isNotBlank(keywords)){
+			c.add(Restrictions.or(Restrictions.like("name", keywords, true),Restrictions.like("title", keywords, true),
+					Restrictions.like("subTitle", keywords, true),Restrictions.like("code", keywords, true),
+					Restrictions.like("categoryTitle", keywords, true)));
+		}
+		if(categoryTitle!=null && categoryTitle.size()>0){
+			c.add(Restrictions.in("categoryTitle",categoryTitle,true));
+		}
+		//排序
+		if("0".equals(sortFiled)){
+			if("0".equals(rule)){
+				c.setOrderByAsc("sortId");
+			}else{
+				c.setOrderByDesc("sortId");
+			}
+		}else if("1".equals(sortFiled)){
+			if("0".equals(rule)){
+				c.setOrderByAsc("sortId");
+			}else{
+				c.setOrderByDesc("sortId");
+			}
+		}else if("2".equals(sortFiled)){
+			if("0".equals(rule)){
+				c.setOrderByAsc("soldNumber");
+			}else{
+				c.setOrderByDesc("soldNumber");
+			}
+		}
+		return repository.findAll(c);
+		
+	}
+	
 }
