@@ -351,14 +351,18 @@ public class TdOrder {
 	// 第三方支付的金额
 	@Column
 	private Double otherPay;
-	
-	//有效时间(超过有效时间未支付将重新计算价格)
+
+	// 有效时间(超过有效时间未支付将重新计算价格)
 	@Column
 	private Date validTime;
-	//其他收入(不参与其他计算 只影响代收金额) zp
+	// 其他收入(不参与其他计算 只影响代收金额) zp
 	@Column
 	private Double otherIncome;
-	
+
+	// 购买的优惠券使用情况
+	@Column
+	private String buyCouponId;
+
 	public Double getRefund() {
 		return refund;
 	}
@@ -960,8 +964,7 @@ public class TdOrder {
 	}
 
 	public Long getRealUserId() {
-		if (this.realUserId == null)
-		{
+		if (this.realUserId == null) {
 			return this.userId;
 		}
 		return realUserId;
@@ -1001,5 +1004,13 @@ public class TdOrder {
 
 	public void setOtherIncome(Double otherIncome) {
 		this.otherIncome = otherIncome;
+	}
+
+	public String getBuyCouponId() {
+		return buyCouponId;
+	}
+
+	public void setBuyCouponId(String buyCouponId) {
+		this.buyCouponId = buyCouponId;
 	}
 }

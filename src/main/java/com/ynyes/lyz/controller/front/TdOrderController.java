@@ -91,7 +91,7 @@ public class TdOrderController {
 
 	@Autowired
 	TdGoodsService tdGoodsService;
-	
+
 	@Autowired
 	TdSettingService tdSettingService;
 
@@ -115,7 +115,7 @@ public class TdOrderController {
 	 * @author dengxiao
 	 */
 	@RequestMapping
-	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id, Long realUserId) {
+	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id, Long realUserId,Long count) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		// 参数由调用函数检查
@@ -284,6 +284,11 @@ public class TdOrderController {
 		// 清空已选
 		if (null == id) {
 			tdCommonService.clear(req);
+		}
+		
+		//再次计算促销
+		if(null != count){
+			tdCommonService.getPresent(req, order_temp);
 		}
 
 		map.addAttribute("order", order_temp);
@@ -1110,7 +1115,8 @@ public class TdOrderController {
 						}
 
 						// 如果使用的产品券已经等于商品的数量，那么就不能够再使用了
-						if (orderGoods.getQuantity() - orderGoods.getCashNumber() - orderGoods.getCouponNumber() <= 0L) {
+						if (orderGoods.getQuantity() - orderGoods.getCashNumber()
+								- orderGoods.getCouponNumber() <= 0L) {
 							res.put("message", "您不能使用更多对于<br>该件产品的优惠券了");
 							return res;
 						} else {
@@ -1139,6 +1145,14 @@ public class TdOrderController {
 								req.getSession().setAttribute("order_temp", order);
 								// 存储产品券的实际使用价值
 								coupon.setRealPrice(orderGoods.getPrice());
+
+								// 判断是否为购买的产品券，如果是，则记录
+								if (null != coupon.getIsBuy() && coupon.getIsBuy()) {
+									if (null == order.getBuyCouponId()) {
+										order.setBuyCouponId("");
+									}
+									order.setBuyCouponId(order.getBuyCouponId() + coupon.getId() + ",");
+								}
 								tdCouponService.save(coupon);
 							}
 						}
@@ -1162,15 +1176,21 @@ public class TdOrderController {
 							String[] strings = productCouponId.split(",");
 							// 创建一个变量用于存储新的产品券使用情况
 							String ids = "";
+							String buyIds = "";
 							for (String sCouponId : strings) {
 								if (null != sCouponId) {
 									Long couponId = Long.valueOf(sCouponId);
 									if (null != couponId && couponId.longValue() != coupon.getId().longValue()) {
 										ids += (sCouponId + ",");
+										TdCoupon tempCoupon = tdCouponService.findOne(couponId);
+										if (null != tempCoupon && tempCoupon.getIsBuy()) {
+											buyIds += (sCouponId + ",");
+										}
 									}
 									productCouponId = ids;
 								}
 							}
+							order.setBuyCouponId(buyIds);
 						}
 						order.setProductCouponId(productCouponId);
 						req.getSession().setAttribute("order_temp", order);
@@ -1285,13 +1305,13 @@ public class TdOrderController {
 		Long realUserId = order.getRealUserId();
 		// 获取真实用户
 		TdUser realUser = tdUserService.findOne(realUserId);
-		
+
 		if (null != realUser) {
-			//判断是否超过最大限制数量
-			if(tdSettingService.checkMaxShipping(res, realUser,0L)){
+			// 判断是否超过最大限制数量
+			if (tdSettingService.checkMaxShipping(res, realUser, 0L)) {
 				return res;
 			}
-	
+
 			TdDistrict tdDistrict = tdDistrictService.findOne(district);
 			TdSubdistrict tdSubdistrict = tdSubdistrictService.findOne(subdistrict);
 
@@ -1455,7 +1475,7 @@ public class TdOrderController {
 		// 修改不为空 zp
 		if ((null == address || null == shippingName || null == shippingPhone)) {
 			if (!"门店自提".equals(order_temp.getDeliverTypeTitle())
-					&& !(order_temp.getIsCoupon()!=null && order_temp.getIsCoupon())) {
+					&& !(order_temp.getIsCoupon() != null && order_temp.getIsCoupon())) {
 				res.put("message", "请填写收货地址");
 				return res;
 			}
@@ -1928,7 +1948,7 @@ public class TdOrderController {
 		res.put("status", 0);
 		return res;
 	}
-	
+
 	/**
 	 * 对用户填写的其他收入进行存储的方法
 	 * 
@@ -1939,11 +1959,11 @@ public class TdOrderController {
 	public Map<String, Object> otherIncomeSave(HttpServletRequest req, Double otherIncome) {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
-		//不能小于0或者为空
-		if(null==otherIncome || otherIncome<=0){
+		// 不能小于0或者为空
+		if (null == otherIncome || otherIncome <= 0) {
 			res.put("status", -1);
 		}
-		
+
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 
 		if (null != order) {

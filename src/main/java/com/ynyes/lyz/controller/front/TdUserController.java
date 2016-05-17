@@ -1973,7 +1973,7 @@ public class TdUserController {
 
 	/**
 	 * 根据已选获取赠品的方法
-	 * 
+	 * 记录活动编号
 	 * @author DengXiao
 	 */
 	public List<TdOrderGoods> getPresent(List<TdCartGoods> all_selected, HttpServletRequest req) {
@@ -2075,6 +2075,8 @@ public class TdUserController {
 											orderGoods.setGiftPrice(priceListItem.getPrice());
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
+											//记录活动id
+											orderGoods.setActivityId(activity.getId().toString());
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
 											Boolean isHave = false;
 											for (TdOrderGoods single : presentList) {
@@ -2082,6 +2084,8 @@ public class TdUserController {
 														&& single.getGoodsId() == orderGoods.getGoodsId()) {
 													isHave = true;
 													single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
+													//记录活动id
+													single.setActivityId(orderGoods.getActivityId()+","+activity.getId().toString());
 												}
 											}
 
@@ -2102,7 +2106,7 @@ public class TdUserController {
 
 	/**
 	 * 根据已选获取小辅料
-	 * 
+	 * 记录活动id 小辅料活动暂时不记录 zp
 	 * @author DengXiao
 	 */
 	public List<TdOrderGoods> getGift(HttpServletRequest req, List<TdCartGoods> all_selected) {
@@ -2142,6 +2146,8 @@ public class TdUserController {
 						goods.setGoodsId(tdGoods.getId());
 						goods.setGoodsCoverImageUri(tdGoods.getCoverImageUri());
 						goods.setSku(tdGoods.getCode());
+//						//记录活动id
+//						goods.setActivityId(activity.getId().toString());
 						// 创建一个布尔变量用于判断此件商品是否已经加入了小辅料
 						Boolean isHave = false;
 						for (TdOrderGoods orderGoods : giftGoodsList) {
@@ -2149,6 +2155,8 @@ public class TdUserController {
 									&& orderGoods.getGoodsId().longValue() == gift.getGoodsId().longValue()) {
 								isHave = true;
 								orderGoods.setQuantity(orderGoods.getQuantity() + goods.getQuantity());
+//								//记录活动id
+//								orderGoods.setActivityId(orderGoods.getActivityId()+","+activity.getId().toString());
 							}
 						}
 						if (!isHave) {

@@ -143,19 +143,19 @@ public class TdCoupon {
 	// 门店名称
 	@Column
 	private String diySiteTital;
-	
-	//销顾名称
+
+	// 销顾名称
 	@Column
 	private String sellerRealName;
-	
-	//销顾账号
+
+	// 销顾账号
 	@Column
 	private String sellerUsername;
-	
-	//销顾id
+
+	// 销顾id
 	@Column
 	private Long sellerId;
-	
+
 	// 城市id
 	@Column
 	private Long cityId;
@@ -182,19 +182,23 @@ public class TdCoupon {
 	// 使用门店id
 	@Column
 	private Long useDiySiteId;
-	
-	//使用销顾名称
+
+	// 使用销顾名称
 	@Column
 	private String useSellerRealName;
 
-	//使用销顾账号
+	// 使用销顾账号
 	@Column
 	private String useSellerUsername;
-	
-	//使用销顾id
+
+	// 使用销顾id
 	@Column
 	private Long useSellerId;
-	
+
+	// 是否是购买的券
+	@Column
+	private Boolean isBuy;
+
 	public String getCustomerId() {
 		return customerId;
 	}
@@ -529,5 +533,13 @@ public class TdCoupon {
 
 	public void setUseSellerId(Long useSellerId) {
 		this.useSellerId = useSellerId;
+	}
+
+	public Boolean getIsBuy() {
+		return isBuy;
+	}
+
+	public void setIsBuy(Boolean isBuy) {
+		this.isBuy = isBuy;
 	}
 }
