@@ -12,8 +12,10 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
+import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.repository.TdOrderGoodsRepo;
 
 
@@ -32,7 +34,10 @@ public class TdOrderGoodsService {
     TdOrderGoodsRepo repository;
     @Autowired
     TdCartGoodsService tdCartGoodsService;
-    
+    @Autowired
+    TdGoodsService tdGoodsService;
+    @Autowired
+    TdProductCategoryService tdProductCategoryService;
     /**
      * 删除
      * 
@@ -129,26 +134,55 @@ public class TdOrderGoodsService {
      * @param order 订单
      * @param cost 活动所需要的商品及其数量的列表
      * @param activityId 活动id
+     * @param min 参加活动的次数
+     * @param type 类型1活动 2小辅料活动
      * @author zp
      */
-    public void updateOrderGoodsActivity(TdOrder order,Map<Long, Long> cost,Long activityId){
+    public void updateOrderGoodsActivity(TdOrder order,Map<Long, Long> cost,Long activityId,Long min,Long type){
     	// 获取用户的已选
     	List<TdOrderGoods> orderGoodsList= order.getOrderGoodsList();
     	//循环所有商品
     	if(orderGoodsList!=null && orderGoodsList.size()>0){
     		for (TdOrderGoods orderGood : orderGoodsList) {
     			//判断是否是要修改的商品
-    			for (Long id : cost.keySet()) {
-    				if(orderGood.getGoodsId().equals(id)){
-        				String activityIds=orderGood.getActivityId();
-        				if(StringUtils.isNotBlank(activityIds)){
-        					orderGood.setActivityId(activityIds+","+activityId.toString());
-        				}else{
-        					orderGood.setActivityId(activityId.toString());
-        				}
-        				
-        			}
-				}
+    			if(type.equals(1L)){ //普通活动
+    				for (Long id : cost.keySet()) {
+    					//判断商品id是否相等
+        				if(cost.containsKey(orderGood.getGoodsId())){
+        					//记录活动id
+            				String activityIds=orderGood.getActivityId();
+            				if(StringUtils.isNotBlank(activityIds)){
+            					orderGood.setActivityId(activityIds+",A"+activityId.toString()+"_"+cost.get(id)*min);
+            				}else{
+            					orderGood.setActivityId("A"+activityId.toString()+"_"+cost.get(id)*min);
+            				}
+            				
+            			}
+    				}
+    			}else{  //小辅料活动
+    				//判断商品类型是否相等
+    				TdGoods goods = tdGoodsService.findOne(orderGood.getGoodsId());
+    				// 获取已选商品的分类id
+    				Long cateId = goods.getCategoryId();
+    				// 获取指定的分类
+    				TdProductCategory category = tdProductCategoryService.findOne(cateId);
+    				// 获取指定分类的父类
+    				if (null != category) {
+    					Long parentId = category.getParentId();
+    					//判断商品类型是否存在
+    					if(cost.containsKey(parentId)){
+    						//记录活动id
+    						String activityIds=orderGood.getActivityId();
+    						if(StringUtils.isNotBlank(activityIds)){
+    							orderGood.setActivityId(activityIds+",B"+activityId.toString()+"_0");
+    						}else{
+    							orderGood.setActivityId("B"+activityId.toString()+"_0");
+    						}
+
+    					}
+    				}
+    			}
+    			
 			}
     	}
     	//保存
