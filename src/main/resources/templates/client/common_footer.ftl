@@ -16,10 +16,9 @@
                 </a>
             </li>
             <li>
-                <a href="/user">
-                    <div></div>
-                    <span>我的</span>
-                </a>
+               <a href="/promotion/list">
+               <div></div>
+               </a>
             </li>
             <li>
                 <a href="/user/selected">
@@ -27,7 +26,13 @@
                     <span>购物车</span>
                 </a>
             </li>
+            <li>
+                <a href="/user">
+                    <div></div>
+                    <span>我的</span>
+                </a>
+            </li>
         </ul>               
     </div>
-    <a class="footer_act" href="/promotion/list"></a>
+    
 </div>
