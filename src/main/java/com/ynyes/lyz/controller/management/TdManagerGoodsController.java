@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdDiySiteInventory;
@@ -245,7 +247,7 @@ public class TdManagerGoodsController {
 	}
 
 	@RequestMapping(value = "/list")
-	public String goodsList(Integer page, Integer size, Long categoryId, String property, String __EVENTTARGET,
+	public String goodsList(Integer page, Integer size, Long categoryId, String property, Long brandId, String __EVENTTARGET,
 			String __EVENTARGUMENT, String __VIEWSTATE, String keywords, Long[] listId, Integer[] listChkId,
 			Double[] listSortId, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -350,6 +352,8 @@ public class TdManagerGoodsController {
 			map.addAttribute("diy_site_manager", tdManager.getId());
 		}
 		map.addAttribute("content_page", goodsPage);
+		
+		map.addAttribute("brand_list",tdBrandService.findAll());
 
 		// 参数注回
 		map.addAttribute("page", page);
@@ -359,7 +363,7 @@ public class TdManagerGoodsController {
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("categoryId", categoryId);
-		map.addAttribute("property", property);
+		map.addAttribute("brandId", property);
 		List<TdGoods> findByCategoryIdIsNull = tdGoodsService.findByCategoryIdIsNull();
 		map.addAttribute("left_goods", findByCategoryIdIsNull.size());
 
@@ -514,9 +518,10 @@ public class TdManagerGoodsController {
 	}
 	
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String goodsListPost(Integer page, Integer size, Long categoryId, String property, String saleType,
+	public String goodsListPost(Integer page, Integer size, Long categoryId, String property, Long brandId, String saleType,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, String keywords, Long[] listId,
-			Integer[] listChkId, Double[] listSortId, ModelMap map, HttpServletRequest req) {
+			Integer[] listChkId, Double[] listSortId, ModelMap map, HttpServletRequest req) 
+	{
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -636,7 +641,8 @@ public class TdManagerGoodsController {
 						goodsPage = tdGoodsService.searchAndIsOnSaleFalseOrderBySortIdAsc(keywords, page, size);
 					}
 				}
-			} else {
+			} 
+			else {
 				if ("flashSale".equalsIgnoreCase(saleType)) {
 					if (null == keywords || "".equalsIgnoreCase(keywords)) {
 						goodsPage = tdGoodsService.findByIsFlashSaleTrueOrderBySortIdAsc(page, size);
@@ -747,6 +753,11 @@ public class TdManagerGoodsController {
 			}
 		}
 
+		
+		if (StringUtils.isNotBlank(__EVENTTARGET) && __EVENTTARGET.equalsIgnoreCase("btnBrand")) 
+		{
+			
+		}
 		map.addAttribute("content_page", goodsPage);
 
 		// 参数注回
@@ -758,6 +769,8 @@ public class TdManagerGoodsController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("categoryId", categoryId);
 		map.addAttribute("property", property);
+		map.addAttribute("brand_list",tdBrandService.findAll());
+		map.addAttribute("brandId", property);
 
 		// 图片列表模式
 		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewImg")) {

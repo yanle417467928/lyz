@@ -82,7 +82,7 @@ public class TdPayController {
 		sParaTemp.put("return_url", return_url);
 		sParaTemp.put("seller_id", AlipayConfig.seller_id);
 		sParaTemp.put("service", "alipay.wap.create.direct.pay.by.user");
-		sParaTemp.put("show_url", "http://127.0.0.1:8080/user/order/0");
+		sParaTemp.put("show_url", "http://101.200.128.65:8080/user/order/0");
 		sParaTemp.put("subject", subject);
 		sParaTemp.put("total_fee", order.getTotalPrice() + "");
 		String sHtmlText = AlipaySubmit.buildRequest(sParaTemp, "get", "确认");
