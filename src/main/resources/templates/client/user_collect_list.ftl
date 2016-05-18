@@ -20,6 +20,7 @@
         <header>
             <a class="back" href="javascript:history.go(-1);"></a>
             <p>我的收藏</p>
+            <a id="info" class="btn-edit">编辑</a>
         </header>
         <!-- 头部 END -->
         <#-- 引入警告提示样式 -->
@@ -103,6 +104,25 @@
             });
         });
         </script>
+        <script type="text/javascript">
+    $(function(){
+        var $bEdit = $("header .btn-edit");
+        var $move = $(".my-collect .list-group");
+        var $bSpace = $(".my-collect .list-group .btn-backspace");
+        var onOff = true;
+        
+        $bEdit.click(function(){
+            if(onOff){
+            	$("#info").html("完成");
+                $move.addClass("selected");
+            }else{
+            	$("#info").html("编辑");
+                $move.removeClass("selected");
+            }
+            onOff = !onOff;
+      });
+    });
+</script>
         <!-- 我的收藏 END -->
     </body>
 </html>
