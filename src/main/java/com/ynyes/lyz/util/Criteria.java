@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 /**
  * 定义一个查询条件容器
- * @author lee
+ * @author zp
  *
  * @param <T>
  */

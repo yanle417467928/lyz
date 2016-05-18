@@ -10,7 +10,7 @@ import com.ynyes.lyz.util.Criterion.Operator;
  * 条件构造器
  * 用于创建条件表达式
  * @Class Name Restrictions
- * @Author lee
+ * @Author zp
  */
 public class Restrictions {
 
@@ -148,5 +148,21 @@ public class Restrictions {
 				i++;
 			}
 			return new LogicalExpression(ses,Operator.OR);
+		}
+		/**
+		 * 为空
+		 * @param fieldName 字段名
+		 * @return
+		 */
+		public static SimpleExpression isNull(String fieldName) {
+			return new SimpleExpression (fieldName, null, Operator.NULL);
+		}
+		/**
+		 * 不为空
+		 * @param fieldName 字段名
+		 * @return
+		 */
+		public static SimpleExpression isNotNull(String fieldName) {
+			return new SimpleExpression (fieldName, null, Operator.NOTNULL);
 		}
 }

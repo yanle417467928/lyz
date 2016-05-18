@@ -1477,4 +1477,40 @@ public class TdGoodsService {
 		
 	}
 	
+	/**
+	 * 后代 商品查询
+	 * @param keywords 关键字
+	 * @param brandId 品牌id
+	 * @param categoryId 类别id
+	 * @param page 页数
+	 * @param size 行数
+	 * @return 分页结果集
+	 * @author zp
+	 */
+	public Page<TdGoods> searchGoodsList(String keywords,Long brandId,Long categoryId,int page,int size){
+		//分页加排序
+		PageRequest pageRequest = new PageRequest(page, size,
+				new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "id")));
+		Criteria<TdGoods> c = new Criteria<TdGoods>();
+		//查询条件
+		if(StringUtils.isNotBlank(keywords)){
+			c.add(Restrictions.or(Restrictions.like("name", keywords, true),Restrictions.like("title", keywords, true),
+					Restrictions.like("subTitle", keywords, true),Restrictions.like("code", keywords, true),
+					Restrictions.like("categoryTitle", keywords, true)));
+		}
+		if(categoryId!=null){
+			if(categoryId==-1L){
+				c.add(Restrictions.isNull("categoryIdTree"));
+			}else{
+				String catIdStr = "[" + categoryId + "]";
+				c.add(Restrictions.like("categoryIdTree",catIdStr,true));
+			}
+			
+		}
+		if(brandId!=null){
+			c.add(Restrictions.eq("brandId",brandId,true));
+		}
+		return repository.findAll(c,pageRequest);
+	}
+	
 }
