@@ -156,13 +156,23 @@ function confirmCopy(id)
             </select>
         </div>
         <div class="rule-single-select">
+            <select name="brandId" onchange="javascript:setTimeout(__doPostBack('btnBrand',''), 0)">
+                <option value="" <#if !brandId??>selected="selected"</#if> >所有品牌</option>
+                <#if brand_list??>
+                    <#list brand_list as brand>
+                    <option value="${brand.id?c}" <#if brandId?? && brandId==brand.id>selected="selected"</#if> >${brand.title!''}</option>
+                    </#list>
+                </#if>
+            </select>
+        </div>
+         <#--<div class="rule-single-select">
             <select name="property" onchange="javascript:setTimeout(__doPostBack('property',''), 0)">
                 <option value="">所有属性</option>
                 <option value="isOnSale" <#if property?? && property=="isOnSale">selected="selected"</#if>>已上架</option>
                 <option value="isNotOnSale" <#if property?? && property=="isNotOnSale">selected="selected"</#if>>已下架</option>
             </select>
         </div>
-        <#--<div class="rule-single-select">
+       <div class="rule-single-select">
             <select name="saleType" onchange="javascript:setTimeout(__doPostBack('saleType',''), 0)">
                 <option value="">所有</option>
                 <option value="flashSale" <#if saleType?? && saleType=="flashSale">selected="selected"</#if>>抢拍</option>
