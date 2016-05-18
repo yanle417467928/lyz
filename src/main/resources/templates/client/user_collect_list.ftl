@@ -116,7 +116,7 @@
             	$("#info").html("完成");
                 $move.addClass("selected");
             }else{
-            	$("#info").html("编辑");
+            	$("#info").html("编辑"); 
                 $move.removeClass("selected");
             }
             onOff = !onOff;
