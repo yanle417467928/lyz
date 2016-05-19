@@ -78,6 +78,27 @@ $(function () {
 	});
         $("#diySiteId").css("display","block");
     });
+    $("#diySiteId").change(function(){
+        var diy = $("#upperDiySiteId").val();
+            $.ajax({
+    		url: "/Verwalter/user/change_diy", 
+    		type: "post",
+    		dataType: "json",
+    		data: {"did": diy},
+    		error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    },
+    		success: function(data)
+    		{	
+    			 $("#sellerId").empty();
+    			 $("#sellerId").append("<option value=''>请选择导购</option>");
+            	 $.each(data.user_list, function(i,val){
+            	 $("#sellerId").append("<option value='"+val.id+"'>"+val.realName+"</option>");      
+                 });
+            	 
+      		}
+    	});
+            $("#sellerdl").css("display","block");
+        });
 });   
 
  //修改粮草备注
@@ -243,6 +264,19 @@ $(function () {
         </select>
     </dd>
   </dl>
+  <dl id="sellerdl" style="display:block;">
+    <dt>归属导购</dt>
+    <dd>
+        <select name="sellerId" id="sellerId" >
+                <option value="">请选择导购</option>
+            <#if user_list??>
+                <#list user_list as item>
+                    <option <#if user??&&user.sellerId?? && item.id==user.sellerId>selected="selected"</#if> value="${item.id?c}" >${item.realName!''}</option>
+                </#list>
+            </#if>
+        </select>
+    </dd>
+  </dl>
   <#else>
   <dl>
     <dt>所属城市</dt>
@@ -269,6 +303,21 @@ $(function () {
             <#if site_list??>
                 <#list site_list as item>
                     <option value="${item.id?c}">${item.title!''}</option>
+                </#list>
+            </#if>
+        </select>
+    </dd>
+  </dl>
+  <dl id="sellerdl" style="display:none;">
+    <dt>归属导购</dt>
+    <dd>
+        <select name="sellerId" id="sellerId" >
+            <#if !user??>
+                <option value="">请选择导购</option>
+            </#if>
+            <#if user_list??>
+                <#list user_list as item>
+                    <option value="${item.id?c}">${item.realName!''}</option>
                 </#list>
             </#if>
         </select>
