@@ -60,9 +60,10 @@ public class TdPromotionController {
 		TdDiySite diySite = tdCommonService.getDiySite(req);
 
 		// 获取该门店参与的所有未过期的活动
-		List<TdActivity> activities = tdActivityService
-				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
-						diySite.getId() + "", new Date(), 1L);
+//		List<TdActivity> activities = tdActivityService
+//				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
+//						diySite.getId() + "", new Date(), 1L);
+		List<TdActivity> activities = tdActivityService.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySite.getId() + "", new Date());
 		map.addAttribute("activity_list", activities);
 
 		return "/client/promotion_list";

@@ -225,10 +225,13 @@ input[type="text"],input[type="password"],input[type="submit"],input[type="reset
     float: left;
 }
 .index_footer ul li:nth-child(3){
-    float: right;
+    float: left;
 }
 .index_footer ul li:nth-child(4){
-    float: right;
+    float: left;
+}
+.index_footer ul li:nth-child(5){
+    float: left;
 }
 .index_footer ul li a{
     display: block;
@@ -253,11 +256,16 @@ input[type="text"],input[type="password"],input[type="submit"],input[type="reset
     background-size: 26px;
 }
 .index_footer ul li:nth-child(3) div{
-    background: url(/client/images/footer_icon04.png) no-repeat center;
-    background-size: 26px;
-}
+    background: url(/client/images/footer_icon05.png) no-repeat center;
+    background-size: 63px;
+    height: 60px;
+} 
 .index_footer ul li:nth-child(4) div{
     background: url(/client/images/footer_icon03.png) no-repeat center;
+    background-size: 26px;
+}
+.index_footer ul li:nth-child(5) div{
+    background: url(/client/images/footer_icon04.png) no-repeat center;
     background-size: 26px;
 }
 .index_footer ul li span{

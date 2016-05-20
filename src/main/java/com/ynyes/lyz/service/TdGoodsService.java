@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,8 @@ import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.repository.TdGoodsRepo;
+import com.ynyes.lyz.util.Criteria;
+import com.ynyes.lyz.util.Restrictions;
 import com.ynyes.lyz.util.SiteMagConstant;
 
 /**
@@ -1429,4 +1432,85 @@ public class TdGoodsService {
 	{
 		return repository.findBySobId(sobId);
 	}
+	
+	/**
+	 * app 商品搜索
+	 * @param keywords 搜索关键字
+	 * @param sortFiled 排序字段
+	 * @param rule 正序反序
+	 * @param categoryTitle 一级类别
+	 * @return 结果集
+	 * @author zp
+	 */
+	public List<TdGoods> searchGoodsList(String keywords,String sortFiled,String rule,List<String> categoryTitle){
+		Criteria<TdGoods> c = new Criteria<TdGoods>();
+		//查询条件
+		if(StringUtils.isNotBlank(keywords)){
+			c.add(Restrictions.or(Restrictions.like("name", keywords, true),Restrictions.like("title", keywords, true),
+					Restrictions.like("subTitle", keywords, true),Restrictions.like("code", keywords, true),
+					Restrictions.like("categoryTitle", keywords, true)));
+		}
+		if(categoryTitle!=null && categoryTitle.size()>0){
+			c.add(Restrictions.in("categoryTitle",categoryTitle,true));
+		}
+		//排序
+		if("0".equals(sortFiled)){
+			if("0".equals(rule)){
+				c.setOrderByAsc("sortId");
+			}else{
+				c.setOrderByDesc("sortId");
+			}
+		}else if("1".equals(sortFiled)){
+			if("0".equals(rule)){
+				c.setOrderByAsc("sortId");
+			}else{
+				c.setOrderByDesc("sortId");
+			}
+		}else if("2".equals(sortFiled)){
+			if("0".equals(rule)){
+				c.setOrderByAsc("soldNumber");
+			}else{
+				c.setOrderByDesc("soldNumber");
+			}
+		}
+		return repository.findAll(c);
+		
+	}
+	
+	/**
+	 * 后代 商品查询
+	 * @param keywords 关键字
+	 * @param brandId 品牌id
+	 * @param categoryId 类别id
+	 * @param page 页数
+	 * @param size 行数
+	 * @return 分页结果集
+	 * @author zp
+	 */
+	public Page<TdGoods> searchGoodsList(String keywords,Long brandId,Long categoryId,int page,int size){
+		//分页加排序
+		PageRequest pageRequest = new PageRequest(page, size,
+				new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "id")));
+		Criteria<TdGoods> c = new Criteria<TdGoods>();
+		//查询条件
+		if(StringUtils.isNotBlank(keywords)){
+			c.add(Restrictions.or(Restrictions.like("name", keywords, true),Restrictions.like("title", keywords, true),
+					Restrictions.like("subTitle", keywords, true),Restrictions.like("code", keywords, true),
+					Restrictions.like("categoryTitle", keywords, true)));
+		}
+		if(categoryId!=null){
+			if(categoryId==-1L){
+				c.add(Restrictions.isNull("categoryIdTree"));
+			}else{
+				String catIdStr = "[" + categoryId + "]";
+				c.add(Restrictions.like("categoryIdTree",catIdStr,true));
+			}
+			
+		}
+		if(brandId!=null){
+			c.add(Restrictions.eq("brandId",brandId,true));
+		}
+		return repository.findAll(c,pageRequest);
+	}
+	
 }

@@ -245,7 +245,7 @@ public class TdManagerGoodsController {
 	}
 
 	@RequestMapping(value = "/list")
-	public String goodsList(Integer page, Integer size, Long categoryId, String property, String __EVENTTARGET,
+	public String goodsList(Integer page, Integer size, Long categoryId, String property, Long brandId, String __EVENTTARGET,
 			String __EVENTARGUMENT, String __VIEWSTATE, String keywords, Long[] listId, Integer[] listChkId,
 			Double[] listSortId, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -350,6 +350,8 @@ public class TdManagerGoodsController {
 			map.addAttribute("diy_site_manager", tdManager.getId());
 		}
 		map.addAttribute("content_page", goodsPage);
+		
+		map.addAttribute("brand_list",tdBrandService.findAll());
 
 		// 参数注回
 		map.addAttribute("page", page);
@@ -359,7 +361,7 @@ public class TdManagerGoodsController {
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("categoryId", categoryId);
-		map.addAttribute("property", property);
+		map.addAttribute("brandId", property);
 		List<TdGoods> findByCategoryIdIsNull = tdGoodsService.findByCategoryIdIsNull();
 		map.addAttribute("left_goods", findByCategoryIdIsNull.size());
 
@@ -513,10 +515,15 @@ public class TdManagerGoodsController {
 		}
 	}
 	
+	/**
+	 * 隐藏property（商品上下架搜索），saleType（团购和抢购）修改查询方法   zp
+	 * 
+	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
-	public String goodsListPost(Integer page, Integer size, Long categoryId, String property, String saleType,
+	public String goodsListPost(Integer page, Integer size, Long categoryId, String property, Long brandId, String saleType,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, String keywords, Long[] listId,
-			Integer[] listChkId, Double[] listSortId, ModelMap map, HttpServletRequest req) {
+			Integer[] listChkId, Double[] listSortId, ModelMap map, HttpServletRequest req) 
+	{
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -591,162 +598,166 @@ public class TdManagerGoodsController {
 
 		Page<TdGoods> goodsPage = null;
 
-		if (null == categoryId) {
-			if ("isOnSale".equalsIgnoreCase(property)) {
-				if ("flashSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByIsOnSaleTrueAndFlashSaleTrueOrderBySortIdAsc(page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndIsOnSaleTrueAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
-								page, size);
-					}
-				} else if ("groupSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByIsOnSaleTrueAndGroupSaleTrueOrderBySortIdAsc(page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndIsOnSaleTrueAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
-								page, size);
-					}
-				} else {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByIsOnSaleTrueOrderBySortIdAsc(page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndIsOnSaleTrueOrderBySortIdAsc(keywords, page, size);
-					}
-				}
-			} else if ("isNotOnSale".equalsIgnoreCase(property)) {
-				if ("flashSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByIsOnSaleFalseAndIsFlashSaleTrueOrderBySortIdAsc(page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndIsOnSaleFalseAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
-								page, size);
-					}
-				} else if ("groupSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByIsOnSaleFalseAndIsGroupSaleTrueOrderBySortIdAsc(page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndIsOnSaleFalseAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
-								page, size);
-					}
-				} else {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByIsOnSaleFalseOrderBySortIdAsc(page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndIsOnSaleFalseOrderBySortIdAsc(keywords, page, size);
-					}
-				}
-			} else {
-				if ("flashSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByIsFlashSaleTrueOrderBySortIdAsc(page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndIsFlashSaleTrueOrderBySortIdAsc(keywords, page, size);
-					}
-				} else if ("groupSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByIsGroupSaleTrueOrderBySortIdAsc(page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndIsGroupSaleTrueOrderBySortIdAsc(keywords, page, size);
-					}
-				} else {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findAllOrderBySortIdAsc(page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndOrderBySortIdAsc(keywords, page, size);
-					}
-				}
-			}
-		} else {
-			if ("isOnSale".equalsIgnoreCase(property)) {
-				if ("flashSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService
-								.findByCategoryIdTreeContainingAndIsOnSaleTrueAndIsFlashSaleTrueOrderBySortIdAsc(
-										categoryId, page, size);
-					} else {
-						goodsPage = tdGoodsService
-								.searchAndFindByCategoryIdAndIsOnSaleTrueAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
-										categoryId, page, size);
-					}
-				} else if ("groupSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService
-								.findByCategoryIdTreeContainingAndIsOnSaleTrueAndIsGroupSaleTrueOrderBySortIdAsc(
-										categoryId, page, size);
-					} else {
-						goodsPage = tdGoodsService
-								.searchAndFindByCategoryIdAndIsOnSaleTrueAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
-										categoryId, page, size);
-					}
-				} else {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService
-								.findByCategoryIdTreeContainingAndIsOnSaleTrueOrderBySortIdAsc(categoryId, page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndFindByCategoryIdAndIsOnSaleTrueOrderBySortIdAsc(keywords,
-								categoryId, page, size);
-					}
-				}
-			} else if ("isNotOnSale".equalsIgnoreCase(property)) {
-				if ("flashSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService
-								.findByCategoryIdTreeContainingAndIsOnSaleFalseAndIsFlashSaleTrueOrderBySortIdAsc(
-										categoryId, page, size);
-					} else {
-						goodsPage = tdGoodsService
-								.searchAndFindByCategoryIdAndIsOnSaleFalseAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
-										categoryId, page, size);
-					}
-				} else if ("groupSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService
-								.findByCategoryIdTreeContainingAndIsOnSaleFalseAndIsGroupSaleTrueOrderBySortIdAsc(
-										categoryId, page, size);
-					} else {
-						goodsPage = tdGoodsService
-								.searchAndFindByCategoryIdAndIsOnSaleFalseAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
-										categoryId, page, size);
-					}
-				} else {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService
-								.findByCategoryIdTreeContainingAndIsOnSaleFalseOrderBySortIdAsc(categoryId, page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndFindByCategoryIdAndIsOnSaleFalseOrderBySortIdAsc(keywords,
-								categoryId, page, size);
-					}
-				}
-			} else {
-				if ("flashSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByCategoryIdTreeContainingAndIsFlashSaleTrueOrderBySortIdAsc(
-								categoryId, page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndFindByCategoryIdAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
-								categoryId, page, size);
-					}
-				} else if ("groupSale".equalsIgnoreCase(saleType)) {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByCategoryIdTreeContainingAndIsGroupSaleTrueOrderBySortIdAsc(
-								categoryId, page, size);
-					} else {
-						goodsPage = tdGoodsService.searchAndFindByCategoryIdAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
-								categoryId, page, size);
-					}
-				} else {
-					if (null == keywords || "".equalsIgnoreCase(keywords)) {
-						goodsPage = tdGoodsService.findByCategoryIdTreeContainingOrderBySortIdAsc(categoryId, page,
-								size);
-					} else {
-						goodsPage = tdGoodsService.searchAndFindByCategoryIdOrderBySortIdAsc(keywords, categoryId, page,
-								size);
-					}
-				}
-			}
-		}
-
+//		if (null == categoryId) {
+//			if ("isOnSale".equalsIgnoreCase(property)) {
+//				if ("flashSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByIsOnSaleTrueAndFlashSaleTrueOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndIsOnSaleTrueAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
+//								page, size);
+//					}
+//				} else if ("groupSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByIsOnSaleTrueAndGroupSaleTrueOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndIsOnSaleTrueAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
+//								page, size);
+//					}
+//				} else {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByIsOnSaleTrueOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndIsOnSaleTrueOrderBySortIdAsc(keywords, page, size);
+//					}
+//				}
+//			} else if ("isNotOnSale".equalsIgnoreCase(property)) {
+//				if ("flashSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByIsOnSaleFalseAndIsFlashSaleTrueOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndIsOnSaleFalseAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
+//								page, size);
+//					}
+//				} else if ("groupSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByIsOnSaleFalseAndIsGroupSaleTrueOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndIsOnSaleFalseAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
+//								page, size);
+//					}
+//				} else {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByIsOnSaleFalseOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndIsOnSaleFalseOrderBySortIdAsc(keywords, page, size);
+//					}
+//				}
+//			} 
+//			else {
+//				if ("flashSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByIsFlashSaleTrueOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndIsFlashSaleTrueOrderBySortIdAsc(keywords, page, size);
+//					}
+//				} else if ("groupSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByIsGroupSaleTrueOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndIsGroupSaleTrueOrderBySortIdAsc(keywords, page, size);
+//					}
+//				} else {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findAllOrderBySortIdAsc(page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndOrderBySortIdAsc(keywords, page, size);
+//					}
+//				}
+//			}
+//		} else {
+//			if ("isOnSale".equalsIgnoreCase(property)) {
+//				if ("flashSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService
+//								.findByCategoryIdTreeContainingAndIsOnSaleTrueAndIsFlashSaleTrueOrderBySortIdAsc(
+//										categoryId, page, size);
+//					} else {
+//						goodsPage = tdGoodsService
+//								.searchAndFindByCategoryIdAndIsOnSaleTrueAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
+//										categoryId, page, size);
+//					}
+//				} else if ("groupSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService
+//								.findByCategoryIdTreeContainingAndIsOnSaleTrueAndIsGroupSaleTrueOrderBySortIdAsc(
+//										categoryId, page, size);
+//					} else {
+//						goodsPage = tdGoodsService
+//								.searchAndFindByCategoryIdAndIsOnSaleTrueAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
+//										categoryId, page, size);
+//					}
+//				} else {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService
+//								.findByCategoryIdTreeContainingAndIsOnSaleTrueOrderBySortIdAsc(categoryId, page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndFindByCategoryIdAndIsOnSaleTrueOrderBySortIdAsc(keywords,
+//								categoryId, page, size);
+//					}
+//				}
+//			} else if ("isNotOnSale".equalsIgnoreCase(property)) {
+//				if ("flashSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService
+//								.findByCategoryIdTreeContainingAndIsOnSaleFalseAndIsFlashSaleTrueOrderBySortIdAsc(
+//										categoryId, page, size);
+//					} else {
+//						goodsPage = tdGoodsService
+//								.searchAndFindByCategoryIdAndIsOnSaleFalseAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
+//										categoryId, page, size);
+//					}
+//				} else if ("groupSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService
+//								.findByCategoryIdTreeContainingAndIsOnSaleFalseAndIsGroupSaleTrueOrderBySortIdAsc(
+//										categoryId, page, size);
+//					} else {
+//						goodsPage = tdGoodsService
+//								.searchAndFindByCategoryIdAndIsOnSaleFalseAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
+//										categoryId, page, size);
+//					}
+//				} else {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService
+//								.findByCategoryIdTreeContainingAndIsOnSaleFalseOrderBySortIdAsc(categoryId, page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndFindByCategoryIdAndIsOnSaleFalseOrderBySortIdAsc(keywords,
+//								categoryId, page, size);
+//					}
+//				}
+//			} else {
+//				if ("flashSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByCategoryIdTreeContainingAndIsFlashSaleTrueOrderBySortIdAsc(
+//								categoryId, page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndFindByCategoryIdAndIsFlashSaleTrueOrderBySortIdAsc(keywords,
+//								categoryId, page, size);
+//					}
+//				} else if ("groupSale".equalsIgnoreCase(saleType)) {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByCategoryIdTreeContainingAndIsGroupSaleTrueOrderBySortIdAsc(
+//								categoryId, page, size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndFindByCategoryIdAndIsGroupSaleTrueOrderBySortIdAsc(keywords,
+//								categoryId, page, size);
+//					}
+//				} else {
+//					if (null == keywords || "".equalsIgnoreCase(keywords)) {
+//						goodsPage = tdGoodsService.findByCategoryIdTreeContainingOrderBySortIdAsc(categoryId, page,
+//								size);
+//					} else {
+//						goodsPage = tdGoodsService.searchAndFindByCategoryIdOrderBySortIdAsc(keywords, categoryId, page,
+//								size);
+//					}
+//				}
+//			}
+//		}
+		//查询商品
+		goodsPage=tdGoodsService.searchGoodsList(keywords, brandId, categoryId, page, size);
+		
+		
 		map.addAttribute("content_page", goodsPage);
 
 		// 参数注回
@@ -758,6 +769,8 @@ public class TdManagerGoodsController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("categoryId", categoryId);
 		map.addAttribute("property", property);
+		map.addAttribute("brand_list",tdBrandService.findAll());
+		map.addAttribute("brandId", brandId);
 
 		// 图片列表模式
 		if (null != __VIEWSTATE && __VIEWSTATE.equals("lbtnViewImg")) {

@@ -497,7 +497,7 @@ public class TdGoodsController {
 
 	/**
 	 * 跳转到商品搜索页面的方法
-	 * 
+	 * 修改商品查询方法  按价格查询暂时隐藏 zp
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/search")
@@ -510,16 +510,20 @@ public class TdGoodsController {
 		}
 
 		map.addAttribute("user", user);
-		//查询一级分类 不准确 
-		String cateId="";
-		TdProductCategory cateList= tdProductCategoryService.findByTitle(keywords);
-		if(cateList!=null ){
-			cateId="["+cateList.getId()+"]";
+		//查询一级分类 
+		List<String> categoryTitle=new ArrayList<String>();
+		TdProductCategory  productCategory= tdProductCategoryService.findByTitle(keywords);
+		if(productCategory!=null){
+			 List<TdProductCategory> productCategoryList= tdProductCategoryService.findByParentIdOrderBySortIdAsc(productCategory.getId());
+			 if(productCategoryList!=null && productCategoryList.size()>0){
+				 for (TdProductCategory tdProductCategory : productCategoryList) {
+					 categoryTitle.add(tdProductCategory.getTitle());
+				}
+			 }
 		}
 		
-
-		// 获取用户的门店
-		TdDiySite diySite = tdCommonService.getDiySite(req);
+//		// 获取用户的门店
+//		TdDiySite diySite = tdCommonService.getDiySite(req);
 
 		if (null == param) {
 			param = "0-0-0-0";
@@ -531,6 +535,8 @@ public class TdGoodsController {
 		String rule1 = strs[1];
 		String rule2 = strs[2];
 		String rule3 = strs[3];
+		//当期排序规则号
+		int y= Integer.valueOf(sortFiled)+1;
 
 		// 新建一个集合用于存储用户的搜索结果
 		List<TdGoods> goods_list = new ArrayList<>();
@@ -538,30 +544,40 @@ public class TdGoodsController {
 		// 新建一个集合用于存储显示结果
 		List<TdGoods> visible_list = new ArrayList<>();
 
-		if ("0".equals(sortFiled)) {
-			if ("0".equals(rule1)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySortIdAsc(keywords,cateId);
-				rule1 = "1";
-			} else if ("1".equals(rule1)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySortIdDesc(keywords,cateId);
-				rule1 = "0";
-			}
-		} else if ("1".equals(sortFiled)) {
-			if ("0".equals(rule2)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySalePriceAsc(keywords, diySite.getPriceListId(),cateId);
-				rule2 = "1";
-			} else if ("1".equals(rule2)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySalePriceDesc(keywords, diySite.getPriceListId(),cateId);
-				rule2 = "0";
-			}
-		} else if ("2".equals(sortFiled)) {
-			if ("0".equals(rule3)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySoldNumberAsc(keywords,cateId);
-				rule3 = "1";
-			} else if ("1".equals(rule3)) {
-				goods_list = tdGoodsService.searchGoodsOrderBySoldNumberDesc(keywords,cateId);
-				rule3 = "0";
-			}
+//		if ("0".equals(sortFiled)) {
+//			if ("0".equals(rule1)) {
+//				goods_list = tdGoodsService.searchGoodsOrderBySortIdAsc(keywords,cateId);
+//				rule1 = "1";
+//			} else if ("1".equals(rule1)) {
+//				goods_list = tdGoodsService.searchGoodsOrderBySortIdDesc(keywords,cateId);
+//				rule1 = "0";
+//			}
+//		} else if ("1".equals(sortFiled)) {
+//			if ("0".equals(rule2)) {
+//				goods_list = tdGoodsService.searchGoodsOrderBySalePriceAsc(keywords, diySite.getPriceListId(),cateId);
+//				rule2 = "1";
+//			} else if ("1".equals(rule2)) {
+//				goods_list = tdGoodsService.searchGoodsOrderBySalePriceDesc(keywords, diySite.getPriceListId(),cateId);
+//				rule2 = "0";
+//			}
+//		} else if ("2".equals(sortFiled)) {
+//			if ("0".equals(rule3)) {
+//				goods_list = tdGoodsService.searchGoodsOrderBySoldNumberAsc(keywords,cateId);
+//				rule3 = "1";
+//			} else if ("1".equals(rule3)) {
+//				goods_list = tdGoodsService.searchGoodsOrderBySoldNumberDesc(keywords,cateId);
+//				rule3 = "0";
+//			}
+//		}
+		//查询数据
+		goods_list=tdGoodsService.searchGoodsList(keywords, sortFiled, strs[y], categoryTitle);
+		//修改排序规则
+		if(y==1){
+			rule1=( "0".equals(rule1)?"1":"0");
+		}else if(y==2){
+			rule2=( "0".equals(rule2)?"1":"0");
+		}else if(y==3){
+			rule3=( "0".equals(rule3)?"1":"0");
 		}
 
 		// 遍历集合，获取指定商品的价目表项

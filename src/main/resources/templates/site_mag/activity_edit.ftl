@@ -374,7 +374,7 @@ function del_goods_comb(obj) {
             <dt>活动开始时间</dt>
             <dd>
                 <div class="input-date">
-                    <input name="beginDate" type="text" value="<#if activity??>${activity.beginDate!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                    <input name="beginDate" type="text" value="<#if activity??>${activity.beginDate!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                     <i>日期</i>
                 </div>
                 <span class="Validform_checktip"></span>
@@ -384,7 +384,7 @@ function del_goods_comb(obj) {
             <dt>结束到期时间</dt>
             <dd>
                 <div class="input-date">
-                    <input name="finishDate" type="text" value="<#if activity??>${activity.finishDate!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                    <input name="finishDate" type="text" value="<#if activity??>${activity.finishDate!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                     <i>日期</i>
                 </div>
                 <span class="Validform_checktip"></span>

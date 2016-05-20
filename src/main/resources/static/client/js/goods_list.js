@@ -306,7 +306,7 @@ function addCart(isGoHistory) {
 				// 将已选商品的数量正确显示
 				$("#select_num").text(res.selected_number);
 				if(isGoHistory==1){
-					window.history.go(-1);
+					window.location.href = "/user/selected";
 				}
 			}
 		}

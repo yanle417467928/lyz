@@ -266,15 +266,45 @@ public class TdManagerUserController {
 
 	@RequestMapping(value = "/change_city", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> changeCity(Long cid){
+	public Map<String, Object> changeCity(Long cid,HttpServletRequest req){
 		Map<String,Object> map = new HashMap<String,Object>();
+		String username = (String) req.getSession().getAttribute("manager");
+		//获取管理员管辖城市
+    	List<TdCity> cityList= new ArrayList<TdCity>();
+    	//获取管理员管辖门店
+    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
+    	
+    	//管理员获取管辖的城市和门店
+    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, username);
+    	
 		map.put("code", 0);
 		List<TdDiySite> site_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(cid);
-		map.put("site_list", site_list);
+		List<TdDiySite> return_list =new ArrayList<TdDiySite>();
+		for (TdDiySite tdDiySite : site_list) {
+			if(diyList.contains(tdDiySite)){
+				return_list.add(tdDiySite);
+			}
+		}
+		map.put("site_list", return_list);
 		return map;
 	}
 	
-	//增加权限判读 zp
+	@RequestMapping(value = "/change_diy", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changeDiy(Long did){
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("code", 0);
+		//查询归属导购
+		TdDiySite diySite = tdDiySiteService.findOne(did);
+		if (null != diySite) {
+			List<TdUser> user_list = tdUserService.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(
+					diySite.getRegionId(), diySite.getCustomerId());
+			map.put("user_list", user_list);
+		}
+		return map;
+	}
+	
+	//增加权限判读 添加归属导购 zp
 	@RequestMapping(value = "/edit")
 	public String userEdit(Long id, Long roleId, String action, String __VIEWSTATE, ModelMap map,
 			HttpServletRequest req) {
@@ -302,6 +332,13 @@ public class TdManagerUserController {
 		
 		if (null != user) {
 			map.addAttribute("user", user);
+			//查询归属导购
+			TdDiySite diySite = tdDiySiteService.findOne(user.getUpperDiySiteId());
+			if (null != diySite) {
+				List<TdUser> user_list = tdUserService.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(
+						diySite.getRegionId(), diySite.getCustomerId());
+				map.addAttribute("user_list", user_list);
+			}
 //			List<TdCity> cities = tdCityService.findAll();
 //			map.addAttribute("city_list",cities);
 //			// 获取用户所在城市
@@ -348,6 +385,18 @@ public class TdManagerUserController {
 				tdUser.setCityId(site.getRegionId());
 				tdUser.setDiyName(site.getTitle());
 			}
+		}
+		//修改导购的时候修改导购电话和姓名
+		Long sellerId=tdUser.getSellerId();
+		if(null!=sellerId){
+			TdUser sellerUser=tdUserService.findOne(sellerId);
+			if(sellerUser!=null){
+				tdUser.setSellerName(sellerUser.getRealName());
+				tdUser.setReferPhone(sellerUser.getUsername());
+			}
+		}else{
+			tdUser.setSellerName(null);
+			tdUser.setReferPhone(null);
 		}
 
 		if (null != birthdate) {

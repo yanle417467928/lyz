@@ -11,7 +11,7 @@ import javax.persistence.criteria.Root;
 
 /**
  * 简单条件表达式
- * @author lee
+ * @author zp
  *
  */
 public class SimpleExpression implements Criterion {
@@ -65,6 +65,10 @@ public class SimpleExpression implements Criterion {
 				return builder.lessThanOrEqualTo(expression, (Comparable) value);
 			case GTE:
 				return builder.greaterThanOrEqualTo(expression, (Comparable) value);
+			case NULL:
+				return builder.isNull(expression);
+			case NOTNULL:
+				return builder.isNotNull(expression);
 			default:
 				return null;
 			}
