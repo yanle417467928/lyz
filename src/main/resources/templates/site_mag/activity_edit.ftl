@@ -390,6 +390,13 @@ function del_goods_comb(obj) {
                 <span class="Validform_checktip"></span>
             </dd>
         </dl>
+        <dl>
+            <dt>最低购买总量</dt>
+            <dd>
+                <input name="totalNumber" type="text" value="<#if activity??>${activity.totalNumber}<#else>0</#if>" class="input normal" datatype="n" sucmsg=" " errormsg="请输入一个正确的整数">
+                <span class="Validform_checktip"></span>
+            </dd>
+        </dl>
         <div id="id-param-sec">
             <#if diysite_list??>
                 <#include "/site_mag/activity_diysite_list_detail.ftl" />

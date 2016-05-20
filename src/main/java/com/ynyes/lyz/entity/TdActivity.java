@@ -119,7 +119,11 @@ public class TdActivity {
 	
 	//活动图片
 	@Column
-	private String activityImg;
+	private String activityImg; 
+	
+	//最低购买量
+	@Column
+	private Long totalNumber;
 
 	
 	public String getSiteName() {
@@ -304,6 +308,14 @@ public class TdActivity {
 
 	public void setActivityImg(String activityImg) {
 		this.activityImg = activityImg;
+	}
+
+	public Long getTotalNumber() {
+		return totalNumber;
+	}
+
+	public void setTotalNumber(Long totalNumber) {
+		this.totalNumber = totalNumber;
 	}
 
 	@Override
