@@ -60,7 +60,8 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
+	// static String wmsUrl =
+	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
 	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -138,33 +139,32 @@ public class TdCommonService {
 	@Autowired
 	private TdCategoryLimitService tdCategoryLimitService;
 
-//	static private String getWmsUrlByLocalHost() 
-//	{
-//		try 
-//		{
-//			InetAddress address = InetAddress.getLocalHost();
-//			System.out.println(address.getAddress());
-//			System.out.println(address.getHostName());
-//			String hostAddress = address.getHostAddress();
-//			if (hostAddress.equalsIgnoreCase("101.200.128.65")) 
-//			{
-//				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
-//				return wmsUrlReal;
-//			} 
-//			else
-//			{
-//				System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
-//				return wmsUrlTest;
-//			}
-//		} 
-//		catch (Exception e) 
-//		{
-//			System.out.println(e.getMessage());
-//			System.out.println("MDJ:WSL:INTERFACE+3:" + wmsUrlTest);
-//			return wmsUrlTest;
-//		}
-//	}
-
+	// static private String getWmsUrlByLocalHost()
+	// {
+	// try
+	// {
+	// InetAddress address = InetAddress.getLocalHost();
+	// System.out.println(address.getAddress());
+	// System.out.println(address.getHostName());
+	// String hostAddress = address.getHostAddress();
+	// if (hostAddress.equalsIgnoreCase("101.200.128.65"))
+	// {
+	// System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
+	// return wmsUrlReal;
+	// }
+	// else
+	// {
+	// System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
+	// return wmsUrlTest;
+	// }
+	// }
+	// catch (Exception e)
+	// {
+	// System.out.println(e.getMessage());
+	// System.out.println("MDJ:WSL:INTERFACE+3:" + wmsUrlTest);
+	// return wmsUrlTest;
+	// }
+	// }
 
 	/**
 	 * 根据仓库编号获取仓库名
@@ -572,10 +572,10 @@ public class TdCommonService {
 		// 获取门店
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser tdUser = tdUserService.findByUsername(username);
-//		Long siteId = 0L;
+		// Long siteId = 0L;
 		Long sobId = 0L;
 		if (tdUser != null) {
-//			siteId = tdUser.getUpperDiySiteId();
+			// siteId = tdUser.getUpperDiySiteId();
 			sobId = tdUser.getCityId();
 		}
 
@@ -1298,6 +1298,23 @@ public class TdCommonService {
 		for (TdActivity activity : activity_list) {
 			// 创建一个布尔变量表示已选商品能否参加指定的活动
 			Boolean isJoin = true;
+			// -------------------------------2016-05-20
+			// 09:45:15------------------------------------------
+			// 创建一个布尔变量用于判断该活动是存在浮动商品
+			Boolean isFloat = false;
+			// 获取该活动的最低购买量
+			Long totalNumber = activity.getTotalNumber();
+			if (null == totalNumber) {
+				totalNumber = 0L;
+			}
+			// 创建一个变量用于表示实际购买量
+			Long realBuy = 0L;
+			// 创建一个变量用于表示浮动量
+			Long floatCount = 0L;
+			// 创建一个存储顺序的集合
+			List<Long> sortList = new ArrayList<>();
+			// --------------------------------------------------------------------------------------------
+
 			// 获取该活动所需要的商品及其数量的列表
 			Map<Long, Long> cost = new HashMap<>();
 			String goodsAndNumber = activity.getGoodsNumber();
@@ -1314,23 +1331,62 @@ public class TdCommonService {
 								Long id = Long.parseLong(param[0]);
 								Long quantity = Long.parseLong(param[1]);
 								cost.put(id, quantity);
-								if (null == selected_map.get(id) || selected_map.get(id) < quantity) {
-									isJoin = false;
-									break;
+								Long buyQuantity = selected_map.get(id);
+								if (null == buyQuantity) {
+									buyQuantity = 0L;
 								}
+								if (buyQuantity < quantity) {
+									isJoin = false;
+								}
+								realBuy += buyQuantity;
+								sortList.add(id);
 							}
 						}
 					}
 
+					// 如果实际购买量小于最低购买量，则也不能参加活动
+					if (realBuy < totalNumber) {
+						isJoin = false;
+					}
+
 					if (isJoin) {
+
+						// -------------------------------2016-05-20
+						// 09:45:15------------------------------------------
+						// 判断活动是否具有浮动商品
+						Long LimitNumber = 0L;
+						for (Long quantity : cost.values()) {
+							if (null != quantity) {
+								LimitNumber += quantity;
+							}
+						}
+						if (LimitNumber < totalNumber) {
+							isFloat = true;
+							floatCount = totalNumber - LimitNumber;
+						}
+						// --------------------------------------------------------------------------------------------
+
 						// 判断参与促销的倍数（表示同一个活动可以参加几次）
 						List<Long> mutipuls = new ArrayList<>();
+
 						// 获取倍数关系
 						for (Long goodsId : cost.keySet()) {
 							Long quantity = cost.get(goodsId);
 							Long goods_quantity = selected_map.get(goodsId);
-							Long mutiplu = goods_quantity / quantity;
-							mutipuls.add(mutiplu);
+							if (null == quantity || 0L == quantity.longValue()) {
+								mutipuls.add(1L);
+							} else {
+								Long mutiplu = goods_quantity / quantity;
+								mutipuls.add(mutiplu);
+							}
+						}
+
+						if (isFloat) {
+							Long totalNumberMutiplu = 1L;
+							if (0L != totalNumber.longValue()) {
+								totalNumberMutiplu = realBuy / totalNumber;
+							}
+							mutipuls.add(totalNumberMutiplu);
 						}
 
 						// 集合中最小的数字即为倍数
@@ -1341,6 +1397,25 @@ public class TdCommonService {
 							Long quantity = cost.get(goodsId);
 							Long leftNum = selected_map.get(goodsId) - (quantity * min);
 							selected_map.put(goodsId, leftNum);
+						}
+
+						if (isFloat) {
+							floatCount = floatCount * min;
+							for (Long id : sortList) {
+								// 获取指定商品剩余的数量
+								Long leftNumber = selected_map.get(id);
+								if (leftNumber < floatCount) {
+									selected_map.put(id, 0L);
+									floatCount -= leftNumber;
+								} else {
+									selected_map.put(id, leftNumber - floatCount);
+									floatCount = 0L;
+								}
+								
+								if(0L == floatCount.longValue()){
+									break;
+								}
+							}
 						}
 
 						// 获取赠品队列
