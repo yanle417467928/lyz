@@ -26,7 +26,7 @@
                     <#list item.orderGoodsList as goods>
                         <li class="li2">
                             <div class="img"><img src="${goods.goodsCoverImageUri!''}" alt="产品图片"></div>
-                            <div class="product-info">
+                            <div class="product-info"">
                                 <div class="div1">${goods.goodsTitle!''}</div>
                                 <div class="div2">￥<span><#if goods.price??>${goods.price?string("0.00")}<#else>0.00</#if></span>&nbsp;&nbsp;<label>数量：<span>${goods.quantity!'0'}</span></label></div>
                             </div>
