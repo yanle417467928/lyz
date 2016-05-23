@@ -32,7 +32,7 @@
     <div class="login-form">
         <h1>系统管理登录</h1>
         <div class="control-group">
-            <input name="username" type="text" value="tdadmin" class="login-field" placeholder="用户名" title="用户名">
+            <input name="username" type="text" value="" class="login-field" placeholder="用户名" title="用户名">
             <label class="login-field-icon user"></label>
         </div>
         <div class="control-group">
