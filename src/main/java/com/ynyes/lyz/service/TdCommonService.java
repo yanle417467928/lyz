@@ -54,6 +54,8 @@ import com.ynyes.lyz.entity.TdSubdistrict;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdWareHouse;
+import com.ynyes.lyz.interfaces.service.TdInterfaceService;
+import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
 
@@ -137,6 +139,9 @@ public class TdCommonService {
 
 	@Autowired
 	private TdCategoryLimitService tdCategoryLimitService;
+	
+	@Autowired
+	private TdInterfaceService tdInterfaceService;
 
 //	static private String getWmsUrlByLocalHost() 
 //	{
@@ -840,7 +845,7 @@ public class TdCommonService {
 						goods.setGoodsCoverImageUri(tdGoods.getCoverImageUri());
 						goods.setSku(tdGoods.getCode());
 						// 记录活动id
-						goods.setActivityId("B" + activity.getId().toString() + "_" + gift.getNumber());
+						goods.setActivityId("A" + activity.getId().toString() + "_" + gift.getNumber());
 						// 修改订单商品归属活动
 						// 和活动商品同一
 						Map<Long, Long> cost = new HashMap<Long, Long>();
@@ -855,7 +860,7 @@ public class TdCommonService {
 								isHave = true;
 								orderGoods.setQuantity(orderGoods.getQuantity() + goods.getQuantity());
 								// 记录活动id
-								orderGoods.setActivityId(orderGoods.getActivityId() + ",B" + activity.getId().toString()
+								orderGoods.setActivityId(orderGoods.getActivityId() + ",A" + activity.getId().toString()
 										+ "_" + gift.getNumber());
 							}
 						}
@@ -1373,7 +1378,7 @@ public class TdCommonService {
 											orderGoods.setSku(goods.getCode());
 											// 记录活动id
 											orderGoods.setActivityId(
-													"A" + activity.getId().toString() + "_" + quantity * min);
+													activity.getId().toString() + "_" + quantity * min);
 											// 修改订单商品归属活动
 											tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(),
 													min, 1L);
@@ -1385,7 +1390,7 @@ public class TdCommonService {
 													isHave = true;
 													single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
 													// 记录活动id
-													single.setActivityId(single.getActivityId() + ",A"
+													single.setActivityId(single.getActivityId() + ","
 															+ activity.getId().toString() + "_" + min);
 												}
 											}
@@ -1965,6 +1970,64 @@ public class TdCommonService {
 
 		public void run() {
 			sendMsgToWMS(orderList, mainOrderNumber);
+			sendToEBS(orderList);
+			
+		}
+	}
+	
+	// 传EBS
+	private void sendToEBS(List<TdOrder> orderList)
+	{
+		for (TdOrder tdOrder : orderList) 
+		{
+			if (tdOrder != null && tdOrder.getOrderNumber()!= null && tdOrder.getOrderNumber().contains("HR"))
+			{
+				continue;
+			}
+			tdInterfaceService.initOrderInf(tdOrder);
+			
+			//单头
+			String orderInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERINF);
+			Object[] orderInf = {"TD_ORDER" , "1" , orderInfXML};
+			try
+			{
+				Object object = TdInterfaceService.getCall().invoke(orderInf);
+				System.out.println(object);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			//商品
+			String orderGoodsInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERGOODSINF);
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderGoodsInfXML)) 
+			{
+				Object[] orderGoodsInf = {"TD_ORDER_GOODS","1",orderGoodsInfXML};
+				try 
+				{
+					Object object = TdInterfaceService.getCall().invoke(orderGoodsInf);
+					System.out.println(object);
+				}
+				catch (Exception e) 
+				{
+					e.printStackTrace();
+				}
+			}
+			//券
+			String orderCouponInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERCOUPONINF);
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML)) 
+			{
+				Object[] orderCouponInf = {"TD_ORDER_COUPONS","1",orderCouponInfXML};
+				try 
+				{
+					Object object = TdInterfaceService.getCall().invoke(orderCouponInf);
+					System.out.println(object);
+				}
+				catch (Exception e) 
+				{
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -2461,9 +2524,12 @@ public class TdCommonService {
 			xmlStr = xmlStr.replace("null", "");
 			byte[] bs = xmlStr.getBytes();
 			byte[] encodeByte = Base64.encode(bs);
-			try {
+			try 
+			{
 				encodeXML = new String(encodeByte, "UTF-8");
-			} catch (UnsupportedEncodingException e1) {
+			} 
+			catch (UnsupportedEncodingException e1) 
+			{
 				System.err.println("MDJ_WMS:XML 编码出错!");
 				return "FAILED";
 			}
@@ -2490,7 +2556,8 @@ public class TdCommonService {
 		return encodeXML;
 	}
 
-	private void writeErrorLog(String orderNumber, String subOrderNumber, String errorMsg) {
+	private void writeErrorLog(String orderNumber, String subOrderNumber, String errorMsg)
+	{
 		TdInterfaceErrorLog errorLog = new TdInterfaceErrorLog();
 		errorLog.setErrorMsg(errorMsg);
 		errorLog.setOrderNumber(orderNumber);
@@ -2505,28 +2572,32 @@ public class TdCommonService {
 	 * @return
 	 */
 
-	public String chectResult1(String resultStr) {
+	public String chectResult1(String resultStr) 
+	{
 		// "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
-		// add by Shawn
-		if (!resultStr.contains("<CODE>") || !resultStr.contains("</CODE>") || !resultStr.contains("<MESSAGE>")
-				|| !resultStr.contains("</MESSAGE>")) {
-			return "返回信息错误！";
+		if (!resultStr.contains("<CODE>") || !resultStr.contains("</CODE>") || !resultStr.contains("<MESSAGE>") || !resultStr.contains("</MESSAGE>")) 
+		{
+			return "返回XML格式错误错误:"+resultStr;
 		}
 		String regEx = "<CODE>([\\s\\S]*?)</CODE>";
 		Pattern pat = Pattern.compile(regEx);
 		Matcher mat = pat.matcher(resultStr);
-
-		if (mat.find()) {
+		
+		if (mat.find()) 
+		{
 			System.out.println("CODE is :" + mat.group(0));
 			String code = mat.group(0).replace("<CODE>", "");
 			code = code.replace("</CODE>", "").trim();
-			if (Integer.parseInt(code) == 0) {
+			if (Integer.parseInt(code) == 0) 
+			{
 				return null;
-			} else {
+			} else
+			{
 				String errorMsg = "<MESSAGE>([\\s\\S]*?)</MESSAGE>";
 				pat = Pattern.compile(errorMsg);
 				mat = pat.matcher(resultStr);
-				if (mat.find()) {
+				if (mat.find()) 
+				{
 					System.out.println("ERRORMSG is :" + mat.group(0));
 					String msg = mat.group(0).replace("<MESSAGE>", "");
 					msg = msg.replace("</MESSAGE>", "").trim();
