@@ -1,10 +1,12 @@
 package com.ynyes.lyz.interfaces.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+@Entity
 public class TdReturnGoodsInf extends TdInfBaseEntity
 {
 	//订单头ID
