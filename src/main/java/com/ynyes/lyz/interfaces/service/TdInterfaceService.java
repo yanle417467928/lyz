@@ -24,7 +24,7 @@ import com.ynyes.lyz.interfaces.entity.TdOrderCouponInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderGoodsInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderReceiveInf;
-import com.ynyes.lyz.interfaces.utils.EnumUtils;
+import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
 import com.ynyes.lyz.interfaces.utils.InterfaceConfigure;
 import com.ynyes.lyz.interfaces.utils.StringTools;
 import com.ynyes.lyz.service.TdCouponService;
@@ -34,7 +34,7 @@ import com.ynyes.lyz.service.TdPayTypeService;
 
 @Service
 @Transactional
-public class TdInterfaceService extends EnumUtils {
+public class TdInterfaceService {
 
 	@Autowired
 	private TdOrderInfService tdOrderInfService;
