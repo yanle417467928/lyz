@@ -393,7 +393,7 @@ function del_goods_comb(obj) {
         <dl>
             <dt>最低购买总量</dt>
             <dd>
-                <input name="totalNumber" type="text" value="<#if activity??>${activity.totalNumber}<#else>0</#if>" class="input normal" datatype="n" sucmsg=" " errormsg="请输入一个正确的整数">
+                <input name="totalNumber" type="text" value="<#if activity??&&activity.totalNumber??>${activity.totalNumber!'0'}<#else>0</#if>" class="input normal" datatype="n" sucmsg=" " errormsg="请输入一个正确的整数">
                 <span class="Validform_checktip"></span>
             </dd>
         </dl>
