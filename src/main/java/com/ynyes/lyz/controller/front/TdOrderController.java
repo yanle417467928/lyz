@@ -16,6 +16,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCity;
@@ -115,7 +116,7 @@ public class TdOrderController {
 	 * @author dengxiao
 	 */
 	@RequestMapping
-	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id, Long realUserId,Long count) {
+	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id, Long realUserId,Long count,RedirectAttributes attr) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		// 参数由调用函数检查
@@ -149,6 +150,12 @@ public class TdOrderController {
 			tdOrderService.delete(order_temp);
 			return "redirect:/";
 		}
+		//修改订单商品价格
+		if(changeOrderGoodsNewPrice(order_temp,req)){
+			attr.addAttribute("msg", "亲,你购买的商品已经下架");
+			return "redirect:/prompt";
+		}
+		
 
 		order_temp = tdPriceCouintService.checkCouponIsUsed(order_temp);
 
@@ -2015,5 +2022,29 @@ public class TdOrderController {
 			tdOrderService.save(order);
 		}
 	}
+	
+	/**
+	 * 修改订单商品价格
+	 * @param order
+	 * @param req
+	 * @author zp
+	 */
+	private Boolean changeOrderGoodsNewPrice(TdOrder order,HttpServletRequest req){
+		 List<TdOrderGoods> goodsList=order.getOrderGoodsList();
+		 if(goodsList!=null && goodsList.size()>0){
+			 for (TdOrderGoods tdOrderGoods : goodsList) {
+				 TdGoods goods= tdGoodsService.findOne(tdOrderGoods.getGoodsId());
+				 TdPriceListItem price= tdCommonService.getGoodsPrice(req, goods);
+				 if(price==null){
+					 return true;
+				 }
+				 tdOrderGoods.setPrice(price.getSalePrice());
+				 tdOrderGoods.setRealPrice(price.getRealSalePrice());
+			}
+			 
+		 }
+		 return false;
+	}
+
 
 }

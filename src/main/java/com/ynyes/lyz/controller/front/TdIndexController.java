@@ -383,4 +383,10 @@ public class TdIndexController {
 		res.put("status", 0);
 		return res;
 	}
+	
+	@RequestMapping(value = "/prompt")
+	public String prompt(HttpServletRequest req, ModelMap map, String msg) {
+		map.addAttribute("msg", msg);
+		return "/client/common_prompt";
+	}
 }

@@ -436,3 +436,15 @@ footer .btn-clearing {
     z-index: 999;
     -webkit-transform: translateX(100%);
 }
+/*订单标示*/
+.order_biao{
+    color: #ffffff;
+    font-size: 0.9em;
+    text-align: center;
+    background-color: red;
+    border-radius: 0.3em;
+    width: 1.2em;
+    height: 1.2em;
+    line-height: 1.2em;
+    display: inline-block;
+}

@@ -68,7 +68,7 @@
                                     	<#-- 判断是否是退货中 -->
                                     	<#if returnNote??>
                                     		<#list returnNote.returnGoodsList as returnGood>
-                                    			<#if returnGood.sku==item.sku><span style="color: red;;font-size:0.9em">(退货)</span></#if>
+                                    			<#if returnGood.sku==item.sku><span class="order_biao">退</span></#if>
                                     		</#list>
                                     	</#if>
                                     </div>
@@ -88,7 +88,7 @@
                                     	<#-- 判断是否是退货中 -->
                                     	<#if returnNote??>
                                     		<#list returnNote.returnGoodsList as returnGood>
-                                    			<#if returnGood.sku==item.sku><span style="color: red;;font-size:0.9em">(退货)</span></#if>
+                                    			<#if returnGood.sku==item.sku><span class="order_biao">退</span></#if>
                                     		</#list>
                                     	</#if>
                                     </div>
@@ -107,7 +107,7 @@
                                     	<#-- 判断是否是退货中 -->
                                     	<#if returnNote??>
                                     		<#list returnNote.returnGoodsList as returnGood>
-                                    			<#if returnGood.sku==item.sku><span style="color: red;">(退货中)</span></#if>
+                                    			<#if returnGood.sku==item.sku><span class="order_biao">退</span></#if>
                                     		</#list>
                                     	</#if>
                                     </div>
