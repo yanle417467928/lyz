@@ -1,14 +1,14 @@
-/*鐢ㄦ埛璁㈠崟绠＄悊*/
+/*閻€劍鍩涚拋銏犲礋缁狅紕鎮�/
 .order-status {
 	background: #fff;
 	border-bottom: 1px solid #ddd;
 	display: -webkit-flex-box;
-	display: -webkit-flex;      /*flexbox寮规�甯冨眬*/
+	display: -webkit-flex;      /*flexbox瀵锟界敮鍐ㄧ湰*/
 }
 .order-status li {
 	text-align: center;
 	-webkit-flex-box: 1;
-	-webkit-flex: 1;            /*flexbox寮规�甯冨眬*/
+	-webkit-flex: 1;            /*flexbox瀵锟界敮鍐ㄧ湰*/
 }
 .order-status li a {
 	display: block;
@@ -26,7 +26,7 @@
 	line-height: 30px;
 	border-bottom: 1px solid #ddd;
 	display: -webkit-flex-box;
-	display: -webkit-flex;      /*flexbox寮规�甯冨眬*/
+	display: -webkit-flex;      /*flexbox瀵锟界敮鍐ㄧ湰*/
 }
 .searchbox input {
 	height: 30px;
@@ -34,7 +34,7 @@
 	background: none;
 	border: none;
 	-webkit-flex-box: 1;
-	-webkit-flex: 1;            /*flexbox寮规�甯冨眬*/
+	-webkit-flex: 1;            /*flexbox瀵锟界敮鍐ㄧ湰*/
 }
 .searchbox a {
 	width: 30px;
@@ -48,12 +48,16 @@
 .order-nav {
 	background: #fff;
 	display: -webkit-flex-box;
-	display: -webkit-flex;      /*flexbox寮规�甯冨眬*/
+	display: -webkit-flex;      /*flexbox瀵锟界敮鍐ㄧ湰*/
+	overflow:hidden;
 }
 .order-nav li {
 	text-align: center;
 	-webkit-flex-box: 1;
-	-webkit-flex: 1;            /*flexbox寮规�甯冨眬*/
+	-webkit-flex: 1;            /*flexbox瀵锟界敮鍐ㄧ湰*/
+	float:left;
+	width:20%;
+	text-align: center;
 }
 .order-nav li a {
 	display: block;
