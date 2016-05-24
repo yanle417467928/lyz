@@ -44,7 +44,6 @@ import com.ynyes.lyz.entity.TdBackMain;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDiySiteInventory;
-import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdTbwRecd;
@@ -56,9 +55,7 @@ import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDiySiteInventoryLogService;
 import com.ynyes.lyz.service.TdDiySiteInventoryService;
-import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
-import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdTbwRecdService;
 import com.ynyes.lyz.service.TdTbwRecmService;
@@ -75,9 +72,6 @@ public class CallWMSImpl implements ICallWMS {
 	private TdDeliveryInfoDetailService tdDeliveryInfoDetailService;
 	
 	@Autowired
-	private TdGoodsService tdGoodsService;
-	
-	@Autowired
 	private TdOrderService tdOrderService;
 	
 	@Autowired
@@ -88,9 +82,6 @@ public class CallWMSImpl implements ICallWMS {
 	
 	@Autowired
 	private TdUserService tdUserService;
-	
-	@Autowired
-	private TdPriceCountService tdPriceCountService;
 	
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
@@ -484,7 +475,7 @@ public class CallWMSImpl implements ICallWMS {
 				infoDetail.setBackNumber(c_d_ack_qty);
 				infoDetail.setSubOrderNumber(c_reserved1);
 				tdDeliveryInfoDetailService.save(infoDetail);
-				String siteCode = null;
+//				String siteCode = null;
 				Long diySiteId = null;
 				Long userId= null;
 				Boolean isSendOrder = true;
@@ -502,7 +493,7 @@ public class CallWMSImpl implements ICallWMS {
 						{
 							isSendOrder = false;
 						}
-						siteCode = tdOrder.getDiySiteCode();
+//						siteCode = tdOrder.getDiySiteCode();
 						diySiteId = tdOrder.getDiySiteId();
 						tdOrderService.save(tdOrder);
 					}

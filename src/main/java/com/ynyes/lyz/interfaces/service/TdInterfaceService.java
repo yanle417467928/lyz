@@ -66,6 +66,9 @@ public class TdInterfaceService {
 	private TdReturnOrderInfService tdReturnOrderInfService;
 	
 	@Autowired
+	private TdReturnGoodsInfService TdReturnGoodsInfService;
+	
+	@Autowired
 	private TdOrderService tdOrderService;
 	
 	static Call call;
@@ -331,8 +334,22 @@ public class TdInterfaceService {
 		returnOrderInf.setAuditDate(returnNote.getCheckTime());
 		returnOrderInf.setRefundAmount(returnNote.getTurnPrice());
 //		returnOrderInf.setPrepayAmt(returnNote);
-		
-		
+		tdReturnOrderInfService.save(returnOrderInf);
+		//退货单商品
+		List<TdOrderGoods> goodsList = returnNote.getReturnGoodsList();
+		if (goodsList != null && goodsList.size() > 0)
+		{
+			for (TdOrderGoods tdOrderGoods : goodsList) 
+			{
+				TdReturnGoodsInf goodsInf = new TdReturnGoodsInf();
+				goodsInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
+				goodsInf.setSku(tdOrderGoods.getSku());
+				goodsInf.setQuantity(tdOrderGoods.getQuantity());
+//				goodsInf.setJxPrice(tdOrderGoods.g());
+				goodsInf.setLsPrice(tdOrderGoods.getReturnUnitPrice()*tdOrderGoods.getQuantity());
+				TdReturnGoodsInfService.save(goodsInf);
+			}
+		}
 	}
 	
 	public Boolean booleanByStr(String YN)
