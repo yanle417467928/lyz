@@ -11,5 +11,7 @@ public interface TdReturnOrderInfRepo
 		extends PagingAndSortingRepository<TdReturnOrderInf, Long>, JpaSpecificationExecutor<TdReturnOrderInf> 
 {
 	List<TdReturnOrderInf> findByorderHeaderId(Long headerId);
+	
+	TdReturnOrderInf findByreturnNumber(String returnNumber);
 }
 

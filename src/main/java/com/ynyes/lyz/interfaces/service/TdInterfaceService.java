@@ -20,10 +20,12 @@ import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPayType;
+import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.interfaces.entity.TdOrderCouponInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderGoodsInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderReceiveInf;
+import com.ynyes.lyz.interfaces.entity.TdReturnOrderInf;
 import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
 import com.ynyes.lyz.interfaces.utils.InterfaceConfigure;
 import com.ynyes.lyz.interfaces.utils.StringTools;
@@ -53,6 +55,9 @@ public class TdInterfaceService {
 	
 	@Autowired
 	private TdOrderCouponInfService tdOrderCouponInfService;
+	
+	@Autowired
+	private TdReturnOrderInfService tdReturnOrderInfService;
 	
 	static Call call;
 	
@@ -247,6 +252,31 @@ public class TdInterfaceService {
 				}
 			}
 		}
+	}
+	
+	public void initReturnOrder(TdReturnNote returnNote)
+	{
+		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
+		if (returnOrderInf != null)
+		{
+			return ;
+		}
+		returnOrderInf = new TdReturnOrderInf();
+//		returnOrderInf.setSobId(returnNote);
+//		returnOrderInf.setRtHeaderId(returnNote);
+//		returnOrderInf.setReturnNumber(returnNote);
+//		returnOrderInf.setReturnDate(returnNote);
+//		returnOrderInf.setRtFullFlag(returnNote);
+//		returnOrderInf.setOrderHeaderId(returnNote);
+//		returnOrderInf.setOrderNumber(returnNote);
+//		returnOrderInf.setProdectType(returnNote);
+//		returnOrderInf.setDiySiteCode(returnNote);
+//		returnOrderInf.setRefundType(returnNote);
+//		returnOrderInf.setAuditDate(returnNote);
+//		returnOrderInf.setRefundAmount(returnNote);
+//		returnOrderInf.setPrepayAmt(returnNote);
+		
+		
 	}
 	
 	public Boolean booleanByStr(String YN)
