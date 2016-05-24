@@ -183,7 +183,6 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 //						map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
 //					}
 //				}
-				
 				//查询用户管辖门店权限
 		    	TdManagerDiySiteRole diySiteRole= tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
 		    	//获取管理员管辖城市
