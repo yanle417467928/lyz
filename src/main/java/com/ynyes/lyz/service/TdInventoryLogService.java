@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdInventoryLog;
 import com.ynyes.lyz.repository.TdInventoryLogRepo;
 
@@ -31,10 +30,6 @@ public class TdInventoryLogService {
     
     @Autowired
     TdInventoryLogRepo repository;
-    
-    @Autowired
-    private TdGoodsService tdGoodsService;
-    
     
     /**
      * 删除
@@ -164,8 +159,6 @@ public class TdInventoryLogService {
     	ManagerLog.setIsManager(true);
     	String manager = (String)req.getSession().getAttribute("manager");
     	ManagerLog.setUsername(manager);
-    	
-    	TdGoods goods = tdGoodsService.findOne(goodsId);
     	
     	repository.save(ManagerLog);
     }
