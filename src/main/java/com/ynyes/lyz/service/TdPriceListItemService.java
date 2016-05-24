@@ -161,7 +161,7 @@ public class TdPriceListItemService {
 		List<TdPriceListItem> list = repository
 				.findByListHeaderIdAndItemNumAndStartDateActiveBeforeAndEndDateActiveAfter(headerId, SKU, new Date(),
 						new Date());
-		if (null == list && list.size() == 0) {
+		if (null == list || list.size() == 0) {
 			return null;
 		} else {
 			return list.get(0);

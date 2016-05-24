@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
-public class TdRturnTimeInf extends TdInfBaseEntity{
+public class TdReturnTimeInf extends TdInfBaseEntity{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

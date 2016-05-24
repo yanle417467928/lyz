@@ -27,7 +27,31 @@ public class EnumUtils {
 		/**
 		 * 销退订单头表
 		 */
-		RETURNORDER
+		RETURNORDERINF,
 		
+		/**
+		 * 销退订单行表
+		 */
+		RETURNGOODSINF,
+		
+		/**
+		 * 销退单的券退回表
+		 */
+		RETURNCOUPONINF,
+		
+		/**
+		 * 到店退货单退货时间表
+		 */
+		RETURNTIMEINF,
+		
+		/**
+		 * 收款表
+		 */
+		CASHRECIPTINF,
+		
+		/**
+		 * 退款表
+		 */
+		CASHREFUNDINF
 	}
 }

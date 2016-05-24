@@ -902,8 +902,8 @@ public class TdUserController {
 	}
 
 	/**
-	 * 保存新增的收货地址的方法
-	 * 增加收货地址限制
+	 * 保存新增的收货地址的方法 增加收货地址限制
+	 * 
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/address/add/save")
@@ -950,8 +950,8 @@ public class TdUserController {
 			res.put("message", "亲，请添加详细地址");
 			return res;
 		}
-		//判断是否超过最大限制数量
-		if(tdSettingService.checkMaxShipping(res, user,operation)){
+		// 判断是否超过最大限制数量
+		if (tdSettingService.checkMaxShipping(res, user, operation)) {
 			return res;
 		}
 
@@ -1428,8 +1428,8 @@ public class TdUserController {
 	}
 
 	/**
-	 * 跳转到订单详情的方法
-	 * 增加退货单信息 zp
+	 * 跳转到订单详情的方法 增加退货单信息 zp
+	 * 
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/order/detail/{id}")
@@ -1479,11 +1479,11 @@ public class TdUserController {
 				}
 			}
 		}
-		//退货单信息
-		if(order!=null && (order.getStatusId()==9 || order.getStatusId()==10) ){
-			List<TdReturnNote> returnNoteList=tdReturnNoteService.findByOrderNumberContaining(order.getOrderNumber());
-			if(returnNoteList!=null && returnNoteList.size()>0){
-				map.addAttribute("returnNote",returnNoteList.get(0));
+		// 退货单信息
+		if (order != null && (order.getStatusId() == 9 || order.getStatusId() == 10)) {
+			List<TdReturnNote> returnNoteList = tdReturnNoteService.findByOrderNumberContaining(order.getOrderNumber());
+			if (returnNoteList != null && returnNoteList.size() > 0) {
+				map.addAttribute("returnNote", returnNoteList.get(0));
 			}
 		}
 
@@ -1525,8 +1525,8 @@ public class TdUserController {
 	}
 
 	/**
-	 * 用户修改归属门店并且保存的方法
-	 * 修改门店后清空导购  zp
+	 * 用户修改归属门店并且保存的方法 修改门店后清空导购 zp
+	 * 
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/diy/save")
@@ -1552,14 +1552,14 @@ public class TdUserController {
 		user.setUpperDiySiteId(site.getId());
 		user.setDiyName(site.getTitle());
 		user.setCustomerId(site.getCustomerId());
-		//修改门店后清空导购
+		// 修改门店后清空导购
 		user.setSellerId(null);
 		user.setSellerName(null);
 		user.setReferPhone(null);
-		
+
 		tdUserService.save(user);
 		res.put("status", 0);
-		res.put("user",user);
+		res.put("user", user);
 		return res;
 	}
 
@@ -1972,8 +1972,8 @@ public class TdUserController {
 	}
 
 	/**
-	 * 根据已选获取赠品的方法
-	 * 记录活动编号
+	 * 根据已选获取赠品的方法 记录活动编号
+	 * 
 	 * @author DengXiao
 	 */
 	public List<TdOrderGoods> getPresent(List<TdCartGoods> all_selected, HttpServletRequest req) {
@@ -2002,6 +2002,23 @@ public class TdUserController {
 		for (TdActivity activity : activity_list) {
 			// 创建一个布尔变量表示已选商品能否参加指定的活动
 			Boolean isJoin = true;
+			// -------------------------------2016-05-20
+			// 09:45:15------------------------------------------
+			// 创建一个布尔变量用于判断该活动是存在浮动商品
+			Boolean isFloat = false;
+			// 获取该活动的最低购买量
+			Long totalNumber = activity.getTotalNumber();
+			if (null == totalNumber) {
+				totalNumber = 0L;
+			}
+			// 创建一个变量用于表示实际购买量
+			Long realBuy = 0L;
+			// 创建一个变量用于表示浮动量
+			Long floatCount = 0L;
+			// 创建一个存储顺序的集合
+			List<Long> sortList = new ArrayList<>();
+			// --------------------------------------------------------------------------------------------
+
 			// 获取该活动所需要的商品及其数量的列表
 			Map<Long, Long> cost = new HashMap<>();
 			String goodsAndNumber = activity.getGoodsNumber();
@@ -2018,23 +2035,60 @@ public class TdUserController {
 								Long id = Long.parseLong(param[0]);
 								Long quantity = Long.parseLong(param[1]);
 								cost.put(id, quantity);
-								if (null == selected_map.get(id) || selected_map.get(id) < quantity) {
-									isJoin = false;
-									break;
+								Long buyQuantity = selected_map.get(id);
+								if (null == buyQuantity) {
+									buyQuantity = 0L;
 								}
+								if (buyQuantity < quantity) {
+									isJoin = false;
+								}
+								realBuy += buyQuantity;
+								sortList.add(id);
 							}
 						}
 					}
 
+					// 如果实际购买量小于最低购买量，则也不能参加活动
+					if (realBuy < totalNumber) {
+						isJoin = false;
+					}
+
 					if (isJoin) {
+						// -------------------------------2016-05-20
+						// 09:45:15------------------------------------------
+						// 判断活动是否具有浮动商品
+						Long LimitNumber = 0L;
+						for (Long quantity : cost.values()) {
+							if (null != quantity) {
+								LimitNumber += quantity;
+							}
+						}
+						if (LimitNumber < totalNumber) {
+							isFloat = true;
+							floatCount = totalNumber - LimitNumber;
+						}
+						// --------------------------------------------------------------------------------------------
+
 						// 判断参与促销的倍数（表示同一个活动可以参加几次）
 						List<Long> mutipuls = new ArrayList<>();
 						// 获取倍数关系
 						for (Long goodsId : cost.keySet()) {
 							Long quantity = cost.get(goodsId);
 							Long goods_quantity = selected_map.get(goodsId);
-							Long mutiplu = goods_quantity / quantity;
-							mutipuls.add(mutiplu);
+							if (null == quantity || 0L == quantity.longValue()) {
+								mutipuls.add(1L);
+							} else {
+								Long mutiplu = goods_quantity / quantity;
+								mutipuls.add(mutiplu);
+							}
+						}
+
+						if (isFloat) {
+							Long totalNumberMutiplu = 1L;
+							if (0L != totalNumber.longValue()) {
+								totalNumberMutiplu = realBuy / totalNumber;
+							}
+							mutipuls.add(totalNumberMutiplu);
 						}
 
 						// 集合中最小的数字即为倍数
@@ -2045,6 +2099,25 @@ public class TdUserController {
 							Long quantity = cost.get(goodsId);
 							Long leftNum = selected_map.get(goodsId) - (quantity * min);
 							selected_map.put(goodsId, leftNum);
+						}
+
+						if (isFloat) {
+							floatCount = floatCount * min;
+							for (Long id : sortList) {
+								// 获取指定商品剩余的数量
+								Long leftNumber = selected_map.get(id);
+								if (leftNumber < floatCount) {
+									selected_map.put(id, 0L);
+									floatCount -= leftNumber;
+								} else {
+									selected_map.put(id, leftNumber - floatCount);
+									floatCount = 0L;
+								}
+
+								if (0L == floatCount.longValue()) {
+									break;
+								}
+							}
 						}
 
 						// 获取赠品队列
@@ -2072,10 +2145,14 @@ public class TdUserController {
 											orderGoods.setGoodsTitle(goods.getTitle());
 											orderGoods.setGoodsSubTitle(goods.getSubTitle());
 											orderGoods.setPrice(0.0);
-											orderGoods.setGiftPrice(priceListItem.getPrice());
+											if (null == priceListItem) {
+												orderGoods.setGiftPrice(0.00);
+											} else {
+												orderGoods.setGiftPrice(priceListItem.getPrice());
+											}
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
-											//记录活动id
+											// 记录活动id
 											orderGoods.setActivityId(activity.getId().toString());
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
 											Boolean isHave = false;
@@ -2084,8 +2161,9 @@ public class TdUserController {
 														&& single.getGoodsId() == orderGoods.getGoodsId()) {
 													isHave = true;
 													single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
-													//记录活动id
-													single.setActivityId(orderGoods.getActivityId()+","+activity.getId().toString());
+													// 记录活动id
+													single.setActivityId(orderGoods.getActivityId() + ","
+															+ activity.getId().toString());
 												}
 											}
 
@@ -2105,8 +2183,8 @@ public class TdUserController {
 	}
 
 	/**
-	 * 根据已选获取小辅料
-	 * 记录活动id 小辅料活动暂时不记录 zp
+	 * 根据已选获取小辅料 记录活动id 小辅料活动暂时不记录 zp
+	 * 
 	 * @author DengXiao
 	 */
 	public List<TdOrderGoods> getGift(HttpServletRequest req, List<TdCartGoods> all_selected) {
@@ -2146,8 +2224,8 @@ public class TdUserController {
 						goods.setGoodsId(tdGoods.getId());
 						goods.setGoodsCoverImageUri(tdGoods.getCoverImageUri());
 						goods.setSku(tdGoods.getCode());
-//						//记录活动id
-//						goods.setActivityId(activity.getId().toString());
+						// //记录活动id
+						// goods.setActivityId(activity.getId().toString());
 						// 创建一个布尔变量用于判断此件商品是否已经加入了小辅料
 						Boolean isHave = false;
 						for (TdOrderGoods orderGoods : giftGoodsList) {
@@ -2155,8 +2233,8 @@ public class TdUserController {
 									&& orderGoods.getGoodsId().longValue() == gift.getGoodsId().longValue()) {
 								isHave = true;
 								orderGoods.setQuantity(orderGoods.getQuantity() + goods.getQuantity());
-//								//记录活动id
-//								orderGoods.setActivityId(orderGoods.getActivityId()+","+activity.getId().toString());
+								// //记录活动id
+								// orderGoods.setActivityId(orderGoods.getActivityId()+","+activity.getId().toString());
 							}
 						}
 						if (!isHave) {
@@ -2223,35 +2301,39 @@ public class TdUserController {
 		res.put("status", 0);
 		return res;
 	}
+
 	/**
 	 * 退换货
+	 * 
 	 * @author zp
 	 */
-	@RequestMapping(value="/return/list")
-	public String returnList(HttpServletRequest req, ModelMap map,Integer page,Integer size){
+	@RequestMapping(value = "/return/list")
+	public String returnList(HttpServletRequest req, ModelMap map, Integer page, Integer size) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null == user) {
 			return "redirect:/login";
 		}
-		//设置默认值
-		if(null==page || page<=0){
-			page=0;
+		// 设置默认值
+		if (null == page || page <= 0) {
+			page = 0;
 		}
-		if(null ==size || size<=0){
-			size=20;
+		if (null == size || size <= 0) {
+			size = 20;
 		}
-		
+
 		// 分页查询退货单
-		Page<TdReturnNote> returnNoteList = tdReturnNoteService.findByUsername(username,"用户取消订单，退货",page,size);
-//		List<TdReturnNote> returnNoteList=tdReturnNoteService.findByUsername(username);
-		
-		map.addAttribute("all_return_list",returnNoteList.getContent());
+		Page<TdReturnNote> returnNoteList = tdReturnNoteService.findByUsername(username, "用户取消订单，退货", page, size);
+		// List<TdReturnNote>
+		// returnNoteList=tdReturnNoteService.findByUsername(username);
+
+		map.addAttribute("all_return_list", returnNoteList.getContent());
 		return "/client/user_return_list";
-	} 
-	
+	}
+
 	/**
 	 * 退货单详情
+	 * 
 	 * @author zp
 	 */
 	@RequestMapping(value = "/return/detail/{id}")
@@ -2280,30 +2362,30 @@ public class TdUserController {
 		}
 		// 获取导购 可能不准确 真是姓名可能重复
 		if (null != returnNote) {
-			List<TdUser> userList= tdUserService.findByRealName(returnNote.getSellerRealName());
-			if(userList!=null && userList.size()>0){
+			List<TdUser> userList = tdUserService.findByRealName(returnNote.getSellerRealName());
+			if (userList != null && userList.size() > 0) {
 				map.addAttribute("sellerUser", userList.get(0));
 			}
 		}
-		
-		//退货单仓库暂时没有记录 后面增加
-//		// 仓库
-//		if (null != returnNote) {
-//			List<TdDeliveryInfo> deliveryList = tdDeliveryInfoService
-//					.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
-//			if (null != deliveryList && deliveryList.size() > 0) {
-//				List<TdWareHouse> wareHouseList = TdWareHouseService
-//						.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
-//				if (null != wareHouseList && wareHouseList.size() > 0) {
-//					map.addAttribute("tdWareHouse", wareHouseList.get(0));
-//				}
-//			}
-//		}
+
+		// 退货单仓库暂时没有记录 后面增加
+		// // 仓库
+		// if (null != returnNote) {
+		// List<TdDeliveryInfo> deliveryList = tdDeliveryInfoService
+		// .findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+		// if (null != deliveryList && deliveryList.size() > 0) {
+		// List<TdWareHouse> wareHouseList = TdWareHouseService
+		// .findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
+		// if (null != wareHouseList && wareHouseList.size() > 0) {
+		// map.addAttribute("tdWareHouse", wareHouseList.get(0));
+		// }
+		// }
+		// }
 
 		map.addAttribute("returnId", id);
 		return "/client/user_return_detail";
 	}
-	
+
 	/**
 	 * 模糊查询指定退货单的方法（异步刷新）
 	 * 
@@ -2314,7 +2396,8 @@ public class TdUserController {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		if (null != user) {
-			List<TdReturnNote> returnList= tdReturnNoteService.findByReturnNumberContainingOrorderNumberContaining(keywords,"用户取消订单，退货",username);
+			List<TdReturnNote> returnList = tdReturnNoteService
+					.findByReturnNumberContainingOrorderNumberContaining(keywords, "用户取消订单，退货", username);
 			map.addAttribute("all_return_list", returnList);
 		}
 		return "/client/user_all_return";

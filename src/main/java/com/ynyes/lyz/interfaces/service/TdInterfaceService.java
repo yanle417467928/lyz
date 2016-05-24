@@ -21,11 +21,16 @@ import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdReturnNote;
+import com.ynyes.lyz.interfaces.entity.TdCashReciptInf;
+import com.ynyes.lyz.interfaces.entity.TdCashRefundInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderCouponInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderGoodsInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderInf;
 import com.ynyes.lyz.interfaces.entity.TdOrderReceiveInf;
+import com.ynyes.lyz.interfaces.entity.TdReturnCouponInf;
+import com.ynyes.lyz.interfaces.entity.TdReturnGoodsInf;
 import com.ynyes.lyz.interfaces.entity.TdReturnOrderInf;
+import com.ynyes.lyz.interfaces.entity.TdReturnTimeInf;
 import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
 import com.ynyes.lyz.interfaces.utils.InterfaceConfigure;
 import com.ynyes.lyz.interfaces.utils.StringTools;
@@ -65,6 +70,11 @@ public class TdInterfaceService {
 	
 	static Call call;
 	
+	/**
+	 * 访问WebService的服务端
+	 * 
+	 * @return Call
+	 */
 	public static Call getCall()
 	{
 		if (call != null) 
@@ -124,7 +134,10 @@ public class TdInterfaceService {
 	}
 
 	
-	
+	/**
+	 * 根据订单生成销售订单相关数据
+	 * @param tdOrder
+	 */
 	public void initOrderInf(TdOrder tdOrder)
 	{
 		if (tdOrder == null)
@@ -258,6 +271,10 @@ public class TdInterfaceService {
 		}
 	}
 	
+	/**
+	 * 根据退货单生成相应的销退单
+	 * @param returnNote
+	 */
 	public void initReturnOrder(TdReturnNote returnNote)
 	{
 		if(returnNote==null){
@@ -352,7 +369,7 @@ public class TdInterfaceService {
 	{
 		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
 		List<String> stringList = new ArrayList<String>();
-		switch (type) 
+		switch (type)
 		{
 		case ORDERINF :
 		{
@@ -491,6 +508,124 @@ public class TdInterfaceService {
 					+ "<ORDER_NUMBER>" + object.getOrderNumber() + "</ORDER_NUMBER>"
 					+ "<RECEIVE_DATE>" + object.getReceiveDate() + "</RECEIVE_DATE>"
 					+ "<DELIVER_TYPE_TITLE>" + object.getDeliverTypeTitle() + "</DELIVER_TYPE_TITLE>"
+					+ "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
+					+ "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
+					+ "<ATTRIBUTE3>" + object.getAttribute3() + "</ATTRIBUTE3>"
+					+ "<ATTRIBUTE4>" + object.getAttribute4() + "</ATTRIBUTE4>"
+					+ "<ATTRIBUTE5>" + object.getAttribute5() + "</ATTRIBUTE5></TABLE>";
+			break;
+		}
+		case RETURNORDERINF:
+		{
+			TdReturnOrderInf object = (TdReturnOrderInf)entity;
+			xml =   "<TABLE><SOB_ID>" + object.getSobId() + "</SOB_ID>"
+					 + "<RT_HEADER_ID>" + object.getRtHeaderId() + "</RT_HEADER_ID>"
+					 + "<RETURN_NUMBER>" + object.getReturnNumber() + "</RETURN_NUMBER>"
+					 + "<RETURN_DATE>" + object.getReturnDate() + "</RETURN_DATE>"
+					 + "<RT_FULL_FLAG>" + object.getRtFullFlag() + "</RT_FULL_FLAG>"
+					 + "<ORDER_HEADER_ID>" + object.getOrderHeaderId() + "</ORDER_HEADER_ID>"
+					 + "<ORDER_NUMBER>" + object.getOrderNumber() + "</ORDER_NUMBER>"
+					 + "<PRODECT_TYPE>" + object.getProdectType() + "</PRODECT_TYPE>"
+					 + "<DIY_SITE_CODE>" + object.getDiySiteCode() + "</DIY_SITE_CODE>"
+					 + "<REFUND_TYPE>" + object.getRefundType() + "</REFUND_TYPE>"
+					 + "<AUDIT_DATE>" + object.getAuditDate() + "</AUDIT_DATE>"
+					 + "<REFUND_AMOUNT>" + object.getRefundAmount() + "</REFUND_AMOUNT>"
+					 + "<PREPAY_AMT>" + object.getPrepayAmt() + "</PREPAY_AMT>"
+					 + "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
+					 + "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
+					 + "<ATTRIBUTE3>" + object.getAttribute3() + "</ATTRIBUTE3>"
+					 + "<ATTRIBUTE4>" + object.getAttribute4() + "</ATTRIBUTE4>"
+					 + "<ATTRIBUTE5>" + object.getAttribute5() + "</ATTRIBUTE5></TABLE>";
+			break;
+		}
+		case RETURNGOODSINF:
+		{
+			TdReturnGoodsInf object = (TdReturnGoodsInf)entity;
+			xml =   "<TABLE><RT_HEADER_ID>" + object.getRtHeaderId() + "</RT_HEADER_ID>"
+					 + "<RT_LINE_ID>" + object.getRtLineId() + "</RT_LINE_ID>"
+					 + "<SKU>" + object.getSku() + "</SKU>"
+					 + "<QUANTITY>" + object.getQuantity() + "</QUANTITY>"
+					 + "<JX_PRICE>" + object.getJxPrice() + "</JX_PRICE>"
+					 + "<LS_PRICE>" + object.getLsPrice() + "</LS_PRICE>"
+					 + "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
+					 + "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
+					 + "<ATTRIBUTE3>" + object.getAttribute3() + "</ATTRIBUTE3>"
+					 + "<ATTRIBUTE4>" + object.getAttribute4() + "</ATTRIBUTE4>"
+					 + "<ATTRIBUTE5>" + object.getAttribute5() + "</ATTRIBUTE5></TABLE>";
+			break;
+		}
+		case RETURNCOUPONINF:
+		{
+			TdReturnCouponInf object = (TdReturnCouponInf)entity;
+			xml =   "<TABLE><RT_HEADER_ID>" + object.getRtHeaderId() + "</RT_HEADER_ID>"
+					 + "<LINE_ID>" + object.getLineId() + "</LINE_ID>"
+					 + "<COUPON_TYPE_ID>" + object.getCouponTypeId() + "</COUPON_TYPE_ID>"
+					 + "<SKU>" + object.getSku() + "</SKU>"
+					 + "<QUANTITY>" + object.getQuantity() + "</QUANTITY>"
+					 + "<PRICE>" + object.getPrice() + "</PRICE>"
+					 + "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
+					 + "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
+					 + "<ATTRIBUTE3>" + object.getAttribute3() + "</ATTRIBUTE3>"
+					 + "<ATTRIBUTE4>" + object.getAttribute4() + "</ATTRIBUTE4>"
+					 + "<ATTRIBUTE5>" + object.getAttribute5() + "</ATTRIBUTE5></TABLE>";
+			break;
+		}
+		case RETURNTIMEINF:
+		{
+			TdReturnTimeInf object = (TdReturnTimeInf)entity;
+			xml =   "<TABLE><SOB_ID>" + object.getSobId() + "</SOB_ID>"
+					+ "<RT_HEADER_ID>" + object.getRtHeaderId() + "</RT_HEADER_ID>"
+					+ "<RETURN_NUMBER>" + object.getReturnNumber() + "</RETURN_NUMBER>"
+					+ "<RETURN_DATE>" + object.getReturnDate() + "</RETURN_DATE>"
+					+ "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
+					+ "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
+					+ "<ATTRIBUTE3>" + object.getAttribute3() + "</ATTRIBUTE3>"
+					+ "<ATTRIBUTE4>" + object.getAttribute4() + "</ATTRIBUTE4>"
+					+ "<ATTRIBUTE5>" + object.getAttribute5() + "</ATTRIBUTE5></TABLE>";
+			break;
+		}
+		case CASHRECIPTINF:
+		{
+			TdCashReciptInf object = (TdCashReciptInf)entity;
+			xml =   "<TABLE><SOB_ID>" + object.getSobId() + "</SOB_ID>"
+					+ "<RECEIPT_ID>" + object.getReceiptId() + "</RECEIPT_ID>"
+					+ "<RECEIPT_NUMBER>" + object.getReceiptNumber() + "</RECEIPT_NUMBER>"
+					+ "<USERID>" + object.getUserid() + "</USERID>"
+					+ "<USERNAME>" + object.getUsername() + "</USERNAME>"
+					+ "<USERPHONE>" + object.getUserphone() + "</USERPHONE>"
+					+ "<DIY_SITE_CODE>" + object.getDiySiteCode() + "</DIY_SITE_CODE>"
+					+ "<RECEIPT_CLASS>" + object.getReceiptClass() + "</RECEIPT_CLASS>"
+					+ "<ORDER_HEADER_ID>" + object.getOrderHeaderId() + "</ORDER_HEADER_ID>"
+					+ "<ORDER_NUMBER>" + object.getOrderNumber() + "</ORDER_NUMBER>"
+					+ "<PRODUCT_TYPE>" + object.getProductType() + "</PRODUCT_TYPE>"
+					+ "<RECEIPT_TYPE>" + object.getReceiptType() + "</RECEIPT_TYPE>"
+					+ "<RECEIPT_DATE>" + object.getReceiptDate() + "</RECEIPT_DATE>"
+					+ "<AMOUNT>" + object.getAmount() + "</AMOUNT>"
+					+ "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
+					+ "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
+					+ "<ATTRIBUTE3>" + object.getAttribute3() + "</ATTRIBUTE3>"
+					+ "<ATTRIBUTE4>" + object.getAttribute4() + "</ATTRIBUTE4>"
+					+ "<ATTRIBUTE5>" + object.getAttribute5() + "</ATTRIBUTE5></TABLE>";
+			break;
+		}
+		case CASHREFUNDINF:
+		{
+			TdCashRefundInf object = (TdCashRefundInf)entity;
+			xml =   "<TABLE><SOB_ID>" + object.getSobId() + "</SOB_ID>"
+					+ "<REFUND_ID>" + object.getRefundId() + "</REFUND_ID>"
+					+ "<REFUND_NUMBER>" + object.getRefundNumber() + "</REFUND_NUMBER>"
+					+ "<USERID>" + object.getUserid() + "</USERID>"
+					+ "<USERNAME>" + object.getUsername() + "</USERNAME>"
+					+ "<USERPHONE>" + object.getUserphone() + "</USERPHONE>"
+					+ "<DIY_SITE_CODE>" + object.getDiySiteCode() + "</DIY_SITE_CODE>"
+					+ "<REFUND_CLASS>" + object.getRefundClass() + "</REFUND_CLASS>"
+					+ "<RT_HEADER_ID>" + object.getRtHeaderId() + "</RT_HEADER_ID>"
+					+ "<RETURN_NUMBER>" + object.getReturnNumber() + "</RETURN_NUMBER>"
+					+ "<PRODUCT_TYPE>" + object.getProductType() + "</PRODUCT_TYPE>"
+					+ "<REFUND_TYPE>" + object.getRefundType() + "</REFUND_TYPE>"
+					+ "<REFUND_DATE>" + object.getRefundDate() + "</REFUND_DATE>"
+					+ "<AMOUNT>" + object.getAmount() + "</AMOUNT>"
+					+ "<DESCRIPTION>" + object.getDescription() + "</DESCRIPTION>"
 					+ "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
 					+ "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
 					+ "<ATTRIBUTE3>" + object.getAttribute3() + "</ATTRIBUTE3>"

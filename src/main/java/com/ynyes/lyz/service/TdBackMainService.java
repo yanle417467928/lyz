@@ -100,14 +100,14 @@ public class TdBackMainService {
     }
    
    
-    private TdBackMain findByWhNo(String whNo)
-    {
-    	if (whNo == null) 
-    	{
-			return null;
-		}
-    	return repository.findByWhNo(whNo);
-    }
+//    private TdBackMain findByWhNo(String whNo)
+//    {
+//    	if (whNo == null) 
+//    	{
+//			return null;
+//		}
+//    	return repository.findByWhNo(whNo);
+//    }
     
     public TdBackMain findByRecNo(String c_rec_no)
     {
