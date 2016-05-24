@@ -90,10 +90,11 @@ public class TdReturnOrderInfService {
     {
         return (List<TdReturnOrderInf>) repository.findAll();
     }
-//    public TdReturnOrderInf findByOrderNumber(String orderNumber)
-//    {
-//    	return repository.findByOrderNumber(orderNumber);
-//    }
+    
+    public TdReturnOrderInf findByReturnNumber(String returnNumber)
+    {
+    	return repository.findByreturnNumber(returnNumber);
+    }
     
     /**
      * 保存
