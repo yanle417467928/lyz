@@ -141,4 +141,20 @@ public class StringTools {
 			return "N";
 		}
 	}
+	/**
+	 * 根据订单号返回类型
+	 * @param orderNumber
+	 * @return
+	 */
+	public static String getProdectTypeByOrderNumber(String orderNumber){
+		if(orderNumber==null){
+			return "";
+		}
+		String type= orderNumber.substring(0, 2);
+		if(type.equalsIgnoreCase("LY")){
+			type="LYZ";
+		}
+		return type;
+		
+	}
 }

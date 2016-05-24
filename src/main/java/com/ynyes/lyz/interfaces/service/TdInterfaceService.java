@@ -31,6 +31,7 @@ import com.ynyes.lyz.interfaces.utils.InterfaceConfigure;
 import com.ynyes.lyz.interfaces.utils.StringTools;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDiySiteService;
+import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 
 
@@ -58,6 +59,9 @@ public class TdInterfaceService {
 	
 	@Autowired
 	private TdReturnOrderInfService tdReturnOrderInfService;
+	
+	@Autowired
+	private TdOrderService tdOrderService;
 	
 	static Call call;
 	
@@ -256,24 +260,59 @@ public class TdInterfaceService {
 	
 	public void initReturnOrder(TdReturnNote returnNote)
 	{
+		if(returnNote==null){
+			return;
+		}
+		
 		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
 		if (returnOrderInf != null)
 		{
 			return ;
 		}
+		
+		
+		
 		returnOrderInf = new TdReturnOrderInf();
-//		returnOrderInf.setSobId(returnNote);
+		TdDiySite diySite= tdDiySiteService.findOne(returnNote.getDiySiteId());
+		if(diySite!=null){
+			returnOrderInf.setSobId(diySite.getRegionId());
+		}
 //		returnOrderInf.setRtHeaderId(returnNote);
-//		returnOrderInf.setReturnNumber(returnNote);
-//		returnOrderInf.setReturnDate(returnNote);
-//		returnOrderInf.setRtFullFlag(returnNote);
-//		returnOrderInf.setOrderHeaderId(returnNote);
-//		returnOrderInf.setOrderNumber(returnNote);
-//		returnOrderInf.setProdectType(returnNote);
-//		returnOrderInf.setDiySiteCode(returnNote);
+		
+		returnOrderInf.setReturnNumber(returnNote.getReturnNumber());
+		returnOrderInf.setReturnDate(returnNote.getOrderTime());
+		TdOrder order= tdOrderService.findByOrderNumber(returnNote.getOrderNumber());
+		if(order!=null){
+			//是否整单退
+			Boolean isFull=true;
+			for (TdOrderGoods orderGood : order.getOrderGoodsList()) {
+				//是否退货
+				Boolean isReturn=false;
+				for(TdOrderGoods returnGood : returnNote.getReturnGoodsList()){
+					if(orderGood.getSku().equals(returnGood.getSku()) && orderGood.getQuantity().equals(returnGood.getQuantity())){
+						isReturn=true;
+					}
+				}
+				if(!isReturn){
+					isFull=false;
+					break;
+				}
+			}
+			if(isFull){
+				returnOrderInf.setRtFullFlag("Y");
+			}else{
+				returnOrderInf.setRtFullFlag("N");
+			}
+			returnOrderInf.setOrderHeaderId(order.getId());
+		}
+		
+		
+		returnOrderInf.setOrderNumber(returnNote.getOrderNumber());
+		returnOrderInf.setProdectType(StringTools.getProdectTypeByOrderNumber(returnNote.getOrderNumber()));
+		returnOrderInf.setDiySiteCode(returnNote.getDiyCode());
 //		returnOrderInf.setRefundType(returnNote);
-//		returnOrderInf.setAuditDate(returnNote);
-//		returnOrderInf.setRefundAmount(returnNote);
+		returnOrderInf.setAuditDate(returnNote.getCheckTime());
+		returnOrderInf.setRefundAmount(returnNote.getTurnPrice());
 //		returnOrderInf.setPrepayAmt(returnNote);
 		
 		
