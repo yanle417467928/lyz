@@ -2037,25 +2037,28 @@ public class TdCommonService {
 	 *
 	 */
 	// TODO 多线程
-	class SendRequisitionToWmsThread extends Thread {
+	class SendRequisitionToWmsThread extends Thread 
+	{
 		List<TdOrder> orderList;
 		String mainOrderNumber;
 
 		// 构造函数
-		SendRequisitionToWmsThread(List<TdOrder> orderList, String mainOrderNumber) {
+		SendRequisitionToWmsThread(List<TdOrder> orderList, String mainOrderNumber) 
+		{
 			this.orderList = orderList;
 			this.mainOrderNumber = mainOrderNumber;
 		}
 
-		public void run() {
+		public void run() 
+		{
 			sendMsgToWMS(orderList, mainOrderNumber);
-			sendToEBS(orderList);
-
+			sendOrderToEBS(orderList);
 		}
 	}
 
 	// 传EBS
-	private void sendToEBS(List<TdOrder> orderList) {
+	private void sendOrderToEBS(List<TdOrder> orderList) 
+	{
 		for (TdOrder tdOrder : orderList) {
 			if (tdOrder != null && tdOrder.getOrderNumber() != null && tdOrder.getOrderNumber().contains("HR")) {
 				continue;

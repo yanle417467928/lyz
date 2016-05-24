@@ -10,12 +10,12 @@ import javax.persistence.Id;
 public class TdReturnGoodsInf extends TdInfBaseEntity
 {
 	//订单头ID
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column
 	private Long rtHeaderId;
 	
 	//订单行ID
-	@Column
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long rtLineId;
 	
 	//商品的SKU（EBS传给APP的产品编号）
