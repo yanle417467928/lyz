@@ -217,8 +217,6 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					diyList.removeAll(diyRemoveList);
 				}
 				
-				
-				
 				//搜索条件城市 数据库里面没有城市 转换为门code查询
 				List<Long> cityDiyCodes=new ArrayList<Long>();
 				TdCity tdCity= tdCityService.findByCityName(city);
