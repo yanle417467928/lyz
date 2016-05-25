@@ -1248,46 +1248,6 @@ public class TdCommonService {
 			presentedList = new ArrayList<>();
 		}
 
-		// 为了避免脏数据刷新，创建一个map用于存储已选【id：数量】
-		Map<Long, Long> selected_map = new HashMap<>();
-
-		for (TdCartGoods cartGoods : all_selected) {
-			Long id = cartGoods.getGoodsId();
-			Long quantity = cartGoods.getQuantity();
-
-			selected_map.put(id, quantity);
-		}
-
-		String buyCouponId = order.getBuyCouponId();
-		if (null != buyCouponId && !"".equals(buyCouponId)) {
-			presentedList = new ArrayList<>();
-
-			List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
-			if (null != orderGoodsList && orderGoodsList.size() > 0) {
-				for (TdOrderGoods orderGoods : orderGoodsList) {
-					Long id = orderGoods.getGoodsId();
-					Long quantity = orderGoods.getQuantity();
-					selected_map.put(id, quantity);
-				}
-			}
-
-			String[] ids = buyCouponId.split(",");
-			if (null != ids && ids.length > 0) {
-				for (String sid : ids) {
-					if (null != sid && !"".equals(sid)) {
-						Long id = Long.parseLong(sid);
-						TdCoupon coupon = tdCouponService.findOne(id);
-						if (null != coupon) {
-							Long goodsId = coupon.getGoodsId();
-							if (null != goodsId) {
-								selected_map.put(goodsId, selected_map.get(goodsId) - 1);
-							}
-						}
-					}
-				}
-			}
-		}
-
 		Long giftType = 0L;
 
 		if (null != order.getIsCoupon() && order.getIsCoupon()) {
@@ -1316,176 +1276,83 @@ public class TdCommonService {
 			Long realBuy = 0L;
 			// 创建一个变量用于表示浮动量
 			Long floatCount = 0L;
+
+			// 创建一个变量用于表示最低购买金额
+			Double totalPrice = activity.getTotalPrice();
+
+			// 创建一个变量用于表示立减金额
+			Double subPrice = activity.getSubPrice();
+
 			// 创建一个存储顺序的集合
 			List<Long> sortList = new ArrayList<>();
 			// --------------------------------------------------------------------------------------------
 
-			// 获取该活动所需要的商品及其数量的列表
-			Map<Long, Long> cost = new HashMap<>();
-			String goodsAndNumber = activity.getGoodsNumber();
-			if (null != goodsAndNumber) {
-				// 拆分列表，使其成为【商品id_数量】的个体
-				String[] item = goodsAndNumber.split(",");
-				if (null != item) {
-					for (String each_item : item) {
-						if (null != each_item) {
-							// 拆分个体以获取id和数量的属性
-							String[] param = each_item.split("_");
-							// 当个体不为空且长度为2的时候才是正确的数据
-							if (null != param && param.length == 2) {
-								Long id = Long.parseLong(param[0]);
-								Long quantity = Long.parseLong(param[1]);
-								cost.put(id, quantity);
-								Long buyQuantity = selected_map.get(id);
-								if (null == buyQuantity) {
-									buyQuantity = 0L;
-								}
-								if (buyQuantity < quantity) {
-									isJoin = false;
-								}
-								realBuy += buyQuantity;
-								sortList.add(id);
-							}
-						}
+			Boolean isCombo = activity.getIsCombo();
+			Boolean isEnoughMoney = activity.getIsEnoughMoney();
+
+			// 为了避免脏数据刷新，创建一个map用于存储已选【id：数量】
+			Map<Long, Long> selected_map = new HashMap<>();
+
+			for (TdCartGoods cartGoods : all_selected) {
+				Long id = cartGoods.getGoodsId();
+				Long quantity = cartGoods.getQuantity();
+
+				selected_map.put(id, quantity);
+			}
+
+			String buyCouponId = order.getBuyCouponId();
+			if (null != buyCouponId && !"".equals(buyCouponId)) {
+				presentedList = new ArrayList<>();
+
+				List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+				if (null != orderGoodsList && orderGoodsList.size() > 0) {
+					for (TdOrderGoods orderGoods : orderGoodsList) {
+						Long id = orderGoods.getGoodsId();
+						Long quantity = orderGoods.getQuantity();
+						selected_map.put(id, quantity);
 					}
+				}
 
-					// 如果实际购买量小于最低购买量，则也不能参加活动
-					if (realBuy < totalNumber) {
-						isJoin = false;
-					}
-
-					if (isJoin) {
-
-						// -------------------------------2016-05-20
-						// 09:45:15------------------------------------------
-						// 判断活动是否具有浮动商品
-						Long LimitNumber = 0L;
-						for (Long quantity : cost.values()) {
-							if (null != quantity) {
-								LimitNumber += quantity;
-							}
-						}
-						if (LimitNumber < totalNumber) {
-							isFloat = true;
-							floatCount = totalNumber - LimitNumber;
-						}
-						// --------------------------------------------------------------------------------------------
-
-						// 判断参与促销的倍数（表示同一个活动可以参加几次）
-						List<Long> mutipuls = new ArrayList<>();
-
-						// 获取倍数关系
-						for (Long goodsId : cost.keySet()) {
-							Long quantity = cost.get(goodsId);
-							Long goods_quantity = selected_map.get(goodsId);
-							if (null == quantity || 0L == quantity.longValue()) {
-								mutipuls.add(1L);
-							} else {
-								Long mutiplu = goods_quantity / quantity;
-								mutipuls.add(mutiplu);
-							}
-						}
-
-						if (isFloat) {
-							Long totalNumberMutiplu = 1L;
-							if (0L != totalNumber.longValue()) {
-								totalNumberMutiplu = realBuy / totalNumber;
-							}
-							mutipuls.add(totalNumberMutiplu);
-						}
-
-						// 集合中最小的数字即为倍数
-						Long min = Collections.min(mutipuls);
-
-						// 改变剩下的商品的数量
-						for (Long goodsId : cost.keySet()) {
-							Long quantity = cost.get(goodsId);
-							Long leftNum = selected_map.get(goodsId) - (quantity * min);
-							selected_map.put(goodsId, leftNum);
-						}
-
-						if (isFloat) {
-							floatCount = floatCount * min;
-							for (Long id : sortList) {
-								// 获取指定商品剩余的数量
-								Long leftNumber = selected_map.get(id);
-								if (leftNumber < floatCount) {
-									selected_map.put(id, 0L);
-									floatCount -= leftNumber;
-								} else {
-									selected_map.put(id, leftNumber - floatCount);
-									floatCount = 0L;
-								}
-
-								if (0L == floatCount.longValue()) {
-									break;
-								}
-							}
-						}
-
-						// 获取赠品队列
-						String giftNumber = activity.getGiftNumber();
-						if (null != giftNumber) {
-							String[] group = giftNumber.split(",");
-							if (null != group) {
-								for (String each_item : group) {
-									if (null != each_item) {
-										// 拆分个体以获取id和数量的属性
-										String[] param = each_item.split("_");
-										// 当个体不为空且长度为2的时候才是正确的数据
-										if (null != param && param.length == 2) {
-											Long id = Long.parseLong(param[0]);
-											Long quantity = Long.parseLong(param[1]);
-											// 查找到指定id的商品
-											TdGoods goods = tdGoodsService.findOne(id);
-											// 查找指定商品的价格
-											TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
-											TdOrderGoods orderGoods = new TdOrderGoods();
-											orderGoods.setBrandId(goods.getBrandId());
-											orderGoods.setBrandTitle(goods.getBrandTitle());
-											orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
-											orderGoods.setGoodsId(goods.getId());
-											orderGoods.setGoodsTitle(goods.getTitle());
-											orderGoods.setGoodsSubTitle(goods.getSubTitle());
-											orderGoods.setPrice(0.0);
-											if (null == priceListItem) {
-												orderGoods.setGiftPrice(0.00);
-											} else {
-												orderGoods.setGiftPrice(priceListItem.getPrice());
-											}
-											orderGoods.setQuantity(quantity * min);
-											orderGoods.setSku(goods.getCode());
-											// 记录活动id
-											orderGoods
-													.setActivityId(activity.getId().toString() + "_" + quantity * min);
-											// 修改订单商品归属活动
-											tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(),
-													min, 1L);
-											// 创建一个布尔变量用于表示赠品是否已经在队列中
-											Boolean isHave = false;
-											for (TdOrderGoods single : presentedList) {
-												if (null != single && null != single.getGoodsId()
-														&& single.getGoodsId() == orderGoods.getGoodsId()) {
-													isHave = true;
-													single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
-													// 记录活动id
-													single.setActivityId(single.getActivityId() + ","
-															+ activity.getId().toString() + "_" + min);
-												}
-											}
-
-											if (!isHave) {
-												presentedList.add(orderGoods);
-											}
-											tdOrderGoodsService.save(orderGoods);
-										}
-									}
+				String[] ids = buyCouponId.split(",");
+				if (null != ids && ids.length > 0) {
+					for (String sid : ids) {
+						if (null != sid && !"".equals(sid)) {
+							Long id = Long.parseLong(sid);
+							TdCoupon coupon = tdCouponService.findOne(id);
+							if (null != coupon) {
+								Long goodsId = coupon.getGoodsId();
+								if (null != goodsId) {
+									selected_map.put(goodsId, selected_map.get(goodsId) - 1);
 								}
 							}
 						}
 					}
 				}
 			}
+
+			// 满数量促销的方法
+			if (null == isEnoughMoney || !isEnoughMoney) {
+				// 满数量组合促销的方法
+				if (null == isCombo || isCombo) {
+					order = this.comboEnoughNumber(req, activity, selected_map, isJoin, realBuy, sortList, totalNumber,
+							isFloat, floatCount, presentedList, order, subPrice);
+					// 满数量阶梯促销的方法
+				} else {
+
+				}
+				// 满金额促销的方法
+			} else {
+				// 满金额组合促销的方法
+				if (null == isCombo || isCombo) {
+					order = this.comboEnoughPrice(req, activity, selected_map, isJoin, sortList, totalPrice, subPrice,
+							presentedList, order);
+
+					// 满金额阶梯促销的方法
+				} else {
+
+				}
+			}
+
 		}
 		order.setPresentedList(presentedList);
 		order = tdOrderService.save(order);
@@ -2037,28 +1904,24 @@ public class TdCommonService {
 	 *
 	 */
 	// TODO 多线程
-	class SendRequisitionToWmsThread extends Thread 
-	{
+	class SendRequisitionToWmsThread extends Thread {
 		List<TdOrder> orderList;
 		String mainOrderNumber;
 
 		// 构造函数
-		SendRequisitionToWmsThread(List<TdOrder> orderList, String mainOrderNumber) 
-		{
+		SendRequisitionToWmsThread(List<TdOrder> orderList, String mainOrderNumber) {
 			this.orderList = orderList;
 			this.mainOrderNumber = mainOrderNumber;
 		}
 
-		public void run() 
-		{
+		public void run() {
 			sendMsgToWMS(orderList, mainOrderNumber);
 			sendOrderToEBS(orderList);
 		}
 	}
 
 	// 传EBS
-	private void sendOrderToEBS(List<TdOrder> orderList) 
-	{
+	private void sendOrderToEBS(List<TdOrder> orderList) {
 		for (TdOrder tdOrder : orderList) {
 			if (tdOrder != null && tdOrder.getOrderNumber() != null && tdOrder.getOrderNumber().contains("HR")) {
 				continue;
@@ -2955,5 +2818,348 @@ public class TdCommonService {
 				}
 			}
 		}
+	}
+
+	// 促销方案满数量赠送的方法
+	public TdOrder comboEnoughNumber(HttpServletRequest req, TdActivity activity, Map<Long, Long> selected_map,
+			Boolean isJoin, Long realBuy, List<Long> sortList, Long totalNumber, Boolean isFloat, Long floatCount,
+			List<TdOrderGoods> presentedList, TdOrder order, Double subPrice) {
+		// 获取该活动所需要的商品及其数量的列表
+		Map<Long, Long> cost = new HashMap<>();
+		String goodsAndNumber = activity.getGoodsNumber();
+		if (null != goodsAndNumber) {
+			// 拆分列表，使其成为【商品id_数量】的个体
+			String[] item = goodsAndNumber.split(",");
+			if (null != item) {
+				for (String each_item : item) {
+					if (null != each_item) {
+						// 拆分个体以获取id和数量的属性
+						String[] param = each_item.split("_");
+						// 当个体不为空且长度为2的时候才是正确的数据
+						if (null != param && param.length == 2) {
+							Long id = Long.parseLong(param[0]);
+							Long quantity = Long.parseLong(param[1]);
+							cost.put(id, quantity);
+							Long buyQuantity = selected_map.get(id);
+							if (null == buyQuantity) {
+								buyQuantity = 0L;
+							}
+							if (buyQuantity < quantity) {
+								isJoin = false;
+							}
+							realBuy += buyQuantity;
+							sortList.add(id);
+						}
+					}
+				}
+
+				// 如果实际购买量小于最低购买量，则也不能参加活动
+				if (realBuy < totalNumber) {
+					isJoin = false;
+				}
+
+				if (isJoin) {
+
+					// -------------------------------2016-05-20
+					// 09:45:15------------------------------------------
+					// 判断活动是否具有浮动商品
+					Long LimitNumber = 0L;
+					for (Long quantity : cost.values()) {
+						if (null != quantity) {
+							LimitNumber += quantity;
+						}
+					}
+					if (LimitNumber < totalNumber) {
+						isFloat = true;
+						floatCount = totalNumber - LimitNumber;
+					}
+					// --------------------------------------------------------------------------------------------
+
+					// 判断参与促销的倍数（表示同一个活动可以参加几次）
+					List<Long> mutipuls = new ArrayList<>();
+
+					// 获取倍数关系
+					for (Long goodsId : cost.keySet()) {
+						Long quantity = cost.get(goodsId);
+						Long goods_quantity = selected_map.get(goodsId);
+						if (null == quantity || 0L == quantity.longValue()) {
+							mutipuls.add(1L);
+						} else {
+							Long mutiplu = goods_quantity / quantity;
+							mutipuls.add(mutiplu);
+						}
+					}
+
+					if (isFloat) {
+						Long totalNumberMutiplu = 1L;
+						if (0L != totalNumber.longValue()) {
+							totalNumberMutiplu = realBuy / totalNumber;
+						}
+						mutipuls.add(totalNumberMutiplu);
+					}
+
+					// 集合中最小的数字即为倍数
+					Long min = Collections.min(mutipuls);
+
+					// 改变剩下的商品的数量
+					for (Long goodsId : cost.keySet()) {
+						Long quantity = cost.get(goodsId);
+						Long leftNum = selected_map.get(goodsId) - (quantity * min);
+						selected_map.put(goodsId, leftNum);
+					}
+
+					if (isFloat) {
+						floatCount = floatCount * min;
+						for (Long id : sortList) {
+							// 获取指定商品剩余的数量
+							Long leftNumber = selected_map.get(id);
+							if (leftNumber < floatCount) {
+								selected_map.put(id, 0L);
+								floatCount -= leftNumber;
+							} else {
+								selected_map.put(id, leftNumber - floatCount);
+								floatCount = 0L;
+							}
+
+							if (0L == floatCount.longValue()) {
+								break;
+							}
+						}
+					}
+
+					// 获取赠品队列
+					String giftNumber = activity.getGiftNumber();
+					if (null != giftNumber) {
+						String[] group = giftNumber.split(",");
+						if (null != group) {
+							for (String each_item : group) {
+								if (null != each_item) {
+									// 拆分个体以获取id和数量的属性
+									String[] param = each_item.split("_");
+									// 当个体不为空且长度为2的时候才是正确的数据
+									if (null != param && param.length == 2) {
+										Long id = Long.parseLong(param[0]);
+										Long quantity = Long.parseLong(param[1]);
+										// 查找到指定id的商品
+										TdGoods goods = tdGoodsService.findOne(id);
+										// 查找指定商品的价格
+										TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
+										TdOrderGoods orderGoods = new TdOrderGoods();
+										orderGoods.setBrandId(goods.getBrandId());
+										orderGoods.setBrandTitle(goods.getBrandTitle());
+										orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
+										orderGoods.setGoodsId(goods.getId());
+										orderGoods.setGoodsTitle(goods.getTitle());
+										orderGoods.setGoodsSubTitle(goods.getSubTitle());
+										orderGoods.setPrice(0.0);
+										if (null == priceListItem) {
+											orderGoods.setGiftPrice(0.00);
+										} else {
+											orderGoods.setGiftPrice(priceListItem.getPrice());
+										}
+										orderGoods.setQuantity(quantity * min);
+										orderGoods.setSku(goods.getCode());
+										// 记录活动id
+										orderGoods.setActivityId(activity.getId().toString() + "_" + quantity * min);
+										// 修改订单商品归属活动
+										tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(), min,
+												1L);
+										// 创建一个布尔变量用于表示赠品是否已经在队列中
+										Boolean isHave = false;
+										for (TdOrderGoods single : presentedList) {
+											if (null != single && null != single.getGoodsId()
+													&& single.getGoodsId() == orderGoods.getGoodsId()) {
+												isHave = true;
+												single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
+												// 记录活动id
+												single.setActivityId(single.getActivityId() + ","
+														+ activity.getId().toString() + "_" + min);
+											}
+										}
+
+										if (!isHave) {
+											presentedList.add(orderGoods);
+										}
+										tdOrderGoodsService.save(orderGoods);
+									}
+								}
+							}
+						}
+					}
+					Double activitySubPrice = order.getActivitySubPrice();
+					if (null == activitySubPrice) {
+						activitySubPrice = 0.00;
+					}
+					order.setActivitySubPrice(activitySubPrice + (subPrice * min));
+				}
+			}
+		}
+		return order;
+	}
+
+	// 组合促销满金额赠的方法
+	public TdOrder comboEnoughPrice(HttpServletRequest req, TdActivity activity, Map<Long, Long> selected_map,
+			Boolean isJoin, List<Long> sortList, Double totalPrice, Double subPrice, List<TdOrderGoods> presentedList,
+			TdOrder order) {
+
+		// 创建一个变量用于表示实际参与促销的商品的总价值
+		Double totalCost = 0.00;
+
+		// 生成一个价格集合
+		List<Double> priceList = new ArrayList<>();
+
+		// 获取该活动所需要的商品及其数量的列表
+		Map<Long, Long> cost = new HashMap<>();
+		String goodsAndNumber = activity.getGoodsNumber();
+		if (null != goodsAndNumber) {
+			// 拆分列表，使其成为【商品id_数量】的个体
+			String[] item = goodsAndNumber.split(",");
+			if (null != item) {
+				for (String each_item : item) {
+					if (null != each_item) {
+						// 拆分个体以获取id和数量的属性
+						String[] param = each_item.split("_");
+						// 当个体不为空且长度为2的时候才是正确的数据
+						if (null != param && param.length == 2) {
+							Long id = Long.parseLong(param[0]);
+							Long buyQuantity = selected_map.get(id);
+
+							// 获取指定的商品
+							TdGoods goods = tdGoodsService.findOne(id);
+
+							// 获取该件商品的价格
+							TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
+							Double price = 0.00;
+							if (null != priceListItem && null != priceListItem.getSalePrice()) {
+								price = priceListItem.getSalePrice();
+							}
+
+							totalCost += (price * buyQuantity);
+
+							sortList.add(id);
+							priceList.add(price);
+						}
+					}
+				}
+
+				// 判断是否可以参与促销
+				if (totalCost >= totalPrice) {
+					isJoin = true;
+				}
+
+				if (isJoin) {
+					Long min = 1L;
+					// 开始计算倍数关系
+					if (0 != totalPrice) {
+						min = (long) (totalCost / totalPrice);
+					}
+
+					// 获取实际消耗金额
+					Double realNeed = totalPrice * min;
+
+					// 开始计算消耗
+					for (int i = 0; i < sortList.size(); i++) {
+						if (realNeed > 0) {
+							// 获取商品的id
+							Long goodsId = sortList.get(i);
+							// 获取商品的单价
+							Double price = priceList.get(i);
+
+							// 计算消耗的数量
+							Long needNumber = 0L;
+							if (null != price && 0.00 != price.doubleValue()) {
+								needNumber = (long) (realNeed / price);
+							}
+							// 获取该件商品的实际购买量
+							Long realNumber = selected_map.get(goodsId);
+							if (price * needNumber >= realNeed) {
+								if (realNumber < needNumber) {
+									realNeed -= (realNumber * price);
+									selected_map.put(goodsId, 0L);
+								} else {
+									realNeed -= (needNumber * price);
+									selected_map.put(goodsId, realNumber - needNumber);
+								}
+							} else {
+								needNumber += 1L;
+								if (realNumber < needNumber) {
+									realNeed -= (realNumber * price);
+									selected_map.put(goodsId, 0L);
+								} else {
+									realNeed -= (needNumber * price);
+									selected_map.put(goodsId, realNumber - needNumber);
+								}
+							}
+						}
+					}
+					// 获取赠品队列
+					String giftNumber = activity.getGiftNumber();
+					if (null != giftNumber) {
+						String[] group = giftNumber.split(",");
+						if (null != group) {
+							for (String each_item : group) {
+								if (null != each_item) {
+									// 拆分个体以获取id和数量的属性
+									String[] param = each_item.split("_");
+									// 当个体不为空且长度为2的时候才是正确的数据
+									if (null != param && param.length == 2) {
+										Long id = Long.parseLong(param[0]);
+										Long quantity = Long.parseLong(param[1]);
+										// 查找到指定id的商品
+										TdGoods goods = tdGoodsService.findOne(id);
+										// 查找指定商品的价格
+										TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
+										TdOrderGoods orderGoods = new TdOrderGoods();
+										orderGoods.setBrandId(goods.getBrandId());
+										orderGoods.setBrandTitle(goods.getBrandTitle());
+										orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
+										orderGoods.setGoodsId(goods.getId());
+										orderGoods.setGoodsTitle(goods.getTitle());
+										orderGoods.setGoodsSubTitle(goods.getSubTitle());
+										orderGoods.setPrice(0.0);
+										if (null == priceListItem) {
+											orderGoods.setGiftPrice(0.00);
+										} else {
+											orderGoods.setGiftPrice(priceListItem.getPrice());
+										}
+										orderGoods.setQuantity(quantity * min);
+										orderGoods.setSku(goods.getCode());
+										// 记录活动id
+										orderGoods.setActivityId(activity.getId().toString() + "_" + quantity * min);
+										// 修改订单商品归属活动
+										tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(), min,
+												1L);
+										// 创建一个布尔变量用于表示赠品是否已经在队列中
+										Boolean isHave = false;
+										for (TdOrderGoods single : presentedList) {
+											if (null != single && null != single.getGoodsId()
+													&& single.getGoodsId() == orderGoods.getGoodsId()) {
+												isHave = true;
+												single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
+												// 记录活动id
+												single.setActivityId(single.getActivityId() + ","
+														+ activity.getId().toString() + "_" + min);
+											}
+										}
+
+										if (!isHave) {
+											presentedList.add(orderGoods);
+										}
+										tdOrderGoodsService.save(orderGoods);
+									}
+								}
+							}
+						}
+					}
+					Double activitySubPrice = order.getActivitySubPrice();
+					if (null == activitySubPrice) {
+						activitySubPrice = 0.00;
+					}
+					order.setActivitySubPrice(activitySubPrice + (subPrice * min));
+				}
+			}
+		}
+
+		return order;
 	}
 }

@@ -67,7 +67,7 @@ public class TdActivity {
 	// 城市名称
 	@Column
 	private String cityName;
-	
+
 	// 门店名称
 	private String siteName;
 
@@ -93,7 +93,7 @@ public class TdActivity {
 	// 参加活动商品个数
 	@Column
 	private Integer totalGift;
-	
+
 	@Column
 	private Integer totalDiySite;
 
@@ -111,21 +111,35 @@ public class TdActivity {
 	@OneToMany
 	@JoinColumn(name = "ownerActivityId")
 	private List<TdDiySiteList> siteList;
-	
-	
+
 	// 赠送类型（目前：0. 代表赠送的商品；1. 代表赠送的产品券）
 	@Column
 	private Long giftType;
-	
-	//活动图片
+
+	// 活动图片
 	@Column
-	private String activityImg; 
-	
-	//最低购买量
+	private String activityImg;
+
+	// 最低购买量
 	@Column
 	private Long totalNumber;
 
-	
+	// 满足金额
+	@Column(scale = 2)
+	private Double totalPrice;
+
+	// 是否是组合促销（true代表是组合促销，false代表是阶梯促销）
+	@Column
+	private Boolean isCombo;
+
+	// 是否是满金额(true 代表是满金额条件，false代表不是满金额条件)
+	@Column
+	private Boolean isEnoughMoney;
+
+	// 立减金额
+	@Column(scale = 2)
+	private Double subPrice;
+
 	public String getSiteName() {
 		return siteName;
 	}
@@ -318,16 +332,47 @@ public class TdActivity {
 		this.totalNumber = totalNumber;
 	}
 
+	public Boolean getIsCombo() {
+		return isCombo;
+	}
+
+	public void setIsCombo(Boolean isCombo) {
+		this.isCombo = isCombo;
+	}
+
+	public Double getTotalPrice() {
+		return totalPrice;
+	}
+
+	public void setTotalPrice(Double totalPrice) {
+		this.totalPrice = totalPrice;
+	}
+
+	public Boolean getIsEnoughMoney() {
+		return isEnoughMoney;
+	}
+
+	public void setIsEnoughMoney(Boolean isEnoughMoney) {
+		this.isEnoughMoney = isEnoughMoney;
+	}
+
+	public Double getSubPrice() {
+		return subPrice;
+	}
+
+	public void setSubPrice(Double subPrice) {
+		this.subPrice = subPrice;
+	}
+
 	@Override
 	public String toString() {
 		return "TdActivity [id=" + id + ", name=" + name + ", isCommendIndex=" + isCommendIndex + ", beginDate="
-		        + beginDate + ", finishDate=" + finishDate + ", sortId=" + sortId + ", goodsNumber=" + goodsNumber
-		        + ", giftNumber=" + giftNumber + ", cityId=" + cityId + ", cityName=" + cityName + ", siteName="
-		        + siteName + ", isPresented=" + isPresented + ", diySiteIds=" + diySiteIds + ", goodsNames="
-		        + goodsNames + ", giftNames=" + giftNames + ", totalGoods=" + totalGoods + ", totalGift=" + totalGift
-		        + ", totalDiySite=" + totalDiySite + ", giftList=" + giftList + ", combList=" + combList + ", siteList="
-		        + siteList + ", giftType=" + giftType + ", activityImg=" + activityImg + "]";
+				+ beginDate + ", finishDate=" + finishDate + ", sortId=" + sortId + ", goodsNumber=" + goodsNumber
+				+ ", giftNumber=" + giftNumber + ", cityId=" + cityId + ", cityName=" + cityName + ", siteName="
+				+ siteName + ", isPresented=" + isPresented + ", diySiteIds=" + diySiteIds + ", goodsNames="
+				+ goodsNames + ", giftNames=" + giftNames + ", totalGoods=" + totalGoods + ", totalGift=" + totalGift
+				+ ", totalDiySite=" + totalDiySite + ", giftList=" + giftList + ", combList=" + combList + ", siteList="
+				+ siteList + ", giftType=" + giftType + ", activityImg=" + activityImg + "]";
 	}
-	
 
 }

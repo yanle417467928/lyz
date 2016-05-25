@@ -232,6 +232,13 @@ public class TdPriceCountService {
 
 		order.setTotalPrice(order.getTotalPrice() - order.getActualPay());
 
+		// 计算促销减少的价格
+		Double activitySubPrice = order.getActivitySubPrice();
+		if (null == activitySubPrice) {
+			activitySubPrice = 0.00;
+		}
+		order.setTotalPrice(order.getTotalPrice() - activitySubPrice);
+
 		tdOrderService.save(order);
 
 		results.put("result", order);
