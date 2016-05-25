@@ -22,7 +22,7 @@ public class TdReturnCouponInf extends TdInfBaseEntity
 	
 	//券类型（1.产品券，2.产品现金券，3.通用现金券，4.电子产品券，5.电子现金券）
 	@Column
-	private Long couponTypeId;
+	private Integer couponTypeId;
 	
 	//券对应的产品SKU
 	@Column(length = 50)
@@ -74,11 +74,11 @@ public class TdReturnCouponInf extends TdInfBaseEntity
 		this.lineId = lineId;
 	}
 
-	public Long getCouponTypeId() {
+	public Integer getCouponTypeId() {
 		return couponTypeId;
 	}
 
-	public void setCouponTypeId(Long couponTypeId) {
+	public void setCouponTypeId(Integer couponTypeId) {
 		this.couponTypeId = couponTypeId;
 	}
 

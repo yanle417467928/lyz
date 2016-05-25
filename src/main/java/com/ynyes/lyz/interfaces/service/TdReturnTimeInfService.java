@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ynyes.lyz.interfaces.entity.TdReturnOrderInf;
-import com.ynyes.lyz.interfaces.repository.TdReturnOrderInfRepo;
+import com.ynyes.lyz.interfaces.entity.TdReturnTimeInf;
+import com.ynyes.lyz.interfaces.repository.TdReturnTimeInfRepo;
 
 
 /**
@@ -20,10 +20,10 @@ import com.ynyes.lyz.interfaces.repository.TdReturnOrderInfRepo;
 
 @Service
 @Transactional
-public class TdReturnOrderInfService {
+public class TdReturnTimeInfService {
     
     @Autowired
-    private TdReturnOrderInfRepo repository;
+    private TdReturnTimeInfRepo repository;
     
     /**
      * 删除
@@ -43,7 +43,7 @@ public class TdReturnOrderInfService {
      * 
      * @param e 菜单项
      */
-    public void delete(TdReturnOrderInf e)
+    public void delete(TdReturnTimeInf e)
     {
         if (null != e)
         {
@@ -51,7 +51,7 @@ public class TdReturnOrderInfService {
         }
     }
     
-    public void delete(List<TdReturnOrderInf> entities)
+    public void delete(List<TdReturnTimeInf> entities)
     {
         if (null != entities)
         {
@@ -65,7 +65,7 @@ public class TdReturnOrderInfService {
      * @param id ID
      * @return
      */
-    public TdReturnOrderInf findOne(Long id)
+    public TdReturnTimeInf findOne(Long id)
     {
         if (null == id)
         {
@@ -81,25 +81,19 @@ public class TdReturnOrderInfService {
      * @param ids
      * @return
      */
-    public List<TdReturnOrderInf> findAll(Iterable<Long> ids)
+    public List<TdReturnTimeInf> findAll(Iterable<Long> ids)
     {
-        return (List<TdReturnOrderInf>) repository.findAll(ids);
+        return (List<TdReturnTimeInf>) repository.findAll(ids);
     }
     
-    public List<TdReturnOrderInf> findAll()
+    public List<TdReturnTimeInf> findAll()
     {
-        return (List<TdReturnOrderInf>) repository.findAll();
+        return (List<TdReturnTimeInf>) repository.findAll();
     }
-    
-    public TdReturnOrderInf findByReturnNumber(String returnNumber)
-    {
-    	return repository.findByReturnNumber(returnNumber);
-    }
-    
-    public TdReturnOrderInf findByOrderNumber(String orderNumber)
-    {
-    	return repository.findByOrderNumber(orderNumber);
-    }
+//    public TdReturnOrderInf findByOrderNumber(String orderNumber)
+//    {
+//    	return repository.findByOrderNumber(orderNumber);
+//    }
     
     /**
      * 保存
@@ -107,7 +101,7 @@ public class TdReturnOrderInfService {
      * @param e
      * @return
      */
-    public TdReturnOrderInf save(TdReturnOrderInf e)
+    public TdReturnTimeInf save(TdReturnTimeInf e)
     {
         if (null == e.getInitDate())
         {
@@ -122,9 +116,9 @@ public class TdReturnOrderInfService {
         return repository.save(e);
     }
     
-    public List<TdReturnOrderInf> save(List<TdReturnOrderInf> entities)
+    public List<TdReturnTimeInf> save(List<TdReturnTimeInf> entities)
     {
-        return (List<TdReturnOrderInf>) repository.save(entities);
+        return (List<TdReturnTimeInf>) repository.save(entities);
     }
     
 }

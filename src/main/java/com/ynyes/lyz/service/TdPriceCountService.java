@@ -827,6 +827,10 @@ public class TdPriceCountService {
 												proCoupon.setIsOutDate(false);
 												proCoupon.setMobile(order.getUsername());
 												proCoupon.setSku(goods.getCode());
+												// add MDJ
+												proCoupon.setOrderId(orderId);
+												proCoupon.setOrderNumber(order.getOrderNumber());
+												// add end
 												tdCouponService.save(proCoupon);
 												total -= unit;
 											}
@@ -868,6 +872,10 @@ public class TdPriceCountService {
 										cashCoupon.setIsUsed(false);
 										cashCoupon.setIsOutDate(false);
 										cashCoupon.setMobile(order.getUsername());
+										//add MDJ
+										cashCoupon.setOrderId(orderId);
+										cashCoupon.setOrderNumber(order.getOrderNumber());
+										//add end
 										tdCouponService.save(cashCoupon);
 
 										total -= cashPrice;

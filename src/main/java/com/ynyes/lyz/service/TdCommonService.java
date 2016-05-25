@@ -56,6 +56,7 @@ import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
+import com.ynyes.lyz.interfaces.utils.StringTools;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
 
@@ -2052,7 +2053,7 @@ public class TdCommonService {
 		public void run() 
 		{
 			sendMsgToWMS(orderList, mainOrderNumber);
-			sendOrderToEBS(orderList);
+//			sendOrderToEBS(orderList);
 		}
 	}
 
@@ -2065,18 +2066,23 @@ public class TdCommonService {
 			}
 			tdInterfaceService.initOrderInf(tdOrder);
 
+			Boolean isOrderInfSucceed = false;
 			// 单头
 			String orderInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERINF);
 			Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
 			try {
-				Object object = TdInterfaceService.getCall().invoke(orderInf);
+				String object = (String)TdInterfaceService.getCall().invoke(orderInf);
 				System.out.println(object);
+				if (StringTools.interfaceMessage(object)!= null)
+				{
+					isOrderInfSucceed = true;
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			// 商品
 			String orderGoodsInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERGOODSINF);
-			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderGoodsInfXML)) {
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderGoodsInfXML) && isOrderInfSucceed) {
 				Object[] orderGoodsInf = { "TD_ORDER_GOODS", "1", orderGoodsInfXML };
 				try {
 					Object object = TdInterfaceService.getCall().invoke(orderGoodsInf);
@@ -2087,7 +2093,7 @@ public class TdCommonService {
 			}
 			// 券
 			String orderCouponInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERCOUPONINF);
-			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML)) {
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML) && isOrderInfSucceed) {
 				Object[] orderCouponInf = { "TD_ORDER_COUPONS", "1", orderCouponInfXML };
 				try {
 					Object object = TdInterfaceService.getCall().invoke(orderCouponInf);
