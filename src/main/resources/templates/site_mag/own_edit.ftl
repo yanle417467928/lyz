@@ -91,7 +91,7 @@
         <dl>
             <dt>订单号</dt>
             <dd>
-            	<input type="hidden" id="ownId" value="${consult.id }" />
+            	<input type="hidden" id="ownId" value="${consult.id?c }" />
                 <span id="spanOrderNumber">${order.orderNumber!""}</span>
             </dd>
         </dl>
