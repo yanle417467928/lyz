@@ -33,6 +33,12 @@ public class StringTools {
 		}
 	}
 	
+	
+	/**
+	 * 根据接口返回数据判断是传送成功与否
+	 * @param resultStr
+	 * @return
+	 */
 	public static String interfaceMessage(String resultStr) 
 	{
 		// "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
@@ -69,6 +75,12 @@ public class StringTools {
 		return null;
 	}
 	
+	
+	/**
+	 * 根据优惠券返回ebs需要的优惠券id
+	 * @param coupon
+	 * @return
+	 */
 	public static Integer coupontypeWithCoupon(TdCoupon coupon)
 	{
 		// app:优惠券限用分类类型ID: 1. 通用现金券；2. 指定商品现金券；3. 产品券;
@@ -110,6 +122,11 @@ public class StringTools {
 	}
 		
 	
+	/**
+	 * 根据分单号获取订单属于的华润，乐易装或者其他
+	 * @param orderNumber
+	 * @return
+	 */
 	public static String getProductStrByOrderNumber(String orderNumber)
 	{
 		String templeStr = null;
@@ -126,6 +143,11 @@ public class StringTools {
 		return orderNumber.replace(templeStr, "");
 	}
 	
+	/**
+	 * 根据bool值返回字符Y或者N
+	 * @param bool
+	 * @return
+	 */
 	public static String booleanToStr(Boolean bool)
 	{
 		if (bool == null) 
@@ -141,20 +163,33 @@ public class StringTools {
 			return "N";
 		}
 	}
-	/**
-	 * 根据订单号返回类型
-	 * @param orderNumber
-	 * @return
-	 */
-	public static String getProdectTypeByOrderNumber(String orderNumber){
-		if(orderNumber==null){
-			return "";
+	
+	public static String getHistoryFlagByCouponType(Long couponType)
+	{
+		if (couponType != null && couponType == 2)
+		{
+			return "N";
 		}
-		String type= orderNumber.substring(0, 2);
-		if(type.equalsIgnoreCase("LY")){
-			type="LYZ";
+		else 
+		{
+			return "Y";
 		}
-		return type;
-		
 	}
+	
+//	/**
+//	 * 根据订单号返回类型
+//	 * @param orderNumber
+//	 * @return
+//	 */
+//	public static String getProdectTypeByOrderNumber(String orderNumber){
+//		if(orderNumber==null){
+//			return "";
+//		}
+//		String type= orderNumber.substring(0, 2);
+//		if(type.equalsIgnoreCase("LY")){
+//			type="LYZ";
+//		}
+//		return type;
+//		
+//	}
 }

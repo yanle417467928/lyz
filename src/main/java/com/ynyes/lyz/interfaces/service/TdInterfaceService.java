@@ -1,6 +1,7 @@
 package com.ynyes.lyz.interfaces.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -67,6 +68,9 @@ public class TdInterfaceService {
 	
 	@Autowired
 	private TdReturnGoodsInfService TdReturnGoodsInfService;
+	
+	@Autowired
+	private TdReturnTimeInfService tdReturnTimeInfService;
 	
 	@Autowired
 	private TdOrderService tdOrderService;
@@ -267,11 +271,34 @@ public class TdInterfaceService {
 					couponInf.setSku(tdCoupon.getSku());
 					couponInf.setQuantity(1L);
 					couponInf.setPrice(tdCoupon.getRealPrice());
-					couponInf.setHistoryFlag("Y");
+					couponInf.setHistoryFlag(StringTools.getHistoryFlagByCouponType(tdCoupon.getTypeCategoryId()));
 					tdOrderCouponInfService.save(couponInf);
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 到店退货单退货时间表
+	 * @param returnNote
+	 * @return
+	 */
+	public TdReturnTimeInf initReturnTimeByReturnNote(TdReturnNote returnNote)
+	{
+		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
+		if (returnOrderInf == null)
+		{
+			return null;
+		}
+		TdReturnTimeInf timeInf = new TdReturnTimeInf();
+		TdDiySite diySite= tdDiySiteService.findOne(returnNote.getDiySiteId());
+		if(diySite!=null){
+			timeInf.setSobId(diySite.getRegionId());
+		}
+		timeInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
+		timeInf.setReturnNumber(returnOrderInf.getOrderNumber());
+		timeInf.setReturnDate(new Date());
+		return tdReturnTimeInfService.save(timeInf);
 	}
 	
 	/**
@@ -285,7 +312,8 @@ public class TdInterfaceService {
 		}
 		
 		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
-		if (returnOrderInf != null)
+		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(returnNote.getOrderNumber());
+		if (returnOrderInf != null || tdOrderInf == null)
 		{
 			return ;
 		}
@@ -323,12 +351,12 @@ public class TdInterfaceService {
 			}else{
 				returnOrderInf.setRtFullFlag("N");
 			}
-			returnOrderInf.setOrderHeaderId(order.getId());
+			returnOrderInf.setOrderHeaderId(tdOrderInf.getHeaderId());
 		}
 		
 		
 		returnOrderInf.setOrderNumber(returnNote.getOrderNumber());
-		returnOrderInf.setProdectType(StringTools.getProdectTypeByOrderNumber(returnNote.getOrderNumber()));
+		returnOrderInf.setProdectType(StringTools.getProductStrByOrderNumber(returnNote.getOrderNumber()));
 		returnOrderInf.setDiySiteCode(returnNote.getDiyCode());
 //		returnOrderInf.setRefundType(returnNote);
 		returnOrderInf.setAuditDate(returnNote.getCheckTime());
@@ -348,6 +376,53 @@ public class TdInterfaceService {
 //				goodsInf.setJxPrice(tdOrderGoods.g());
 				goodsInf.setLsPrice(tdOrderGoods.getReturnUnitPrice()*tdOrderGoods.getQuantity());
 				TdReturnGoodsInfService.save(goodsInf);
+			}
+		}
+		
+		TdReturnCouponInf tdReturnCouponInf =new TdReturnCouponInf();
+		
+//		tdReturnCouponInf.setRtHeaderId(rtHeaderId);
+	}
+	
+	public void initReturnCouponInfByOrder(TdOrder tdOrder,Integer type)
+	{
+		// type 0:取消订单 1:其他退货
+		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
+		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
+		if (tdOrderInf == null || returnOrderInf == null)
+		{
+			return ;
+		}
+		List<TdOrderCouponInf> couponInfs = tdOrderCouponInfService.findByorderHeaderId(tdOrderInf.getHeaderId());
+		if (type == 0) 
+		{
+			if (couponInfs != null && couponInfs.size() >0)
+			{
+				for (TdOrderCouponInf tdOrderCouponInf : couponInfs) 
+				{
+					TdReturnCouponInf returnCouponInf = new TdReturnCouponInf();
+					returnCouponInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
+					returnCouponInf.setCouponTypeId(tdOrderCouponInf.getCouponTypeId());
+					returnCouponInf.setSku(tdOrderCouponInf.getSku());
+					returnCouponInf.setPrice(tdOrderCouponInf.getPrice());
+					returnCouponInf.setQuantity(1L);
+				}
+			}
+		}
+		else if (type == 1)
+		{
+			List<TdCoupon> coupons = tdCouponService.findByTypeIdAndOrderId(3l, tdOrder.getId());
+			if (coupons != null && coupons.size() > 0)
+			{
+				for (TdCoupon tdCoupon : coupons) 
+				{
+					TdReturnCouponInf returnCouponInf = new TdReturnCouponInf();
+					returnCouponInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
+					returnCouponInf.setCouponTypeId(StringTools.coupontypeWithCoupon(tdCoupon));
+					returnCouponInf.setSku(tdCoupon.getSku());
+					returnCouponInf.setPrice(tdCoupon.getPrice());
+					returnCouponInf.setQuantity(1L);
+				}
 			}
 		}
 	}

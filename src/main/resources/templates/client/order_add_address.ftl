@@ -34,6 +34,25 @@
           }
 
         </style>
+         <script type="text/javascript">
+        function showKeyPress(evt) {
+        	 evt = (evt) ? evt : window.event
+        	 return checkSpecificKey(evt.keyCode);
+        	}
+
+        	function checkSpecificKey(keyCode) {
+        	    var specialKey = "$%\^\'\"\+";//Specific Key list # / - : ; () * .
+        	    var realkey = String.fromCharCode(keyCode);
+        	    var flg = false;
+        	 flg = (specialKey.indexOf(realkey) >= 0);
+        	  if (flg) {
+        	        //alert('请勿输入特殊字符: ' + realkey);
+        	        return false;
+        	    }
+        	    return true;
+        	}
+        	document.onkeypress = showKeyPress;
+        </script>
     </head>
     <body class="bgc-f3f4f6">
         <#-- 引入警告提示样式 -->
