@@ -17,7 +17,11 @@
     });
   //通过审核
     function auditYes(type) {
-        var dialog = $.dialog.confirm('审核将允许欠款，是否继续？', function () {
+	    var msg='将允许欠款，是否继续？';
+	  	if(type==0){
+	  		msg='将不允许欠款，是否继续？';
+	  	}
+        var dialog = $.dialog.confirm(msg, function () {
             var ownId = $("#ownId").val();
             var postData = { "id": ownId, "type": type };
             //发送AJAX请求
