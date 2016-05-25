@@ -1,13 +1,16 @@
 package com.ynyes.lyz.controller.management;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -18,14 +21,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.ynyes.lyz.entity.TdCity;
+import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdManager;
+import com.ynyes.lyz.entity.TdManagerDiySiteRole;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdReturnNote;
+import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.interfaces.entity.TdReturnTimeInf;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
+import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdManagerRoleService;
@@ -33,6 +41,7 @@ import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReturnNoteService;
+import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.util.SiteMagConstant;
 
 @Controller
@@ -48,9 +57,9 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	@Autowired
 	private TdOrderService tdOrderService;
 
-//	@Autowired
-//	private TdUserService tdUserSerrvice;
-//
+	@Autowired
+	private TdUserService tdUserService;
+
 //	@Autowired
 //	private TdDiySiteService tdDisSiteService;
 //
@@ -90,11 +99,14 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
 	
+	@Autowired
+	private TdDiySiteRoleService tdDiySiteRoleService;
+	
 	// 列表
 	@RequestMapping(value = "/{type}/list")
 	public String list(@PathVariable String type, Integer page, Integer size, String keywords, String __EVENTTARGET,
 			String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId, Double[] listSortId,
-			ModelMap map, HttpServletRequest req) {
+			ModelMap map, HttpServletRequest req,Long diyCode,String city) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -176,27 +188,106 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 //						map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
 //					}
 //				}
-				String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
-				siteName = StringUtils.isNotBlank(siteName) ? siteName : keywords;
-				String keyword = StringUtils.isNotBlank(keywords) ? keywords : "";
-				if (StringUtils.isNotBlank(siteName))
-				{
-					map.addAttribute("returnNote_page", tdReturnNoteService
-							.findByDiySiteTitleAndOrderNumberOrReturnNumberOrUsername(siteName, keyword, page, size));
+				//查询用户管辖门店权限
+		    	TdManagerDiySiteRole diySiteRole= tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
+		    	//获取管理员管辖城市
+		    	List<TdCity> cityList= new ArrayList<TdCity>();
+		    	//获取管理员管辖门店
+		    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
+		    	
+		    	//管理员获取管辖的城市和门店
+		    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
+		    	
+		    	//权限门店
+				List<Long> roleDiyCodes=new ArrayList<Long>();
+				if(diyList!=null && diyList.size()>0){
+					for (TdDiySite diy : diyList) {
+						roleDiyCodes.add(diy.getId());
+					}
 				}
-				else if (StringUtils.isNotBlank(keyword))
-				{
-					map.addAttribute("returnNote_page", tdReturnNoteService.searchAll(keyword, page, size));
+		    	
+		    	//修改城市刷新门店列表
+				if(StringUtils.isNotBlank(city)){
+					//需要删除的diy
+					List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
+					for (TdDiySite tdDiySite : diyList) {
+						if(!city.equals(tdDiySite.getCity())){
+							diyRemoveList.add(tdDiySite);
+							if(tdDiySite.getId().equals(diyCode)){
+								diyCode=null;
+							}
+						}
+					}
+					diyList.removeAll(diyRemoveList);
 				}
-				else
-				{
-					map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
+				
+				//搜索条件城市 数据库里面没有城市 转换为门code查询
+				List<Long> cityDiyCodes=new ArrayList<Long>();
+				TdCity tdCity= tdCityService.findByCityName(city);
+				if(tdCity!=null){
+					 List<TdDiySite> diySiteList= tdDiySiteService.findByCityId(tdCity.getId());
+					 if(diySiteList!=null && diySiteList.size()>0){
+						 for (TdDiySite tdDiySite : diySiteList) {
+							if(roleDiyCodes.contains(tdDiySite.getId())){
+								cityDiyCodes.add(tdDiySite.getId());
+							}
+						}
+					 }else{
+						 //城市下面没有门店  默认为null  查询不到任何门店
+						 cityDiyCodes.add(0L);
+					 }
 				}
-				//城市和门店信息
-				if (tdManagerRole.getIsSys()){
-					map.addAttribute("diySiteList",tdDiySiteService.findAll());
-					map.addAttribute("cityList", tdCityService.findAll());
+				
+				Page<TdReturnNote> returnNotePage= tdReturnNoteService.searchReturnList(keywords, diyCode, roleDiyCodes, cityDiyCodes, size, page);
+				map.addAttribute("returnNote_page", returnNotePage);
+				//循环获取用户名称
+				List<TdReturnNote> returnNoteList= returnNotePage.getContent();
+				Map<String, Object> nameMap=new HashMap<String, Object>();
+				if(returnNoteList!=null && returnNoteList.size()>0){
+					for (TdReturnNote returnNote : returnNoteList) {
+						String returnUsername = returnNote.getUsername();
+						if(nameMap.containsKey(returnUsername))
+						{
+							continue;
+						}
+						else
+						{
+							TdUser tdUser = tdUserService.findByUsername(returnUsername);
+							if(null != tdUser && StringUtils.isNotBlank(returnUsername)){
+								nameMap.put(returnUsername, tdUser.getRealName());
+							}
+						}
+					}
 				}
+				
+				map.addAttribute("name_map",nameMap);
+				map.addAttribute("diySiteList",diyList);
+				map.addAttribute("cityList", cityList);
+				map.addAttribute("cityName", city);
+				map.addAttribute("diyCode", diyCode);
+				
+				//以前的查询  zp
+//				String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
+//				siteName = StringUtils.isNotBlank(siteName) ? siteName : keywords;
+//				String keyword = StringUtils.isNotBlank(keywords) ? keywords : "";
+//				if (StringUtils.isNotBlank(siteName))
+//				{
+//					map.addAttribute("returnNote_page", tdReturnNoteService
+//							.findByDiySiteTitleAndOrderNumberOrReturnNumberOrUsername(siteName, keyword, page, size));
+//				}
+//				else if (StringUtils.isNotBlank(keyword))
+//				{
+//					map.addAttribute("returnNote_page", tdReturnNoteService.searchAll(keyword, page, size));
+//				}
+//				else
+//				{
+//					map.addAttribute("returnNote_page", tdReturnNoteService.findAll(page, size));
+//				}
+//				//城市和门店信息
+//				if (tdManagerRole.getIsSys()){
+//					map.addAttribute("diySiteList",tdDiySiteService.findAll());
+//					map.addAttribute("cityList", tdCityService.findAll());
+//				}
 				return "/site_mag/returnNote_list";
 			}
 

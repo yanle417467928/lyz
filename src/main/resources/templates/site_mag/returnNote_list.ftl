@@ -79,6 +79,30 @@ function downloaddateurl(type,url){
                     </li>
                     
                 </ul>
+                 <#if cityList?? && cityList?size gt 0 >
+          	<div class="menu-list">
+              	<div class="rule-single-select">
+                       <select name="city" id="cityCode" onchange="javascript:setTimeout(__doPostBack('changeCity',''), 0)">
+                       <option value="" >选择城市</option>      
+                       <#list cityList as city>
+                       	<option value="${city.cityName }" <#if cityName?? && cityName==city.cityName>selected</#if> >${city.cityName }</option>
+                       </#list>
+                       </select>
+           		</div>
+           	</div>
+           	</#if>
+            <#if diySiteList?? && diySiteList?size gt 0 >
+            <div class="menu-list" >
+                <div class="rule-single-select">
+                       <select name="diyCode" id="diyCode" onchange="javascript:setTimeout(__doPostBack('changeDiy',''), 0)">
+                       <option value="" >选择门店</option>      
+                       <#list diySiteList as diySite>
+                       	<option value="${diySite.id }" <#if diyCode?? && diyCode==diySite.id>selected</#if> >${diySite.title }</option>
+                       </#list>
+                       </select>
+           		</div>
+           	</div>
+           	</#if> 
             </div>
             <div class="r-list">
                 <input name="keywords" type="text" class="keyword">
@@ -101,6 +125,9 @@ function downloaddateurl(type,url){
         </th>
          <th align="left" width="12%">
             申请用户
+        </th>
+        <th align="left" width="12%">
+           用户名称
         </th>
         <th align="left" width="12%">
             门店名称
@@ -131,6 +158,7 @@ function downloaddateurl(type,url){
                 <td>
                     <a href="/Verwalter/returnNote/returnNote/edit?id=${returnNote.id?c}">${returnNote.returnNumber!""}</a></td>
                 <td>${returnNote.username!""}</td>
+                <td><#if name_map??>${name_map[returnNote.username]!''}</#if></td>
                 <td>${returnNote.diySiteTitle!""}</td>
                 <td>${returnNote.remarkInfo!""}</td>
                 <td><#if returnNote.orderTime??>${returnNote.orderTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
