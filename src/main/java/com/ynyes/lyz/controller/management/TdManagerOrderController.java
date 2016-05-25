@@ -1343,7 +1343,8 @@ public class TdManagerOrderController {
 		for (Long chkId : chkIds) {
 			if (chkId >= 0) {
 				TdOwnMoneyRecord ownMoneyRecord = tdOwnMoneyRecordService.findOne(chkId);
-				if (ownMoneyRecord != null)
+				//已审核过就不能修改
+				if (ownMoneyRecord != null && (ownMoneyRecord.getIsEnable()==null || !ownMoneyRecord.getIsEnable()) )
 				{
 					
 					/*//修改订单实际付款  逻辑修改
@@ -1366,7 +1367,7 @@ public class TdManagerOrderController {
 		for (Long chkId : chkIds) {
 			if (chkId >= 0) {
 				TdOwnMoneyRecord ownMoneyRecord = tdOwnMoneyRecordService.findOne(chkId);
-				if (ownMoneyRecord != null)
+				if (ownMoneyRecord != null && (ownMoneyRecord.getIsEnable()==null || !ownMoneyRecord.getIsEnable()))
 				{
 					ownMoneyRecord.setIsEnable(true);
 					ownMoneyRecord.setIspassed(false);
