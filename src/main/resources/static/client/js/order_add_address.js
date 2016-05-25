@@ -111,7 +111,7 @@ function saveAddress() {
  * @author zp
  */
 function cleanSpelChar(obj){
-    if(/["'<>%;)(&+]/.test(obj.value)){
-          $(obj).val(obj.value.replace(/["'<>%;)(&+]/,""));
-    }
+//    if(/["'<>%;)(&+]/.test(obj.value)){
+//          $(obj).val(obj.value.replace(/["'<>%;)(&+]/,""));
+//    }
 }
