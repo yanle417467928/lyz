@@ -645,4 +645,13 @@ public class TdCouponService {
 		return repository.findByCityNameAndTypeIdAndTypeCategoryIdAndIsDistributtedFalseAndExpireTimeAfter(cityName,
 				typeId, cateId, date);
 	}
+	
+	public List<TdCoupon> findByTypeIdAndOrderId(Long typeId,Long orderId)
+	{
+		if (typeId == null || orderId == null)
+		{
+			return null;
+		}
+		return repository.findByTypeIdAndOrderId(typeId, orderId);
+	}
 }

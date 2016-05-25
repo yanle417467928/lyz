@@ -240,4 +240,6 @@ public interface TdCouponRepo extends PagingAndSortingRepository<TdCoupon, Long>
 
 	List<TdCoupon> findByUsernameAndIsUsedFalseAndTypeCategoryIdAndIsOutDateFalseAndCityNameOrderByGetTimeDesc(
 			String username, Long typeCategoryId, String cityName);
+	
+	List<TdCoupon> findByTypeIdAndOrderId(Long typeId, Long orderId);
 }

@@ -29,6 +29,8 @@ import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.interfaces.entity.TdReturnTimeInf;
+import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDiySiteRoleService;
@@ -93,6 +95,9 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	
 	@Autowired
 	private TdPriceCountService tdPriceCountService;
+	
+	@Autowired
+	private TdInterfaceService tdInterfaceService;
 	
 	@Autowired
 	private TdDiySiteRoleService tdDiySiteRoleService;
@@ -395,6 +400,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 						
 					}
 					returnNote.setReturnTime(new Date());
+					TdReturnTimeInf returnTimeInf = tdInterfaceService.initReturnTimeByReturnNote(returnNote);
 					returnNote.setStatusId(5L);// 退货单设置已完成
 				}
 			}
