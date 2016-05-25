@@ -21,7 +21,7 @@ function changeDistrict() {
 			close(100);
 			$("#subdistrict").html(res);
 		}
-	});
+	}); 
 }
 
 /**
