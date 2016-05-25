@@ -35,6 +35,8 @@ var seller = {
 				warning("亲，您的网速不给力啊");
 			},
 			success : function(res) {
+				
+				close(0);
 				console.log(res);
 				// res中的check代表当前登录的是否为普通用户，其值为true代表是，其值为false代表不是
 				if (true === res.check) {

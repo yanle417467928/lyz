@@ -116,7 +116,8 @@ public class TdOrderController {
 	 * @author dengxiao
 	 */
 	@RequestMapping
-	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id, Long realUserId,Long count,RedirectAttributes attr) {
+	public String writeOrderInfo(HttpServletRequest req, ModelMap map, Long id, Long realUserId, Long count,
+			RedirectAttributes attr) {
 		String username = (String) req.getSession().getAttribute("username");
 
 		// 参数由调用函数检查
@@ -150,12 +151,11 @@ public class TdOrderController {
 			tdOrderService.delete(order_temp);
 			return "redirect:/";
 		}
-		//修改订单商品价格
-		if(changeOrderGoodsNewPrice(order_temp,req)){
+		// 修改订单商品价格
+		if (changeOrderGoodsNewPrice(order_temp, req)) {
 			attr.addAttribute("msg", "亲,你购买的商品已经下架");
 			return "redirect:/prompt";
 		}
-		
 
 		order_temp = tdPriceCouintService.checkCouponIsUsed(order_temp);
 
@@ -292,10 +292,11 @@ public class TdOrderController {
 		if (null == id) {
 			tdCommonService.clear(req);
 		}
-		
-		//再次计算促销
-		if(null != count){
+
+		// 再次计算促销和价格
+		if (null != count) {
 			tdCommonService.getPresent(req, order_temp);
+			tdPriceCouintService.countPrice(order_temp, realUser);
 		}
 
 		map.addAttribute("order", order_temp);
@@ -2022,29 +2023,29 @@ public class TdOrderController {
 			tdOrderService.save(order);
 		}
 	}
-	
+
 	/**
 	 * 修改订单商品价格
+	 * 
 	 * @param order
 	 * @param req
 	 * @author zp
 	 */
-	private Boolean changeOrderGoodsNewPrice(TdOrder order,HttpServletRequest req){
-		 List<TdOrderGoods> goodsList=order.getOrderGoodsList();
-		 if(goodsList!=null && goodsList.size()>0){
-			 for (TdOrderGoods tdOrderGoods : goodsList) {
-				 TdGoods goods= tdGoodsService.findOne(tdOrderGoods.getGoodsId());
-				 TdPriceListItem price= tdCommonService.getGoodsPrice(req, goods);
-				 if(price==null){
-					 return true;
-				 }
-				 tdOrderGoods.setPrice(price.getSalePrice());
-				 tdOrderGoods.setRealPrice(price.getRealSalePrice());
+	private Boolean changeOrderGoodsNewPrice(TdOrder order, HttpServletRequest req) {
+		List<TdOrderGoods> goodsList = order.getOrderGoodsList();
+		if (goodsList != null && goodsList.size() > 0) {
+			for (TdOrderGoods tdOrderGoods : goodsList) {
+				TdGoods goods = tdGoodsService.findOne(tdOrderGoods.getGoodsId());
+				TdPriceListItem price = tdCommonService.getGoodsPrice(req, goods);
+				if (price == null) {
+					return true;
+				}
+				tdOrderGoods.setPrice(price.getSalePrice());
+				tdOrderGoods.setRealPrice(price.getRealSalePrice());
 			}
-			 
-		 }
-		 return false;
-	}
 
+		}
+		return false;
+	}
 
 }

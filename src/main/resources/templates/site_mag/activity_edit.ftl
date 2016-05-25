@@ -391,6 +391,39 @@ function del_goods_comb(obj) {
             </dd>
         </dl>
         <dl>
+            <dt>促销类型</dt>
+            <dd>
+                <div class="rule-multi-radio multi-radio">
+                    <span>
+                        <input type="radio" name="isCombo" value="1" <#if !(activity?? && activity.isCombo?? && activity.isCombo==false) >checked="checked"</#if>>
+                        <label>组合促销</label>
+                        <input type="radio" name="isCombo" value="0" <#if activity?? && activity.isCombo?? && activity.isCombo==false>checked="checked"</#if>>
+                        <label>阶梯促销</label>
+                    </span>
+                </div>
+            </dd>
+        </dl>
+        <dl>
+            <dt>折扣条件</dt>
+            <dd>
+                <div class="rule-multi-radio multi-radio">
+                    <span>
+                        <input type="radio" name="isEnoughMoney" value="1" <#if activity??==false ||!activity.isEnoughMoney??||activity.isEnoughMoney==false>checked="checked"</#if>>
+                        <label>数量</label>
+                        <input type="radio" name="isEnoughMoney" value="0" <#if activity?? && activity.isEnoughMoney?? && activity.isEnoughMoney==true>checked="checked"</#if>>
+                        <label>金额</label>
+                    </span>
+                </div>
+            </dd>
+        </dl>
+        <dl>
+            <dt>最低购买金额</dt>
+            <dd>
+                <input name="totalPrice" type="text" value="<#if activity??&&activity.totalPrice??>${activity.totalPrice?string("0.00")}<#else>0.00</#if>" class="input normal" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" " errormsg="">
+                <span class="Validform_checktip"></span>
+            </dd>
+        </dl>
+        <dl>
             <dt>最低购买总量</dt>
             <dd>
                 <input name="totalNumber" type="text" value="<#if activity??&&activity.totalNumber??>${activity.totalNumber!'0'}<#else>0</#if>" class="input normal" datatype="n" sucmsg=" " errormsg="请输入一个正确的整数">
@@ -530,6 +563,13 @@ function del_goods_comb(obj) {
                         </#if>
                     </tbody>
                 </table>
+            </dd>
+        </dl>
+        <dl>
+            <dt>立减金额</dt>
+            <dd>
+                <input name="subPrice" type="text" value="<#if activity??&&activity.subPrice??>${activity.subPrice?string("0.00")}<#else>0.00</#if>" class="input normal" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" " errormsg="">
+                <span class="Validform_checktip"></span>
             </dd>
         </dl>
     </div>

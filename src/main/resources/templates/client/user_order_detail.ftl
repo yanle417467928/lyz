@@ -68,7 +68,8 @@
                                     	<#-- 判断是否是退货中 -->
                                     	<#if returnNote??>
                                     		<#list returnNote.returnGoodsList as returnGood>
-                                    			<#if returnGood.sku==item.sku><span class="order_biao">退</span></#if>
+                                    			<#if returnGood.sku==item.sku><span class="order_biao">退</span><#break></#if>
+                                    			
                                     		</#list>
                                     	</#if>
                                     </div>
@@ -81,14 +82,15 @@
                     <!-- 赠品 -->
                     <#if order.presentedList??>
                         <#list order.presentedList as item>
-                            <li class="li2 bdbt-n">
+                            <li class="li2 bdbt-n" style="height: auto;">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
-                                <div class="product-info">
-                                    <div class="div1">${item.goodsTitle!''}<span style="color:red"><#if item.isCoupon??&&item.isCoupon>【赠品-券】<#else>【赠品】</#if></span>
+                                <div class="product-info" style="height: auto;">
+                                    <div class="div1">${item.goodsTitle!''}${item.goodsTitle!''}<span style="color:red"><#if item.isCoupon??&&item.isCoupon>【赠品-券】<#else>【赠品】</#if></span>
                                     	<#-- 判断是否是退货中 -->
                                     	<#if returnNote??>
                                     		<#list returnNote.returnGoodsList as returnGood>
-                                    			<#if returnGood.sku==item.sku><span class="order_biao">退</span></#if>
+                                    			<#if returnGood.sku==item.sku><span class="order_biao">退</span><#break></#if>
+                                    			
                                     		</#list>
                                     	</#if>
                                     </div>
@@ -100,14 +102,14 @@
                     </#if>
                     <#if order.presentedList??>
                         <#list order.giftGoodsList as item>
-                            <li class="li2 bdbt-n">
+                            <li class="li2 bdbt-n" style="height: auto;">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
-                                <div class="product-info">
+                                <div class="product-info" style="height: auto;">
                                     <div class="div1">${item.goodsTitle!''}<span style="color:red;font-size:0.9em;"><#if item.isCoupon??&&item.isCoupon>【小辅料-券】<#else>【小辅料】</#if></span>
                                     	<#-- 判断是否是退货中 -->
                                     	<#if returnNote??>
                                     		<#list returnNote.returnGoodsList as returnGood>
-                                    			<#if returnGood.sku==item.sku><span class="order_biao">退</span></#if>
+                                    			<#if returnGood.sku==item.sku><span class="order_biao">退</span><#break></#if>
                                     		</#list>
                                     	</#if>
                                     </div>

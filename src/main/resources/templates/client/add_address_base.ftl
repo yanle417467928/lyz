@@ -13,6 +13,25 @@
         <link rel="stylesheet" type="text/css" href="/client/css/x_account_settings.css"/>
         <script type="text/javascript" src="/client/js/jquery-1.11.0.js"></script>
         <script type="text/javascript" src="/client/js/add_address.js"></script>
+        <script type="text/javascript">
+        function showKeyPress(evt) {
+        	 evt = (evt) ? evt : window.event
+        	 return checkSpecificKey(evt.keyCode);
+        	}
+
+        	function checkSpecificKey(keyCode) {
+        	    var specialKey = "$%\^\'\"\+";//Specific Key list # / - : ; () * .
+        	    var realkey = String.fromCharCode(keyCode);
+        	    var flg = false;
+        	 flg = (specialKey.indexOf(realkey) >= 0);
+        	  if (flg) {
+        	        //alert('请勿输入特殊字符: ' + realkey);
+        	        return false;
+        	    }
+        	    return true;
+        	}
+        	document.onkeypress = showKeyPress;
+        </script>
     </head>
     <body class="bgc-f3f4f6">
         <#-- 引入警告提示样式 -->
@@ -34,7 +53,7 @@
             <form>
                 <div class="edit-info">
                     <label>收货人：</label>
-                    <input type="text" id="receiverName" value="${address.receiverName!''}" onkeyup="cleanSpelChar(this)">
+                    <input type="text" id="receiverName" value="${address.receiverName!''}">
                 </div>
                 <div class="edit-info">
                     <label>手机号码：</label>
@@ -46,7 +65,7 @@
                 </div>
                 <div class="edit-info">
                     <label>详细地址：</label>
-                    <input type="text" id="detailAddress" value="${address.detailAddress!''}" onkeyup="cleanSpelChar(this)">
+                    <input type="text" id="detailAddress" value="${address.detailAddress!''}">
                 </div>
                 <input style="background-color:#cc1421;" class="btn-submit-save" type="button" value="保存" onclick="saveAddress();">
             </form>

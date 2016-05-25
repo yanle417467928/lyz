@@ -407,6 +407,10 @@ public class TdInterfaceService {
 				TdReturnGoodsInfService.save(goodsInf);
 			}
 		}
+		
+		TdReturnCouponInf tdReturnCouponInf =new TdReturnCouponInf();
+		
+//		tdReturnCouponInf.setRtHeaderId(rtHeaderId);
 	}
 	
 	public void initReturnCouponInfByOrder(TdOrder tdOrder,Integer type)

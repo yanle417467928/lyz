@@ -363,6 +363,10 @@ public class TdOrder {
 	@Column
 	private String buyCouponId;
 
+	// 促销减少的金额
+	@Column(scale = 2)
+	private Double activitySubPrice;
+
 	public Double getRefund() {
 		return refund;
 	}
@@ -1012,5 +1016,13 @@ public class TdOrder {
 
 	public void setBuyCouponId(String buyCouponId) {
 		this.buyCouponId = buyCouponId;
+	}
+
+	public Double getActivitySubPrice() {
+		return activitySubPrice;
+	}
+
+	public void setActivitySubPrice(Double activitySubPrice) {
+		this.activitySubPrice = activitySubPrice;
 	}
 }
