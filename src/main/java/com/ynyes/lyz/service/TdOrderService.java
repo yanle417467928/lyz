@@ -521,7 +521,7 @@ public class TdOrderService {
 
 	/**
 	 * 订单条件查询 分页
-	 * 
+	 * 修改城市查询
 	 * @return
 	 */
 	public Page<TdOrder> findAll(String keywords, String orderStartTime, String orderEndTime, List<String> usernameList,
@@ -572,11 +572,12 @@ public class TdOrderService {
 		if (null != diyCode && !"".equals(diyCode)) {
 			c.add(Restrictions.eq("diySiteCode", diyCode, true));
 		}
-		if (null != city && !"".equals(city)) {
-			c.add(Restrictions.eq("city", city, true));
-		}
+		//city为收货人地址
+//		if (null != city && !"".equals(city)) {
+//			c.add(Restrictions.eq("city", city, true));
+//		}
 		if (null != roleCitys && roleCitys.size()>0) {
-			c.add(Restrictions.in("city", roleCitys, true));
+			c.add(Restrictions.in("diySiteCode", roleCitys, true));
 		}
 		if (null != roleDiys && roleDiys.size()>0) {
 			c.add(Restrictions.in("diySiteCode", roleDiys, true));

@@ -730,9 +730,26 @@ public class TdManagerOrderController {
 							roleDiyCodes.add(diy.getStoreCode());
 						}
 					}
+					//订单的city字段为收货人地址 
+					//搜索条件城市 数据库里面没有城市 转换为门code查询
+					List<String> cityDiyCodes=new ArrayList<String>();
+					TdCity tdCity= tdCityService.findByCityName(city);
+					if(tdCity!=null){
+						 List<TdDiySite> diySiteList= tdDiySiteService.findByCityId(tdCity.getId());
+						 if(diySiteList!=null && diySiteList.size()>0){
+							 for (TdDiySite tdDiySite : diySiteList) {
+								if(roleDiyCodes.contains(tdDiySite.getStoreCode())){
+									cityDiyCodes.add(tdDiySite.getStoreCode());
+								}
+							}
+						 }else{
+							 //城市下面没有门店  默认为null  查询不到任何门店
+							 cityDiyCodes.add("null");
+						 }
+					}
 					
 						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, usernameList, sellerRealName, shippingAddress, shippingPhone,
-					 deliveryTime, userPhone, shippingName, sendTime,statusId,diyCode,city,roleCityNames,roleDiyCodes, size, page));
+					 deliveryTime, userPhone, shippingName, sendTime,statusId,diyCode,city,cityDiyCodes,roleDiyCodes, size, page));
 				}
 			}
 		
