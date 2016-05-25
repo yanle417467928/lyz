@@ -64,6 +64,9 @@ public class TdInterfaceService {
 	private TdOrderCouponInfService tdOrderCouponInfService;
 	
 	@Autowired
+	private TdOrderReceiveInfService tdOrderReceiveInfService;
+	
+	@Autowired
 	private TdReturnOrderInfService tdReturnOrderInfService;
 	
 	@Autowired
@@ -278,8 +281,34 @@ public class TdInterfaceService {
 		}
 	}
 	
+	public TdOrderReceiveInf initOrderReceiveByOrder(TdOrder tdOrder)
+	{
+		TdOrderReceiveInf orderReceiveInf = new TdOrderReceiveInf();
+		if (tdOrder == null || tdOrder.getDeliverTypeTitle() == null)
+		{
+			return null;
+		}
+		if(tdOrder.getDeliverTypeTitle().equalsIgnoreCase("门店自提"))
+		{
+			TdDiySite diySite= tdDiySiteService.findOne(tdOrder.getDiySiteId());
+			if(diySite!=null){
+				orderReceiveInf.setSobId(diySite.getRegionId());
+			}
+			TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
+			if (tdOrderInf != null) 
+			{
+				orderReceiveInf.setHeaderId(tdOrderInf.getHeaderId());
+			}
+			orderReceiveInf.setOrderNumber(tdOrder.getOrderNumber());
+			orderReceiveInf.setReceiveDate(new Date());
+			orderReceiveInf.setDeliverTypeTitle("门店自提");
+			return tdOrderReceiveInfService.save(orderReceiveInf);
+		}
+		return null;
+	}
+	
 	/**
-	 * 到店退货单退货时间表
+	 * 到店退货单退货时间表,收到货的时间
 	 * @param returnNote
 	 * @return
 	 */
@@ -465,7 +494,7 @@ public class TdInterfaceService {
 			stringList.add(orderInfXml);
 			break;
 		}
-		case ORDERGOODSINF:
+		case ORDERGOODSINF :
 		{
 			List<TdOrderGoodsInf> goodsInfs = tdOrderGoodsInfService.findByOrderHeaderId(tdOrderInf.getHeaderId());
 			for (TdOrderGoodsInf tdOrderGoodsInf : goodsInfs) 
@@ -756,6 +785,28 @@ public class TdInterfaceService {
 		return xmlEnd;
 	}
 	
-	
+	public void ebsWithObject(Object object, INFTYPE type) 
+	{
+		switch (type) {
+		case ORDERRECEIVEINF:
+		{
+			TdOrderReceiveInf orderReceiveInf = (TdOrderReceiveInf)object;
+			String orderInfXML = this.XMLWithEntity(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+			Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
+			try
+			{
+				String result = (String)TdInterfaceService.getCall().invoke(orderInf);
+				System.out.println(result);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		break;
+		default:
+			break;
+		}
+	}
 
 }

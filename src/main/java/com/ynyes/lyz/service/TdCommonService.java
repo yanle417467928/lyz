@@ -2053,11 +2053,11 @@ public class TdCommonService {
 		public void run() 
 		{
 			sendMsgToWMS(orderList, mainOrderNumber);
-//			sendOrderToEBS(orderList);
+			sendOrderToEBS(orderList);
 		}
 	}
 
-	// 传EBS
+	// 传 order 给 EBS
 	private void sendOrderToEBS(List<TdOrder> orderList) 
 	{
 		for (TdOrder tdOrder : orderList) {
@@ -2073,7 +2073,8 @@ public class TdCommonService {
 			try {
 				String object = (String)TdInterfaceService.getCall().invoke(orderInf);
 				System.out.println(object);
-				if (StringTools.interfaceMessage(object)!= null)
+				String resultStr =StringTools.interfaceMessage(object);
+				if (org.apache.commons.lang3.StringUtils.isBlank(resultStr))
 				{
 					isOrderInfSucceed = true;
 				}

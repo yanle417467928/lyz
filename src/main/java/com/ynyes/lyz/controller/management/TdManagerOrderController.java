@@ -41,6 +41,9 @@ import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdWareHouse;
+import com.ynyes.lyz.interfaces.entity.TdOrderReceiveInf;
+import com.ynyes.lyz.interfaces.service.TdInterfaceService;
+import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
@@ -144,6 +147,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdDiySiteRoleService tdDiySiteRoleService;
+	
+	@Autowired
+	private TdInterfaceService tdInterfaceService;
 	
 	 /**
 	 * @author lc
@@ -1003,6 +1009,13 @@ public class TdManagerOrderController {
 				if (order.getStatusId().equals(4L)) {
 					order.setStatusId(5L);
 					order.setReceiveTime(new Date());
+					
+					// add send receive time to ebs
+					TdOrderReceiveInf orderReceiveInf = tdInterfaceService.initOrderReceiveByOrder(order);
+					if (orderReceiveInf != null)
+					{
+						tdInterfaceService.ebsWithObject(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+					}
 				}
 			}
 			// 确认完成
