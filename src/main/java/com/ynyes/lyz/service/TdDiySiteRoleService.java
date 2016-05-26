@@ -155,7 +155,13 @@ public class TdDiySiteRoleService {
 
     	//非超级管理员 添加管辖门店
     	if(!tdManagerRole.getIsSys()){
-    		roleDiyIds.add(tdManager.getDiyCode());
+    		//查询门店
+    		TdDiySite  diySite= tdDiySiteService.findByStoreCode(tdManager.getDiyCode());
+    		//添加门店id
+    		if(diySite!=null){
+    			roleDiyIds.add(diySite.getId().toString());
+    		}
+    		
     	}
     	//查询用户管辖门店权限
     	TdManagerDiySiteRole diySiteRole= this.findByTitle(tdManagerRole.getTitle());
