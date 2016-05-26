@@ -572,7 +572,7 @@ public class TdDeliveryIndexController {
 			{
 				for (TdOrder subOrder : orderList) 
 				{
-					subOrder.setStatusId(5L);
+					subOrder.setStatusId(12L);
 					subOrder.setDeliveryTime(new Date());
 
 					subOrder = tdOrderService.save(subOrder);
@@ -759,7 +759,7 @@ public class TdDeliveryIndexController {
 						tdReturnNoteService.save(returnNote);
 						
 
-						subOrder.setStatusId(9L);
+						subOrder.setStatusId(12L);
 						subOrder.setIsRefund(true);
 						subOrder = tdOrderService.save(subOrder);
 					}
