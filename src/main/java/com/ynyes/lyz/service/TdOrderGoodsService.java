@@ -146,18 +146,16 @@ public class TdOrderGoodsService {
     		for (TdOrderGoods orderGood : orderGoodsList) {
     			//判断是否是要修改的商品
     			if(type.equals(1L)){ //普通活动
-    				for (Long id : cost.keySet()) {
-    					//判断商品id是否相等
-        				if(cost.containsKey(orderGood.getGoodsId())){
-        					//记录活动id
-            				String activityIds=orderGood.getActivityId();
-            				if(StringUtils.isNotBlank(activityIds)){
-            					orderGood.setActivityId(activityIds+","+activityId.toString()+"_"+cost.get(id)*min);
-            				}else{
-            					orderGood.setActivityId(""+activityId.toString()+"_"+cost.get(id)*min);
-            				}
-            				
-            			}
+    				//判断商品id是否相等
+    				if(cost.containsKey(orderGood.getGoodsId())){
+    					//记录活动id
+    					String activityIds=orderGood.getActivityId();
+    					if(StringUtils.isNotBlank(activityIds)){
+    						orderGood.setActivityId(activityIds+","+activityId.toString()+"_"+cost.get(orderGood.getGoodsId())*min);
+    					}else{
+    						orderGood.setActivityId(""+activityId.toString()+"_"+cost.get(orderGood.getGoodsId())*min);
+    					}
+
     				}
     			}else if(type.equals(2L)){  //小辅料活动
     				//判断商品类型是否相等
@@ -182,14 +180,16 @@ public class TdOrderGoodsService {
     					}
     				}
     			}else if(type.equals(3L)){ //满金额赠送
-    				//记录活动id
-    				String activityIds=orderGood.getActivityId();
-    				if(StringUtils.isNotBlank(activityIds)){
-    					orderGood.setActivityId(activityIds+",M"+activityId.toString()+"_"+orderGood.getQuantity());
-    				}else{
-    					orderGood.setActivityId("M"+activityId.toString()+"_"+orderGood.getQuantity());
+    				//判断商品id是否相等
+    				if(cost.containsKey(orderGood.getGoodsId())){
+    					//记录活动id
+    					String activityIds=orderGood.getActivityId();
+    					if(StringUtils.isNotBlank(activityIds)){
+    						orderGood.setActivityId(activityIds+",M"+activityId.toString()+"_"+orderGood.getQuantity());
+    					}else{
+    						orderGood.setActivityId("M"+activityId.toString()+"_"+orderGood.getQuantity());
+    					}
     				}
-
     			}
     			
 			}
