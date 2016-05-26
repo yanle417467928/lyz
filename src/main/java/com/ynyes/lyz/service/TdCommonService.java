@@ -3104,70 +3104,73 @@ public class TdCommonService {
 							}
 						}
 					}
-					// 获取赠品队列
-					String giftNumber = activity.getGiftNumber();
-					if (null != giftNumber) {
-						String[] group = giftNumber.split(",");
-						if (null != group) {
-							for (String each_item : group) {
-								if (null != each_item) {
-									// 拆分个体以获取id和数量的属性
-									String[] param = each_item.split("_");
-									// 当个体不为空且长度为2的时候才是正确的数据
-									if (null != param && param.length == 2) {
-										Long id = Long.parseLong(param[0]);
-										Long quantity = Long.parseLong(param[1]);
-										// 查找到指定id的商品
-										TdGoods goods = tdGoodsService.findOne(id);
-										// 查找指定商品的价格
-										TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
-										TdOrderGoods orderGoods = new TdOrderGoods();
-										orderGoods.setBrandId(goods.getBrandId());
-										orderGoods.setBrandTitle(goods.getBrandTitle());
-										orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
-										orderGoods.setGoodsId(goods.getId());
-										orderGoods.setGoodsTitle(goods.getTitle());
-										orderGoods.setGoodsSubTitle(goods.getSubTitle());
-										orderGoods.setPrice(0.0);
-										if (null == priceListItem) {
-											orderGoods.setGiftPrice(0.00);
-										} else {
-											orderGoods.setGiftPrice(priceListItem.getPrice());
-										}
-										orderGoods.setQuantity(quantity * min);
-										orderGoods.setSku(goods.getCode());
-										// 记录活动id
-										orderGoods.setActivityId(activity.getId().toString() + "_" + quantity * min);
-										// 修改订单商品归属活动
-										tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(), min,
-												1L);
-										// 创建一个布尔变量用于表示赠品是否已经在队列中
-										Boolean isHave = false;
-										for (TdOrderGoods single : presentedList) {
-											if (null != single && null != single.getGoodsId()
-													&& single.getGoodsId() == orderGoods.getGoodsId()) {
-												isHave = true;
-												single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
-												// 记录活动id
-												single.setActivityId(single.getActivityId() + ","
-														+ activity.getId().toString() + "_" + min);
+					//不应该显示赠品为0的赠品 zp
+					if (min > 0) {
+						// 获取赠品队列
+						String giftNumber = activity.getGiftNumber();
+						if (null != giftNumber) {
+							String[] group = giftNumber.split(",");
+							if (null != group) {
+								for (String each_item : group) {
+									if (null != each_item) {
+										// 拆分个体以获取id和数量的属性
+										String[] param = each_item.split("_");
+										// 当个体不为空且长度为2的时候才是正确的数据
+										if (null != param && param.length == 2) {
+											Long id = Long.parseLong(param[0]);
+											Long quantity = Long.parseLong(param[1]);
+											// 查找到指定id的商品
+											TdGoods goods = tdGoodsService.findOne(id);
+											// 查找指定商品的价格
+											TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
+											TdOrderGoods orderGoods = new TdOrderGoods();
+											orderGoods.setBrandId(goods.getBrandId());
+											orderGoods.setBrandTitle(goods.getBrandTitle());
+											orderGoods.setGoodsCoverImageUri(goods.getCoverImageUri());
+											orderGoods.setGoodsId(goods.getId());
+											orderGoods.setGoodsTitle(goods.getTitle());
+											orderGoods.setGoodsSubTitle(goods.getSubTitle());
+											orderGoods.setPrice(0.0);
+											if (null == priceListItem) {
+												orderGoods.setGiftPrice(0.00);
+											} else {
+												orderGoods.setGiftPrice(priceListItem.getPrice());
 											}
-										}
+											orderGoods.setQuantity(quantity * min);
+											orderGoods.setSku(goods.getCode());
+											// 记录活动id
+											orderGoods.setActivityId("M"+activity.getId().toString() + "_" + quantity * min);
+											// 修改订单商品归属活动
+											tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(), min,
+													3L);
+											// 创建一个布尔变量用于表示赠品是否已经在队列中
+											Boolean isHave = false;
+											for (TdOrderGoods single : presentedList) {
+												if (null != single && null != single.getGoodsId()
+														&& single.getGoodsId() == orderGoods.getGoodsId()) {
+													isHave = true;
+													single.setQuantity(single.getQuantity() + orderGoods.getQuantity());
+													// 记录活动id
+													single.setActivityId(single.getActivityId() + ","
+															+ activity.getId().toString() + "_" + min);
+												}
+											}
 
-										if (!isHave) {
-											presentedList.add(orderGoods);
+											if (!isHave) {
+												presentedList.add(orderGoods);
+											}
+											tdOrderGoodsService.save(orderGoods);
 										}
-										tdOrderGoodsService.save(orderGoods);
 									}
 								}
 							}
 						}
+						Double activitySubPrice = order.getActivitySubPrice();
+						if (null == activitySubPrice) {
+							activitySubPrice = 0.00;
+						}
+						order.setActivitySubPrice(activitySubPrice + (subPrice * min));
 					}
-					Double activitySubPrice = order.getActivitySubPrice();
-					if (null == activitySubPrice) {
-						activitySubPrice = 0.00;
-					}
-					order.setActivitySubPrice(activitySubPrice + (subPrice * min));
 				}
 			}
 		}

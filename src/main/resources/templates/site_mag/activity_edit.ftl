@@ -408,9 +408,9 @@ function del_goods_comb(obj) {
             <dd>
                 <div class="rule-multi-radio multi-radio">
                     <span>
-                        <input type="radio" name="isEnoughMoney" value="1" <#if activity??==false ||!activity.isEnoughMoney??||activity.isEnoughMoney==false>checked="checked"</#if>>
+                        <input type="radio" name="isEnoughMoney" value="0" <#if activity??==false ||!activity.isEnoughMoney??||activity.isEnoughMoney==false>checked="checked"</#if>>
                         <label>数量</label>
-                        <input type="radio" name="isEnoughMoney" value="0" <#if activity?? && activity.isEnoughMoney?? && activity.isEnoughMoney==true>checked="checked"</#if>>
+                        <input type="radio" name="isEnoughMoney" value="1" <#if activity?? && activity.isEnoughMoney?? && activity.isEnoughMoney==true>checked="checked"</#if>>
                         <label>金额</label>
                     </span>
                 </div>

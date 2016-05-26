@@ -135,7 +135,7 @@ public class TdOrderGoodsService {
      * @param cost 活动所需要的商品及其数量的列表
      * @param activityId 活动id
      * @param min 参加活动的次数
-     * @param type 类型1活动 2小辅料活动
+     * @param type 类型1活动 2小辅料活动 3满金额赠送
      * @author zp
      */
     public void updateOrderGoodsActivity(TdOrder order,Map<Long, Long> cost,Long activityId,Long min,Long type){
@@ -159,7 +159,7 @@ public class TdOrderGoodsService {
             				
             			}
     				}
-    			}else{  //小辅料活动
+    			}else if(type.equals(2L)){  //小辅料活动
     				//判断商品类型是否相等
     				TdGoods goods = tdGoodsService.findOne(orderGood.getGoodsId());
     				// 获取已选商品的分类id
@@ -181,6 +181,15 @@ public class TdOrderGoodsService {
 
     					}
     				}
+    			}else if(type.equals(3L)){ //满金额赠送
+    				//记录活动id
+    				String activityIds=orderGood.getActivityId();
+    				if(StringUtils.isNotBlank(activityIds)){
+    					orderGood.setActivityId(activityIds+",M"+activityId.toString()+"_"+orderGood.getQuantity());
+    				}else{
+    					orderGood.setActivityId("M"+activityId.toString()+"_"+orderGood.getQuantity());
+    				}
+
     			}
     			
 			}
