@@ -553,11 +553,12 @@ public class TdUserController {
 
 	/**
 	 * 更改已选数量的方法
-	 * 
+	 * 可以手动修改数量 zp
+	 * @param operation 0:减一  1:加一  2手动修改数量
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/selected/change/quantity")
-	public String selectedChangeQuantity(HttpServletRequest req, ModelMap map, Long operation, Long type, Long id) {
+	public String selectedChangeQuantity(HttpServletRequest req, ModelMap map, Long operation, Long type, Long id,Long quantity) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		// 避免“空指针异常”
@@ -577,6 +578,9 @@ public class TdUserController {
 					}
 					if (1L == operation) {
 						cartGoods.setQuantity(cartGoods.getQuantity() + 1);
+					}
+					if(2L==operation){
+						cartGoods.setQuantity(quantity);
 					}
 					tdCartGoodsService.save(cartGoods);
 				}
