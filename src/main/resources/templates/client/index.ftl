@@ -55,7 +55,7 @@
                         <div class="swiper-wrapper">
                             <#list circle_ad_list as item>
                                 <div class="swiper-slide orange-slide">
-                                    <img src="${item.fileUri!''}"/>
+                                    <a href="${item.linkUri }"><img src="${item.fileUri!''}"/></a>
                                 </div>
                             </#list>
                         </div>

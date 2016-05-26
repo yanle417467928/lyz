@@ -1453,6 +1453,7 @@ public class TdGoodsService {
 		if(categoryTitle!=null && categoryTitle.size()>0){
 			c.add(Restrictions.in("categoryTitle",categoryTitle,true));
 		}
+		c.add(Restrictions.eq("isOnSale", true, true));
 		//排序
 		if("0".equals(sortFiled)){
 			if("0".equals(rule)){

@@ -381,8 +381,11 @@ public class TdUserController {
 			for (int i = 0; i < collect_list.size(); i++) {
 				TdUserCollect userCollect = collect_list.get(i);
 				if (null != userCollect) {
-					TdPriceListItem priceListItem = tdPriceListItemService
-							.findByPriceListIdAndGoodsId(diySite.getPriceListId(), userCollect.getGoodsId());
+					//调用公共方法查询价格
+					TdGoods goods= tdGoodsService.findOne(userCollect.getGoodsId());
+					TdPriceListItem priceListItem =tdCommonService.getGoodsPrice(req, goods);
+//					TdPriceListItem priceListItem = tdPriceListItemService
+//							.findByPriceListIdAndGoodsId(diySite.getPriceListId(), userCollect.getGoodsId());
 					map.addAttribute("priceListItem" + i, priceListItem);
 				}
 			}
