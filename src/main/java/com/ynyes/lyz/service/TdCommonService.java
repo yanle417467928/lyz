@@ -3031,7 +3031,11 @@ public class TdCommonService {
 						if (null != param && param.length == 2) {
 							Long id = Long.parseLong(param[0]);
 							Long buyQuantity = selected_map.get(id);
-
+							
+							if (buyQuantity == null)
+							{
+								buyQuantity = 0l;
+							}
 							// 获取指定的商品
 							TdGoods goods = tdGoodsService.findOne(id);
 
