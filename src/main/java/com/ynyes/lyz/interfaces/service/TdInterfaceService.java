@@ -197,7 +197,7 @@ public class TdInterfaceService {
 		
 		//商品TdOrderGoodsInf
 		List<TdOrderGoods> goodsList = tdOrder.getOrderGoodsList();
-		if (goodsList != null && goodsList.size() > 0) 
+		if (goodsList != null && goodsList.size() > 0)
 		{
 			for (TdOrderGoods tdOrderGoods : goodsList)
 			{
@@ -348,8 +348,6 @@ public class TdInterfaceService {
 			return ;
 		}
 		
-		
-		
 		returnOrderInf = new TdReturnOrderInf();
 		TdDiySite diySite= tdDiySiteService.findOne(returnNote.getDiySiteId());
 		if(diySite!=null){
@@ -391,7 +389,7 @@ public class TdInterfaceService {
 //		returnOrderInf.setRefundType(returnNote);
 		returnOrderInf.setAuditDate(returnNote.getCheckTime());
 		returnOrderInf.setRefundAmount(returnNote.getTurnPrice());
-//		returnOrderInf.setPrepayAmt(returnNote);
+		returnOrderInf.setPrepayAmt(returnNote.getTurnPrice());
 		tdReturnOrderInfService.save(returnOrderInf);
 		//退货单商品
 		List<TdOrderGoods> goodsList = returnNote.getReturnGoodsList();
@@ -404,7 +402,7 @@ public class TdInterfaceService {
 				goodsInf.setSku(tdOrderGoods.getSku());
 				goodsInf.setQuantity(tdOrderGoods.getQuantity());
 //				goodsInf.setJxPrice(tdOrderGoods.g());
-				goodsInf.setLsPrice(tdOrderGoods.getReturnUnitPrice()*tdOrderGoods.getQuantity());
+				goodsInf.setLsPrice(tdOrderGoods.getReturnUnitPrice());
 				TdReturnGoodsInfService.save(goodsInf);
 			}
 		}

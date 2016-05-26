@@ -53,6 +53,7 @@ import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdUserSuggestion;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
 import com.ynyes.lyz.entity.TdWareHouse;
+import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdArticleCategoryService;
 import com.ynyes.lyz.service.TdArticleService;
@@ -180,6 +181,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdPayTypeService tdPayTypeService;
+	
+	@Autowired
+	private TdInterfaceService tdInterfaceService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1791,7 +1795,16 @@ public class TdUserController {
 					if (null != goodsId) {
 						Double unit = returnUnitPrice.get(goodsId);
 						map.addAttribute("unit" + goodsId, unit);
-						map.addAttribute("price" + goodsId, goods.getPrice());
+						Double lsPrice = 0d;
+						if (goods.getGiftPrice() != null)
+						{
+							lsPrice = goods.getGiftPrice();
+						}
+						else
+						{
+							lsPrice = goods.getPrice();
+						}
+						map.addAttribute("price" + goodsId, lsPrice);
 					}
 				}
 			}
@@ -1908,7 +1921,7 @@ public class TdUserController {
 										orderGoods.setQuantity(quantity);
 										orderGoods.setReturnNoteNumber(returnNote.getReturnNumber());
 										orderGoods.setSubOrderNumber(order.getOrderNumber());
-
+										orderGoods.setReturnUnitPrice(price);
 										// orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
 										// orderGoods.setPoints(oGoods.getPoints());
 										// tdOrderGoodsService.save(orderGoods);
@@ -1944,6 +1957,8 @@ public class TdUserController {
 			order.setIsRefund(true);
 			tdOrderService.save(order);
 			tdReturnNoteService.save(returnNote);
+			tdInterfaceService.initReturnOrder(returnNote);
+			
 			// tdCommonService.sendBackToWMS(returnNote);
 		}
 
