@@ -135,7 +135,7 @@ function changeType(e)
     <dt>所属公司</dt>
     <dd>
         <div class="rule-single-select">
-            <select name="brandId" >
+            <select name="brandId" id="brandId" <#if !coupon??>onchange="javascript:searchGoods();"</#if>>
             	<option value="">请选择...</option>
                 <#if brand_list??>
                     <#list brand_list as item>
@@ -210,11 +210,13 @@ function changeType(e)
 <script type="text/javascript">
 function searchGoods()
 {
+	//查询条件增加公司id
     var keywords = $("#keywords").val();
+    var brandId = $("#brandId").val();
     $.ajax({
         type : "post",
         url : "/Verwalter/coupon/search",
-        data : {"keywords":keywords},
+        data : {"keywords":keywords,"brandId":brandId},
         success:function(res)
         {
             $("#goodsDiv").html(res);

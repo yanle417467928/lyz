@@ -1513,4 +1513,16 @@ public class TdGoodsService {
 		return repository.findAll(c,pageRequest);
 	}
 	
+	public List<TdGoods> searchGoodsByKeywordsAndBrand(String keywords,Long brandId){
+		Criteria<TdGoods> c = new Criteria<TdGoods>();
+		//查询条件
+		if(StringUtils.isNotBlank(keywords)){
+			c.add(Restrictions.or(Restrictions.like("title", keywords, true),Restrictions.like("subTitle", keywords, true),
+					Restrictions.like("code", keywords, true)));
+		}
+		if(brandId!=null){
+			c.add(Restrictions.eq("brandId", brandId, true));
+		}
+		return repository.findAll(c);
+	}
 }
