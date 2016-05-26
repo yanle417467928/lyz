@@ -121,6 +121,7 @@ public class TdInterfaceService {
 			call.setTimeout(100000);
 			call.setEncodingStyle("UTF-8");
 			call.setTargetEndpointAddress(InterfaceConfigure.getEBS_WS_URL());
+			call.setReturnType(XMLType.XSD_STRING);
 			call.addHeader(soapHeaderElement);
 			QName TableQName = new QName("STRTABLE");
 			QName TypeQName = new QName("STRTYPE");
@@ -248,7 +249,7 @@ public class TdInterfaceService {
 				goodsInf.setSku(tdOrderGoods.getSku());
 				goodsInf.setQuantity(tdOrderGoods.getQuantity());
 //				goodsInf.setJxPrice(tdOrderGoods.getRealPrice());
-				goodsInf.setLsPrice(tdOrderGoods.getPrice());
+				goodsInf.setLsPrice(tdOrderGoods.getGiftPrice());
 				goodsInf.setGiftFlag("Y");
 				goodsInf.setPromotion(tdOrderGoods.getActivityId());
 				tdOrderGoodsInfService.save(goodsInf);
@@ -408,7 +409,7 @@ public class TdInterfaceService {
 			}
 		}
 		
-		TdReturnCouponInf tdReturnCouponInf =new TdReturnCouponInf();
+//		TdReturnCouponInf tdReturnCouponInf =new TdReturnCouponInf();
 		
 //		tdReturnCouponInf.setRtHeaderId(rtHeaderId);
 	}
