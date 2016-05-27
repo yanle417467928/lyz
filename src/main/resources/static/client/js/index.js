@@ -194,14 +194,14 @@ function win_cla() {
 };
 
 function fen_scroll() {
-	$('.fen_testleft').height($(window).height());
+	$('.fen_testleft').height($(window).height()-160); //160是 顶部 50  底部 50+60 得出来的 
 	var che = $('.fen_goodbox dl dt .my_checkbox');
 	var dlb = $('.fen_goodbox dl dt')
 	var hei = (dlb.height() - che.height()) / 2
 	che.css({
 		marginTop : hei
 	})
-	$('.fen_goodbox').height($(window).height() - 150)
+	$('.fen_goodbox').height($(window).height() - 200) //200是 顶部 50+40  底部 50+60 得出来的 
 	// ///////////
 	var all_li = 0;
 	var all_ul = $('.fen_testtop ul');
