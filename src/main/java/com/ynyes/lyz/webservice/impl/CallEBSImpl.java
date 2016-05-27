@@ -47,6 +47,7 @@ import com.ynyes.lyz.entity.TdGoodsLimit;
 import com.ynyes.lyz.entity.TdLyzParameter;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
+import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsLimitService;
@@ -54,6 +55,7 @@ import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdLyzParameterService;
 import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdPriceListService;
+import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.webservice.ICallEBS;
 
 @WebService
@@ -79,6 +81,9 @@ public class CallEBSImpl implements ICallEBS {
 	
 	@Autowired
 	private TdBrandService tdBrandService;
+	
+	@Autowired
+	private TdProductCategoryService tdProductCategoryService;
 
 	public String GetErpInfo(String STRTABLE, String STRTYPE, String XML) 
 	{
@@ -844,6 +849,30 @@ public class CallEBSImpl implements ICallEBS {
 				{
 					tdLyzParameter = new TdLyzParameter();
 					tdLyzParameter.setCategoryId(category_id);
+					//添加分类
+			        TdProductCategory parentprodcut =tdProductCategoryService.findByTitle(segment1); //一级分类
+			        if(parentprodcut==null){
+			        	parentprodcut=new TdProductCategory();
+			        	parentprodcut.setTitle(segment1);
+			        	parentprodcut.setSortId(99.0);
+			        	parentprodcut.setLayerCount(1L);
+			        	parentprodcut.setInvCategoryId(0L);
+			        	parentprodcut=tdProductCategoryService.save(parentprodcut);
+			        	parentprodcut.setParentTree("["+parentprodcut.getId()+"]");//保存后才能拿到id
+			        	tdProductCategoryService.save(parentprodcut);
+			        }
+			        TdProductCategory prodcut=tdProductCategoryService.findByTitleAndParentId(segment2, parentprodcut.getId()); //二级分类
+			        if(prodcut==null){
+			        	prodcut= new TdProductCategory();
+			        	prodcut.setParentId(parentprodcut.getId());
+			        	prodcut.setTitle(segment2);
+			        	prodcut.setSortId(99.0);
+			        	prodcut.setLayerCount(1L);
+			        	prodcut.setInvCategoryId(category_id);
+			        	prodcut=tdProductCategoryService.save(prodcut);//保存后才能拿到id
+			        	prodcut.setParentTree(parentprodcut.getParentTree()+",["+parentprodcut.getId()+"]");
+			        	tdProductCategoryService.save(prodcut);
+			        }
 				}
 				tdLyzParameter.setConcatenatedSegments(concatenated_segments);
 				tdLyzParameter.setCategorySetName(category_set_name);
