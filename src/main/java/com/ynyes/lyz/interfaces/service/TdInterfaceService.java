@@ -143,7 +143,10 @@ public class TdInterfaceService {
 			return null;
 		}
 	}
-
+	
+	
+	
+/**     -=-=-=-=-=-=-     生成实体类       -=-=-=-=-=-=-       **/
 	
 	/**
 	 * 根据订单生成销售订单相关数据
@@ -282,6 +285,11 @@ public class TdInterfaceService {
 		}
 	}
 	
+	/**
+	 * 生成销售单的收货时间，收到货的时间
+	 * @param tdOrder
+	 * @return
+	 */
 	public TdOrderReceiveInf initOrderReceiveByOrder(TdOrder tdOrder)
 	{
 		TdOrderReceiveInf orderReceiveInf = new TdOrderReceiveInf();
@@ -306,6 +314,31 @@ public class TdInterfaceService {
 			return tdOrderReceiveInfService.save(orderReceiveInf);
 		}
 		return null;
+	}
+	
+	public TdCashReciptInf initCashReciptByOrder(TdOrder tdOrder)
+	{
+		if (tdOrder == null)
+		{
+			return null;
+		}
+		TdCashReciptInf cashReciptInf = new TdCashReciptInf();
+//		cashReciptInf.setSobId();
+//		cashReciptInf.setReceiptId();
+//		cashReciptInf.setReceiptNumber();
+//		cashReciptInf.setUserid();
+//		cashReciptInf.setUsername();
+//		cashReciptInf.setUserphone();
+//		cashReciptInf.setDiySiteCode();
+//		cashReciptInf.setReceiptClass();
+//		cashReciptInf.setOrderHeaderId();
+//		cashReciptInf.setOrderNumber();
+//		cashReciptInf.setProductType();
+//		cashReciptInf.setReceiptType();
+//		cashReciptInf.setReceiptDate();
+//		cashReciptInf.setAmount();
+
+		return cashReciptInf;
 	}
 	
 	/**
@@ -340,14 +373,14 @@ public class TdInterfaceService {
 		if(returnNote==null){
 			return;
 		}
-		
+
 		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
 		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(returnNote.getOrderNumber());
 		if (returnOrderInf != null || tdOrderInf == null)
 		{
 			return ;
 		}
-		
+
 		returnOrderInf = new TdReturnOrderInf();
 		TdDiySite diySite= tdDiySiteService.findOne(returnNote.getDiySiteId());
 		if(diySite!=null){
@@ -412,6 +445,11 @@ public class TdInterfaceService {
 //		tdReturnCouponInf.setRtHeaderId(rtHeaderId);
 	}
 	
+	/**
+	 * 根据订单生成退货时的优惠券
+	 * @param tdOrder
+	 * @param type
+	 */
 	public void initReturnCouponInfByOrder(TdOrder tdOrder,Integer type)
 	{
 		// type 0:取消订单 1:其他退货
@@ -484,6 +522,9 @@ public class TdInterfaceService {
 		}
 		return "N";
 	}
+	
+	
+	/**     -=-=-=-=-=-=-     生成XML       -=-=-=-=-=-=-       **/
 	
 	public String XmlByOrder(TdOrder tdOrder, INFTYPE type)
 	{
@@ -788,27 +829,36 @@ public class TdInterfaceService {
 		return xmlEnd;
 	}
 	
+	/**     -=-=-=-=-=-=-     单个实体类发送EBS       -=-=-=-=-=-=-       **/
+	
+	
+	/**
+	 * 通过相关的实体进行单一的发送给EBS
+	 * @param object
+	 * @param type
+	 */
 	public void ebsWithObject(Object object, INFTYPE type) 
 	{
-		switch (type) {
-		case ORDERRECEIVEINF:
+		switch (type) 
 		{
-			TdOrderReceiveInf orderReceiveInf = (TdOrderReceiveInf)object;
-			String orderInfXML = this.XMLWithEntity(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
-			Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
-			try
+			case ORDERRECEIVEINF:
 			{
-				String result = (String)TdInterfaceService.getCall().invoke(orderInf);
-				System.out.println(result);
+				TdOrderReceiveInf orderReceiveInf = (TdOrderReceiveInf)object;
+				String orderInfXML = this.XMLWithEntity(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+				Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
+				try
+				{
+					String result = (String)TdInterfaceService.getCall().invoke(orderInf);
+					System.out.println(result);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		break;
-		default:
 			break;
+			default:
+				break;
 		}
 	}
 
