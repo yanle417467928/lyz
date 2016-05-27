@@ -100,7 +100,7 @@ function downloaddate(type)
     <div class="toolbar-wrap">
         <div id="floatHead" class="toolbar">
 
-				<div class="r-list">
+				<div class="r-list" style="width: 100%;">
 					<div class="odiv">
 						<span class="span1">开始时间：</span> <input name="orderStartTime"
 							id="begain" type="text" value="${orderStartTime!"" }" class="input date"

@@ -41,6 +41,9 @@ import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdWareHouse;
+import com.ynyes.lyz.interfaces.entity.TdOrderReceiveInf;
+import com.ynyes.lyz.interfaces.service.TdInterfaceService;
+import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
@@ -144,6 +147,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdDiySiteRoleService tdDiySiteRoleService;
+	
+	@Autowired
+	private TdInterfaceService tdInterfaceService;
 	
 	 /**
 	 * @author lc
@@ -724,9 +730,26 @@ public class TdManagerOrderController {
 							roleDiyCodes.add(diy.getStoreCode());
 						}
 					}
+					//订单的city字段为收货人地址 
+					//搜索条件城市 数据库里面没有城市 转换为门code查询
+					List<String> cityDiyCodes=new ArrayList<String>();
+					TdCity tdCity= tdCityService.findByCityName(city);
+					if(tdCity!=null){
+						 List<TdDiySite> diySiteList= tdDiySiteService.findByCityId(tdCity.getId());
+						 if(diySiteList!=null && diySiteList.size()>0){
+							 for (TdDiySite tdDiySite : diySiteList) {
+								if(roleDiyCodes.contains(tdDiySite.getStoreCode())){
+									cityDiyCodes.add(tdDiySite.getStoreCode());
+								}
+							}
+						 }else{
+							 //城市下面没有门店  默认为null  查询不到任何门店
+							 cityDiyCodes.add("null");
+						 }
+					}
 					
 						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, usernameList, sellerRealName, shippingAddress, shippingPhone,
-					 deliveryTime, userPhone, shippingName, sendTime,statusId,diyCode,city,roleCityNames,roleDiyCodes, size, page));
+					 deliveryTime, userPhone, shippingName, sendTime,statusId,diyCode,city,cityDiyCodes,roleDiyCodes, size, page));
 				}
 			}
 		
@@ -1003,6 +1026,13 @@ public class TdManagerOrderController {
 				if (order.getStatusId().equals(4L)) {
 					order.setStatusId(5L);
 					order.setReceiveTime(new Date());
+					
+					// add send receive time to ebs
+					TdOrderReceiveInf orderReceiveInf = tdInterfaceService.initOrderReceiveByOrder(order);
+					if (orderReceiveInf != null)
+					{
+						tdInterfaceService.ebsWithObject(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+					}
 				}
 			}
 			// 确认完成
@@ -1313,7 +1343,8 @@ public class TdManagerOrderController {
 		for (Long chkId : chkIds) {
 			if (chkId >= 0) {
 				TdOwnMoneyRecord ownMoneyRecord = tdOwnMoneyRecordService.findOne(chkId);
-				if (ownMoneyRecord != null)
+				//已审核过就不能修改
+				if (ownMoneyRecord != null && (ownMoneyRecord.getIsEnable()==null || !ownMoneyRecord.getIsEnable()) )
 				{
 					
 					/*//修改订单实际付款  逻辑修改
@@ -1336,7 +1367,7 @@ public class TdManagerOrderController {
 		for (Long chkId : chkIds) {
 			if (chkId >= 0) {
 				TdOwnMoneyRecord ownMoneyRecord = tdOwnMoneyRecordService.findOne(chkId);
-				if (ownMoneyRecord != null)
+				if (ownMoneyRecord != null && (ownMoneyRecord.getIsEnable()==null || !ownMoneyRecord.getIsEnable()))
 				{
 					ownMoneyRecord.setIsEnable(true);
 					ownMoneyRecord.setIspassed(false);

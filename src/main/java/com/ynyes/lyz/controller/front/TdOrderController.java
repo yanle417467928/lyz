@@ -465,7 +465,7 @@ public class TdOrderController {
 	 * @author DengXiao
 	 */
 	@RequestMapping(value = "/get/info")
-	public String orderGetInfo(HttpServletRequest req, ModelMap map, Long type) {
+	public String orderGetInfo(HttpServletRequest req, ModelMap map, Long type,String diySiteName) {
 		// 获取登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
@@ -477,8 +477,16 @@ public class TdOrderController {
 				List<TdDiySite> info_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(cityId);
 				map.addAttribute("info_list", info_list);
 			} else if (1L == type.longValue()) {
-				List<TdUser> info_list = tdUserService
-						.findByCityIdAndUserTypeOrCityIdAndUserTypeOrderBySortIdAsc(cityId);
+				//根据门店查询导购
+				TdDiySite diySite=tdDiySiteService.findByTitleAndIsEnableTrue(diySiteName);
+				List<TdUser> info_list=null;
+				if (null != diySite) {//查询门店下面的导购
+					info_list = tdUserService.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(
+							diySite.getRegionId(), diySite.getCustomerId());
+
+				}else{//以前的逻辑查询城市下面的所有导购
+					info_list = tdUserService.findByCityIdAndUserTypeOrCityIdAndUserTypeOrderBySortIdAsc(cityId);
+				}
 				map.addAttribute("info_list", info_list);
 			}
 		}
@@ -558,9 +566,9 @@ public class TdOrderController {
 			if (null != upperDiySiteId && upperDiySiteId == diySite.getId()) {
 				// 销顾自动变更为用户的默认导购
 				order.setSellerId(user.getSellerId());
-				order.setSellerRealName(user.getRealName());
-				order.setSellerUsername(user.getUsername());
-				res.put("sellerName", user.getRealName());
+				order.setSellerRealName(user.getSellerName());
+				order.setSellerUsername(user.getReferPhone());
+				res.put("sellerName", user.getSellerName());
 			} else {
 				// 默认为所有销顾中的第一个
 				List<TdUser> seller_list = tdUserService
@@ -572,6 +580,11 @@ public class TdOrderController {
 					order.setSellerUsername(the_seller.getUsername());
 					order.setSellerRealName(the_seller.getRealName());
 					res.put("sellerName", the_seller.getRealName());
+				}else{
+					order.setSellerId(null);
+					order.setSellerUsername(null);
+					order.setSellerRealName(null);
+					res.put("sellerName", "");
 				}
 			}
 			tdOrderService.save(order);

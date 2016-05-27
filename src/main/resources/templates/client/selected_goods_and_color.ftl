@@ -22,7 +22,8 @@
                             <!-- 数量选择 -->
                             <div class="numbers">
                                 <a class="less" href="javascript:operate(0,0,${goods.goodsId?c});">-</a>
-                                <input type="text" readonly="true" id="goods${goods.goodsId?c}" <#if ("goods"+goods_index)?eval??&&("goods"+goods_index)?eval lt goods.quantity>value="${("goods"+goods_index)?eval}"<#else>value="${goods.quantity!'0'}"</#if>>
+                                <!-- 可以手动修改数量 -->
+                                <input type="text" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onchange="javascript:operate(2,0,${goods.goodsId?c});" id="goods${goods.goodsId?c}" <#if ("goods"+goods_index)?eval??&&("goods"+goods_index)?eval lt goods.quantity>value="${("goods"+goods_index)?eval}"<#else>value="${goods.quantity!'0'}"</#if>>
                                 <a class="add" href="javascript:operate(1,0,${goods.goodsId?c});">+</a>
                             </div>
                             <div class="price" id="goods${goods.goodsId?c}price">￥
@@ -79,6 +80,14 @@ $(function touch(){
         })
     });
 });
+//限制输入 只能输入数字
+function keyup(obj){
+	if(obj.value.length==1){obj.value=obj.value.replace(/[^1-9]/g,'')}else{obj.value=obj.value.replace(/\D/g,'')};
+}
+//限制输入 只能输入数字
+function afterpaste(obj){
+	if(obj.value.length==1){obj.value=obj.value.replace(/[^1-9]/g,'')}else{obj.value=obj.value.replace(/\D/g,'')};
+}
 </script>
 
 <script type="text/javascript">

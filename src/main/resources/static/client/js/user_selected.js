@@ -22,7 +22,13 @@ function operate(operation, type, id) {
 			return;
 		}
 	}
-
+	
+	if(quantity>inventory){
+		$(elementId).val(inventory);
+		warning("亲，库存只有这么多啦");
+		return;
+	}
+	//增加当前数量参数
 	// 开启等待图标
 	wait();
 	// 发送异步请求
@@ -33,7 +39,8 @@ function operate(operation, type, id) {
 		data : {
 			operation : operation,
 			type : type,
-			id : id
+			id : id,
+			quantity:quantity
 		},
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			close(100);

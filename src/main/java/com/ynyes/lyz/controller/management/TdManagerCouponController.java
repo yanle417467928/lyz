@@ -793,13 +793,14 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 	/**
 	 * 指定商品券和产品券 关键字收索商品
-	 * 
+	 * 搜索条件增加公司id
 	 * @author Max
 	 */
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public String goodsSeach(String keywords, Integer page, HttpServletRequest req, ModelMap map) {
+	public String goodsSeach(String keywords, Integer page, HttpServletRequest req, ModelMap map,Long brandId) {
 
-		map.addAttribute("goodsList", tdGoodsService.searchGoods(keywords));
+//		map.addAttribute("goodsList", tdGoodsService.searchGoods(keywords));
+		map.addAttribute("goodsList", tdGoodsService.searchGoodsByKeywordsAndBrand(keywords, brandId));
 		return "/site_mag/coupon_goods";
 	}
 

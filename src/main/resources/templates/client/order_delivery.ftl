@@ -123,6 +123,8 @@
             
             <#-- 获取门店信息或者导购信息的方法 -->
             function getInfo(type){
+            	<#--增加门店字段 -->
+            	var diySiteName= $("#diySite_info").html();
                 wait();
                 console.log(1);
                 <#-- type的值为0，代表获取的门店的信息，type的值为1，代表获取的导购的信息 -->
@@ -131,7 +133,8 @@
                     timeout:10000,
                     type:"POST",
                     data:{
-                        type:type
+                        type:type,
+                        diySiteName:diySiteName
                     },
                     error:function(){
                         close(1);

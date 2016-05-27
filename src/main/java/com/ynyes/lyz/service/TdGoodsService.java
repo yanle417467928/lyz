@@ -1453,6 +1453,7 @@ public class TdGoodsService {
 		if(categoryTitle!=null && categoryTitle.size()>0){
 			c.add(Restrictions.in("categoryTitle",categoryTitle,true));
 		}
+		c.add(Restrictions.eq("isOnSale", true, true));
 		//排序
 		if("0".equals(sortFiled)){
 			if("0".equals(rule)){
@@ -1513,4 +1514,16 @@ public class TdGoodsService {
 		return repository.findAll(c,pageRequest);
 	}
 	
+	public List<TdGoods> searchGoodsByKeywordsAndBrand(String keywords,Long brandId){
+		Criteria<TdGoods> c = new Criteria<TdGoods>();
+		//查询条件
+		if(StringUtils.isNotBlank(keywords)){
+			c.add(Restrictions.or(Restrictions.like("title", keywords, true),Restrictions.like("subTitle", keywords, true),
+					Restrictions.like("code", keywords, true)));
+		}
+		if(brandId!=null){
+			c.add(Restrictions.eq("brandId", brandId, true));
+		}
+		return repository.findAll(c);
+	}
 }

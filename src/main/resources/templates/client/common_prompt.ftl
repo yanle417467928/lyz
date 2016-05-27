@@ -36,7 +36,6 @@
 		    width: 40px;
 		    height: 27px;
 		    line-height: 27px;
-		    font-size: 0.2em;
 		    background-color:#ff2d2d;
 		    color: #fff;
 		    text-align: center;
