@@ -53,6 +53,7 @@ import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdUserSuggestion;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
 import com.ynyes.lyz.entity.TdWareHouse;
+import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdArticleCategoryService;
 import com.ynyes.lyz.service.TdArticleService;
@@ -180,6 +181,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdPayTypeService tdPayTypeService;
+	
+	@Autowired
+	private TdInterfaceService tdInterfaceService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -377,8 +381,11 @@ public class TdUserController {
 			for (int i = 0; i < collect_list.size(); i++) {
 				TdUserCollect userCollect = collect_list.get(i);
 				if (null != userCollect) {
-					TdPriceListItem priceListItem = tdPriceListItemService
-							.findByPriceListIdAndGoodsId(diySite.getPriceListId(), userCollect.getGoodsId());
+					//调用公共方法查询价格
+					TdGoods goods= tdGoodsService.findOne(userCollect.getGoodsId());
+					TdPriceListItem priceListItem =tdCommonService.getGoodsPrice(req, goods);
+//					TdPriceListItem priceListItem = tdPriceListItemService
+//							.findByPriceListIdAndGoodsId(diySite.getPriceListId(), userCollect.getGoodsId());
 					map.addAttribute("priceListItem" + i, priceListItem);
 				}
 			}
@@ -553,11 +560,12 @@ public class TdUserController {
 
 	/**
 	 * 更改已选数量的方法
-	 * 
+	 * 可以手动修改数量 zp
+	 * @param operation 0:减一  1:加一  2手动修改数量
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/selected/change/quantity")
-	public String selectedChangeQuantity(HttpServletRequest req, ModelMap map, Long operation, Long type, Long id) {
+	public String selectedChangeQuantity(HttpServletRequest req, ModelMap map, Long operation, Long type, Long id,Long quantity) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		// 避免“空指针异常”
@@ -577,6 +585,9 @@ public class TdUserController {
 					}
 					if (1L == operation) {
 						cartGoods.setQuantity(cartGoods.getQuantity() + 1);
+					}
+					if(2L==operation){
+						cartGoods.setQuantity(quantity);
 					}
 					tdCartGoodsService.save(cartGoods);
 				}
@@ -1787,7 +1798,16 @@ public class TdUserController {
 					if (null != goodsId) {
 						Double unit = returnUnitPrice.get(goodsId);
 						map.addAttribute("unit" + goodsId, unit);
-						map.addAttribute("price" + goodsId, goods.getPrice());
+						Double lsPrice = 0d;
+						if (goods.getGiftPrice() != null)
+						{
+							lsPrice = goods.getGiftPrice();
+						}
+						else
+						{
+							lsPrice = goods.getPrice();
+						}
+						map.addAttribute("price" + goodsId, lsPrice);
 					}
 				}
 			}
@@ -1904,7 +1924,7 @@ public class TdUserController {
 										orderGoods.setQuantity(quantity);
 										orderGoods.setReturnNoteNumber(returnNote.getReturnNumber());
 										orderGoods.setSubOrderNumber(order.getOrderNumber());
-
+										orderGoods.setReturnUnitPrice(price);
 										// orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
 										// orderGoods.setPoints(oGoods.getPoints());
 										// tdOrderGoodsService.save(orderGoods);
@@ -1940,6 +1960,8 @@ public class TdUserController {
 			order.setIsRefund(true);
 			tdOrderService.save(order);
 			tdReturnNoteService.save(returnNote);
+			tdInterfaceService.initReturnOrder(returnNote);
+			
 			// tdCommonService.sendBackToWMS(returnNote);
 		}
 

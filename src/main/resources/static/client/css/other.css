@@ -1901,10 +1901,12 @@
 	color: #999;
 	-webkit-flex-box: 1;
 	-webkit-flex: 1; /*flexbox弹性布局*/
+	float: left;
 }
 /*等待发货颜色*/
 .order-list li .species {
 	color: #cc1421;
+	float: right;
 }
 /*已发货颜色*/
 .order-list li .c-ff8e08 {

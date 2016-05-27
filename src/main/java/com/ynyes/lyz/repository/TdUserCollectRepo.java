@@ -27,6 +27,11 @@ public interface TdUserCollectRepo
 	// 不分页的findByUsernameAndGoodsTitleContainingOrderByIdDesc——by dengxiao
 	List<TdUserCollect> findByUsernameAndGoodsTitleContainingOrderByIdDesc(String username, String keywords);
 
+	/**
+	 * 查找指定用户收藏的商品
+	 */
+	@Query("select uc from TdUserCollect uc,TdGoods g where "
+			+ "uc.goodsId=g.id and uc.username =?1 and g.isOnSale=1 ")
 	List<TdUserCollect> findByUsername(String username);
 
 	TdUserCollect findByUsernameAndGoodsId(String username, Long goodsId);
@@ -38,6 +43,8 @@ public interface TdUserCollectRepo
 	 * 
 	 * @author dengxiao
 	 */
+	@Query("select uc from TdUserCollect uc,TdGoods g where "
+			+ "uc.goodsId=g.id and uc.username =?1 and g.isOnSale=1 order by uc.collectTime desc")
 	List<TdUserCollect> findByUsernameOrderByCollectTimeDesc(String username);
 
 	/**

@@ -68,7 +68,7 @@
                 <li style="width:45%; " <#if selected_rule??&&selected_rule==2>class="current"</#if>><a href="/goods/search?param=2-${rule1!'0'}-${rule2!'0'}-${rule3!'0'}&keywords=${keywords!''}">按销量</a></li>
             </ul>
             
-            <div class="new_goodbox">					
+            <div class="new_goodbox" style="margin-bottom: 110px;">					
                 <#if goods_list??>
                     <#list goods_list as item>
                         <dl>
