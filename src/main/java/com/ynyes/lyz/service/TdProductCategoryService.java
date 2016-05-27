@@ -219,5 +219,13 @@ public class TdProductCategoryService {
 		}
 		return repository.findByIdInGroupByIdOrderBySortIdAsc(ids);
 	}
+	
+	public TdProductCategory findByTitleAndParentId(String title,Long parentId) {
+		if (null == title) {
+			return null;
+		}
+
+		return repository.findByTitleAndParentId(title,parentId);
+	}
 
 }
