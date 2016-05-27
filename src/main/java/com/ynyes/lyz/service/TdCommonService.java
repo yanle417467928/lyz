@@ -1917,7 +1917,7 @@ public class TdCommonService {
 
 		public void run() {
 			sendMsgToWMS(orderList, mainOrderNumber);
-//			sendOrderToEBS(orderList);
+			// sendOrderToEBS(orderList);
 		}
 	}
 
@@ -1934,10 +1934,9 @@ public class TdCommonService {
 			String orderInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERINF);
 			Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
 			try {
-				String object = (String)TdInterfaceService.getCall().invoke(orderInf);
+				String object = (String) TdInterfaceService.getCall().invoke(orderInf);
 				System.out.println(object);
-				if (StringTools.interfaceMessage(object)!= null)
-				{
+				if (StringTools.interfaceMessage(object) != null) {
 					isOrderInfSucceed = true;
 				}
 			} catch (Exception e) {
