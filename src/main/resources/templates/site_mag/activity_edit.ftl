@@ -272,7 +272,16 @@ function del_goods_comb(obj) {
     $(obj).parent().parent().remove();
     $("#totalComb").val(parseInt($("#totalComb").val())-1);
 }
-
+//判断活动结束时间不能小于开始时间
+function checkDate(){
+	var beginDate= $('#beginDate').val();
+	var finishDate=$('#finishDate').val();
+	if(finishDate<=beginDate){
+		alert("亲,活动结束时间不能小于开始时间");
+		return false;
+	}
+	
+}
   <#if fns??>
   	$(document).ready(function(){
   		alert("保存成功");
@@ -284,7 +293,7 @@ function del_goods_comb(obj) {
 </script>
 </head>
 <body class="mainbody">
-<form method="post" action="/Verwalter/activity/save" id="form1">
+<form method="post" action="/Verwalter/activity/save" id="form1" onsubmit="return checkDate();">
 <div>
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="${__EVENTTARGET!""}" />
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="${__EVENTARGUMENT!""}" />
@@ -374,7 +383,7 @@ function del_goods_comb(obj) {
             <dt>活动开始时间</dt>
             <dd>
                 <div class="input-date">
-                    <input name="beginDate" type="text" value="<#if activity??>${activity.beginDate!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                    <input name="beginDate" id="beginDate" type="text" value="<#if activity??>${activity.beginDate?string("yyyy-MM-dd HH:mm:ss")}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                     <i>日期</i>
                 </div>
                 <span class="Validform_checktip"></span>
@@ -384,7 +393,7 @@ function del_goods_comb(obj) {
             <dt>结束到期时间</dt>
             <dd>
                 <div class="input-date">
-                    <input name="finishDate" type="text" value="<#if activity??>${activity.finishDate!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                    <input name="finishDate" id="finishDate" type="text" value="<#if activity??>${activity.finishDate?string("yyyy-MM-dd HH:mm:ss")}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                     <i>日期</i>
                 </div>
                 <span class="Validform_checktip"></span>
@@ -578,7 +587,7 @@ function del_goods_comb(obj) {
     <!--工具栏-->
     <div class="page-footer">
         <div class="btn-list">
-            <input type="submit" name="btnSubmit" value="提交保存" id="btnSubmit" class="btn">
+            <input type="submit" name="btnSubmit" value="提交保存" id="btnSubmit" class="btn" >
             <input name="btnReturn" type="button" value="返回上一页" class="btn yellow" onclick="javascript:history.back(-1);">
         </div>
         <div class="clear">
