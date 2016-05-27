@@ -34,7 +34,7 @@
             <a id="info" class="btn-edit">编辑</a>
         </header>
         <!-- 头部 END -->
-        
+      
         <!-- 我的已选 -->
         <div id="my_selected" style="margin-bottom: 50px;">
             <#include "/client/selected_goods_and_color.ftl">
