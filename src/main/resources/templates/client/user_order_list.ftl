@@ -138,7 +138,7 @@
             <section class="my_order">
                 <input id="typeId" type="hidden" value="${typeId!'0'}">
                 <div class="searchbox bgc-f3f4f6 bdt">
-                    <input type="text" id="keywords" placeholder="订单号/用户名">
+                    <input type="text" id="keywords" placeholder="订单号/用户信息/收货人信息">
                     <a href="javascript:searchOrder();"></a>
                 </div>          
                 <!-- 订单管理 -->
