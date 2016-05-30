@@ -20,7 +20,6 @@
   </div>
 </div>
 <script src="/client/js/swiper.min.js"></script>
-
 <script type="text/javascript">
   var mySwiper = new Swiper('.swiper-container',{
 	  direction: 'vertical',
@@ -29,7 +28,7 @@
 	  slidesPerView: 6
   });  
 </script>
-<!-- 
+<#-- 
 <#if user_list??>
     <#list user_list as item>
         <div class="swiper-slide" onclick="seller.selectInfo(${item.id?c});">
