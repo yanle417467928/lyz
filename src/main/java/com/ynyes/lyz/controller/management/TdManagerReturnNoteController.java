@@ -308,7 +308,9 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			if (type.equalsIgnoreCase("returnNote")) // 支付方式
 			{
 				if (null != id) {
-					map.addAttribute("returnNote", tdReturnNoteService.findOne(id));
+					TdReturnNote returnNote= tdReturnNoteService.findOne(id);
+					map.addAttribute("returnNote", returnNote);
+					map.addAttribute("user",tdUserService.findByUsername(returnNote.getUsername()));
 				}
 
 				return "/site_mag/returnNote_edit";
@@ -462,5 +464,4 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			}
 		}
 	}
-
 }
