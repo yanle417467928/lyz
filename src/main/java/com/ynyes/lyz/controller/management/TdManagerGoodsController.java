@@ -32,6 +32,7 @@ import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdCityService;
+import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDiySiteInventoryLogService;
 import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
@@ -105,6 +106,9 @@ public class TdManagerGoodsController {
 	
 	@Autowired
 	private TdDiySiteInventoryLogService tdDiySiteInventoryLogService;
+	
+	@Autowired
+	private TdCommonService tdCommonService;
 
 	@RequestMapping(value = "/refresh")
 	public String refreshCategorg() 
@@ -784,7 +788,7 @@ public class TdManagerGoodsController {
 	@RequestMapping(value = "/list/dialog/{type}")
 	public String goodsListDialog(@PathVariable String type, String keywords, Long categoryId, Integer page,
 			Long priceId, Integer size, Integer total, String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE,
-			ModelMap map, HttpServletRequest req) {
+			ModelMap map, HttpServletRequest req,Long cityId) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -815,29 +819,89 @@ public class TdManagerGoodsController {
 		}
 
 		Page<TdGoods> goodsPage = null;
+		//查询条件 价目表头id列表 
+		List<Long> priceListIdList=new ArrayList<Long>();
+		//添加一个不存在的Id 避免空值报错
+		priceListIdList.add(-1L);
+		//查询条件 商品类型id列表 
+		List<Long> categoryIdList=new ArrayList<Long>();
+		//添加一个不存在的Id 避免空值报错
+		categoryIdList.add(-1L);
+		//判断是否选择城市
+		if(cityId==null){
+			List<TdPriceList> priceList= tdPriceListService.findAll();
+			if(priceList!=null && priceList.size()>0){
+				//循环价目表头添加到查询条件中
+				for (TdPriceList tdPriceList : priceList) {
+					priceListIdList.add(tdPriceList.getListHeaderId());
+				}
+			}
+		}else{
+			//查询选择的城市
+			TdCity city= tdCityService.findOne(cityId);
+			if(city!=null){
+				List<TdPriceList> priceList= tdPriceListService.findByCityId(city.getSobIdCity());
+				if(priceList!=null && priceList.size()>0){
+					//循环价目表头添加到查询条件中
+					for (TdPriceList tdPriceList : priceList) {
+						priceListIdList.add(tdPriceList.getListHeaderId());
+					}
+				}
+			}
+		}
+		
+		if (null == categoryId || categoryId==-1){
+			List<TdProductCategory> productCategoryList= tdProductCategoryService.findAll();
+			if(productCategoryList!=null && productCategoryList.size()>0){
+				//循环商品类型id添加到查询条件中
+				for (TdProductCategory tdProductCategory : productCategoryList) {
+					categoryIdList.add(tdProductCategory.getId());
+				}
+			}
+		}else{
+			TdProductCategory productCategory= tdProductCategoryService.findOne(categoryId);
+			//1级目录
+			if(productCategory!=null &&productCategory.getParentId()==null){
+				//查询2级目录
+				 List<TdProductCategory> productCategoryList= tdProductCategoryService.findByParentIdOrderBySortIdAsc(productCategory.getId());
+				//循环商品类型id添加到查询条件中
+				 for (TdProductCategory tdProductCategory : productCategoryList) {
+					 categoryIdList.add(tdProductCategory.getId());
+				}
+			}else{//2级目录
+				 categoryIdList.add(productCategory.getId());
+			}
+		}
+		//关键字查询 为空查询全部
+		if(null == keywords || "".equalsIgnoreCase(keywords)){
+			keywords="";
+		}
+		
+		goodsPage = tdGoodsService.queryAllOrderBySortIdAsc(priceListIdList, categoryIdList, keywords, page, size);
+			
 
-		if (null == categoryId)
-		{
-			if (null == keywords || "".equalsIgnoreCase(keywords)) 
-			{
-				goodsPage = tdGoodsService.findAllOrderBySortIdAsc(page, size);
-			}
-			else
-			{
-				goodsPage = tdGoodsService.searchAndOrderBySortIdAsc(keywords, page, size);
-			}
-		}
-		else
-		{
-			if (null == keywords || "".equalsIgnoreCase(keywords)) 
-			{
-				goodsPage = tdGoodsService.findByCategoryIdTreeContainingOrderBySortIdAsc(categoryId, page, size);
-			}
-			else
-			{
-				goodsPage = tdGoodsService.searchAndFindByCategoryIdOrderBySortIdAsc(keywords, categoryId, page, size);
-			}
-		}
+//		if (null == categoryId)
+//		{
+//			if (null == keywords || "".equalsIgnoreCase(keywords)) 
+//			{
+//				goodsPage = tdGoodsService.queryAllOrderBySortIdAsc(page, size);
+//			}
+//			else
+//			{
+//				goodsPage = tdGoodsService.searchAndOrderBySortIdAsc(keywords, page, size);
+//			}
+//		}
+//		else
+//		{
+//			if (null == keywords || "".equalsIgnoreCase(keywords)) 
+//			{
+//				goodsPage = tdGoodsService.findByCategoryIdTreeContainingOrderBySortIdAsc(categoryId, page, size);
+//			}
+//			else
+//			{
+//				goodsPage = tdGoodsService.searchAndFindByCategoryIdOrderBySortIdAsc(keywords, categoryId, page, size);
+//			}
+//		}
 
 		map.addAttribute("goods_page", goodsPage);
 

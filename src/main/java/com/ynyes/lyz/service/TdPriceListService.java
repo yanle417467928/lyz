@@ -135,5 +135,12 @@ public class TdPriceListService {
 																					sobId, priceType, start, end,
 																					sobId,priceType);
 	}
+	
+	public List<TdPriceList> findByCityId(Long cityId){
+		if(cityId==null){
+			return null;
+		}
+		return repository.findByCityId(cityId);
+	}
 
 }

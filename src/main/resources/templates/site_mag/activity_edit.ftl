@@ -145,7 +145,7 @@ $(function () {
             max: false,
             min: false,
             title: "商品组合",
-            content: 'url:/Verwalter/goods/list/dialog/comb?total=' + $("#var_box_comb").children("tr").length,
+            content: 'url:/Verwalter/goods/list/dialog/comb?total=' + $("#var_box_comb").children("tr").length+'&cityId='+$('#cityId').val(),
             width: 800,
             height: 550
         });

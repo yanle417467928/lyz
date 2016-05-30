@@ -1526,4 +1526,11 @@ public class TdGoodsService {
 		}
 		return repository.findAll(c);
 	}
+	
+	// 查找所有商品按序号排序
+	public Page<TdGoods> queryAllOrderBySortIdAsc(List<Long> priceListIdList,List<Long> categoryIdList,String keywords,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
+
+		return repository.queryAllOrderBySortIdAsc(priceListIdList,categoryIdList,keywords,pageRequest);
+	}
 }
