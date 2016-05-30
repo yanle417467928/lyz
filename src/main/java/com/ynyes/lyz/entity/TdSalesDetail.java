@@ -43,6 +43,9 @@ public class TdSalesDetail {
 	//收货人
 	@Column
 	private String shippingName;
+	//收货人
+	@Column
+	private String shippingPhone;
 	//产品编号
 	@Column
 	private String sku;
@@ -267,6 +270,12 @@ public class TdSalesDetail {
 	}
 	public void setDiyId(Long diyId) {
 		this.diyId = diyId;
+	}
+	public String getShippingPhone() {
+		return shippingPhone;
+	}
+	public void setShippingPhone(String shippingPhone) {
+		this.shippingPhone = shippingPhone;
 	}
 	
 	
