@@ -28,12 +28,14 @@
         -->
         <#-- 引入公共警告窗口 -->
         <#include "/client/common_warn.ftl">
+        <#-- 引入等待提示样式 -->
+        <#include "/client/common_wait.ftl">
         
         <!-- 头部 -->
         <header>
             <a class="back" href="javascript:history.go(-1);"></a>
             <p>余额充值</p>
-            <a class="save" href="#">使用说明</a>
+            <#--<a class="save" href="#">使用说明</a>-->
         </header>
         <!-- 头部 END -->
         
@@ -139,19 +141,41 @@
 					}
 				}
 				
+				
+				
 				<#-- 获取支付名称 -->
 				var title = this.urls[pay];
 				
-				switch(title){
-					case "微信支付":
-					break;
-					case "支付宝":
-						window.location.href = "/recharge/alipay?money=" + cash;
-					break;
-					case "银行卡":
-						window.location.href = "/recharge/union?money=" + cash;
-					break;
-				}
+				<#-- 发送异步请求生成充值单 -->
+				$.ajax({
+					url : "/user/create/recharge",
+					type : "post",
+					data : {
+						money : cash,
+						title : title					
+					},
+					error:function(){
+						warning("亲，您的网速不给力啊");
+					},
+					success:function(res){
+						if(0 == res.status){
+							switch(title){
+								case "微信支付":
+								break;
+								case "支付宝":
+									window.location.href = "/pay/alipay?number=" + res.number + "&type=1";
+								break;
+								case "银行卡":
+									window.location.href = "/pay/union?number=" + res.number + "&type=1";
+								break;
+							}
+						}else{
+							warning(res.message);
+						}
+					}
+				});
+				
+				
     		}
     	}
     </script>

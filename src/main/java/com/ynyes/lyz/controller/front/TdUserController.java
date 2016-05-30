@@ -42,6 +42,7 @@ import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceListItem;
+import com.ynyes.lyz.entity.TdRecharge;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdSetting;
 import com.ynyes.lyz.entity.TdShippingAddress;
@@ -73,6 +74,7 @@ import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdPriceListItemService;
+import com.ynyes.lyz.service.TdReChargeService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
@@ -181,9 +183,12 @@ public class TdUserController {
 
 	@Autowired
 	private TdPayTypeService tdPayTypeService;
-	
+
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
+	
+	@Autowired
+	private TdReChargeService tdReChargeService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -381,11 +386,12 @@ public class TdUserController {
 			for (int i = 0; i < collect_list.size(); i++) {
 				TdUserCollect userCollect = collect_list.get(i);
 				if (null != userCollect) {
-					//调用公共方法查询价格
-					TdGoods goods= tdGoodsService.findOne(userCollect.getGoodsId());
-					TdPriceListItem priceListItem =tdCommonService.getGoodsPrice(req, goods);
-//					TdPriceListItem priceListItem = tdPriceListItemService
-//							.findByPriceListIdAndGoodsId(diySite.getPriceListId(), userCollect.getGoodsId());
+					// 调用公共方法查询价格
+					TdGoods goods = tdGoodsService.findOne(userCollect.getGoodsId());
+					TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
+					// TdPriceListItem priceListItem = tdPriceListItemService
+					// .findByPriceListIdAndGoodsId(diySite.getPriceListId(),
+					// userCollect.getGoodsId());
 					map.addAttribute("priceListItem" + i, priceListItem);
 				}
 			}
@@ -559,13 +565,15 @@ public class TdUserController {
 	}
 
 	/**
-	 * 更改已选数量的方法
-	 * 可以手动修改数量 zp
-	 * @param operation 0:减一  1:加一  2手动修改数量
+	 * 更改已选数量的方法 可以手动修改数量 zp
+	 * 
+	 * @param operation
+	 *            0:减一 1:加一 2手动修改数量
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/selected/change/quantity")
-	public String selectedChangeQuantity(HttpServletRequest req, ModelMap map, Long operation, Long type, Long id,Long quantity) {
+	public String selectedChangeQuantity(HttpServletRequest req, ModelMap map, Long operation, Long type, Long id,
+			Long quantity) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		// 避免“空指针异常”
@@ -586,7 +594,7 @@ public class TdUserController {
 					if (1L == operation) {
 						cartGoods.setQuantity(cartGoods.getQuantity() + 1);
 					}
-					if(2L==operation){
+					if (2L == operation) {
 						cartGoods.setQuantity(quantity);
 					}
 					tdCartGoodsService.save(cartGoods);
@@ -1799,12 +1807,9 @@ public class TdUserController {
 						Double unit = returnUnitPrice.get(goodsId);
 						map.addAttribute("unit" + goodsId, unit);
 						Double lsPrice = 0d;
-						if (goods.getGiftPrice() != null)
-						{
+						if (goods.getGiftPrice() != null) {
 							lsPrice = goods.getGiftPrice();
-						}
-						else
-						{
+						} else {
 							lsPrice = goods.getPrice();
 						}
 						map.addAttribute("price" + goodsId, lsPrice);
@@ -1961,7 +1966,7 @@ public class TdUserController {
 			tdOrderService.save(order);
 			tdReturnNoteService.save(returnNote);
 			tdInterfaceService.initReturnOrder(returnNote);
-			
+
 			// tdCommonService.sendBackToWMS(returnNote);
 		}
 
@@ -2423,5 +2428,60 @@ public class TdUserController {
 			map.addAttribute("all_return_list", returnList);
 		}
 		return "/client/user_all_return";
+	}
+
+	@RequestMapping(value = "/create/recharge", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> createRecharge(HttpServletRequest req, Double money, String title) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsername(username);
+		if (null == user) {
+			res.put("message", "未成功获取到登录用户的信息");
+			return res;
+		}
+
+		if (null == money) {
+			res.put("message", "未成功获取到充值金额信息");
+			return res;
+		}
+
+		if (null == title) {
+			res.put("message", "未成功获取到充值方式信息");
+			return res;
+		}
+
+		TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue(title);
+		if (null == payType) {
+			res.put("message", "未成功获取到充值方式信息");
+			return res;
+		}
+
+		// 生成充值单号
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		Date now = new Date();
+		String sDate = sdf.format(now);
+		Random random = new Random();
+		Integer suiji = random.nextInt(900) + 100;
+		String orderNum = sDate + suiji;
+
+		// 生成充值单
+		TdRecharge recharge = new TdRecharge();
+		recharge.setNumber("CZ" + orderNum);
+		recharge.setUserId(user.getId());
+		recharge.setUsername(user.getUsername());
+		recharge.setCreateTime(new Date());
+		recharge.setTotalPrice(money);
+		recharge.setTypeId(payType.getId());
+		recharge.setTypeTitle(payType.getTitle());
+		recharge.setStatusId(1L);
+		tdReChargeService.save(recharge);
+		
+		res.put("number", recharge.getNumber());
+
+		res.put("status", 0);
+		return res;
 	}
 }

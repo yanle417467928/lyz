@@ -24,7 +24,7 @@
   <!-- 支付成功 -->
   <article class="success-pay">
     <img src="/client/images/x_icon_success_pay.png" alt="">
-    <div>支付成功，等待发货！</div>
+    <div>支付成功！</div>
     <a href="/">返回首页</a>
   </article>
   <!-- 支付成功 END -->

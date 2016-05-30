@@ -61,7 +61,7 @@
                                     <div class="div2">
                                         <div class="c999"><#if item.finishTime??>${item.finishTime?string("yyyy-MM-dd")}</#if></div>
                                         <!-- 字体颜色：提现为黄色yellow，充值为绿色green -->
-                                        <div class="green">+ <#if user.money??>${user.money?string("0.00")}<#else>0.00</#if></div>
+                                        <div class="green">+ <#if item.money??>${item.money?string("0.00")}<#else>0.00</#if></div>
                                     </div>
                                 </div>
                             </#if>
@@ -74,7 +74,7 @@
                                     <div class="div2">
                                         <div class="c999"><#if item.finishTime??>${item.finishTime?string("yyyy-MM-dd")}</#if></div>
                                         <!-- 字体颜色：提现为黄色yellow，充值为绿色green -->
-                                        <div class="yellow">- <#if user.money??>${user.money?string("0.00")}<#else>0.00</#if></div>
+                                        <div class="yellow">- <#if item.money??>${item.money?string("0.00")}<#else>0.00</#if></div>
                                     </div>
                                 </div>
                             </#if>

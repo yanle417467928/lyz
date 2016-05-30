@@ -96,7 +96,7 @@ function pay() {
 			}
 			if (3 == res.status) {
 				if ("支付宝" == res.title) {
-					window.location.href = "/pay/alipay?id=" + res.order_id
+					window.location.href = "/pay/alipay?number=" + res.order_id
 							+ "&type=0";
 				} else if (res.title == "微信支付") {
 					document.location = "WXAppPay:WX:" + res.order_id;

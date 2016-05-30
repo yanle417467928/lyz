@@ -1541,7 +1541,7 @@ public class TdOrderController {
 					// status的值为3代表需要通过第三方支付
 					res.put("status", 3);
 					res.put("title", payType.getTitle());
-					res.put("order_id", order_temp.getId());
+					res.put("order_number", order_temp.getOrderNumber());
 				}
 				return res;
 			} else {
