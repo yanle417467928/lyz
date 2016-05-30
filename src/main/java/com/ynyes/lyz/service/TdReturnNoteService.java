@@ -310,10 +310,11 @@ public class TdReturnNoteService {
 	 * @param cityDiyCodes 权限城市
 	 * @param size 每页数据
 	 * @param page 当前页
+	 * @param statusId 退货单状态
 	 * @return 分页结果集
 	 * @author zp
 	 */
-	public Page<TdReturnNote> searchReturnList(String keyword,Long diyCode,List<Long> roleDiyCodes, List<Long> cityDiyCodes,int size,int page){
+	public Page<TdReturnNote> searchReturnList(String keyword,Long diyCode,List<Long> roleDiyCodes, List<Long> cityDiyCodes,int size,int page,Long statusId){
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdReturnNote> c = new Criteria<TdReturnNote>();
 		
@@ -328,6 +329,9 @@ public class TdReturnNoteService {
 		}
 		if(null!=cityDiyCodes && cityDiyCodes.size()>0){
 			c.add(Restrictions.in("diySiteId", cityDiyCodes, true));
+		}
+		if(null!=statusId){
+			c.add(Restrictions.eq("statusId", statusId, true));
 		}
 		c.add(Restrictions.ne("remarkInfo","用户取消订单，退货", true));
 		

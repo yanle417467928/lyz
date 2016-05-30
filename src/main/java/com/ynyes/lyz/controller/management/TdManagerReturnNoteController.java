@@ -106,7 +106,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	@RequestMapping(value = "/{type}/list")
 	public String list(@PathVariable String type, Integer page, Integer size, String keywords, String __EVENTTARGET,
 			String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId, Double[] listSortId,
-			ModelMap map, HttpServletRequest req,Long diyCode,String city) {
+			ModelMap map, HttpServletRequest req,Long diyCode,String city,Long statusId) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -238,7 +238,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					 }
 				}
 				
-				Page<TdReturnNote> returnNotePage= tdReturnNoteService.searchReturnList(keywords, diyCode, roleDiyCodes, cityDiyCodes, size, page);
+				Page<TdReturnNote> returnNotePage= tdReturnNoteService.searchReturnList(keywords, diyCode, roleDiyCodes, cityDiyCodes, size, page,statusId);
 				map.addAttribute("returnNote_page", returnNotePage);
 				//循环获取用户名称
 				List<TdReturnNote> returnNoteList= returnNotePage.getContent();
@@ -265,6 +265,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				map.addAttribute("cityList", cityList);
 				map.addAttribute("cityName", city);
 				map.addAttribute("diyCode", diyCode);
+				map.addAttribute("statusId", statusId);
 				
 				//以前的查询  zp
 //				String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
