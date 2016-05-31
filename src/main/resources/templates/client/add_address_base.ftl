@@ -20,7 +20,7 @@
         	}
 
         	function checkSpecificKey(keyCode) {
-        	    var specialKey = "$%\^\'\"\+";//Specific Key list # / - : ; () * .
+        	    var specialKey = "~!/@#$%\^&*=\+\|[{}];:\'\"<.>\\?";//Specific Key list ~/@#$%^&*=+\|[{}];:'"<.>
         	    var realkey = String.fromCharCode(keyCode);
         	    var flg = false;
         	 flg = (specialKey.indexOf(realkey) >= 0);
