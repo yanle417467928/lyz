@@ -135,6 +135,7 @@ public class TdCouponController {
 			tdCoupon.setTypeId(coupon.getTypeId());
 			tdCoupon.setTypeTitle(coupon.getTypeTitle());
 			tdCoupon.setTypeCategoryId(coupon.getTypeCategoryId());
+			tdCoupon.setCityName(user.getCityName());
 			TdGoods good = tdGoodsService.findOne(coupon.getGoodsId());
 			if (good != null) {
 				tdCoupon.setSku(good.getCode());
