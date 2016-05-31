@@ -44,7 +44,8 @@
                 </div>
             </dd>
         </dl>   
+        <div class="index_test_box"></div>
     </#if>
-    <div class="index_test_box"></div>
+    
 </#list>
 </#if>
