@@ -453,7 +453,7 @@
         <div class="btn-list">
         	<#if consult.isEnable?? && consult.isEnable==false>
         	<input type="button" value="通过" class="btn " id="auditYes">
-        	<input type="button" value="不通过" class="btn  id="auditNo">
+        	<input type="button" value="不通过" class="btn "  id="auditNo">
         	</#if>
             <input type="button" value="返回上一页" class="btn yellow" onclick="javascript:history.back(-1);">
             <span style="margin-left: 33px;"> 收款：<#if consult.payed??>${consult.payed?c}<#else>0</#if><b></b>   |<b></b> 欠款：<#if consult.owned??>${consult.owned?c}<#else>0</#if></span>
