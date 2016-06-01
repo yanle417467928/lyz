@@ -73,7 +73,6 @@ import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
-import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdReChargeService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdSettingService;
@@ -113,9 +112,6 @@ public class TdUserController {
 
 	@Autowired
 	private TdUserSuggestionCategoryService tdUserSuggestionCategoryService;
-
-	@Autowired
-	private TdPriceListItemService tdPriceListItemService;
 
 	@Autowired
 	private TdUserSuggestionService tdUserSuggestionService;
@@ -186,7 +182,7 @@ public class TdUserController {
 
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
-	
+
 	@Autowired
 	private TdReChargeService tdReChargeService;
 
@@ -1981,15 +1977,18 @@ public class TdUserController {
 	 */
 	@RequestMapping(value = "/show/gift")
 	public String showGift(HttpServletRequest req, ModelMap map) {
+
+		// 创建一个虚拟订单
+		TdOrder order = new TdOrder();
 		// 获取登录的用户
 		String username = (String) req.getSession().getAttribute("username");
-
 		// 获取用户所有的已选商品
 		List<TdCartGoods> all_selected = tdCartGoodsService.findByUsername(username);
 
+		order = tdCommonService.getPresent(req, order);
+
 		// 获取促销赠品
-		List<TdOrderGoods> present = this.getPresent(all_selected, req);
-		map.addAttribute("present", present);
+		map.addAttribute("present", order.getPresentedList());
 
 		// 获取小辅料赠品
 		List<TdOrderGoods> gift = this.getGift(req, all_selected);
@@ -2478,7 +2477,7 @@ public class TdUserController {
 		recharge.setTypeTitle(payType.getTitle());
 		recharge.setStatusId(1L);
 		tdReChargeService.save(recharge);
-		
+
 		res.put("number", recharge.getNumber());
 
 		res.put("status", 0);

@@ -177,6 +177,12 @@
                         <label>运费</label>
                         <div>￥<#if order??&&order.deliverFee??&&!(isFree??&&isFree)>${order.deliverFee?string("0.00")}<#else>0.00</#if></div>
                     </div>
+                    <#if order??&&order.activitySubPrice??&&order.activitySubPrice gt 0>
+	                    <div class="div1">
+	                        <label>促销扣减</label>
+	                        <div>￥<span><#if order??&&order.activitySubPrice??>-${order.activitySubPrice?string("0.00")}<#else>-0.00</#if><span></div>
+	                    </div>
+                    </#if>
                 </section>
             </article>
         </article>
