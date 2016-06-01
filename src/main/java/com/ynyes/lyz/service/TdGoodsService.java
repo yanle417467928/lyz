@@ -1485,10 +1485,11 @@ public class TdGoodsService {
 	 * @param categoryId 类别id
 	 * @param page 页数
 	 * @param size 行数
+	 * @param isOnsale 商品上下架
 	 * @return 分页结果集
 	 * @author zp
 	 */
-	public Page<TdGoods> searchGoodsList(String keywords,Long brandId,Long categoryId,int page,int size){
+	public Page<TdGoods> searchGoodsList(String keywords,Long brandId,Long categoryId,int page,int size,Boolean isOnSale){
 		//分页加排序
 		PageRequest pageRequest = new PageRequest(page, size,
 				new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "id")));
@@ -1510,6 +1511,9 @@ public class TdGoodsService {
 		}
 		if(brandId!=null){
 			c.add(Restrictions.eq("brandId",brandId,true));
+		}
+		if(isOnSale!=null){
+			c.add(Restrictions.eq("isOnSale", isOnSale, true));
 		}
 		return repository.findAll(c,pageRequest);
 	}
