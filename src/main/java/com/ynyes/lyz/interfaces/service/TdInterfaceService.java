@@ -78,20 +78,22 @@ public class TdInterfaceService {
 	@Autowired
 	private TdOrderService tdOrderService;
 	
-	static Call call;
+	private Call call;
+	
+//	private org.apache.axis.client.Service wbService = new  org.apache.axis.client.Service();
 	
 	/**
 	 * 访问WebService的服务端
 	 * 
 	 * @return Call
 	 */
-	public static Call getCall()
+	public Call getCall()
 	{
 		if (call != null) 
 		{
 			return call;
 		}
-		try 
+		try
 		{
 //			String urlname = "http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl";
 //			String urlname = getEbsWebServiceUrlByLocalHost();
@@ -113,12 +115,11 @@ public class TdInterfaceService {
 			wsSecHeaderElm.addChildElement(userNameTokenElm);
 			SOAPHeaderElement soapHeaderElement =  new SOAPHeaderElement(wsSecHeaderElm);
 //			soapHeaderElement.setMustUnderstand(true);
-			org.apache.axis.client.Service s = new  org.apache.axis.client.Service();
-			call = (Call) s.createCall();
-//			call.setTimeout(new Integer(5000));
+			org.apache.axis.client.Service wbService = new  org.apache.axis.client.Service();
+			call = (Call) wbService.createCall();
+			call.setTimeout(new Integer(5000));
 			QName EBSQName = new QName("http://xmlns.oracle.com/apps/cux/soaprovider/plsql/cux_app_webservice_pkg/get_xml/", "GET_XML");
 			call.setOperationName(EBSQName);
-			call.setTimeout(100000);
 			call.setEncodingStyle("UTF-8");
 			call.setTargetEndpointAddress(InterfaceConfigure.getEBS_WS_URL());
 			call.setReturnType(XMLType.XSD_STRING);
@@ -848,7 +849,7 @@ public class TdInterfaceService {
 				Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
 				try
 				{
-					String result = (String)TdInterfaceService.getCall().invoke(orderInf);
+					String result = (String)getCall().invoke(orderInf);
 					System.out.println(result);
 				}
 				catch (Exception e)

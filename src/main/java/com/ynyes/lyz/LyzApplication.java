@@ -47,7 +47,16 @@ public class LyzApplication extends SpringBootServletInitializer implements
 	}
 
 	public static void main(String[] args) {
-
+		Runtime runtime = Runtime.getRuntime();
+		long freeMemory = runtime.freeMemory();
+		long totalMemory = runtime.totalMemory();
+		long maxMemory = runtime.maxMemory();
+		freeMemory = freeMemory/1024/1024;
+		totalMemory = totalMemory/1024/1024;
+		maxMemory = maxMemory/1024/1024;
+		System.out.println("-------------------------->---------------->当前 Java 虚拟机中的总内存量：" + totalMemory + " 兆");
+		System.out.println("-------------------------->---------------->当前 Java 虚拟机中的最大内存量：" + maxMemory + " 兆");
+		System.out.println("-------------------------->---------------->当前 Java 虚拟机中的空闲内存量：" + freeMemory + " 兆");
 		SpringApplication.run(LyzApplication.class, args);
 	}
 

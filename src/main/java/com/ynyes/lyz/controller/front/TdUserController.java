@@ -73,7 +73,6 @@ import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
-import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdReChargeService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdSettingService;
@@ -113,9 +112,6 @@ public class TdUserController {
 
 	@Autowired
 	private TdUserSuggestionCategoryService tdUserSuggestionCategoryService;
-
-	@Autowired
-	private TdPriceListItemService tdPriceListItemService;
 
 	@Autowired
 	private TdUserSuggestionService tdUserSuggestionService;
