@@ -32,7 +32,6 @@ import com.ynyes.lyz.entity.TdProductCategory;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdCityService;
-import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDiySiteInventoryLogService;
 import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
@@ -106,9 +105,6 @@ public class TdManagerGoodsController {
 	
 	@Autowired
 	private TdDiySiteInventoryLogService tdDiySiteInventoryLogService;
-	
-	@Autowired
-	private TdCommonService tdCommonService;
 
 	@RequestMapping(value = "/refresh")
 	public String refreshCategorg() 

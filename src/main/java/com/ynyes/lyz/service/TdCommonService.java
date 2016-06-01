@@ -63,13 +63,12 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-	// static String wmsUrl =
-	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
-	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
-	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
-	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
-	static QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
-
+//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
+	private String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
+	private JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
+	private org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
+	private QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
+	
 	@Autowired
 	private TdUserService tdUserService;
 
@@ -144,33 +143,6 @@ public class TdCommonService {
 
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
-
-	// static private String getWmsUrlByLocalHost()
-	// {
-	// try
-	// {
-	// InetAddress address = InetAddress.getLocalHost();
-	// System.out.println(address.getAddress());
-	// System.out.println(address.getHostName());
-	// String hostAddress = address.getHostAddress();
-	// if (hostAddress.equalsIgnoreCase("101.200.128.65"))
-	// {
-	// System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
-	// return wmsUrlReal;
-	// }
-	// else
-	// {
-	// System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
-	// return wmsUrlTest;
-	// }
-	// }
-	// catch (Exception e)
-	// {
-	// System.out.println(e.getMessage());
-	// System.out.println("MDJ:WSL:INTERFACE+3:" + wmsUrlTest);
-	// return wmsUrlTest;
-	// }
-	// }
 
 	/**
 	 * 根据仓库编号获取仓库名
@@ -1708,18 +1680,13 @@ public class TdCommonService {
 		// 清空session中的虚拟订单
 		req.getSession().setAttribute("order_temp", null);
 
-		// CallWMSImpl callWMSImpl = new CallWMSImpl();
-
-		// System.out.println("MDJWS:READY:WMS:" +
-		// orderList.get(0).getMainOrderNumber());
-		// 抛单给WMS
-		// sendMsgToWMS(orderList, order_temp.getOrderNumber());
-
 		// 子线程 抛单给WMS
-		if (isSend) {
-			SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList,
-					order_temp.getOrderNumber());
+		if (isSend)
+		{
+			SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList,order_temp.getOrderNumber());
 			requsitThread.start();
+			sendEbsThread ebsThread = new sendEbsThread(orderList);
+			ebsThread.start();
 		}
 	}
 
@@ -1894,7 +1861,7 @@ public class TdCommonService {
 	 * @author mdj
 	 *
 	 */
-	// TODO 多线程
+	// TODO 多线程 wms
 	class SendRequisitionToWmsThread extends Thread {
 		List<TdOrder> orderList;
 		String mainOrderNumber;
@@ -1907,14 +1874,29 @@ public class TdCommonService {
 
 		public void run() {
 			sendMsgToWMS(orderList, mainOrderNumber);
-			sendOrderToEBS(orderList);
 		}
 	}
 
+	class sendEbsThread extends Thread
+	{
+		List<TdOrder> orderList;
+		sendEbsThread(List<TdOrder> orderList)
+		{
+			this.orderList = orderList;
+		}
+		public void run()
+		{
+			sendOrderToEBS(orderList);
+		}
+	}
+	
 	// 传 order 给 EBS
-	private void sendOrderToEBS(List<TdOrder> orderList) {
-		for (TdOrder tdOrder : orderList) {
-			if (tdOrder != null && tdOrder.getOrderNumber() != null && tdOrder.getOrderNumber().contains("HR")) {
+	private void sendOrderToEBS(List<TdOrder> orderList)
+	{
+		for (TdOrder tdOrder : orderList) 
+		{
+			if (tdOrder != null && tdOrder.getOrderNumber() != null && tdOrder.getOrderNumber().contains("HR")) 
+			{
 				continue;
 			}
 			tdInterfaceService.initOrderInf(tdOrder);
@@ -1923,24 +1905,32 @@ public class TdCommonService {
 			// 单头
 			String orderInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERINF);
 			Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
-			try {
-				String object = (String) TdInterfaceService.getCall().invoke(orderInf);
+			try
+			{
+				String object = (String) tdInterfaceService.getCall().invoke(orderInf);
 				System.out.println(object);
 				String resultStr = StringTools.interfaceMessage(object);
-				if (org.apache.commons.lang3.StringUtils.isBlank(resultStr)) {
+				if (org.apache.commons.lang3.StringUtils.isBlank(resultStr)) 
+				{
 					isOrderInfSucceed = true;
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				e.printStackTrace();
 			}
 			// 商品
 			String orderGoodsInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERGOODSINF);
-			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderGoodsInfXML) && isOrderInfSucceed) {
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderGoodsInfXML) && isOrderInfSucceed)
+			{
 				Object[] orderGoodsInf = { "TD_ORDER_GOODS", "1", orderGoodsInfXML };
-				try {
-					Object object = TdInterfaceService.getCall().invoke(orderGoodsInf);
+				try
+				{
+					Object object = tdInterfaceService.getCall().invoke(orderGoodsInf);
 					System.out.println(object);
-				} catch (Exception e) {
+				} 
+				catch (Exception e)
+				{
 					e.printStackTrace();
 				}
 			}
@@ -1948,10 +1938,13 @@ public class TdCommonService {
 			String orderCouponInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERCOUPONINF);
 			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML) && isOrderInfSucceed) {
 				Object[] orderCouponInf = { "TD_ORDER_COUPONS", "1", orderCouponInfXML };
-				try {
-					Object object = TdInterfaceService.getCall().invoke(orderCouponInf);
+				try
+				{
+					Object object = tdInterfaceService.getCall().invoke(orderCouponInf);
 					System.out.println(object);
-				} catch (Exception e) {
+				} 
+				catch (Exception e)
+				{
 					e.printStackTrace();
 				}
 			}

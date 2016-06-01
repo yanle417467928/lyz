@@ -19,8 +19,8 @@ import com.ynyes.lyz.entity.TdAd;
 
 public interface TdAdRepo extends PagingAndSortingRepository<TdAd, Long>, JpaSpecificationExecutor<TdAd> {
 	Page<TdAd> findByIsEnableTrueOrderBySortIdAsc(Pageable page);
-
-	List<TdAd> findByTypeIdOrderBySortIdAsc(Long typeId);
+	//只查询生效的
+	List<TdAd> findByTypeIdAndIsEnableTrueOrderBySortIdAsc(Long typeId);
 
 	List<TdAd> findByTypeIdAndStartTimeBeforeAndEndTimeAfterAndIsEnableTrueOrderByIdDesc(Long typeId, Date begin,
 			Date finish);

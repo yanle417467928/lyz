@@ -202,13 +202,15 @@ public class AlipaySubmit {
         SAXReader reader = new SAXReader();
         Document doc = reader.read(new URL(strUrl).openStream());
 
-        List<Node> nodeList = doc.selectNodes("//alipay/*");
+        @SuppressWarnings("unchecked")
+		List<Node> nodeList = doc.selectNodes("//alipay/*");
 
         for (Node node : nodeList) {
             // 截取部分不需要解析的信息
             if (node.getName().equals("is_success") && node.getText().equals("T")) {
                 // 判断是否有成功标示
-                List<Node> nodeList1 = doc.selectNodes("//response/timestamp/*");
+                @SuppressWarnings("unchecked")
+				List<Node> nodeList1 = doc.selectNodes("//response/timestamp/*");
                 for (Node node1 : nodeList1) {
                     result.append(node1.getText());
                 }

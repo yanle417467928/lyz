@@ -52,7 +52,7 @@ public class StringTools {
 		
 		if (mat.find()) 
 		{
-			System.out.println("CODE is :" + mat.group(0));
+			System.out.println("EBS:" + mat.group(0));
 			String code = mat.group(0).replace("<CODE>", "");
 			code = code.replace("</CODE>", "").trim();
 			if (Integer.parseInt(code) == 0) 
