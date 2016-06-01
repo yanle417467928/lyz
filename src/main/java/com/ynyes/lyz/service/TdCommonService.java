@@ -1685,8 +1685,8 @@ public class TdCommonService {
 		{
 			SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList,order_temp.getOrderNumber());
 			requsitThread.start();
-			sendEbsThread ebsThread = new sendEbsThread(orderList);
-			ebsThread.start();
+//			sendEbsThread ebsThread = new sendEbsThread(orderList);
+//			ebsThread.start();
 		}
 	}
 
