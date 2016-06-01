@@ -22,8 +22,8 @@ function operate(operation, type, id) {
 			return;
 		}
 	}
-	
-	if(quantity>inventory){
+	//数字比较
+	if(parseInt(quantity)>parseInt(inventory)){
 		$(elementId).val(inventory);
 		warning("亲，库存只有这么多啦");
 		return;

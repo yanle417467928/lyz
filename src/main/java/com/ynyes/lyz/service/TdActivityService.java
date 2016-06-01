@@ -60,10 +60,11 @@ public class TdActivityService {
 		}
 
 		String giftNames = "";
-		for (TdGoodsGift tdGoodGift : e.getGiftList()) {
-			giftNames += tdGoodGift.getGoodsTitle() + ",";
+		if (null != e.getGiftList() && e.getGiftList().size() > 0) {
+			for (TdGoodsGift tdGoodGift : e.getGiftList()) {
+				giftNames += tdGoodGift.getGoodsTitle() + ",";
+			}
 		}
-
 		e.setGiftNames(giftNames);
 		e.setGoodsNames(goodsName);
 
@@ -199,16 +200,14 @@ public class TdActivityService {
 	 * 
 	 * @author dengxiao
 	 */
-	 public List<TdActivity>
-	 findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(
-	 String diySiteId, Date now) {
-	 if (null == diySiteId || null == now) {
-	 return null;
-	 }
-	 return
-	 repository.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(diySiteId
-	 + ",", now, now);
-	 }
+	public List<TdActivity> findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(
+			String diySiteId, Date now) {
+		if (null == diySiteId || null == now) {
+			return null;
+		}
+		return repository.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterOrderBySortIdAsc(
+				diySiteId + ",", now, now);
+	}
 
 	public List<TdActivity> findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
 			String diySiteId, Date now, Long giftType) {

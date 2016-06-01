@@ -516,7 +516,7 @@ public class TdManagerGoodsController {
 	}
 	
 	/**
-	 * 隐藏property（商品上下架搜索），saleType（团购和抢购）修改查询方法   zp
+	 * 隐藏saleType（团购和抢购）修改查询方法   zp
 	 * 
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.POST)
@@ -754,8 +754,15 @@ public class TdManagerGoodsController {
 //				}
 //			}
 //		}
+		Boolean isOnSale=null;
+		if ("isOnSale".equalsIgnoreCase(property)) {
+			isOnSale=true;
+		}else if("isNotOnSale".equalsIgnoreCase(property)){
+			isOnSale=false;
+		}
+		
 		//查询商品
-		goodsPage=tdGoodsService.searchGoodsList(keywords, brandId, categoryId, page, size);
+		goodsPage=tdGoodsService.searchGoodsList(keywords, brandId, categoryId, page, size,isOnSale);
 		
 		
 		map.addAttribute("content_page", goodsPage);

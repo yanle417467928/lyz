@@ -136,7 +136,7 @@ function downloaddateurl(type,url){
             退货单号
         </th>
         <th align="left">
-            当期状态
+            订单状态
         </th>
          <th align="left" width="12%">
             申请用户

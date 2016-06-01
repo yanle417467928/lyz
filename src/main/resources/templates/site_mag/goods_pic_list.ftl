@@ -165,13 +165,14 @@ function confirmCopy(id)
                 </#if>
             </select>
         </div>
-         <#--<div class="rule-single-select">
+         <div class="rule-single-select">
             <select name="property" onchange="javascript:setTimeout(__doPostBack('property',''), 0)">
                 <option value="">所有属性</option>
                 <option value="isOnSale" <#if property?? && property=="isOnSale">selected="selected"</#if>>已上架</option>
                 <option value="isNotOnSale" <#if property?? && property=="isNotOnSale">selected="selected"</#if>>已下架</option>
             </select>
         </div>
+       <#--
        <div class="rule-single-select">
             <select name="saleType" onchange="javascript:setTimeout(__doPostBack('saleType',''), 0)">
                 <option value="">所有</option>

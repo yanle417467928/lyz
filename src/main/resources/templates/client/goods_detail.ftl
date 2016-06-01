@@ -66,7 +66,7 @@
                 	</div>
 	                <script type="text/javascript">
 	                    var mySwiper = new Swiper('.swiper-container',{
-	                        loop: true,
+	                        loop: false,
 	                        autoplay: 3000,
 	                        pagination : '.swiper-pagination'
 	                    });   
