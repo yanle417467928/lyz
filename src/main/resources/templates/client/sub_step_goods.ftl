@@ -27,7 +27,7 @@
                         </#if>
                     </#if>
                     <a href="javascript:changeQuantity(${goods.id?c},'add');">+</a>
-                    <input min="0" class="goodsSelectedQuantity" type="number" id="quantity${goods.id?c}" value="0" onkeyup="keyup(this)" onafterpaste="afterpaste(this)">
+                    <input min="0" class="goodsSelectedQuantity" type="number" id="quantity${goods.id?c}" value="0" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onchange="changeQuantity(${goods.id?c})">
                     <a href="javascript:changeQuantity(${goods.id?c},'delete');">-</a>
                 </div>
                 <div class="fen_div02" value="${goods_index} ">

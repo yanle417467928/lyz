@@ -83,8 +83,10 @@
     					<p>￥<#if priceListItem??&&priceListItem.salePrice??>${priceListItem.salePrice?string("0.00")}<#else>0.00</#if></p>
     					<p>销量：${goods.soldNumber!'0'}件</p>
     					<#-- 该标签用以存储库存 -->
-    					<input type="hidden" id="inventory${goods.id?c}" value="<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>">
-    					<p>库存：<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>件</p>
+    					<#--<input type="hidden" id="inventory${goods.id?c}" value="<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>">
+    					<p>库存：<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>件</p>-->
+    					<input type="hidden" id="inventory${goods.id?c}" value="<#if diySiteInventory?? && diySiteInventory.inventory??>${diySiteInventory.inventory?c}<#else>0</#if>">
+    					<p>库存：<#if diySiteInventory?? && diySiteInventory.inventory??>${diySiteInventory.inventory?c}<#else>0</#if>件</p>
 					</#if>
 				</div>
 				<div class="index_test_box"></div>

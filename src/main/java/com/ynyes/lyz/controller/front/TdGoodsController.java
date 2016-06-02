@@ -19,6 +19,7 @@ import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
@@ -31,6 +32,7 @@ import com.ynyes.lyz.entity.TdUserComment;
 import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCommonService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdProductCategoryService;
@@ -72,6 +74,9 @@ public class TdGoodsController {
 	
 	@Autowired
 	private TdProductCategoryService tdProductCategoryService;
+	
+	@Autowired
+	TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	/*
 	 *********************************** 普通下单模式的控制器和方法********************************************
@@ -457,7 +462,11 @@ public class TdGoodsController {
 		if (null != all && all.size() >= 1) {
 			map.addAttribute("phone", all.get(0).getTelephone());
 		}
-
+		//获取商品单店库存
+		TdDiySiteInventory  diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), diySite.getRegionId());
+		
+		
+		map.addAttribute("diySiteInventory", diySiteInventory);
 		map.addAttribute("activity_list", activity_list);
 		map.addAttribute("isCollect", isCollect);
 		return "/client/goods_detail";
