@@ -36,7 +36,6 @@ import com.ynyes.lyz.service.TdDiySiteInventoryLogService;
 import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
-import com.ynyes.lyz.service.TdInventoryLogService;
 import com.ynyes.lyz.service.TdManagerLogService;
 import com.ynyes.lyz.service.TdManagerRoleService;
 import com.ynyes.lyz.service.TdManagerService;
@@ -83,8 +82,6 @@ public class TdManagerGoodsController {
 	@Autowired
 	TdPriceChangeLogService tdPriceChangeLogService;
 
-	@Autowired
-	private TdInventoryLogService tdInventoryLogService;
 	@Autowired // zhangji 2015-12-30 16:26:29
 	TdPriceListService tdPriceListService;
 	
@@ -1052,8 +1049,7 @@ public class TdManagerGoodsController {
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
-
-		map.addAttribute("log_page", tdInventoryLogService.findAll(page, size));
+		map.addAttribute("log_page", tdDiySiteInventoryLogService.findAll(page, size));
 
 		return "site_mag/inventory_log";
 	}
@@ -1199,9 +1195,9 @@ public class TdManagerGoodsController {
 			{
 				if (listInventory[changeIndex] != diySiteInventory.getInventory()) 
 				{
+					tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, listInventory[changeIndex] - diySiteInventory.getInventory(), null, req);
 					diySiteInventory.setInventory(listInventory[changeIndex]);
 					tdDiySiteInventoryService.save(diySiteInventory);
-					tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, listInventory[changeIndex] - diySiteInventory.getInventory(), null, req);
 				}
 			}
 		}
@@ -1221,7 +1217,7 @@ public class TdManagerGoodsController {
 			if (chkId >= 0 && ids.length > chkId) {
 				Long id = ids[chkId];
 
-				tdInventoryLogService.delete(id);
+				tdDiySiteInventoryLogService.delete(id);
 			}
 		}
 	}
