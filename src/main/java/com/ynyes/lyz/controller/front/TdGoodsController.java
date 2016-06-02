@@ -506,7 +506,7 @@ public class TdGoodsController {
 
 	/**
 	 * 跳转到商品搜索页面的方法
-	 * 修改商品查询方法  按价格查询暂时隐藏 zp
+	 * 修改商品查询方法  按价格查询暂时隐藏 添加单店库存 zp
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/search")
@@ -532,7 +532,7 @@ public class TdGoodsController {
 		}
 		
 //		// 获取用户的门店
-//		TdDiySite diySite = tdCommonService.getDiySite(req);
+		TdDiySite diySite = tdCommonService.getDiySite(req);
 
 		if (null == param) {
 			param = "0-0-0-0";
@@ -601,10 +601,21 @@ public class TdGoodsController {
 						priceListItem.setIsPromotion(tdCommonService.isJoinActivity(req, goods));
 						map.addAttribute("priceListItem" + goods.getId(), priceListItem);
 						visible_list.add(goods);
+						
+						//设置商品单店库存
+						TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), diySite.getRegionId());
+						if(diySiteInventory!=null){
+							map.addAttribute("goodInventory" + goods.getId(), diySiteInventory.getInventory());
+						}
 					}
 				}
+				
+				
 			}
 		}
+		
+		
+		
 		map.addAttribute("selected_rule", Long.parseLong(sortFiled));
 		map.addAttribute("rule1", rule1);
 		map.addAttribute("rule2", rule2);

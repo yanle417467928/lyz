@@ -26,7 +26,6 @@ function operate(operation, type, id) {
 	if(parseInt(quantity)>parseInt(inventory)){
 		$(elementId).val(inventory);
 		warning("亲，库存只有这么多啦");
-		return;
 	}
 	//增加当前数量参数
 	// 开启等待图标

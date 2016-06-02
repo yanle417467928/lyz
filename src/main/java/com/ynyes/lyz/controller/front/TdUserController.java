@@ -36,6 +36,7 @@ import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDistrict;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGeoInfo;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
@@ -66,6 +67,7 @@ import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDistrictService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
@@ -185,6 +187,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdReChargeService tdReChargeService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -520,7 +525,7 @@ public class TdUserController {
 
 	/**
 	 * 跳转到我的已选页面的方法
-	 * 
+	 * 增加单店库存 zp
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/selected")
@@ -532,7 +537,9 @@ public class TdUserController {
 		}
 
 		Double total_price = 0.0;
-
+		
+		TdDiySite diySite= tdCommonService.getDiySite(req);
+		
 		// 获取所有已选的商品
 		List<TdCartGoods> all_selected = tdCartGoodsService.findByUserId(user.getId());
 		for (int i = 0; i < all_selected.size(); i++) {
@@ -541,15 +548,25 @@ public class TdUserController {
 			if (null != cartGoods) {
 				TdGoods goods = tdGoodsService.findOne(cartGoods.getGoodsId());
 				if (null != goods) {
-					map.addAttribute("goods" + i, goods.getLeftNumber());
+					//查询商品单店库存
+					TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), diySite.getRegionId());
+					//设置单店库存
+					if(diySiteInventory!=null){
+						map.addAttribute("goods" + i, diySiteInventory.getInventory());
+					}else{
+						map.addAttribute("goods" + i, 0);
+					}
+					
+					
 					// 如果已选数量大于了最大库存，则消减已选数量
-					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > goods.getLeftNumber()) {
-						cartGoods.setQuantity(goods.getLeftNumber());
+					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > diySiteInventory.getInventory()) {
+						cartGoods.setQuantity(diySiteInventory.getInventory());
 						cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
 						tdCartGoodsService.save(cartGoods);
 					}
 					total_price += cartGoods.getTotalPrice();
 				}
+				
 			}
 		}
 		map.addAttribute("all_selected", all_selected);
@@ -597,7 +614,7 @@ public class TdUserController {
 				}
 			}
 		}
-
+		TdDiySite diySite= tdCommonService.getDiySite(req);
 		// 获取所有已选的商品
 		for (int i = 0; i < selected_goods.size(); i++) {
 			TdCartGoods cartGoods = selected_goods.get(i);
@@ -605,10 +622,17 @@ public class TdUserController {
 			if (null != cartGoods) {
 				TdGoods goods = tdGoodsService.findOne(cartGoods.getGoodsId());
 				if (null != goods) {
-					map.addAttribute("goods" + i, goods.getLeftNumber());
+					//查询商品单店库存
+					TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), diySite.getRegionId());
+					Long goodsInventory=0L;
+					//设置单店库存
+					if(diySiteInventory!=null){
+						goodsInventory=diySiteInventory.getInventory();
+					}
+					map.addAttribute("goods" + i, goodsInventory);
 					// 如果已选数量大于了最大库存，则消减已选数量
-					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > goods.getLeftNumber()) {
-						cartGoods.setQuantity(goods.getLeftNumber());
+					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > goodsInventory) {
+						cartGoods.setQuantity(goodsInventory);
 					}
 					cartGoods.setTotalPrice(cartGoods.getQuantity() * cartGoods.getPrice());
 					cartGoods.setRealTotalPrice(cartGoods.getRealPrice() * cartGoods.getQuantity());

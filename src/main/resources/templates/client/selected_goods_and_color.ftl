@@ -17,7 +17,7 @@
                         <#if goods.ownerGoodsSku??><label>调色:${goods.ownerGoodsSku!''}</label></#if>
                         <div class="choose-num">
                             <#if ("goods"+goods_index)?eval??>
-                                <input type="hidden" id="goods${goods.goodsId?c}quantity" value="<#if ("goods"+goods_index)?eval??>${("goods"+goods_index)?eval?c}<#else>0</#if>">
+                                <input type="hidden" id="goods${goods.goodsId?c}quantity" value="<#if ("goods"+goods_index)?eval??>${("goods"+goods_index)?eval?c}<#else>0</#if>"> 
                             </#if>
                             <!-- 数量选择 -->
                             <div class="numbers">
