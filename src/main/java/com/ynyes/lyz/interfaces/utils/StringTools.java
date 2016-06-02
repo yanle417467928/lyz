@@ -34,6 +34,18 @@ public class StringTools {
 	}
 	
 	
+	public static String productClassStrByBoolean(Boolean isCoupon)
+	{
+		if (isCoupon == null || isCoupon == false)
+		{
+			return "订单";
+		}
+		else
+		{
+			return "电子券";
+		}
+	}
+	
 	/**
 	 * 根据接口返回数据判断是传送成功与否
 	 * @param resultStr

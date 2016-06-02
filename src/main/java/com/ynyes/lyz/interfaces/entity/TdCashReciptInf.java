@@ -1,10 +1,14 @@
 package com.ynyes.lyz.interfaces.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class TdCashReciptInf extends TdInfBaseEntity{
@@ -60,7 +64,8 @@ public class TdCashReciptInf extends TdInfBaseEntity{
 	
 	//收款日期
 	@Column
-	private String receiptDate;
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Date receiptDate;
 	
 	//收款金额
 	@Column
@@ -182,11 +187,11 @@ public class TdCashReciptInf extends TdInfBaseEntity{
 		this.receiptType = receiptType;
 	}
 
-	public String getReceiptDate() {
+	public Date getReceiptDate() {
 		return receiptDate;
 	}
 
-	public void setReceiptDate(String receiptDate) {
+	public void setReceiptDate(Date receiptDate) {
 		this.receiptDate = receiptDate;
 	}
 

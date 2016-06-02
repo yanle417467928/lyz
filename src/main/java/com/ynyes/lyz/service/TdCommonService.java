@@ -1891,8 +1891,10 @@ public class TdCommonService {
 
 	// 传 order 给 EBS
 	private void sendOrderToEBS(List<TdOrder> orderList) {
-		for (TdOrder tdOrder : orderList) {
-			if (tdOrder != null && tdOrder.getOrderNumber() != null && tdOrder.getOrderNumber().contains("HR")) {
+		for (TdOrder tdOrder : orderList)
+		{
+			if (tdOrder != null && tdOrder.getOrderNumber() != null && tdOrder.getOrderNumber().contains("HR"))
+			{
 				continue;
 			}
 			tdInterfaceService.initOrderInf(tdOrder);
@@ -1901,35 +1903,62 @@ public class TdCommonService {
 			// 单头
 			String orderInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERINF);
 			Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
-			try {
+			try 
+			{
 				String object = (String) tdInterfaceService.getCall().invoke(orderInf);
 				System.out.println(object);
 				String resultStr = StringTools.interfaceMessage(object);
-				if (org.apache.commons.lang3.StringUtils.isBlank(resultStr)) {
+				if (org.apache.commons.lang3.StringUtils.isBlank(resultStr))
+				{
 					isOrderInfSucceed = true;
 				}
-			} catch (Exception e) {
+			}
+			catch (Exception e) 
+			{
 				e.printStackTrace();
 			}
 			// 商品
 			String orderGoodsInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERGOODSINF);
-			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderGoodsInfXML) && isOrderInfSucceed) {
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderGoodsInfXML) && isOrderInfSucceed)
+			{
 				Object[] orderGoodsInf = { "TD_ORDER_GOODS", "1", orderGoodsInfXML };
-				try {
+				try 
+				{
 					Object object = tdInterfaceService.getCall().invoke(orderGoodsInf);
 					System.out.println(object);
-				} catch (Exception e) {
+				}
+				catch (Exception e) 
+				{
 					e.printStackTrace();
 				}
 			}
 			// 券
 			String orderCouponInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERCOUPONINF);
-			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML) && isOrderInfSucceed) {
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML) && isOrderInfSucceed)
+			{
 				Object[] orderCouponInf = { "TD_ORDER_COUPONS", "1", orderCouponInfXML };
-				try {
+				try
+				{
 					Object object = tdInterfaceService.getCall().invoke(orderCouponInf);
 					System.out.println(object);
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			// 收款
+			String cashreciptInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.CASHRECIPTINF);
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML) && isOrderInfSucceed)
+			{
+				Object[] cashreciptInf = { "TD_CASH_RECEIPTS", "1", cashreciptInfXML };
+				try
+				{
+					Object object = tdInterfaceService.getCall().invoke(cashreciptInf);
+					System.out.println(object);
+				}
+				catch (Exception e)
+				{
 					e.printStackTrace();
 				}
 			}

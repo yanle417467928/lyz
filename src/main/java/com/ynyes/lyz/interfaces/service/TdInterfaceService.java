@@ -293,22 +293,25 @@ public class TdInterfaceService {
 			}
 		}
 		
-		
 		//收款
-		TdCashReciptInf cashReciptInf = new TdCashReciptInf();
-		cashReciptInf.setSobId(SobId);
-		cashReciptInf.setReceiptNumber(tdOrder.getOrderNumber());
-		cashReciptInf.setUserid(tdOrder.getRealUserId());
-		cashReciptInf.setUsername(tdOrder.getRealUserRealName());
-		cashReciptInf.setUserphone(tdOrder.getRealUserUsername());
-		cashReciptInf.setDiySiteCode(tdOrder.getDiySiteCode());
-//		cashReciptInf.setReceiptClass();
-//		cashReciptInf.setOrderHeaderId(orderInf.getHeaderId());
-//		cashReciptInf.setOrderNumber(tdOrder.getOrderNumber());
-//		cashReciptInf.setProductType();
-//		cashReciptInf.setReceiptType();
-//		cashReciptInf.setReceiptDate();
-//		cashReciptInf.setAmount();
+		if (tdOrder.getOtherPay()!= null && tdOrder.getOtherPay() != 0)
+		{
+			TdCashReciptInf cashReciptInf = new TdCashReciptInf();
+			cashReciptInf.setSobId(SobId);
+			cashReciptInf.setReceiptNumber(tdOrder.getOrderNumber());
+			cashReciptInf.setUserid(tdOrder.getRealUserId());
+			cashReciptInf.setUsername(tdOrder.getRealUserRealName());
+			cashReciptInf.setUserphone(tdOrder.getRealUserUsername());
+			cashReciptInf.setDiySiteCode(tdOrder.getDiySiteCode());
+			cashReciptInf.setReceiptClass(StringTools.productClassStrByBoolean(tdOrder.getIsCoupon()));
+			cashReciptInf.setOrderHeaderId(orderInf.getHeaderId());
+			cashReciptInf.setOrderNumber(tdOrder.getOrderNumber());
+			cashReciptInf.setProductType(StringTools.getProductStrByOrderNumber(tdOrder.getOrderNumber()));
+			cashReciptInf.setReceiptType(tdOrder.getPayTypeTitle());
+			cashReciptInf.setReceiptDate(new Date());
+			cashReciptInf.setAmount(tdOrder.getOtherPay());
+			tdCashReciptInfService.save(cashReciptInf);
+		}
 	}
 	
 	/**
@@ -623,6 +626,19 @@ public class TdInterfaceService {
 				if (org.apache.commons.lang3.StringUtils.isNotBlank(couponInfXml))
 				{
 					stringList.add(couponInfXml);
+				}
+			}
+			break;
+		}
+		case CASHRECIPTINF :
+		{
+			List<TdCashReciptInf> cashReciptInfs = tdCashReciptInfService.findByOrderHeaderId(tdOrderInf.getHeaderId());
+			for (TdCashReciptInf tdCashReciptInf : cashReciptInfs)
+			{
+				String cashReciptInfXml = XMLWithEntity(tdCashReciptInf, INFTYPE.CASHRECIPTINF);
+				if (org.apache.commons.lang3.StringUtils.isNotBlank(cashReciptInfXml))
+				{
+					stringList.add(cashReciptInfXml);
 				}
 			}
 			break;
