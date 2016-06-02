@@ -151,6 +151,14 @@ public class TdOrderController {
 			tdOrderService.delete(order_temp);
 			return "redirect:/";
 		}
+		//判断商品数量是否为0
+		for (TdOrderGoods tdOrderGoods : goodsList) {
+			if(tdOrderGoods.getQuantity()==0L){
+				attr.addAttribute("msg", "亲,商品数量不能为零");
+				return "redirect:/prompt";
+			}
+		}
+
 		// 修改订单商品价格
 		if (changeOrderGoodsNewPrice(order_temp, req)) {
 			attr.addAttribute("msg", "亲,你购买的商品已经下架");

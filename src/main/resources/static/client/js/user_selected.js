@@ -10,7 +10,7 @@ function operate(operation, type, id) {
 	var priceElement = $(priceId);
 
 	if (0 == operation) {
-		if (1 == quantity) {
+		if (0 == quantity) {
 			warning("亲，不能再少了");
 			return;
 		}
@@ -22,6 +22,7 @@ function operate(operation, type, id) {
 			return;
 		}
 	}
+	
 	//数字比较
 	if(parseInt(quantity)>parseInt(inventory)){
 		$(elementId).val(inventory);

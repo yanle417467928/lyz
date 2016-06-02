@@ -593,6 +593,11 @@ public class TdUserController {
 		if (null == user) {
 			user = new TdUser();
 		}
+		//设置默认值
+		if(quantity==null){
+			quantity=0L;
+		}
+		
 		List<TdCartGoods> selected_goods = tdCartGoodsService.findByUserId(user.getId());
 		Double total_price = 0.0;
 		// 操作已选商品的情况
