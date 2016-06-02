@@ -76,6 +76,12 @@ public class TdInterfaceService {
 	private TdReturnTimeInfService tdReturnTimeInfService;
 	
 	@Autowired
+	private TdCashReciptInfService tdCashReciptInfService;
+	
+	@Autowired
+	private TdCashRefundInfService tdCashRefundInfService;
+	
+	@Autowired
 	private TdOrderService tdOrderService;
 	
 	private Call call;
@@ -166,12 +172,14 @@ public class TdInterfaceService {
 		}
 		orderInf = new TdOrderInf();
 		TdDiySite diySite = tdDiySiteService.findOne(tdOrder.getDiySiteId());
+		Long SobId = 0L;
 		if (diySite != null)
 		{
-			orderInf.setSobId(diySite.getRegionId());
+			SobId = diySite.getRegionId();
 		}
 		
 //		orderInf.setHeaderId(tdOrder.getId());
+		orderInf.setSobId(SobId);
 		orderInf.setOrderNumber(tdOrder.getOrderNumber());
 		orderInf.setOrderDate(tdOrder.getOrderTime());
 		orderInf.setMainOrderNumber(tdOrder.getMainOrderNumber());
@@ -284,6 +292,26 @@ public class TdInterfaceService {
 				}
 			}
 		}
+		
+		//收款
+		if (tdOrder.getOtherPay()!= null && tdOrder.getOtherPay() != 0)
+		{
+			TdCashReciptInf cashReciptInf = new TdCashReciptInf();
+			cashReciptInf.setSobId(SobId);
+			cashReciptInf.setReceiptNumber(tdOrder.getOrderNumber());
+			cashReciptInf.setUserid(tdOrder.getRealUserId());
+			cashReciptInf.setUsername(tdOrder.getRealUserRealName());
+			cashReciptInf.setUserphone(tdOrder.getRealUserUsername());
+			cashReciptInf.setDiySiteCode(tdOrder.getDiySiteCode());
+			cashReciptInf.setReceiptClass(StringTools.productClassStrByBoolean(tdOrder.getIsCoupon()));
+			cashReciptInf.setOrderHeaderId(orderInf.getHeaderId());
+			cashReciptInf.setOrderNumber(tdOrder.getOrderNumber());
+			cashReciptInf.setProductType(StringTools.getProductStrByOrderNumber(tdOrder.getOrderNumber()));
+			cashReciptInf.setReceiptType(tdOrder.getPayTypeTitle());
+			cashReciptInf.setReceiptDate(new Date());
+			cashReciptInf.setAmount(tdOrder.getOtherPay());
+			tdCashReciptInfService.save(cashReciptInf);
+		}
 	}
 	
 	/**
@@ -317,12 +345,19 @@ public class TdInterfaceService {
 		return null;
 	}
 	
+	
+	/**
+	 * 收款
+	 * @param tdOrder
+	 * @return
+	 */
 	public TdCashReciptInf initCashReciptByOrder(TdOrder tdOrder)
 	{
 		if (tdOrder == null)
 		{
 			return null;
 		}
+		
 		TdCashReciptInf cashReciptInf = new TdCashReciptInf();
 //		cashReciptInf.setSobId();
 //		cashReciptInf.setReceiptId();
@@ -338,8 +373,38 @@ public class TdInterfaceService {
 //		cashReciptInf.setReceiptType();
 //		cashReciptInf.setReceiptDate();
 //		cashReciptInf.setAmount();
-
-		return cashReciptInf;
+		return tdCashReciptInfService.save(cashReciptInf);
+	}
+	
+	
+	/**
+	 * 退款
+	 * @param tdOrder
+	 * @return
+	 */
+	public TdCashRefundInf initCashRefundInf(TdOrder tdOrder)
+	{
+		if (tdOrder == null)
+		{
+			return null;
+		}
+		TdCashRefundInf cashRefundInf = new TdCashRefundInf();
+//		cashRefundInf.setSobId();
+//		cashRefundInf.setReceiptId();
+//		cashRefundInf.setReceiptNumber();
+//		cashRefundInf.setUserid();
+//		cashRefundInf.setUsername();
+//		cashRefundInf.setUserphone();
+//		cashRefundInf.setDiySiteCode();
+//		cashRefundInf.setReceiptClass();
+//		cashRefundInf.setOrderHeaderId();
+//		cashRefundInf.setOrderNumber();
+//		cashRefundInf.setProductType();
+//		cashRefundInf.setReceiptType();
+//		cashRefundInf.setReceiptDate();
+//		cashRefundInf.setAmount();
+		return tdCashRefundInfService.save(cashRefundInf);
+		
 	}
 	
 	/**
@@ -561,6 +626,19 @@ public class TdInterfaceService {
 				if (org.apache.commons.lang3.StringUtils.isNotBlank(couponInfXml))
 				{
 					stringList.add(couponInfXml);
+				}
+			}
+			break;
+		}
+		case CASHRECIPTINF :
+		{
+			List<TdCashReciptInf> cashReciptInfs = tdCashReciptInfService.findByOrderHeaderId(tdOrderInf.getHeaderId());
+			for (TdCashReciptInf tdCashReciptInf : cashReciptInfs)
+			{
+				String cashReciptInfXml = XMLWithEntity(tdCashReciptInf, INFTYPE.CASHRECIPTINF);
+				if (org.apache.commons.lang3.StringUtils.isNotBlank(cashReciptInfXml))
+				{
+					stringList.add(cashReciptInfXml);
 				}
 			}
 			break;

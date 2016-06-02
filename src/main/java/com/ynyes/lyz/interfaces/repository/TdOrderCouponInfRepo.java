@@ -10,6 +10,6 @@ import com.ynyes.lyz.interfaces.entity.TdOrderCouponInf;
 public interface TdOrderCouponInfRepo
 		extends PagingAndSortingRepository<TdOrderCouponInf, Long>, JpaSpecificationExecutor<TdOrderCouponInf> 
 {
-	List<TdOrderCouponInf> findByorderHeaderId(Long headerId);
+	List<TdOrderCouponInf> findByOrderHeaderId(Long headerId);
 }
 

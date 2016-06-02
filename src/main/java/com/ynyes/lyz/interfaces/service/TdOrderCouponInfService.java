@@ -93,7 +93,7 @@ public class TdOrderCouponInfService {
     
     List<TdOrderCouponInf> findByorderHeaderId(Long headerId)
     {
-    	return repository.findByorderHeaderId(headerId);
+    	return repository.findByOrderHeaderId(headerId);
     }
     
     /**
