@@ -787,6 +787,16 @@
                     <tbody>
                     <tr>
                         <th>
+                       门店名称
+                        </th>
+                        <td>
+                            <div class="position">
+                            <span><#if order.diySiteName??>${order.diySiteName!""}</#if> </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                         导购名字
                         </th>
                         <td>
