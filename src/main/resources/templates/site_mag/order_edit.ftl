@@ -867,6 +867,14 @@
                     </tr>
                     <tr>
                         <th>
+                    订单在线支付金额                   
+                        </th>
+                        <td>
+                         <#if order.otherPay??> ${order.otherPay?string("0.00")}<#else>0.00</#if>元
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             订单总金额
                         </th>
                         <td>
