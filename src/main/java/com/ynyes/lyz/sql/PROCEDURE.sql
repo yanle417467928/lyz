@@ -6,7 +6,7 @@ BEGIN
 delete from td_goods_in_out where create_username=v_username;
 			-- 查询数据到td_goods_in_out
 INSERT into td_goods_in_out(diy_site_name,main_order_number,order_number,status_id,order_time,sales_time,real_name,username,brand_title,category_title,seller_real_name,deliver_type_title,sku,goods_title,quantity,price,total_price,wh_no,deliver_real_name,deliver_username,shipping_address,remark_info,city_name,diy_site_code,create_username,diy_id) 
-select o.diy_site_name,o.main_order_number,o.order_number,o.status_id,o.order_time,o.send_time sales_time,u.real_name,o.username,og.brand_title,pc.title category_title,o.seller_real_name,o.deliver_type_title,og.sku,og.goods_title,og.quantity,og.price,og.quantity*og.price total_price,di.wh_no,u1.real_name,u1.username,o.shipping_address,o.remark,o.city city_name,o.diy_site_code,v_username create_username,o.diy_site_id
+select o.diy_site_name,o.main_order_number,o.order_number,o.status_id,o.order_time,di.begin_dt sales_time,u.real_name,o.username,og.brand_title,pc.title category_title,o.seller_real_name,o.deliver_type_title,og.sku,og.goods_title,og.quantity,og.price,og.quantity*og.price total_price,di.wh_no,u1.real_name,u1.username,o.shipping_address,o.remark,o.city city_name,o.diy_site_code,v_username create_username,o.diy_site_id
 from td_order o 
 INNER JOIN td_order_goods og on og.td_order_id=o.id or og.presented_list_id=o.id or og.gift_list_id=o.id
 LEFT JOIN td_user u on u.username=o.username 
@@ -15,7 +15,7 @@ left join td_delivery_info di on di.order_number=o.main_order_number
 left join (select * from td_user where user_type=5) u1 on u1.op_user=di.driver
 where o.order_time>=startTime and o.order_time<=endTime and o.status_id not in(1,2,3,7,8)
 union ALL
-select o.diy_site_name,rn.return_number main_order_number,rn.order_number,o.status_id,rn.order_time,rn.check_time sales_time,u.real_name,o.username,og.brand_title,pc.title category_title,o.seller_real_name,o.deliver_type_title,og.sku,og.goods_title,-og.quantity,og.price,-og.quantity*og.price total_price,'' wh_no,u1.real_name,u1.username,o.shipping_address,o.remark,o.city city_name,o.diy_site_code,v_username create_username,rn.diy_site_id
+select o.diy_site_name,rn.return_number main_order_number,rn.order_number,o.status_id,rn.order_time,rn.receive_time sales_time,u.real_name,o.username,og.brand_title,pc.title category_title,o.seller_real_name,o.deliver_type_title,og.sku,og.goods_title,-og.quantity,og.price,-og.quantity*og.price total_price,'' wh_no,u1.real_name,u1.username,o.shipping_address,o.remark,o.city city_name,o.diy_site_code,v_username create_username,rn.diy_site_id
 from td_return_note rn
 INNER JOIN td_order o on o.order_number=rn.order_number and o.status_id not in(1,2,3,7,8)
 LEFT JOIN td_user u on u.username=o.username

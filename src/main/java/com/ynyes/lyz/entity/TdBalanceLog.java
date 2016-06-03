@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -72,6 +73,14 @@ public class TdBalanceLog {
 	// ip
 	@Column
 	private String operatorIp;
+	
+	//使用订单号 (分单号) zp
+	@Column
+	private String orderNumber;
+	
+	//预存款的类型名称
+	@Transient
+	private String balanceTypeName;
 	
 	public Long getId() {
 		return id;
@@ -175,6 +184,25 @@ public class TdBalanceLog {
 
 	public void setBalanceType(Long balanceType) {
 		this.balanceType = balanceType;
+	}
+
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+
+	public String getBalanceTypeName() {
+		if(this.balanceType==0L){
+			return "总";
+		}else if(this.balanceType==1L){
+			return "可提现";
+		}else if(this.balanceType==2L){
+			return "不可提现";
+		}
+		return "";
 	}
 	
 }

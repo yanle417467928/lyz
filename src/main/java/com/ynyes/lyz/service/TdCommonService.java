@@ -3,6 +3,8 @@ package com.ynyes.lyz.service;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ import com.ibm.icu.util.Calendar;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
+import com.ynyes.lyz.entity.TdBalanceLog;
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
@@ -144,6 +147,9 @@ public class TdCommonService {
 
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
+	
+	@Autowired
+	private TdBalanceLogService tdBalanceLogService;
 
 	/**
 	 * 根据仓库编号获取仓库名
@@ -1630,12 +1636,61 @@ public class TdCommonService {
 						order.setCashBalanceUsed(Double.parseDouble(scale2_cash));
 						order.setOtherPay(Double.parseDouble(scale2_other));
 						order.setActualPay(order.getUnCashBalanceUsed() + order.getCashBalanceUsed());
+						
+						//记录预存款使用
+						TdUser user= tdUserService.findOne(order.getUserId());
+						//不可提现预存款
+						if(!".00".equals(scale2_uncash)){
+							TdBalanceLog balanceLog=new TdBalanceLog();
+							balanceLog.setUserId(order.getRealUserId());
+							balanceLog.setUsername(order.getUsername());
+							balanceLog.setMoney(Double.valueOf(scale2_uncash));
+							balanceLog.setType(3L);
+							balanceLog.setCreateTime(new Date());
+							balanceLog.setFinishTime(new Date());
+							balanceLog.setIsSuccess(true);
+							balanceLog.setReason("订单只支付使用");
+							balanceLog.setBalance(user.getUnCashBalance());
+							balanceLog.setBalanceType(2L);
+							balanceLog.setOperator(order.getUsername());
+							balanceLog.setOrderNumber(order.getOrderNumber());
+							try {
+								balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+							} catch (UnknownHostException e) {
+								System.out.println("获取ip地址报错");
+								e.printStackTrace();
+							}
+							tdBalanceLogService.save(balanceLog); 
+						}
+						//可提现预存款
+						if(!".00".equals(scale2_cash)){
+							TdBalanceLog balanceLog=new TdBalanceLog();
+							balanceLog.setUserId(order.getRealUserId());
+							balanceLog.setUsername(order.getUsername());
+							balanceLog.setMoney(Double.valueOf(scale2_cash));
+							balanceLog.setType(3L);
+							balanceLog.setCreateTime(new Date());
+							balanceLog.setFinishTime(new Date());
+							balanceLog.setIsSuccess(true);
+							balanceLog.setReason("订单只支付使用");
+							balanceLog.setBalance(user.getCashBalance());
+							balanceLog.setBalanceType(1L);
+							balanceLog.setOperator(order.getUsername());
+							balanceLog.setOrderNumber(order.getOrderNumber());
+							try {
+								balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+							} catch (UnknownHostException e) {
+								System.out.println("获取ip地址报错");
+								e.printStackTrace();
+							}
+							tdBalanceLogService.save(balanceLog); 
+						}
 
 					}
 				}
 			}
 		}
-
+ 
 		// add by Shawn
 		List<TdOrder> orderList = new ArrayList<TdOrder>();
 
