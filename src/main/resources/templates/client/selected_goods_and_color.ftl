@@ -23,7 +23,8 @@
                             <div class="numbers">
                                 <a class="less" href="javascript:operate(0,0,${goods.goodsId?c});">-</a>
                                 <!-- 可以手动修改数量 -->
-                                <input type="text" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onchange="javascript:operate(2,0,${goods.goodsId?c});" id="goods${goods.goodsId?c}" <#if ("goods"+goods_index)?eval??&&("goods"+goods_index)?eval lt goods.quantity>value="${("goods"+goods_index)?eval}"<#else>value="${goods.quantity?c!'0'}"</#if>>
+                                <#--<input type="text" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onchange="javascript:operate(2,0,${goods.goodsId?c});" id="goods${goods.goodsId?c}" <#if ("goods"+goods_index)?eval??&&("goods"+goods_index)?eval lt goods.quantity>value="${("goods"+goods_index)?eval}"<#else>value="${goods.quantity?c!'0'}"</#if>> -->
+                                <input type="text" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onchange="javascript:operate(2,0,${goods.goodsId?c});" id="goods${goods.goodsId?c}" value="${goods.quantity?c!'0'}" >
                                 <a class="add" href="javascript:operate(1,0,${goods.goodsId?c});">+</a>
                             </div>
                             <div class="price" id="goods${goods.goodsId?c}price">￥

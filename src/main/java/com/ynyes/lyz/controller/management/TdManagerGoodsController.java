@@ -1196,6 +1196,7 @@ public class TdManagerGoodsController {
 				if (listInventory[changeIndex] != diySiteInventory.getInventory()) 
 				{
 					tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, listInventory[changeIndex] - diySiteInventory.getInventory(), null, req);
+					//设置剩余库存
 					diySiteInventory.setInventory(listInventory[changeIndex]);
 					tdDiySiteInventoryService.save(diySiteInventory);
 				}

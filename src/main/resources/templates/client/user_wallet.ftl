@@ -56,7 +56,7 @@
                                 <div class="details-list">
                                     <div class="div1">
                                         <div class="c666">充值</div>
-                                        <div class="c999">余额：<#if item.balance??>${item.balance?string("0.00")}<#else>0.00</#if></div>
+                                        <div class="c999">${item.balanceTypeName }余额：<#if item.balance??>${item.balance?string("0.00")}<#else>0.00</#if></div>
                                     </div>
                                     <div class="div2">
                                         <div class="c999"><#if item.finishTime??>${item.finishTime?string("yyyy-MM-dd")}</#if></div>
@@ -69,7 +69,34 @@
                                 <div class="details-list">
                                     <div class="div1">
                                         <div class="c666">提现</div>
-                                        <div class="c999">余额：<#if item.balance??>${item.balance?string("0.00")}<#else>0.00</#if></div>
+                                        <div class="c999">${item.balanceTypeName }余额：<#if item.balance??>${item.balance?string("0.00")}<#else>0.00</#if></div>
+                                    </div>
+                                    <div class="div2">
+                                        <div class="c999"><#if item.finishTime??>${item.finishTime?string("yyyy-MM-dd")}</#if></div>
+                                        <!-- 字体颜色：提现为黄色yellow，充值为绿色green -->
+                                        <div class="yellow">- <#if item.money??>${item.money?string("0.00")}<#else>0.00</#if></div>
+                                    </div>
+                                </div>
+                            </#if>
+                            <#if item??&&item.type??&&item.type==2>
+                                <div class="details-list">
+                                    <div class="div1">
+                                        <div class="c666">管理员手动修改</div>
+                                        <div class="c999">${item.balanceTypeName }余额：<#if item.balance??>${item.balance?string("0.00")}<#else>0.00</#if></div>
+                                    </div>
+                                    <div class="div2">
+                                        <div class="c999"><#if item.finishTime??>${item.finishTime?string("yyyy-MM-dd")}</#if></div>
+                                        <!-- 字体颜色：提现为黄色yellow，充值为绿色green -->
+                                        <div class="<#if (item.money>0)>green<#else>yellow</#if>"><#if item.money??>${item.money?string("0.00")}<#else>0.00</#if></div>
+                                    </div>
+                                </div>
+                            </#if>
+                            <#if item??&&item.type??&&item.type==3>
+                                <div class="details-list">
+                                    <div class="div1">
+                                        <div class="c666">订单支付使用</div>
+                                        <div style="font-size: 0.9em;"><#if item.orderNumber??>${item.orderNumber }</#if></div>
+                                        <div class="c999">${item.balanceTypeName }余额：<#if item.balance??>${item.balance?string("0.00")}<#else>0.00</#if></div>
                                     </div>
                                     <div class="div2">
                                         <div class="c999"><#if item.finishTime??>${item.finishTime?string("yyyy-MM-dd")}</#if></div>
