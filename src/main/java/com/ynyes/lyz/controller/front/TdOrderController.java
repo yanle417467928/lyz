@@ -2009,12 +2009,14 @@ public class TdOrderController {
 			for (String sku : inventoryMap.keySet())
 			{
 				TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(sku, regionId);
-				if (diySiteInventory == null || inventoryMap.get(sku) != null ||  diySiteInventory.getInventory() < inventoryMap.get(sku))
+				if (diySiteInventory == null || inventoryMap.get(sku) == null ||  diySiteInventory.getInventory() < inventoryMap.get(sku))
 				{
 					res.put("status", -2);
 					return res;
 				}
 			}
+			
+			
 			
 			// 获取用户的支付方式
 			Long payTypeId = order.getPayTypeId();

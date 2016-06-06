@@ -85,7 +85,7 @@
                             <li class="li2 bdbt-n" style="height: auto;">
                                 <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                                 <div class="product-info" style="height: auto;">
-                                    <div class="div1">${item.goodsTitle!''}${item.goodsTitle!''}<span style="color:red"><#if item.isCoupon??&&item.isCoupon>【赠品-券】<#else>【赠品】</#if></span>
+                                    <div class="div1">${item.goodsTitle!''}<span style="color:red"><#if item.isCoupon??&&item.isCoupon>【赠品-券】<#else>【赠品】</#if></span>
                                     	<#-- 判断是否是退货中 -->
                                     	<#if returnNote??>
                                     		<#list returnNote.returnGoodsList as returnGood>
