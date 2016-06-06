@@ -1965,7 +1965,13 @@ public class TdOrderController {
 		// 获取指定的订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null != order) {
-			
+			Long regionId = null;
+			Long diysiteId = order.getDiySiteId();
+			TdDiySite tdDiySite = tdDiySiteService.findOne(diysiteId);
+			if (tdDiySite != null)
+			{
+				regionId = tdDiySite.getRegionId();
+			}
 			//判断库存
 			Map<String, Long> inventoryMap=new HashMap<String, Long>();
 			//商品列表
@@ -2000,7 +2006,15 @@ public class TdOrderController {
 				}
 			}
 			
-			
+			for (String sku : inventoryMap.keySet())
+			{
+				TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(sku, regionId);
+				if (diySiteInventory == null || inventoryMap.get(sku) != null ||  diySiteInventory.getInventory() < inventoryMap.get(sku))
+				{
+					res.put("status", -2);
+					return res;
+				}
+			}
 			
 			// 获取用户的支付方式
 			Long payTypeId = order.getPayTypeId();

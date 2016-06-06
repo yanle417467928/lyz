@@ -61,14 +61,14 @@ public class TdDiySiteInventoryService {
 		return repository.findByGoodsCodeAndDiySiteId(goodsCode, siteId);
 	}
 	
-	public TdDiySiteInventory findBygoodsCodeAndDiySiteIdNull(String goodsCode)
-	{
-		if (StringUtils.isBlank(goodsCode))
-		{
-			return null;
-		}
-		return repository.findBygoodsCodeAndDiySiteIdNull(goodsCode);
-	}
+//	public TdDiySiteInventory findBygoodsCodeAndDiySiteIdNull(String goodsCode)
+//	{
+//		if (StringUtils.isBlank(goodsCode))
+//		{
+//			return null;
+//		}
+//		return repository.findBygoodsCodeAndDiySiteIdNull(goodsCode);
+//	}
 	
 	public Page<TdDiySiteInventory> findAll(String keywords,int page,int size)
 	{

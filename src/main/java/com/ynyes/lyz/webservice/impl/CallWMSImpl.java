@@ -332,7 +332,6 @@ public class CallWMSImpl implements ICallWMS {
 				Double c_d_request_qty = null;//请求数量
 				String c_reserved1 = null;//分单号
 				
-				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
 
@@ -478,7 +477,7 @@ public class CallWMSImpl implements ICallWMS {
 //				String siteCode = null;
 				Long diySiteId = null;
 				Long userId= null;
-				Boolean isSendOrder = true;
+				Boolean isSendOrder = true; // 是否是物流送货
 				TdUser tdUser = null;
 				Long sobId = null;
 				String orderNumber = null;
