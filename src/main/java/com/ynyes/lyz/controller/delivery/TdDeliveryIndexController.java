@@ -37,6 +37,10 @@ import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.interfaces.entity.TdCashReciptInf;
+import com.ynyes.lyz.interfaces.service.TdInterfaceService;
+import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
+import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
@@ -86,6 +90,9 @@ public class TdDeliveryIndexController {
 
 	@Autowired
 	private TdPriceCountService tdPriceCountService;
+	
+	@Autowired
+	private TdInterfaceService tdInterfaceService;
 
 	@RequestMapping
 	public String deliveryIndex(HttpServletRequest req) {
@@ -461,6 +468,8 @@ public class TdDeliveryIndexController {
 				for (TdOrder subOrder : orderList) {
 					subOrder.setStatusId(5L);
 					subOrder.setDeliveryTime(new Date());
+					TdCashReciptInf cashReciptInf = tdInterfaceService.initCashReciptByOrder(subOrder);
+					tdInterfaceService.ebsWithObject(cashReciptInf, INFTYPE.CASHRECEIPTINF);
 					subOrder = tdOrderService.save(subOrder);
 				}
 			}
@@ -757,6 +766,9 @@ public class TdDeliveryIndexController {
 						
 						// 保存退货单
 						tdReturnNoteService.save(returnNote);
+						
+						tdInterfaceService.initReturnOrder(returnNote);
+						tdInterfaceService.initReturnCouponInfByOrder(subOrder, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
 						
 
 						subOrder.setStatusId(12L);

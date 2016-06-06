@@ -423,7 +423,7 @@ public class TdManagerGoodsController {
 		{
 			page = 0;
 		}
-		if (type == 0) 
+		if (type == 0)
 		{
 			//设置门店库存
 			List<TdDiySite> diySites = tdDiySiteService.findAll();
@@ -486,7 +486,7 @@ public class TdManagerGoodsController {
 		{
 			return ;
 		}
-		List<TdGoods> goods = tdGoodsService.findBySobId(site.getCityId());
+		List<TdGoods> goods = tdGoodsService.findBySobId(site.getRegionId());
 		for (TdGoods tdGoods : goods) 
 		{
 			tdDiySiteInventoryService.findAll();

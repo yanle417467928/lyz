@@ -889,7 +889,6 @@ public class TdManagerOrderController {
 		} else {
 			tdManagerLogService.addLog("edit", "修改门店", req);
 		}
-		
 
 		tdDiySiteService.save(tdDiySite);
 

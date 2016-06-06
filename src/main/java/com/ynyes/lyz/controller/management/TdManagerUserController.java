@@ -49,7 +49,6 @@ import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdManagerLogService;
-import com.ynyes.lyz.service.TdManagerRoleService;
 import com.ynyes.lyz.service.TdManagerService;
 import com.ynyes.lyz.service.TdMessageService;
 import com.ynyes.lyz.service.TdMessageTypeService;
@@ -111,10 +110,9 @@ public class TdManagerUserController {
 	
 	@Autowired
 	private TdManagerService tdManagerService;
+	
 	@Autowired
 	private TdDiySiteRoleService tdDiySiteRoleService;
-	@Autowired
-	private TdManagerRoleService tdManagerRoleService;
 
 	/**
 	 * 修改账户名所用 2016-1-8 10:34:46
@@ -123,10 +121,13 @@ public class TdManagerUserController {
 	 */
 	@Autowired
 	TdCartColorPackageService TdCartColorPackageService;
+	
 	@Autowired
 	TdCartGoodsService tdCartGoodsService;
+	
 	@Autowired
 	TdCouponService tdCouponService;
+	
 	@Autowired
 	TdReturnNoteService tdReturnNoteService;
 
@@ -1366,247 +1367,8 @@ public class TdManagerUserController {
 			model.addAttribute("tdUserComment", tdUserCommentService.findOne(userCommentId));
 		}
 
-		// if (null != userReturnId) {
-		// model.addAttribute("tdUserReturn",
-		// tdUserReturnService.findOne(userReturnId));
-		// }
-		//
-		// if (null != userComplainId) {
-		// model.addAttribute("tdUserComplain",
-		// tdUserComplainService.findOne(userComplainId));
-		// }
-		// if (null != userWithdrawId) {
-		// model.addAttribute("tdUserWithdraw",
-		// tdUserWithdrawService.findOne(userWithdrawId));
-		// }
 	}
 
-	// private Page<TdUserConsult> findTdUserConsult(Long statusId, String
-	// keywords, int page, int size)
-	// {
-	// Page<TdUserConsult> dataPage = null;
-	//
-	// if (null == statusId)
-	// {
-	// if (null == keywords || "".equalsIgnoreCase(keywords))
-	// {
-	// dataPage = tdUserConsultService.findAllOrderByIdDesc(page, size);
-	// }
-	// else
-	// {
-	// dataPage = tdUserConsultService.searchAndOrderByIdDesc(keywords, page,
-	// size);
-	// }
-	// }
-	// else
-	// {
-	// if (null == keywords || "".equalsIgnoreCase(keywords))
-	// {
-	// dataPage = tdUserConsultService.findByStatusIdOrderByIdDesc(statusId,
-	// page, size);
-	// }
-	// else
-	// {
-	// dataPage =
-	// tdUserConsultService.searchAndFindByStatusIdOrderByIdDesc(keywords,
-	// statusId, page, size);
-	// }
-	// }
-	//
-	// return dataPage;
-	// }
-
-	private Page<TdUserComment> findTdUserComment(Long statusId, String keywords, int page, int size) {
-		Page<TdUserComment> dataPage = null;
-
-		if (null == statusId) {
-			if (null == keywords || "".equalsIgnoreCase(keywords)) {
-				dataPage = tdUserCommentService.findAllOrderByIdDesc(page, size);
-			} else {
-				dataPage = tdUserCommentService.searchAndOrderByIdDesc(keywords, page, size);
-			}
-		} else {
-			if (null == keywords || "".equalsIgnoreCase(keywords)) {
-				dataPage = tdUserCommentService.findByStatusIdOrderByIdDesc(statusId, page, size);
-			} else {
-				dataPage = tdUserCommentService.searchAndFindByStatusIdOrderByIdDesc(keywords, statusId, page, size);
-			}
-		}
-
-		return dataPage;
-	}
-
-	// private Page<TdUserComplain> findTdUserComplain(Long statusId, String
-	// keywords, int page, int size)
-	// {
-	// Page<TdUserComplain> dataPage = null;
-	//
-	// if (null == statusId)
-	// {
-	// if (null == keywords || "".equalsIgnoreCase(keywords))
-	// {
-	// dataPage = tdUserComplainService.findAllOrderByIdDesc(page, size);
-	// }
-	// else
-	// {
-	// dataPage = tdUserComplainService.searchAndOrderByIdDesc(keywords, page,
-	// size);
-	// }
-	// }
-	// else
-	// {
-	// if (null == keywords || "".equalsIgnoreCase(keywords))
-	// {
-	// dataPage = tdUserComplainService.findByStatusIdOrderByIdDesc(statusId,
-	// page, size);
-	// }
-	// else
-	// {
-	// dataPage =
-	// tdUserComplainService.searchAndFindByStatusIdOrderByIdDesc(keywords,
-	// statusId, page, size);
-	// }
-	// }
-	//
-	// return dataPage;
-	// }
-
-	// private Page<TdUserReturn> findTdUserReturn(Long statusId, String
-	// keywords, int page, int size)
-	// {
-	// Page<TdUserReturn> dataPage = null;
-	//
-	// if (null == statusId)
-	// {
-	// if (null == keywords || "".equalsIgnoreCase(keywords))
-	// {
-	// dataPage = tdUserReturnService.findAllOrderBySortIdAsc(page, size);
-	// }
-	// else
-	// {
-	// dataPage = tdUserReturnService.searchAndOrderBySortIdAsc(keywords, page,
-	// size);
-	// }
-	// }
-	// else
-	// {
-	// if (null == keywords || "".equalsIgnoreCase(keywords))
-	// {
-	// dataPage = tdUserReturnService.findByStatusIdOrderBySortIdAsc(statusId,
-	// page, size);
-	// }
-	// else
-	// {
-	// dataPage =
-	// tdUserReturnService.searchAndFindByStatusIdOrderBySortIdAsc(keywords,
-	// statusId, page, size);
-	// }
-	// }
-	//
-	// return dataPage;
-	// }
-	/**
-	 * @author Zhangji
-	 * @param isRefund
-	 * @param page
-	 * @param size
-	 * @return
-	 */
-	private Page<TdOrder> findTdUserCancel(Boolean isRefund, int page, int size) {
-		Page<TdOrder> dataPage = null;
-
-		if (null == isRefund) {
-			dataPage = tdOrderService.findByIsCancelTrue(page, size);
-		} else if (true == isRefund) {
-			dataPage = tdOrderService.findByIsCancelTrueAndIsRefundTrue(page, size);
-		} else if (false == isRefund) {
-			dataPage = tdOrderService.findByIsCancelTrueAndIsRefundFalse(page, size);
-		}
-
-		return dataPage;
-	}
-
-	private void btnSave(String type, Long[] ids, Double[] sortIds) {
-		if (null == ids || null == sortIds || ids.length < 1 || sortIds.length < 1 || null == type || "".equals(type)) {
-			return;
-		}
-
-		for (int i = 0; i < ids.length; i++) {
-			Long id = ids[i];
-
-			if (type.equalsIgnoreCase("user")) // 用户
-			{
-				TdUser e = tdUserService.findOne(id);
-
-				if (null != e) {
-					if (sortIds.length > i) {
-						e.setSortId(new Double(sortIds[i]));
-						tdUserService.save(e);
-					}
-				}
-			} else if (type.equalsIgnoreCase("level")) // 用户等级
-			{
-				TdUserLevel e = tdUserLevelService.findOne(id);
-
-				if (null != e) {
-					if (sortIds.length > i) {
-						e.setSortId(new Double(sortIds[i]));
-						tdUserLevelService.save(e);
-					}
-				}
-			}
-			// else if (type.equalsIgnoreCase("consult")) // 咨询
-			// {
-			// TdUserConsult e = tdUserConsultService.findOne(id);
-			//
-			// if (null != e)
-			// {
-			// if (sortIds.length > i)
-			// {
-			// e.setSortId(sortIds[i]);
-			// tdUserConsultService.save(e);
-			// }
-			// }
-			// }
-			else if (type.equalsIgnoreCase("comment")) // 评论
-			{
-				TdUserComment e = tdUserCommentService.findOne(id);
-
-				if (null != e) {
-					if (sortIds.length > i) {
-						e.setSortId(new Double(sortIds[i]));
-						tdUserCommentService.save(e);
-					}
-				}
-			}
-			// else if (type.equalsIgnoreCase("complain")) // 投诉
-			// {
-			// TdUserComplain e = tdUserComplainService.findOne(id);
-			//
-			// if (null != e)
-			// {
-			// if (sortIds.length > i)
-			// {
-			// e.setSortId(sortIds[i]);
-			// tdUserComplainService.save(e);
-			// }
-			// }
-			// }
-			// else if (type.equalsIgnoreCase("return")) // 退换货
-			// {
-			// TdUserReturn e = tdUserReturnService.findOne(id);
-			//
-			// if (null != e)
-			// {
-			// if (sortIds.length > i)
-			// {
-			// e.setSortId(sortIds[i]);
-			// tdUserReturnService.save(e);
-			// }
-			// }
-			// }
-		}
-	}
 
 	private void btnDelete(String type, Long[] ids, Integer[] chkIds) {
 		if (null == ids || null == chkIds || ids.length < 1 || chkIds.length < 1 || null == type || "".equals(type)) {
@@ -1630,80 +1392,9 @@ public class TdManagerUserController {
 				{
 					tdMessageService.delete(id);
 				}
-				// else if (type.equalsIgnoreCase("consult")) // 咨询
-				// {
-				// tdUserConsultService.delete(id);
-				// }
-				// else if (type.equalsIgnoreCase("comment")) // 评论
-				// {
-				// tdUserCommentService.delete(id);
-				// }
-				// else if (type.equalsIgnoreCase("complain")) // 投诉
-				// {
-				// tdUserComplainService.delete(id);
-				// }
-				// else if (type.equalsIgnoreCase("return")) // 退换货
-				// {
-				// tdUserReturnService.delete(id);
-				// }
-				// else if (type.equalsIgnoreCase("withdraw")) // 退换货
-				// {
-				// tdUserWithdrawService.delete(id);
-				// }
 			}
 		}
 	}
 
-	private void btnVerify(String type, Long[] ids, Integer[] chkIds) {
-		if (null == ids || null == chkIds || ids.length < 1 || chkIds.length < 1 || null == type || "".equals(type)) {
-			return;
-		}
-
-		for (int chkId : chkIds) {
-			if (chkId >= 0 && ids.length > chkId) {
-				Long id = ids[chkId];
-
-				// if (type.equalsIgnoreCase("consult")) // 咨询
-				// {
-				// TdUserConsult e = tdUserConsultService.findOne(id);
-				//
-				// if (null != e)
-				// {
-				// e.setStatusId(1L);
-				// tdUserConsultService.save(e);
-				// }
-				// }
-				if (type.equalsIgnoreCase("comment")) // 评论
-				{
-					TdUserComment e = tdUserCommentService.findOne(id);
-
-					if (null != e) {
-						e.setStatusId(1L);
-						tdUserCommentService.save(e);
-					}
-				}
-				// else if (type.equalsIgnoreCase("complain")) // 投诉
-				// {
-				// TdUserComplain e = tdUserComplainService.findOne(id);
-				//
-				// if (null != e)
-				// {
-				// e.setStatusId(1L);
-				// tdUserComplainService.save(e);
-				// }
-				// }
-				// else if (type.equalsIgnoreCase("return")) // 退换货
-				// {
-				// TdUserReturn e = tdUserReturnService.findOne(id);
-				//
-				// if (null != e)
-				// {
-				// e.setStatusId(1L);
-				// tdUserReturnService.save(e);
-				// }
-				// }
-			}
-		}
-	}
 	
 }

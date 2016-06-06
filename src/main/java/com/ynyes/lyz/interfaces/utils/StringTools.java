@@ -48,6 +48,8 @@ public class StringTools {
 	
 	/**
 	 * 根据接口返回数据判断是传送成功与否
+	 * 
+	 * 失败返回的失败原因
 	 * @param resultStr
 	 * @return
 	 */
@@ -70,7 +72,8 @@ public class StringTools {
 			if (Integer.parseInt(code) == 0) 
 			{
 				return null;
-			} else
+			}
+			else
 			{
 				String errorMsg = "<MESSAGE>([\\s\\S]*?)</MESSAGE>";
 				pat = Pattern.compile(errorMsg);
@@ -182,7 +185,7 @@ public class StringTools {
 		{
 			return "N";
 		}
-		else 
+		else
 		{
 			return "Y";
 		}

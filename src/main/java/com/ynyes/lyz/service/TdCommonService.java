@@ -56,6 +56,7 @@ import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
+import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.interfaces.utils.StringTools;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
@@ -333,6 +334,9 @@ public class TdCommonService {
 
 		returnNote.setReturnGoodsList(orderGoodsList);
 		tdOrderGoodsService.save(orderGoodsList);
+		tdInterfaceService.initReturnOrder(returnNote);
+		tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
+		tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 		return tdReturnNoteService.save(returnNote);
 	}
 
@@ -1630,7 +1634,7 @@ public class TdCommonService {
 						order.setCashBalanceUsed(Double.parseDouble(scale2_cash));
 						order.setOtherPay(Double.parseDouble(scale2_other));
 						order.setActualPay(order.getUnCashBalanceUsed() + order.getCashBalanceUsed());
-
+//						order.setTotalPrice(order.getTotalPrice()-order.getUnCashBalanceUsed()-order.getCashBalanceUsed());
 					}
 				}
 			}
@@ -1681,12 +1685,12 @@ public class TdCommonService {
 		req.getSession().setAttribute("order_temp", null);
 
 		// 子线程 抛单给WMS
-		if (isSend) {
-			SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList,
-					order_temp.getOrderNumber());
+		if (isSend)
+		{
+			SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
 			requsitThread.start();
-//			sendEbsThread ebsThread = new sendEbsThread(orderList);
-//			ebsThread.start();
+			sendEbsThread ebsThread = new sendEbsThread(orderList);
+			ebsThread.start();
 		}
 	}
 
@@ -1902,7 +1906,7 @@ public class TdCommonService {
 			Boolean isOrderInfSucceed = false;
 			// 单头
 			String orderInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERINF);
-			Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
+			Object[] orderInf = { INFConstants.INF_ORDER_STR, "1", orderInfXML };
 			try 
 			{
 				String object = (String) tdInterfaceService.getCall().invoke(orderInf);
@@ -1921,7 +1925,7 @@ public class TdCommonService {
 			String orderGoodsInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERGOODSINF);
 			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderGoodsInfXML) && isOrderInfSucceed)
 			{
-				Object[] orderGoodsInf = { "TD_ORDER_GOODS", "1", orderGoodsInfXML };
+				Object[] orderGoodsInf = { INFConstants.INF_ORDER_GOODS_STR, "1", orderGoodsInfXML };
 				try 
 				{
 					Object object = tdInterfaceService.getCall().invoke(orderGoodsInf);
@@ -1936,7 +1940,7 @@ public class TdCommonService {
 			String orderCouponInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERCOUPONINF);
 			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML) && isOrderInfSucceed)
 			{
-				Object[] orderCouponInf = { "TD_ORDER_COUPONS", "1", orderCouponInfXML };
+				Object[] orderCouponInf = { INFConstants.INF_ORDER_COUPON_STR, "1", orderCouponInfXML };
 				try
 				{
 					Object object = tdInterfaceService.getCall().invoke(orderCouponInf);
@@ -1948,10 +1952,10 @@ public class TdCommonService {
 				}
 			}
 			// 收款
-			String cashreciptInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.CASHRECIPTINF);
-			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML) && isOrderInfSucceed)
+			String cashreciptInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.CASHRECEIPTINF);
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(cashreciptInfXML) && isOrderInfSucceed)
 			{
-				Object[] cashreciptInf = { "TD_CASH_RECEIPTS", "1", cashreciptInfXML };
+				Object[] cashreciptInf = { INFConstants.INF_CASH_RECEIPTS_STR, "1", cashreciptInfXML };
 				try
 				{
 					Object object = tdInterfaceService.getCall().invoke(cashreciptInf);

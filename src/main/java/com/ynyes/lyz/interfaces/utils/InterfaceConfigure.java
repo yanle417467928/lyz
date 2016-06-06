@@ -12,6 +12,7 @@ public class InterfaceConfigure
 	
 	/*-----测试环境 start----*/
 	
+	
 	/*
 	 * 在测试服务器抛给WMS的WEBSERVICE接口地址
 	 */

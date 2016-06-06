@@ -90,10 +90,10 @@ public class TdReturnCouponInfService {
     {
         return (List<TdReturnCouponInf>) repository.findAll();
     }
-//    public TdReturnOrderInf findByOrderNumber(String orderNumber)
-//    {
-//    	return repository.findByOrderNumber(orderNumber);
-//    }
+    public List<TdReturnCouponInf> findByRtHeaderId(Long rtHeaderId)
+    {
+    	return repository.findByRtHeaderId(rtHeaderId);
+    }
     
     /**
      * 保存
