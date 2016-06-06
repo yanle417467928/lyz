@@ -51,7 +51,7 @@ public class TdDiySiteInventory {
 	@Column
 	private String goodsCode;
 
-	// 库存量
+	// 库存量(可售)
 	@Column
 	private Long inventory;
 
@@ -168,7 +168,7 @@ public class TdDiySiteInventory {
 	}
 
 	public Long getInventory() {
-		return inventory;
+		return inventory==null?0L:inventory;
 	}
 
 	public void setInventory(Long inventory) {
@@ -182,5 +182,4 @@ public class TdDiySiteInventory {
 	public void setDiyCode(String diyCode) {
 		this.diyCode = diyCode;
 	}
-	
 }

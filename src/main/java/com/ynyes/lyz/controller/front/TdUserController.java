@@ -560,8 +560,15 @@ public class TdUserController {
 					
 					// 如果已选数量大于了最大库存，则消减已选数量
 					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > diySiteInventory.getInventory()) {
-						cartGoods.setQuantity(diySiteInventory.getInventory());
-						cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
+						//如果为负库存设置为0
+						if(diySiteInventory.getInventory()<0){
+							cartGoods.setQuantity(0L);
+							cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
+						}else{
+							cartGoods.setQuantity(diySiteInventory.getInventory());
+							cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
+						}
+						
 						tdCartGoodsService.save(cartGoods);
 					}
 					total_price += cartGoods.getTotalPrice();

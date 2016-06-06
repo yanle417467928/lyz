@@ -23,6 +23,7 @@ import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDistrict;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
@@ -36,6 +37,7 @@ import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDistrictService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
@@ -91,10 +93,13 @@ public class TdOrderController {
 	private TdPriceCountService tdPriceCouintService;
 
 	@Autowired
-	TdGoodsService tdGoodsService;
+	private TdGoodsService tdGoodsService;
 
 	@Autowired
-	TdSettingService tdSettingService;
+	private TdSettingService tdSettingService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	/**
 	 * 清空部分信息的控制器
@@ -153,8 +158,8 @@ public class TdOrderController {
 		}
 		//判断商品数量是否为0
 		for (TdOrderGoods tdOrderGoods : goodsList) {
-			if(tdOrderGoods.getQuantity()==0L){
-				attr.addAttribute("msg", "亲,商品数量不能为零");
+			if(tdOrderGoods.getQuantity()<1L){
+				attr.addAttribute("msg", "亲,商品数量不能小于1");
 				return "redirect:/prompt";
 			}
 		}
@@ -1736,6 +1741,9 @@ public class TdOrderController {
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null != order && null != order.getOrderNumber()) {
 			if (order.getOrderNumber().contains("XN")) {
+				//拆单钱先去扣减库存
+				TdCity city= tdCityService.findByCityName(order.getCity());
+				tdDiySiteInventoryService.changeGoodsInventory(order, city);
 				tdCommonService.dismantleOrder(req, username);
 			}
 		}
@@ -1947,6 +1955,7 @@ public class TdOrderController {
 		return "/client/order_user_info";
 	}
 
+	//增加判断库存
 	@RequestMapping(value = "/coupon/confirm")
 	@ResponseBody
 	public Map<String, Object> confirm(HttpServletRequest req, ModelMap map) {
@@ -1956,6 +1965,43 @@ public class TdOrderController {
 		// 获取指定的订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null != order) {
+			
+			//判断库存
+			Map<String, Long> inventoryMap=new HashMap<String, Long>();
+			//商品列表
+			List<TdOrderGoods> orderGoodsList= order.getOrderGoodsList();
+			for (TdOrderGoods tdOrderGoods : orderGoodsList) {
+				if(tdOrderGoods!=null){
+					String sku= tdOrderGoods.getSku();
+					//判断是否存在 存在累加 不存在默认为0
+					Long quantity= inventoryMap.get(sku)==null?0L:inventoryMap.get(sku);
+					inventoryMap.put(sku, quantity+tdOrderGoods.getQuantity());
+				}
+			}
+			//赠品列表
+			List<TdOrderGoods> giftGoodsList= order.getGiftGoodsList();
+			for (TdOrderGoods giftGoods : giftGoodsList) {
+				if(giftGoods!=null){
+					String sku= giftGoods.getSku();
+					//判断是否存在 存在累加 不存在默认为0
+					Long quantity= inventoryMap.get(sku)==null?0L:inventoryMap.get(sku);
+					inventoryMap.put(sku, quantity+giftGoods.getQuantity());
+				}
+				
+			}
+			//小辅料列表
+			List<TdOrderGoods> presentedList= order.getPresentedList();
+			for (TdOrderGoods presented : presentedList) {
+				if(presented!=null){
+					String sku= presented.getSku();
+					//判断是否存在 存在累加 不存在默认为0
+					Long quantity= inventoryMap.get(sku)==null?0L:inventoryMap.get(sku);
+					inventoryMap.put(sku, quantity+presented.getQuantity());
+				}
+			}
+			
+			
+			
 			// 获取用户的支付方式
 			Long payTypeId = order.getPayTypeId();
 			TdPayType payType = tdPayTypeService.findOne(payTypeId);
