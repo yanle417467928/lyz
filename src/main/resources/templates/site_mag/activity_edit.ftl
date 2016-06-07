@@ -91,7 +91,7 @@ $(function () {
             max: false,
             min: false,
             title: "赠品",
-            content: 'url:/Verwalter/goods/list/dialog/gift?total=' + $("#var_box_gift").children("tr").length,
+            content: 'url:/Verwalter/goods/list/dialog/gift?total=' + $("#var_box_gift").children("tr").length+'&cityId='+$('#cityId').val(),
             width: 800,
             height: 550
         });
