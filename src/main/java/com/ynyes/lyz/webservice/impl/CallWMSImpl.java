@@ -505,26 +505,26 @@ public class CallWMSImpl implements ICallWMS {
 				{
 					sobId = tdUser.getCityId();
 				}
-				String gCode = infoDetail.getgCode();
-				Long backquantity = Math.round(infoDetail.getBackNumber() == null ? 0 : infoDetail.getBackNumber());
-				if (isSendOrder) 
-				{
-					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(gCode, sobId);
-					if (inventory != null && inventory.getInventory() != null)
-					{
-						inventory.setInventory(inventory.getInventory() - backquantity);
-						tdDiySiteInventoryLogService.saveChangeLog(inventory, 0 - backquantity, orderNumber, null);
-					}
-				}
-				else
-				{
-					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(gCode, diySiteId);
-					if (inventory != null && inventory.getInventory() != null)
-					{
-						inventory.setInventory(inventory.getInventory() - backquantity);
-						tdDiySiteInventoryLogService.saveChangeLog(inventory, 0 - backquantity, orderNumber, null);
-					}
-				}
+//				String gCode = infoDetail.getgCode();
+//				Long backquantity = Math.round(infoDetail.getBackNumber() == null ? 0 : infoDetail.getBackNumber());
+//				if (isSendOrder) 
+//				{
+//					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(gCode, sobId);
+//					if (inventory != null && inventory.getInventory() != null)
+//					{
+//						inventory.setInventory(inventory.getInventory() - backquantity);
+//						tdDiySiteInventoryLogService.saveChangeLog(inventory, 0 - backquantity, orderNumber, null);
+//					}
+//				}
+//				else
+//				{
+//					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(gCode, diySiteId);
+//					if (inventory != null && inventory.getInventory() != null)
+//					{
+//						inventory.setInventory(inventory.getInventory() - backquantity);
+//						tdDiySiteInventoryLogService.saveChangeLog(inventory, 0 - backquantity, orderNumber, null);
+//					}
+//				}
 				
 //				TdGoods tdGoods = tdGoodsService.findByCode(infoDetail.getgCode());
 //				List<TdDiySiteInventory> inventoryList = tdGoods.getInventoryList();

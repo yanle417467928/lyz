@@ -1026,11 +1026,14 @@ public class TdManagerOrderController {
 					order.setStatusId(5L);
 					order.setReceiveTime(new Date());
 					
-					// add send receive time to ebs
-					TdOrderReceiveInf orderReceiveInf = tdInterfaceService.initOrderReceiveByOrder(order);
-					if (orderReceiveInf != null)
+					if (order.getDeliverTypeTitle().equalsIgnoreCase("门店自提"))
 					{
-						tdInterfaceService.ebsWithObject(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+						// add send receive time to ebs
+						TdOrderReceiveInf orderReceiveInf = tdInterfaceService.initOrderReceiveByOrder(order);
+						if (orderReceiveInf != null)
+						{
+							tdInterfaceService.ebsWithObject(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+						}
 					}
 				}
 			}

@@ -182,4 +182,15 @@ public class TdDiySiteInventory {
 	public void setDiyCode(String diyCode) {
 		this.diyCode = diyCode;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "TdDiySiteInventory [id=" + id + ", regionId=" + regionId + ", regionName=" + regionName + ", diySiteId="
+		        + diySiteId + ", diySiteName=" + diySiteName + ", diyCode=" + diyCode + ", goodsId=" + goodsId
+		        + ", goodsTitle=" + goodsTitle + ", goodsCode=" + goodsCode + ", inventory=" + inventory
+		        + ", categoryId=" + categoryId + ", categoryTitle=" + categoryTitle + ", categoryIdTree="
+		        + categoryIdTree + ", managerId=" + managerId + "]";
+	}
+	
 }

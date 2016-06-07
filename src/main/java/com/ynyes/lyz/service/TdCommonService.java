@@ -1698,6 +1698,8 @@ public class TdCommonService {
  
 		// add by Shawn
 		List<TdOrder> orderList = new ArrayList<TdOrder>();
+		
+		List<TdOrder> ebsOrderList = new ArrayList<TdOrder>();
 
 		// 遍历存储
 		for (TdOrder order : order_map.values()) {
@@ -1717,6 +1719,7 @@ public class TdCommonService {
 				if ("送货上门".equals(order.getDeliverTypeTitle())) {
 					orderList.add(order);
 				}
+				ebsOrderList.add(order);
 			}
 		}
 
@@ -1745,9 +1748,9 @@ public class TdCommonService {
 		{
 			SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList, order_temp.getOrderNumber());
 			requsitThread.start();
-			sendEbsThread ebsThread = new sendEbsThread(orderList);
-			ebsThread.start();
 		}
+		sendEbsThread ebsThread = new sendEbsThread(ebsOrderList);
+		ebsThread.start();
 	}
 
 	/**
