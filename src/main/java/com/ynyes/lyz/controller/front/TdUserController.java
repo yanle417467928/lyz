@@ -1435,7 +1435,10 @@ public class TdUserController {
 					if (null != statusId && 3L == statusId.longValue()) {
 						// 在此进行资金和优惠券的退还
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
-
+						
+						//增加库存
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L);
+						
 						// 通知物流
 						TdReturnNote returnNote = tdCommonService.MakeReturnNote(subOrder, 0L, "");
 						tdCommonService.sendBackMsgToWMS(returnNote);

@@ -44,6 +44,7 @@ import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
@@ -93,6 +94,9 @@ public class TdDeliveryIndexController {
 	
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	@RequestMapping
 	public String deliveryIndex(HttpServletRequest req) {
@@ -513,8 +517,11 @@ public class TdDeliveryIndexController {
 
 		returnNote.setStatusId(3L);
 		returnNote.setRecvTime(new Date());
-
+		
 		returnNote = tdReturnNoteService.save(returnNote);
+		
+		//增加库存
+		tdDiySiteInventoryService.changeGoodsInventory(returnNote);
 		
 //		 自动通知WMS
 //		tdCommonService.sendBackMsgToWMS(returnNote);
@@ -766,6 +773,9 @@ public class TdDeliveryIndexController {
 						
 						// 保存退货单
 						tdReturnNoteService.save(returnNote);
+						
+						//增加库存
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L);
 						
 						tdInterfaceService.initReturnOrder(returnNote);
 						tdInterfaceService.initReturnCouponInfByOrder(subOrder, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
