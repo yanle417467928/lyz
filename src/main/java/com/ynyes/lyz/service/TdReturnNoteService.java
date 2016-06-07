@@ -333,7 +333,8 @@ public class TdReturnNoteService {
 		if(null!=statusId){
 			c.add(Restrictions.eq("statusId", statusId, true));
 		}
-		c.add(Restrictions.ne("remarkInfo","用户取消订单，退货", true));
+		c.add(Restrictions.notLike("remarkInfo","取消订单，退货", true));
+		c.add(Restrictions.notLike("remarkInfo","取消订单,退货", true));
 		
 		c.setOrderByDesc("id");
 		return repository.findAll(c,pageRequest);

@@ -523,6 +523,8 @@ public class TdGoodsController {
 		List<String> categoryTitle=new ArrayList<String>();
 		TdProductCategory  productCategory= tdProductCategoryService.findByTitle(keywords);
 		if(productCategory!=null){
+			 //分类存在只查找分类
+			 keywords=null;
 			 List<TdProductCategory> productCategoryList= tdProductCategoryService.findByParentIdOrderBySortIdAsc(productCategory.getId());
 			 if(productCategoryList!=null && productCategoryList.size()>0){
 				 for (TdProductCategory tdProductCategory : productCategoryList) {
