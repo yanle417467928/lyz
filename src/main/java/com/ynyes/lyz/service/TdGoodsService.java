@@ -1537,4 +1537,15 @@ public class TdGoodsService {
 
 		return repository.queryAllOrderBySortIdAsc(priceListIdList,categoryIdList,keywords,pageRequest);
 	}
+	
+	/**
+	 *优惠卷商品查询
+	 * @param cityId 城市id
+	 * @param brandId 品牌id
+	 * @param keywords 关键字
+	 * @author zp
+	 */
+	public List<TdGoods> queryCouponGooddsOrderBySortIdAsc(Long cityId,Long brandId,String keywords){
+		return repository.queryCouponGooddsOrderBySortIdAsc(cityId, brandId, keywords);
+	}
 }

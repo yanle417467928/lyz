@@ -43,6 +43,7 @@ import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdCityService;
+import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdCouponModuleService;
 import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdCouponTypeService;
@@ -106,7 +107,10 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 	@Autowired
 	private TdCouponModuleService tdCouponModuleService;
-
+	
+	@Autowired
+	private TdCommonService tdCommonService;
+	
 	@RequestMapping(value = "/down/order/use")
 	public void couponUseDetail() {
 		HSSFWorkbook workbook = new HSSFWorkbook();
@@ -793,14 +797,29 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 	/**
 	 * 指定商品券和产品券 关键字收索商品
-	 * 搜索条件增加公司id
+	 * 搜索条件增加公司id 增加城市字段
 	 * @author Max
 	 */
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public String goodsSeach(String keywords, Integer page, HttpServletRequest req, ModelMap map,Long brandId) {
+	public String goodsSeach(String keywords, Integer page, HttpServletRequest req, ModelMap map,Long brandId,Long cityId) {
 
-//		map.addAttribute("goodsList", tdGoodsService.searchGoods(keywords));
-		map.addAttribute("goodsList", tdGoodsService.searchGoodsByKeywordsAndBrand(keywords, brandId));
+		TdCity city=null;
+		if(cityId!=null){
+			city= tdCityService.findOne(cityId);
+		}
+		//查询条件 不存在是默认-1 不查询
+		Long cityCode=-1L;
+		if(city!=null){
+			cityCode=city.getSobIdCity();
+		}
+		//查询条件 不存在是默认-1 不查询
+		if(brandId==null){
+			brandId=-1L;
+		}
+		//查询商品
+		List<TdGoods> goods_list= tdGoodsService.queryCouponGooddsOrderBySortIdAsc(cityCode, brandId, keywords);
+		map.addAttribute("goodsList",goods_list);
+		
 		return "/site_mag/coupon_goods";
 	}
 
