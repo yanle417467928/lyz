@@ -33,6 +33,7 @@ import com.ynyes.lyz.interfaces.entity.TdReturnTimeInf;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -101,6 +102,9 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	
 	@Autowired
 	private TdDiySiteRoleService tdDiySiteRoleService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 	
 	// 列表
 	@RequestMapping(value = "/{type}/list")
@@ -379,6 +383,9 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					returnNote.setStatusId(3L);
 					returnNote.setReceiveTime(new Date());
 				}
+				//修改库存
+				tdDiySiteInventoryService.changeGoodsInventory(returnNote);
+				
 			}
 			// 确认验货
 			else if ("examineReturn".equalsIgnoreCase(type)) {

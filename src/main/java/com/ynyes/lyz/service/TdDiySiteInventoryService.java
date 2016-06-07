@@ -15,8 +15,11 @@ import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
+import com.ynyes.lyz.entity.TdReturnNote;
+import com.ynyes.lyz.repository.TdCityRepo;
 import com.ynyes.lyz.repository.TdDiySiteInventoryRepo;
 import com.ynyes.lyz.repository.TdGoodsRepo;
+import com.ynyes.lyz.repository.TdOrderRepo;
 
 @Service
 @Transactional
@@ -27,6 +30,12 @@ public class TdDiySiteInventoryService {
 	
 	@Autowired
 	private TdGoodsRepo goodsRepo;
+	
+	@Autowired
+	private TdOrderRepo orderRepo;
+	
+	@Autowired
+	private TdCityRepo tdCityRepo;
 
 	public TdDiySiteInventory save(TdDiySiteInventory e) {
 		if (null == e) {
@@ -128,110 +137,108 @@ public class TdDiySiteInventoryService {
 	}
 	
 	/**
-	 * 根据订单扣减库存
+	 * 根据订单增减库存
 	 * @param order 订单
-	 * @param city 城市
+	 * @param type 1赠 2减
 	 * @author zp
 	 */
-	public void changeGoodsInventory(TdOrder order,TdCity city){
-		if(!"门店自提".equals(order.getDeliverTypeTitle())){ //扣减城市库存
-			//商品列表
-			List<TdOrderGoods> orderGoodsList= order.getOrderGoodsList();
-			for (TdOrderGoods tdOrderGoods : orderGoodsList) {
-				if(tdOrderGoods!=null){
-					TdDiySiteInventory  diySiteInventory = repository.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(tdOrderGoods.getSku(), city.getSobIdCity());
-					//扣减库存
-					if(diySiteInventory!=null  ){
-						diySiteInventory.setInventory(diySiteInventory.getInventory()-tdOrderGoods.getQuantity());
-					}else{
-						diySiteInventory=saveInventoryByGoods(order, tdOrderGoods, city, 1L);
-						diySiteInventory.setInventory(-tdOrderGoods.getQuantity());
-					}
-					repository.save(diySiteInventory);
-				}
-
-			}
-			//赠品列表
-			List<TdOrderGoods> giftGoodsList= order.getGiftGoodsList();
-			for (TdOrderGoods giftGoods : giftGoodsList) {
-				if(giftGoods!=null){
-					TdDiySiteInventory  diySiteInventory = repository.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(giftGoods.getSku(), city.getSobIdCity());
-					//扣减库存
-					if(diySiteInventory!=null  ){
-						diySiteInventory.setInventory(diySiteInventory.getInventory()-giftGoods.getQuantity());
-					}else{
-						diySiteInventory=saveInventoryByGoods(order, giftGoods, city, 1L);
-						diySiteInventory.setInventory(-giftGoods.getQuantity());
-					}
-					repository.save(diySiteInventory);
-				}
-
-			}
-			//小辅料列表
-			List<TdOrderGoods> presentedList= order.getPresentedList();
-			for (TdOrderGoods presented : presentedList) {
-				if(presented!=null){
-					TdDiySiteInventory  diySiteInventory = repository.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(presented.getSku(), city.getSobIdCity());
-					//扣减库存
-					if(diySiteInventory!=null  ){
-						diySiteInventory.setInventory(diySiteInventory.getInventory()-presented.getQuantity());
-					}else{
-						diySiteInventory=saveInventoryByGoods(order, presented, city, 1L);
-						diySiteInventory.setInventory(-presented.getQuantity());
-					}
-					repository.save(diySiteInventory);
-				}
-
-			}
-		}else{ //扣减门店库存
-			//商品列表
-			List<TdOrderGoods> orderGoodsList= order.getOrderGoodsList();
-			for (TdOrderGoods tdOrderGoods : orderGoodsList) {
-				if(tdOrderGoods!=null){
-					TdDiySiteInventory  diySiteInventory = repository.findByGoodsCodeAndDiySiteId(tdOrderGoods.getSku(), order.getDiySiteId());
-					//扣减库存
-					if(diySiteInventory!=null  ){
-						diySiteInventory.setInventory(diySiteInventory.getInventory()-tdOrderGoods.getQuantity());
-					}else{
-						diySiteInventory=saveInventoryByGoods(order, tdOrderGoods, city, 2L);
-						diySiteInventory.setInventory(-tdOrderGoods.getQuantity());
-					}
-					repository.save(diySiteInventory);
-				}
-			}
-			//赠品列表
-			List<TdOrderGoods> giftGoodsList= order.getGiftGoodsList();
-			for (TdOrderGoods giftGoods : giftGoodsList) {
-				if(giftGoods!=null){
-					TdDiySiteInventory  diySiteInventory = repository.findByGoodsCodeAndDiySiteId(giftGoods.getSku(), order.getDiySiteId());
-					//扣减库存
-					if(diySiteInventory!=null  ){
-						diySiteInventory.setInventory(diySiteInventory.getInventory()-giftGoods.getQuantity());
-					}else{
-						diySiteInventory=saveInventoryByGoods(order, giftGoods, city, 2L);
-						diySiteInventory.setInventory(-giftGoods.getQuantity());
-					}
-					repository.save(diySiteInventory);
-				}
-				
-			}
-			//小辅料列表
-			List<TdOrderGoods> presentedList= order.getPresentedList();
-			for (TdOrderGoods presented : presentedList) {
-				if(presented!=null){
-					TdDiySiteInventory  diySiteInventory = repository.findByGoodsCodeAndDiySiteId(presented.getSku(), order.getDiySiteId());
-					//扣减库存
-					if(diySiteInventory!=null  ){
-						diySiteInventory.setInventory(diySiteInventory.getInventory()-presented.getQuantity());
-					}else{
-						diySiteInventory=saveInventoryByGoods(order, presented, city, 2L);
-						diySiteInventory.setInventory(-presented.getQuantity());
-					}
-					repository.save(diySiteInventory);
-				}
-			}
+	public void changeGoodsInventory(TdOrder order,Long type){
+		TdCity city= tdCityRepo.findByCityName(order.getCity());
+		//订单类型
+		Long orderType=1L;
+		//判断订单类型
+		if("门店自提".equals(order.getDeliverTypeTitle())){ 
+			orderType=2L;
 		}
+		
+		//商品列表
+		List<TdOrderGoods> orderGoodsList= order.getOrderGoodsList();
+		for (TdOrderGoods tdOrderGoods : orderGoodsList) {
+			if(tdOrderGoods!=null){
+				TdDiySiteInventory  diySiteInventory=null;
+				if(orderType==2L){
+					//门店库存
+					diySiteInventory = repository.findByGoodsCodeAndDiySiteId(tdOrderGoods.getSku(), order.getDiySiteId());
+				}else{
+					//城市库存
+					diySiteInventory = repository.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(tdOrderGoods.getSku(), city.getSobIdCity());
+				}
 
+				//要修改库存数量
+				Long quantitiy=tdOrderGoods.getQuantity();
+				if(type==2L){ //type为2时减库存
+					quantitiy=-quantitiy;
+				}
+
+				//修改库存
+				if(diySiteInventory!=null  ){
+					diySiteInventory.setInventory(diySiteInventory.getInventory()+quantitiy);
+				}else{
+					diySiteInventory=saveInventoryByGoods(order, tdOrderGoods, city, orderType);
+					diySiteInventory.setInventory(quantitiy);
+				}
+				//保存
+				repository.save(diySiteInventory);
+			}
+
+		}
+		
+		//赠品列表
+		List<TdOrderGoods> giftGoodsList= order.getGiftGoodsList();
+		for (TdOrderGoods giftGoods : giftGoodsList) {
+			if(giftGoods!=null){
+				TdDiySiteInventory  diySiteInventory=null;
+				if(orderType==2L){
+					//门店库存
+					diySiteInventory = repository.findByGoodsCodeAndDiySiteId(giftGoods.getSku(), order.getDiySiteId());
+				}else{
+					//城市库存
+					diySiteInventory = repository.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(giftGoods.getSku(), city.getSobIdCity());
+				}
+				//要修改库存数量
+				Long quantitiy=giftGoods.getQuantity();
+				if(type==2L){ //type为2时减库存
+					quantitiy=-quantitiy;
+				}
+				//修改库存
+				if(diySiteInventory!=null  ){
+					diySiteInventory.setInventory(diySiteInventory.getInventory()+quantitiy);
+				}else{
+					diySiteInventory=saveInventoryByGoods(order, giftGoods, city, orderType);
+					diySiteInventory.setInventory(quantitiy);
+				}
+				repository.save(diySiteInventory);
+			}
+
+		}
+		//小辅料列表
+		List<TdOrderGoods> presentedList= order.getPresentedList();
+		for (TdOrderGoods presented : presentedList) {
+			if(presented!=null){
+				TdDiySiteInventory  diySiteInventory=null;
+				if(orderType==2L){
+					//门店库存
+					diySiteInventory = repository.findByGoodsCodeAndDiySiteId(presented.getSku(), order.getDiySiteId());
+				}else{
+					//城市库存
+					diySiteInventory = repository.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(presented.getSku(), city.getSobIdCity());
+				}
+				//要修改库存数量
+				Long quantitiy=presented.getQuantity();
+				if(type==2L){ //type为2时减库存
+					quantitiy=-quantitiy;
+				}
+				//修改库存
+				if(diySiteInventory!=null  ){
+					diySiteInventory.setInventory(diySiteInventory.getInventory()+quantitiy);
+				}else{
+					diySiteInventory=saveInventoryByGoods(order, presented, city, orderType);
+					diySiteInventory.setInventory(quantitiy);
+				}
+				repository.save(diySiteInventory);
+			}
+
+		}
 	}
 	/**
 	 * 新增库存
@@ -269,4 +276,45 @@ public class TdDiySiteInventoryService {
 		return inventory;
 	}
 	
+	/**
+	 * 根据退货单增加库存
+	 * @param returnNote 退货单
+	 * @author zp
+	 */
+	public void changeGoodsInventory(TdReturnNote returnNote){
+		TdOrder order= orderRepo.findByOrderNumber(returnNote.getOrderNumber());
+		TdCity city= tdCityRepo.findByCityName(order.getCity());
+		//订单类型
+		Long orderType=1L;
+		//判断订单类型
+		if("门店自提".equals(order.getDeliverTypeTitle())){ 
+			orderType=2L;
+		}
+		List<TdOrderGoods> returnGoodsList= returnNote.getReturnGoodsList();
+		for (TdOrderGoods retrunGoods : returnGoodsList) {
+			if(retrunGoods!=null){
+				TdDiySiteInventory  diySiteInventory=null;
+				if(orderType==2L){
+					//门店库存
+					diySiteInventory = repository.findByGoodsCodeAndDiySiteId(retrunGoods.getSku(), order.getDiySiteId());
+				}else{
+					//城市库存
+					diySiteInventory = repository.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(retrunGoods.getSku(), city.getSobIdCity());
+				}
+
+				//要修改库存数量
+				Long quantitiy=retrunGoods.getQuantity();
+
+				//修改库存
+				if(diySiteInventory!=null  ){
+					diySiteInventory.setInventory(diySiteInventory.getInventory()+quantitiy);
+				}else{
+					diySiteInventory=saveInventoryByGoods(order, retrunGoods, city, orderType);
+					diySiteInventory.setInventory(+quantitiy);
+				}
+				//保存
+				repository.save(diySiteInventory);
+			}
+		}
+	}
 }

@@ -878,7 +878,8 @@
                     货到付款金额                 
                         </th>
                         <td>
-                         ${(order.totalPrice-order.actualPay-order.otherPay)?string("0.00")}元
+                        
+                         ${(order.totalPrice-order.actualPay!'0'?number-order.otherPay!'0'?number)?string("0.00")}元
                         </td>
                     </tr>
                     <tr>
@@ -1005,7 +1006,7 @@
                 <input type="button" id="btnConfirm" value="确认订单" class="btn">
                 <input type="button" id="btnCancel" value="取消订单" class="btn green">
             <#elseif order.statusId==2>
-                    <input type="button" id="btnPayment" value="确认付款" class="btn">
+                    <#--后台确认付款没有拆单 <input type="button" id="btnPayment" value="确认付款" class="btn"> -->
                     <input type="button" id="btnCancel" value="取消订单" class="btn green">
             <#elseif order.statusId==3>
                 <input type="button" id="btnOrderExpress" value="确认发货" class="btn">

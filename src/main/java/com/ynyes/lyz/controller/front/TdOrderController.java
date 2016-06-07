@@ -1742,8 +1742,7 @@ public class TdOrderController {
 		if (null != order && null != order.getOrderNumber()) {
 			if (order.getOrderNumber().contains("XN")) {
 				//拆单钱先去扣减库存
-				TdCity city= tdCityService.findByCityName(order.getCity());
-				tdDiySiteInventoryService.changeGoodsInventory(order, city);
+				tdDiySiteInventoryService.changeGoodsInventory(order,2L);
 				tdCommonService.dismantleOrder(req, username);
 			}
 		}

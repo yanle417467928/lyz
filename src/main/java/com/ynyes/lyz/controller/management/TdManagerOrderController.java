@@ -50,6 +50,7 @@ import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDeliveryTypeService;
 import com.ynyes.lyz.service.TdDistrictService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
@@ -150,6 +151,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 	
 	 /**
 	 * @author lc
@@ -1012,6 +1016,7 @@ public class TdManagerOrderController {
 					order.setStatusId(5L);
 					order.setPayTime(new Date());
 				}
+				
 			}
 			// 确认发货
 			else if (type.equalsIgnoreCase("orderDelivery")) {
@@ -1174,6 +1179,9 @@ public class TdManagerOrderController {
 					{
 						// 在此进行资金和优惠券的退还
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
+						
+						//增加库存
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L);
 						
 						// 通知物流
 						if (StringUtils.isNotBlank(order.getRemarkInfo()))
