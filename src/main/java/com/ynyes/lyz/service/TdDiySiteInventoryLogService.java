@@ -83,6 +83,7 @@ public class TdDiySiteInventoryLogService {
 		log.setGoodsId(diySiteInventory.getGoodsId());
 		log.setGoodsTitle(diySiteInventory.getGoodsTitle());
 		log.setGoodsSku(diySiteInventory.getGoodsCode());
+		log.setAfterChange(diySiteInventory.getInventory());
 		log.setChangeValue(changeValue);
 		log.setChangeDate(new Date());
 		log.setDescription(changeType);

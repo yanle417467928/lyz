@@ -68,6 +68,9 @@ public class TdDiySiteInventoryLog {
 	
 	@Column
 	private String manager;
+	
+	@Column
+	private Long afterChange;
 
 	public Long getId() {
 		return id;
@@ -172,6 +175,16 @@ public class TdDiySiteInventoryLog {
 
 	public void setManager(String manager) {
 		this.manager = manager;
+	}
+	
+	public Long getAfterChange()
+	{
+		return afterChange;
+	}
+
+	public void setAfterChange(Long afterChange)
+	{
+		this.afterChange = afterChange;
 	}
 
 	@Override

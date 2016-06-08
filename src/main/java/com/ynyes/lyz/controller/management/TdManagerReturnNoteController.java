@@ -361,6 +361,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				{
 					// 生成收货通知
 					tdCommonService.sendBackToWMS(returnNote);
+					tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 					if (returnNote.getStatusId() == 1)
 					{
 						returnNote.setStatusId(2L);

@@ -586,7 +586,7 @@ public class TdDeliveryIndexController {
 
 			if (null != orderList)
 			{
-				for (TdOrder subOrder : orderList) 
+				for (TdOrder subOrder : orderList)
 				{
 					subOrder.setStatusId(12L);
 					subOrder.setDeliveryTime(new Date());
@@ -594,7 +594,7 @@ public class TdDeliveryIndexController {
 					subOrder = tdOrderService.save(subOrder);
 
 					// 生成退货单
-					if (null != subOrder) 
+					if (null != subOrder)
 					{
 						TdReturnNote returnNote = new TdReturnNote();
 
@@ -779,7 +779,7 @@ public class TdDeliveryIndexController {
 						
 						tdInterfaceService.initReturnOrder(returnNote);
 						tdInterfaceService.initReturnCouponInfByOrder(subOrder, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
-						
+						tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 
 						subOrder.setStatusId(12L);
 						subOrder.setIsRefund(true);
