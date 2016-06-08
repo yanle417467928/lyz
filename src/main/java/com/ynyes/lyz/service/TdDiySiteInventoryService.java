@@ -2,6 +2,7 @@ package com.ynyes.lyz.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,9 @@ public class TdDiySiteInventoryService {
 	
 	@Autowired
 	private TdCityRepo tdCityRepo;
+	
+	@Autowired
+	private TdDiySiteInventoryLogService tdDiySiteInventoryLogService;
 
 	public TdDiySiteInventory save(TdDiySiteInventory e) {
 		if (null == e) {
@@ -142,7 +146,7 @@ public class TdDiySiteInventoryService {
 	 * @param type 1赠 2减
 	 * @author zp
 	 */
-	public void changeGoodsInventory(TdOrder order,Long type){
+	public void changeGoodsInventory(TdOrder order,Long type,HttpServletRequest req){
 		TdCity city= tdCityRepo.findByCityName(order.getCity());
 		//订单类型
 		Long orderType=1L;
@@ -179,6 +183,8 @@ public class TdDiySiteInventoryService {
 				}
 				//保存
 				repository.save(diySiteInventory);
+				//保存日志
+				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, order.getOrderNumber(), req);
 			}
 
 		}
@@ -208,6 +214,8 @@ public class TdDiySiteInventoryService {
 					diySiteInventory.setInventory(quantitiy);
 				}
 				repository.save(diySiteInventory);
+				//保存日志
+				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, order.getOrderNumber(), req);
 			}
 
 		}
@@ -236,6 +244,8 @@ public class TdDiySiteInventoryService {
 					diySiteInventory.setInventory(quantitiy);
 				}
 				repository.save(diySiteInventory);
+				//保存日志
+				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, order.getOrderNumber(), req);
 			}
 
 		}
@@ -281,7 +291,7 @@ public class TdDiySiteInventoryService {
 	 * @param returnNote 退货单
 	 * @author zp
 	 */
-	public void changeGoodsInventory(TdReturnNote returnNote){
+	public void changeGoodsInventory(TdReturnNote returnNote,HttpServletRequest req){
 		TdOrder order= orderRepo.findByOrderNumber(returnNote.getOrderNumber());
 		TdCity city= tdCityRepo.findByCityName(order.getCity());
 		//订单类型
@@ -314,6 +324,8 @@ public class TdDiySiteInventoryService {
 				}
 				//保存
 				repository.save(diySiteInventory);
+				//保存日志
+				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, returnNote.getReturnNumber(), req);
 			}
 		}
 	}

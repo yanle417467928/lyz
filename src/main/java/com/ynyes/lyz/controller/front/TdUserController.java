@@ -1437,7 +1437,7 @@ public class TdUserController {
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
 						
 						//增加库存
-						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L);
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req);
 						
 						// 通知物流
 						TdReturnNote returnNote = tdCommonService.MakeReturnNote(subOrder, 0L, "");

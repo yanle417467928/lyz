@@ -71,7 +71,15 @@ public class TdDiySiteInventoryLogService {
 			changeType = "管理员修改";
 			if (username == null)
 			{
-				return false;
+				username="看到我就表示被黑了";
+			}
+		}
+		if(orderNumber!=null && req != null){
+			username = (String) req.getSession().getAttribute("username");
+			changeType = "管理员修改后台订单";
+			if (username == null)
+			{
+				username="看到我就表示被黑了";
 			}
 		}
 		

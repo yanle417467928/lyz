@@ -521,7 +521,7 @@ public class TdDeliveryIndexController {
 		returnNote = tdReturnNoteService.save(returnNote);
 		
 		//增加库存
-		tdDiySiteInventoryService.changeGoodsInventory(returnNote);
+		tdDiySiteInventoryService.changeGoodsInventory(returnNote,req);
 		
 //		 自动通知WMS
 //		tdCommonService.sendBackMsgToWMS(returnNote);
@@ -775,7 +775,7 @@ public class TdDeliveryIndexController {
 						tdReturnNoteService.save(returnNote);
 						
 						//增加库存
-						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L);
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req);
 						
 						tdInterfaceService.initReturnOrder(returnNote);
 						tdInterfaceService.initReturnCouponInfByOrder(subOrder, INFConstants.INF_RETURN_ORDER_CANCEL_INT);

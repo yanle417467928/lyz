@@ -385,7 +385,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					returnNote.setReceiveTime(new Date());
 				}
 				//修改库存
-				tdDiySiteInventoryService.changeGoodsInventory(returnNote);
+				tdDiySiteInventoryService.changeGoodsInventory(returnNote,req);
 				
 			}
 			// 确认验货
