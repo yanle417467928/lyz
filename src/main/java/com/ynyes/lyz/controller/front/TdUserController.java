@@ -1143,7 +1143,7 @@ public class TdUserController {
 		Long cityId = user.getCityId();
 
 		TdDiySite site = tdDiySiteService.findByRegionIdAndCustomerId(cityId, customerId);
-		if (null != site && (site.getStatus() == 2)) {
+		if (null != site && (site.getStatus()!=null && site.getStatus() == 2)) {
 			map.addAttribute("isSelected", false);
 		}
 
