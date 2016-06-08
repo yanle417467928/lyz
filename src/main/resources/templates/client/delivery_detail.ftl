@@ -354,7 +354,12 @@ function payedChange(){
     				
     			</#if>
     		<#else>
+    			<#if td_order.allTotalPay?? && td_order.allTotalPay!=0>
     			<a class="btn-submit-save bgc-ff8e08" onclick="pupopen()">填写代收金额</a>
+    			<#else>
+    			<a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="javascript:win_yes('请确认代收款和货物是否正确？','submitDelivery(${td_order.id?c});')">确认送达</a>
+    			</#if>
+    			
     		</#if>
     	<#else>
     	    <a class="btn-submit-save bgc-ff8e08" href="javascript:;" onclick="javascript:win_yes('是否确定拒签退货？','submitReturn(${td_order.id?c});')">拒签退货</a>
