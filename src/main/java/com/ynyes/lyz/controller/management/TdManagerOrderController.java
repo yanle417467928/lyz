@@ -1057,7 +1057,7 @@ public class TdManagerOrderController {
 			{
 				if (order.getStatusId().equals(1L) || order.getStatusId().equals(2L) || order.getStatusId().equals(3L)) // zhangji
 				{
-					this.cancelRelativeOrderBySubOrder(order,username);
+					this.cancelRelativeOrderBySubOrder(order,username,req);
 					order.setStatusId(7L);
 					order.setCancelTime(new Date());
 				}
@@ -1142,9 +1142,10 @@ public class TdManagerOrderController {
 	
 	/**
 	 * 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
+	 * req 记录库存用
 	 * @param order
 	 */
-	private void cancelRelativeOrderBySubOrder(TdOrder order,String username)
+	private void cancelRelativeOrderBySubOrder(TdOrder order,String username,HttpServletRequest req)
 	{
 		
 		Long realUserId = order.getRealUserId();
@@ -1184,7 +1185,7 @@ public class TdManagerOrderController {
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
 						
 						//增加库存
-						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L);
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req);
 						
 						// 通知物流
 						if (StringUtils.isNotBlank(order.getRemarkInfo()))
