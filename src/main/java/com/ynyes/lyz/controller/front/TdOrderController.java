@@ -1972,6 +1972,7 @@ public class TdOrderController {
 			{
 				regionId = tdDiySite.getRegionId();
 			}
+			
 			//判断库存
 			Map<String, Long> inventoryMap=new HashMap<String, Long>();
 			//商品列表
@@ -1982,6 +1983,14 @@ public class TdOrderController {
 					//判断是否存在 存在累加 不存在默认为0
 					Long quantity= inventoryMap.get(sku)==null?0L:inventoryMap.get(sku);
 					inventoryMap.put(sku, quantity+tdOrderGoods.getQuantity());
+					
+					//增加非华润产品不能进行门店自提
+					String brandTitle = tdOrderGoods.getBrandTitle();
+					if (brandTitle != null && !brandTitle.equalsIgnoreCase("华润") && tdOrder.getDeliverTypeTitle().equals("门店自提"))
+					{
+						res.put("status", -3);
+						return res;
+					}
 				}
 			}
 			//赠品列表
@@ -1993,7 +2002,6 @@ public class TdOrderController {
 					Long quantity= inventoryMap.get(sku)==null?0L:inventoryMap.get(sku);
 					inventoryMap.put(sku, quantity+giftGoods.getQuantity());
 				}
-				
 			}
 			//小辅料列表
 			List<TdOrderGoods> presentedList= tdOrder.getPresentedList();
@@ -2017,7 +2025,6 @@ public class TdOrderController {
 			}
 			//再存一次 后面改
 			req.getSession().setAttribute("order_temp", tdOrder);
-			
 			
 			// 获取用户的支付方式
 			Long payTypeId = order.getPayTypeId();
