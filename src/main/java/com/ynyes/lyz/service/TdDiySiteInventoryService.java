@@ -144,15 +144,20 @@ public class TdDiySiteInventoryService {
 	 * 根据订单增减库存
 	 * @param order 订单
 	 * @param type 1赠 2减
+	 * @param changeName 修改库存类型名称
 	 * @author zp
 	 */
-	public void changeGoodsInventory(TdOrder order,Long type,HttpServletRequest req){
+	public void changeGoodsInventory(TdOrder order,Long type,HttpServletRequest req,String changeName){
 		TdCity city= tdCityRepo.findByCityName(order.getCity());
 		//订单类型
 		Long orderType=1L;
+		
 		//判断订单类型
 		if("门店自提".equals(order.getDeliverTypeTitle())){ 
 			orderType=2L;
+			changeName="自提单"+changeName;
+		}else{
+			changeName="配送"+changeName;
 		}
 		
 		//商品列表
@@ -184,7 +189,7 @@ public class TdDiySiteInventoryService {
 				//保存
 				repository.save(diySiteInventory);
 				//保存日志
-				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, order.getOrderNumber(), req);
+				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, order.getOrderNumber(), req,changeName);
 			}
 
 		}
@@ -215,7 +220,7 @@ public class TdDiySiteInventoryService {
 				}
 				repository.save(diySiteInventory);
 				//保存日志
-				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, order.getOrderNumber(), req);
+				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, order.getOrderNumber(), req,changeName);
 			}
 
 		}
@@ -245,7 +250,7 @@ public class TdDiySiteInventoryService {
 				}
 				repository.save(diySiteInventory);
 				//保存日志
-				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, order.getOrderNumber(), req);
+				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, order.getOrderNumber(), req,changeName);
 			}
 
 		}
@@ -289,6 +294,7 @@ public class TdDiySiteInventoryService {
 	/**
 	 * 根据退货单增加库存
 	 * @param returnNote 退货单
+	 * @param changeName 修改库存类型名称
 	 * @author zp
 	 */
 	public void changeGoodsInventory(TdReturnNote returnNote,HttpServletRequest req){
@@ -296,9 +302,11 @@ public class TdDiySiteInventoryService {
 		TdCity city= tdCityRepo.findByCityName(order.getCity());
 		//订单类型
 		Long orderType=1L;
+		String changeName="配送退货";
 		//判断订单类型
 		if("门店自提".equals(order.getDeliverTypeTitle())){ 
 			orderType=2L;
+			changeName="自提单退货";
 		}
 		List<TdOrderGoods> returnGoodsList= returnNote.getReturnGoodsList();
 		for (TdOrderGoods retrunGoods : returnGoodsList) {
@@ -325,7 +333,7 @@ public class TdDiySiteInventoryService {
 				//保存
 				repository.save(diySiteInventory);
 				//保存日志
-				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, returnNote.getReturnNumber(), req);
+				tdDiySiteInventoryLogService.saveChangeLog(diySiteInventory, quantitiy, returnNote.getReturnNumber(), req,changeName);
 			}
 		}
 	}

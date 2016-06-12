@@ -1185,7 +1185,7 @@ public class TdManagerOrderController {
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
 						
 						//增加库存
-						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req);
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req,"退货");
 						
 						// 通知物流
 						if (StringUtils.isNotBlank(order.getRemarkInfo()))

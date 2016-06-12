@@ -60,7 +60,7 @@ public class TdDiySiteInventoryLogService {
 		log.setChangeDate(new Date());
 	}
 	
-	public Boolean saveChangeLog(TdDiySiteInventory diySiteInventory,Long changeValue,String orderNumber,HttpServletRequest req)
+	public Boolean saveChangeLog(TdDiySiteInventory diySiteInventory,Long changeValue,String orderNumber,HttpServletRequest req,String changeName)
 	{
 		String username = null;
 		
@@ -97,6 +97,7 @@ public class TdDiySiteInventoryLogService {
 		log.setDescription(changeType);
 		log.setOrderNumber(orderNumber);
 		log.setManager(username);
+		log.setChangeType(changeName);
 		this.save(log);
 		return true;
 		

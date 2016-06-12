@@ -1742,7 +1742,7 @@ public class TdOrderController {
 		if (null != order && null != order.getOrderNumber()) {
 			if (order.getOrderNumber().contains("XN")) {
 				//拆单钱先去扣减库存
-				tdDiySiteInventoryService.changeGoodsInventory(order,2L,req);
+				tdDiySiteInventoryService.changeGoodsInventory(order,2L,req,"发货");
 				tdCommonService.dismantleOrder(req, username);
 			}
 		}
