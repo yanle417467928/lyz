@@ -515,7 +515,7 @@ public class TdDeliveryIndexController {
 			return res;
 		}
 
-		returnNote.setStatusId(3L);
+		returnNote.setStatusId(4L);
 		returnNote.setRecvTime(new Date());
 		
 		returnNote = tdReturnNoteService.save(returnNote);
