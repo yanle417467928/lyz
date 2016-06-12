@@ -29,6 +29,8 @@ public interface TdDiySiteRepo
 	 */
 	TdDiySite findByStoreCode(String storeCode);
 	
+	TdDiySite findByStoreCodeAndIsEnableTrue(String storeCode);
+	
 	/**
 	 * 通过行政区划id查找其下属的所有门店
 	 * 

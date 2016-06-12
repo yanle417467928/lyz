@@ -1277,6 +1277,14 @@ public class TdGoodsService {
 		}
 		return repository.findByCode(code);
 	}
+	public TdGoods findByCodeAndStatus(String code,Long status)
+	{
+		if (null == code || status == null)
+		{
+			return null;
+		}
+		return repository.findByCodeAndInventoryItemStatus(code, status);
+	}
 
 	/**
 	 * 根据关键词模糊查询商品，其涉及到商品的名称，商品的标题，商品的副标题，商品的sku，最后按照sortId（排序号）正序排序

@@ -79,7 +79,7 @@ public class TdDiySiteService {
 		{
 			return null;
 		}
-		return repository.findByStoreCode(storeCode);
+		return repository.findByStoreCodeAndIsEnableTrue(storeCode);
 	}
 
 	/**

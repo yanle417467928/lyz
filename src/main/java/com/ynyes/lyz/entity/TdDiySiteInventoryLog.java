@@ -18,6 +18,15 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class TdDiySiteInventoryLog {
+	
+	public static final String CHANGETYPE_DIYSITE_ADD		= "门店要货";
+	public static final String CHANGETYPE_DIYSITE_SUB		= "门店退货";
+	public static final String CHANGETYPE_USER_SUB			= "自提单发货";
+	public static final String CHANGETYPE_USER_ADD			= "自提单退货";
+	public static final String CHANGETYPE_DELIVERY_SUB		= "配送出货";
+	public static final String CHANGETYPE_DELIVERY_ADD		= "配送退货";
+	public static final String CHANGETYPE_INVENTORY_OVERAGE = "库存盘盈";
+	public static final String CHANGETYPE_INVENTORY_LOSE	= "库存盘亏";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -71,112 +80,140 @@ public class TdDiySiteInventoryLog {
 	
 	@Column
 	private Long afterChange;
+	
+	@Column
+	private String changeType;
 
-	public Long getId() {
+	public Long getId()
+	{
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(Long id)
+	{
 		this.id = id;
 	}
 
-	public String getDiySiteTitle() {
+	public String getDiySiteTitle()
+	{
 		return diySiteTitle;
 	}
 
-	public void setDiySiteTitle(String diySiteTitle) {
+	public void setDiySiteTitle(String diySiteTitle)
+	{
 		this.diySiteTitle = diySiteTitle;
 	}
 
-
-	public Long getDiySiteId() {
-		return diySiteId;
-	}
-
-	public void setDiySiteId(Long diySiteId) {
-		this.diySiteId = diySiteId;
-	}
-
-	public Long getGoodsId() {
-		return goodsId;
-	}
-
-	public void setGoodsId(Long goodsId) {
-		this.goodsId = goodsId;
-	}
-
-	public String getGoodsTitle() {
-		return goodsTitle;
-	}
-
-	public void setGoodsTitle(String goodsTitle) {
-		this.goodsTitle = goodsTitle;
-	}
-
-	public String getGoodsSku() {
-		return goodsSku;
-	}
-
-	public void setGoodsSku(String goodsSku) {
-		this.goodsSku = goodsSku;
-	}
-
-	public Date getChangeDate() {
-		return changeDate;
-	}
-
-	public void setChangeDate(Date changeDate) {
-		this.changeDate = changeDate;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getRegionName() {
+	public String getRegionName()
+	{
 		return regionName;
 	}
 
-	public void setRegionName(String regionName) {
+	public void setRegionName(String regionName)
+	{
 		this.regionName = regionName;
 	}
 
-	public Long getRegionId() {
+	public Long getRegionId()
+	{
 		return regionId;
 	}
 
-	public void setRegionId(Long regionId) {
+	public void setRegionId(Long regionId)
+	{
 		this.regionId = regionId;
 	}
 
-	public String getOrderNumber() {
-		return orderNumber;
+	public Long getDiySiteId()
+	{
+		return diySiteId;
 	}
 
-	public Long getChangeValue() {
+	public void setDiySiteId(Long diySiteId)
+	{
+		this.diySiteId = diySiteId;
+	}
+
+	public Long getGoodsId()
+	{
+		return goodsId;
+	}
+
+	public void setGoodsId(Long goodsId)
+	{
+		this.goodsId = goodsId;
+	}
+
+	public String getGoodsTitle()
+	{
+		return goodsTitle;
+	}
+
+	public void setGoodsTitle(String goodsTitle)
+	{
+		this.goodsTitle = goodsTitle;
+	}
+
+	public String getGoodsSku()
+	{
+		return goodsSku;
+	}
+
+	public void setGoodsSku(String goodsSku)
+	{
+		this.goodsSku = goodsSku;
+	}
+
+	public Long getChangeValue()
+	{
 		return changeValue;
 	}
 
-	public void setChangeValue(Long changeValue) {
+	public void setChangeValue(Long changeValue)
+	{
 		this.changeValue = changeValue;
 	}
 
-	public void setOrderNumber(String orderNumber) {
+	public Date getChangeDate()
+	{
+		return changeDate;
+	}
+
+	public void setChangeDate(Date changeDate)
+	{
+		this.changeDate = changeDate;
+	}
+
+	public String getDescription()
+	{
+		return description;
+	}
+
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+
+	public String getOrderNumber()
+	{
+		return orderNumber;
+	}
+
+	public void setOrderNumber(String orderNumber)
+	{
 		this.orderNumber = orderNumber;
 	}
-	
-	public String getManager() {
+
+	public String getManager()
+	{
 		return manager;
 	}
 
-	public void setManager(String manager) {
+	public void setManager(String manager)
+	{
 		this.manager = manager;
 	}
-	
+
 	public Long getAfterChange()
 	{
 		return afterChange;
@@ -187,11 +224,23 @@ public class TdDiySiteInventoryLog {
 		this.afterChange = afterChange;
 	}
 
+	public String getChangeType()
+	{
+		return changeType;
+	}
+
+	public void setChangeType(String changeType)
+	{
+		this.changeType = changeType;
+	}
+
 	@Override
-	public String toString() {
+	public String toString()
+	{
 		return "TdDiySiteInventoryLog [id=" + id + ", diySiteTitle=" + diySiteTitle + ", regionName=" + regionName
-				+ ", regionId=" + regionId + ", diySiteId=" + diySiteId + ", goodsId=" + goodsId + ", goodsTitle="
-				+ goodsTitle + ", goodsSku=" + goodsSku + ", changeDate=" + changeDate + ", description=" + description
-				+ "]";
+		        + ", regionId=" + regionId + ", diySiteId=" + diySiteId + ", goodsId=" + goodsId + ", goodsTitle="
+		        + goodsTitle + ", goodsSku=" + goodsSku + ", changeValue=" + changeValue + ", changeDate=" + changeDate
+		        + ", description=" + description + ", orderNumber=" + orderNumber + ", manager=" + manager
+		        + ", afterChange=" + afterChange + ", changeType=" + changeType + "]";
 	}
 }

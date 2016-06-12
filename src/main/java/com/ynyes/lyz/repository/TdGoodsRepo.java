@@ -360,6 +360,15 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	 * @author dengxiao
 	 */
 	TdGoods findByCode(String code);
+	
+	
+	/**
+	 * 根据sku查找有效商品
+	 * @param code
+	 * @param status
+	 * @return
+	 */
+	TdGoods findByCodeAndInventoryItemStatus(String code ,Long status);
 
 	/**
 	 * 根据关键词模糊查询商品，其涉及到商品的名称，商品的标题，商品的副标题，商品的sku，商品的分类名称，最后按照sortId（排序号）正序排序
