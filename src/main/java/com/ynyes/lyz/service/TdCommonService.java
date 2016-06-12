@@ -1956,10 +1956,10 @@ public class TdCommonService {
 	private void sendOrderToEBS(List<TdOrder> orderList) {
 		for (TdOrder tdOrder : orderList)
 		{
-			if (tdOrder != null && tdOrder.getOrderNumber() != null && tdOrder.getOrderNumber().contains("HR"))
-			{
-				continue;
-			}
+//			if (tdOrder != null && tdOrder.getOrderNumber() != null && tdOrder.getOrderNumber().contains("HR"))
+//			{
+//				continue;
+//			}
 			tdInterfaceService.initOrderInf(tdOrder);
 
 			Boolean isOrderInfSucceed = false;
