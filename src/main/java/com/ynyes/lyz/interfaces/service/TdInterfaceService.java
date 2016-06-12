@@ -291,7 +291,7 @@ public class TdInterfaceService {
 		orderInf.setPayDate(tdOrder.getPayTime());
 		orderInf.setPayAmt(booleanByStr(orderInf.getIsonlinepay())?tdOrder.getTotalPrice():0);
 		orderInf.setPrepayAmt(tdOrder.getCashBalanceUsed() + tdOrder.getUnCashBalanceUsed());
-		orderInf.setRecAmt(tdOrder.getAllTotalPay());
+		orderInf.setRecAmt(tdOrder.getTotalPrice() - orderInf.getPrepayAmt());
 		tdOrderInfService.save(orderInf);
 		
 		

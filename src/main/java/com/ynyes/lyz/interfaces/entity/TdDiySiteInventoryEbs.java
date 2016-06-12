@@ -4,6 +4,9 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,6 +18,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 public class TdDiySiteInventoryEbs extends TdInfBaseEntity
 {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	
 	//分公司ID
 	@Column
 	private Long sobId;
@@ -97,6 +104,16 @@ public class TdDiySiteInventoryEbs extends TdInfBaseEntity
 	//
 	@Column
 	private String attribute5;
+
+	public Long getId()
+	{
+		return id;
+	}
+
+	public void setId(Long id)
+	{
+		this.id = id;
+	}
 
 	public Long getSobId()
 	{

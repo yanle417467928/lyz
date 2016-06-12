@@ -50,6 +50,8 @@ import com.ynyes.lyz.entity.TdLyzParameter;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdProductCategory;
+import com.ynyes.lyz.interfaces.entity.TdDiySiteInventoryEbs;
+import com.ynyes.lyz.interfaces.service.TdDiySiteInventoryEbsService;
 import com.ynyes.lyz.service.TdBrandService;
 import com.ynyes.lyz.service.TdDiySiteInventoryLogService;
 import com.ynyes.lyz.service.TdDiySiteInventoryService;
@@ -88,6 +90,9 @@ public class CallEBSImpl implements ICallEBS {
 	
 	@Autowired
 	private TdProductCategoryService tdProductCategoryService;
+	
+	@Autowired
+	private TdDiySiteInventoryEbsService tdDiySiteInventoryEbsService;
 	
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
@@ -1113,7 +1118,7 @@ public class CallEBSImpl implements ICallEBS {
 				String ebsToAppFlag = null;//
 				String appErrorMessage = null;//
 				String creationDate = null;//
-				String lastUpdatedBy = null;//
+				Long lastUpdatedBy = null;//
 				String lastUpdateDate = null;//
 				String attribute1 = null;//
 				String attribute2 = null;//
@@ -1225,7 +1230,7 @@ public class CallEBSImpl implements ICallEBS {
 						{
 						    if (null != childNode.getChildNodes().item(0))
 						    {
-						        lastUpdatedBy = childNode.getChildNodes().item(0).getNodeValue();
+						        lastUpdatedBy = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
 						    }
 						}
 						else if (childNode.getNodeName().equalsIgnoreCase("LAST_UPDATE_DATE"))
@@ -1285,6 +1290,68 @@ public class CallEBSImpl implements ICallEBS {
 				{
 					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>门店编码为："+ diySiteCode +"的门店不存在或者不可用</MESSAGE></STATUS></RESULTS>";
 				}
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				TdDiySiteInventoryEbs diySiteInventoryEbs = new TdDiySiteInventoryEbs();
+				diySiteInventoryEbs.setSobId(sobId);
+				diySiteInventoryEbs.setTransId(transId);
+				diySiteInventoryEbs.setTransType(transType);
+				diySiteInventoryEbs.setTransNumber(transNumber);
+				diySiteInventoryEbs.setCustomerId(customerId);
+				diySiteInventoryEbs.setCustomerNumber(customerNumber);
+				diySiteInventoryEbs.setDiySiteCode(diySiteCode);
+				
+				if (shipDate != null)
+				{
+					try
+					{
+						Date ship_date = sdf.parse(shipDate);
+						diySiteInventoryEbs.setShipDate(ship_date);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				diySiteInventoryEbs.setItemCode(itemCode);
+				diySiteInventoryEbs.setQuantity(quantity);
+				diySiteInventoryEbs.setEbsToAppFlag(ebsToAppFlag);
+				diySiteInventoryEbs.setAppErrorMessage(appErrorMessage);
+				
+				if (creationDate != null)
+				{
+					try
+					{
+						Date creation_date = sdf.parse(creationDate);
+						diySiteInventoryEbs.setCreationDate(creation_date);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				
+				diySiteInventoryEbs.setLastUpdatedBy(lastUpdatedBy);
+				
+				if (lastUpdateDate != null)
+				{
+					try
+					{
+						Date last_update_date = sdf.parse(lastUpdateDate);
+						diySiteInventoryEbs.setCreationDate(last_update_date);
+					}
+					catch (ParseException e)
+					{
+						e.printStackTrace();
+					}
+				}
+				diySiteInventoryEbs.setAttribute1(attribute1);
+				diySiteInventoryEbs.setAttribute2(attribute2);
+				diySiteInventoryEbs.setAttribute3(attribute3);
+				diySiteInventoryEbs.setAttribute4(attribute4);
+				diySiteInventoryEbs.setAttribute5(attribute5);
+				
+				tdDiySiteInventoryEbsService.save(diySiteInventoryEbs);
+				
 				TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(itemCode, site.getId());
 				if (inventory == null)
 				{
@@ -1301,8 +1368,11 @@ public class CallEBSImpl implements ICallEBS {
 					inventory.setGoodsTitle(tdGoods.getTitle());
 					inventory.setRegionId(site.getRegionId());
 					inventory.setRegionName(site.getCity());
-					tdDiySiteInventoryLogService.saveChangeLog(inventory, quantity, null, null);
+					tdDiySiteInventoryLogService.saveChangeLog(inventory, quantity, null, null, transType);
 				}
+				inventory.setInventory(inventory.getInventory() + quantity);
+				tdDiySiteInventoryLogService.saveChangeLog(inventory, quantity, null, null,(quantity > 0 ? TdDiySiteInventoryLog.CHANGETYPE_DIYSITE_ADD :TdDiySiteInventoryLog.CHANGETYPE_DIYSITE_SUB));
+				tdDiySiteInventoryService.save(inventory);
 				
 			}
 		}

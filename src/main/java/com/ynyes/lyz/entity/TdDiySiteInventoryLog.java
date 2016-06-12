@@ -81,7 +81,7 @@ public class TdDiySiteInventoryLog {
 	@Column
 	private Long afterChange;
 	
-	@Column
+	@Column(length = 50)
 	private String changeType;
 
 	public Long getId()

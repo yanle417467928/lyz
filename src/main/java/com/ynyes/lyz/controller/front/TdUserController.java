@@ -2006,7 +2006,7 @@ public class TdUserController {
 			tdReturnNoteService.save(returnNote);
 			tdInterfaceService.initReturnOrder(returnNote);
 			tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_SUB_INT);
-
+			tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 			// tdCommonService.sendBackToWMS(returnNote);
 		}
 
