@@ -124,12 +124,16 @@ function confirmPay() {
 				close(-1);
 				warning("该订单不能选择'货到付款'或'到店支付'");
 			}
-			if (-2 === res.status) {
+			else if (-2 === res.status) {
 				close(-1);
 				warning("商品库存不足，请重新下单！");
 			}
+			else if (-3 === res.status) {
+				close(-1);
+				warning("非华润产品请选择物流配送！");
+			}
 
-			if (0 === res.status) {
+			else if (0 === res.status) {
 				pay();
 			}
 		}
