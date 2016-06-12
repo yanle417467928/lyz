@@ -126,7 +126,7 @@ function confirmPay() {
 			}
 			if (-2 === res.status) {
 				close(-1);
-				warning("商品库存不足，请重新下单！'");
+				warning("商品库存不足，请重新下单！");
 			}
 
 			if (0 === res.status) {

@@ -469,12 +469,34 @@ public class TdGoodsController {
 		map.addAttribute("diySiteInventory", diySiteInventory);
 		map.addAttribute("activity_list", activity_list);
 		map.addAttribute("isCollect", isCollect);
+		//只判断是否有值 有值不刷新
+		req.getSession().setAttribute("noRefresh", "1");
 		return "/client/goods_detail";
 	}
-
+	
+	/**
+	 * 判断是否刷新(没用)
+	 * 
+	 * @author zp
+	 */
+	@RequestMapping(value = "/listRefresh")
+	@ResponseBody
+	public Map<String, Object> listRefresh(HttpServletRequest req, Long goodsId) {  
+		Map<String, Object> res = new HashMap<>();
+		Object obj= req.getSession().getAttribute("noRefresh");
+		//1 刷新 2 不刷新
+		if(obj==null){
+			res.put("type", 1);
+		}else{
+			res.put("type", 2);
+			req.getSession().removeAttribute("noRefresh");
+		}
+		return res;
+	}
+	
 	/**
 	 * 添加收藏的方法
-	 * 
+	 *  
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/operate/collection")
