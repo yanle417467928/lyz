@@ -238,8 +238,13 @@ public class TdPriceCountService {
 			activitySubPrice = 0.00;
 		}
 		order.setTotalPrice(order.getTotalPrice() - activitySubPrice);
+		if (0 > order.getTotalPrice()) {
+			order.setTotalPrice(0.00);
+		}
 
 		tdOrderService.save(order);
+
+		max_use = order.getTotalPrice();
 
 		results.put("result", order);
 		results.put("max", max_use);
@@ -879,10 +884,10 @@ public class TdPriceCountService {
 										cashCoupon.setIsUsed(false);
 										cashCoupon.setIsOutDate(false);
 										cashCoupon.setMobile(order.getUsername());
-										//add MDJ
+										// add MDJ
 										cashCoupon.setOrderId(orderId);
 										cashCoupon.setOrderNumber(order.getOrderNumber());
-										//add end
+										// add end
 										tdCouponService.save(cashCoupon);
 
 										total -= cashPrice;
