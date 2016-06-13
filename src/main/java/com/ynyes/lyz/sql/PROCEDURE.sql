@@ -86,8 +86,8 @@ BEGIN
     -- 删除重复数据
 delete from td_sales_detail where create_username=v_username ;
 			-- 查询数据到agencyfund
-INSERT into td_sales_detail(diy_site_name,main_order_number,order_number,order_time,status_id,username,real_name,shipping_name,sku,goods_title,quantity,price,total_price,cash_balance_used,un_cash_balance_used,remark,wh_no,deliver_real_name,deliver_username,seller_real_name,title,deliver_type_title,shipping_address,city_name,diy_site_code,create_username,diy_id,shipping_phone) 
-select o.diy_site_name,o.main_order_number,o.order_number,o.order_time,o.status_id,o.username,u.real_name,o.shipping_name,og.sku,og.goods_title,og.quantity,og.price,og.quantity*og.price total_price,o.cash_balance_used,o.un_cash_balance_used,o.remark,di.wh_no,u1.real_name deliver_real_name,u1.username deliver_username,o.seller_real_name,pc.title,o.deliver_type_title,o.shipping_address,o.city,o.diy_site_code,v_username create_username,o.diy_site_id,o.shipping_phone
+INSERT into td_sales_detail(diy_site_name,main_order_number,order_number,order_time,status_id,username,real_name,shipping_name,sku,goods_title,quantity,price,total_price,cash_balance_used,un_cash_balance_used,remark,wh_no,deliver_real_name,deliver_username,seller_real_name,title,deliver_type_title,shipping_address,city_name,diy_site_code,create_username,diy_id,shipping_phone,parent_category_title,remark_info) 
+select o.diy_site_name,o.main_order_number,o.order_number,o.order_time,o.status_id,o.username,u.real_name,o.shipping_name,og.sku,og.goods_title,og.quantity,og.price,og.quantity*og.price total_price,o.cash_balance_used,o.un_cash_balance_used,o.remark,di.wh_no,u1.real_name deliver_real_name,u1.username deliver_username,o.seller_real_name,pc.title,o.deliver_type_title,o.shipping_address,o.city,o.diy_site_code,v_username create_username,o.diy_site_id,o.shipping_phone,ppc.title,o.remark_info
  from td_order o
 INNER JOIN td_order_goods og on og.td_order_id=o.id or og.presented_list_id=o.id or og.gift_list_id=o.id
 LEFT JOIN td_user u on u.username=o.username
@@ -95,5 +95,6 @@ left join td_delivery_info di on di.order_number=o.main_order_number
 left join td_user u1 on u1.op_user=di.driver
 left join td_goods g on g.id=og.goods_id
 left join td_product_category pc on pc.id=g.category_id
+left join td_product_category ppc on ppc.id=pc.parent_id
 where o.main_order_number is not null and order_time>=startTime and order_time<=endTime and o.status_id not in(1,2,3,7,8);
 END;
