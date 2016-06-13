@@ -163,7 +163,7 @@ public class TdManagerActivityCotroller {
 		}
 		return "/site_mag/activity_edit";
 	}
-
+     //增加判断商品是否存在
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String save(TdActivity tdActivity, Long[] diySiteIds, String __EVENTTARGET, String __EVENTARGUMENT,
 			String __VIEWSTATE, String menuId, String channelId, ModelMap map, Boolean isRecommendIndex,
@@ -193,7 +193,15 @@ public class TdManagerActivityCotroller {
 		}
 		List<TdGoodsCombination> comb_List = tdActivity.getCombList();
 		for (TdGoodsCombination tdGoodsCombination : comb_List) {
-			goodsAndNumber += tdGoodsCombination.getGoodsId() + "_" + tdGoodsCombination.getNumber() + ",";
+			//判断商品是否存在
+			TdGoods goods=null;
+			if(tdGoodsCombination.getGoodsId()!=null){
+				goods= tdGoodsService.findOne(tdGoodsCombination.getGoodsId());
+			}
+			if(goods!=null){
+				goodsAndNumber += tdGoodsCombination.getGoodsId() + "_" + tdGoodsCombination.getNumber() + ",";
+			}
+			
 		}
 
 		tdActivity.setGoodsNumber(goodsAndNumber);
@@ -202,10 +210,16 @@ public class TdManagerActivityCotroller {
 
 		if (null != gift_List && gift_List.size() > 0) {
 			for (TdGoodsGift tdGoodsGift : gift_List) {
-				giftAndNumber += tdGoodsGift.getGoodsId() + "_" + tdGoodsGift.getNumber() + ",";
+				//判断商品是否存在
+				TdGoods goods=null;
+				if(tdGoodsGift.getGoodsId()!=null){
+					goods= tdGoodsService.findOne(tdGoodsGift.getGoodsId());
+				}
+				if(goods!=null){
+					giftAndNumber += tdGoodsGift.getGoodsId() + "_" + tdGoodsGift.getNumber() + ",";
+				}
 			}
 		}
-
 		tdActivity.setGiftNumber(giftAndNumber);
 
 		if (null == tdActivity.getId()) {

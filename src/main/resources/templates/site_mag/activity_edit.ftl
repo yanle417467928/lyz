@@ -487,15 +487,15 @@ function checkDate(){
                                         <input name="combList[${comb_index}].coverImageUri" type="hidden" value="${comb.coverImageUri!''}">
                                         <input type="text" name="combList[${comb_index}].sortId" class="td-input" value="${comb.sortId!''}" style="width:90%;">
                                     </td>
-                                    <td><input type="text" id="id" name="combList[${comb_index}].goodsId" class="td-input" value="${comb.goodsId?c}" style="width:90%;"></td>
+                                    <td><input type="text" id="id" name="combList[${comb_index}].goodsId" class="td-input" value="<#if comb.goodsId??> ${comb.goodsId?c}</#if>" style="width:90%;"></td>
                                     <td>
                                         <input type="text" id="title" name="combList[${comb_index}].goodsTitle" class="td-input" value="${comb.goodsTitle!''}" style="width:90%;">
                                     </td>
                                     <td>
-                                        <input type="text" id="number" name="combList[${comb_index}].number" class="td-input" value="${comb.number?c}" style="width:90%;">
+                                        <input type="text" id="number" name="combList[${comb_index}].number" class="td-input" value="<#if comb.number??>${comb.number?c}</#if>" style="width:90%;">
                                     </td>
                                     <td>
-                                        <input type="text" id="price" name="combList[${comb_index}].goodsPrice" class="td-input" value="${comb.goodsPrice?string("0.00")}" style="width:90%;">
+                                        <input type="text" id="price" name="combList[${comb_index}].goodsPrice" class="td-input" value="<#if comb.goodsPrice??>${comb.goodsPrice?string("0.00")}</#if>" style="width:90%;">
                                     </td>
                                     <td>
                                         <i class="icon"></i>
@@ -552,15 +552,15 @@ function checkDate(){
                                         <input name="giftList[${item_index}].coverImageUri" type="hidden" value="${item.coverImageUri!''}">
                                         <input type="text" name="giftList[${item_index}].sortId" class="td-input" value="${item.sortId!''}" style="width:90%;">
                                     </td>
-                                    <td><input type="text" id="id" name="giftList[${item_index}].goodsId" class="td-input" value="${item.goodsId?c}" style="width:90%;"></td>
+                                    <td><input type="text" id="id" name="giftList[${item_index}].goodsId" class="td-input" value="<#if item.goodsId??>${item.goodsId?c}</#if>" style="width:90%;"></td>
                                     <td>
                                         <input type="text" id="title" name="giftList[${item_index}].goodsTitle" class="td-input" value="${item.goodsTitle!''}" style="width:90%;">
                                     </td>
                                     <td>
-                                        <input type="text" id="number" name="giftList[${item_index}].number" class="td-input" value="${item.number?c}" style="width:90%;">
+                                        <input type="text" id="number" name="giftList[${item_index}].number" class="td-input" value="<#if item.number??>${item.number?c}</#if>" style="width:90%;">
                                     </td>
                                     <td>
-                                        <input type="text" id="price" name="giftList[${item_index}].goodsPrice" class="td-input" value="${item.goodsPrice?string("0.00")}" style="width:90%;">
+                                        <input type="text" id="price" name="giftList[${item_index}].goodsPrice" class="td-input" value="<#if item.goodsPrice??>${item.goodsPrice?string("0.00")}</#if>" style="width:90%;">
                                     </td>
                                     <td>
                                         <i class="icon"></i>
