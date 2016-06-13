@@ -43,7 +43,6 @@ import org.xml.sax.SAXException;
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdDiySiteInventory;
-import com.ynyes.lyz.entity.TdDiySiteInventoryLog;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdGoodsLimit;
 import com.ynyes.lyz.entity.TdLyzParameter;
@@ -1278,18 +1277,6 @@ public class CallEBSImpl implements ICallEBS {
 					}
 				}
 				
-				TdGoods tdGoods = tdGoodsService.findByCodeAndStatus(itemCode,1l);
-				
-				TdDiySite site = tdDiySiteService.findByStoreCode(diySiteCode);
-				
-				if (tdGoods == null)
-				{
-					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>商品编码为："+ itemCode +"的商品不存在或者不可用</MESSAGE></STATUS></RESULTS>";
-				}
-				if (site == null)
-				{
-					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>门店编码为："+ diySiteCode +"的门店不存在或者不可用</MESSAGE></STATUS></RESULTS>";
-				}
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				TdDiySiteInventoryEbs diySiteInventoryEbs = new TdDiySiteInventoryEbs();
 				diySiteInventoryEbs.setSobId(sobId);
@@ -1352,6 +1339,19 @@ public class CallEBSImpl implements ICallEBS {
 				
 				tdDiySiteInventoryEbsService.save(diySiteInventoryEbs);
 				
+				TdGoods tdGoods = tdGoodsService.findByCodeAndStatus(itemCode,1l);
+				
+				TdDiySite site = tdDiySiteService.findByStoreCode(diySiteCode);
+				
+				if (tdGoods == null)
+				{
+					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>商品编码为："+ itemCode +"的商品不存在或者不可用</MESSAGE></STATUS></RESULTS>";
+				}
+				if (site == null)
+				{
+					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>门店编码为："+ diySiteCode +"的门店不存在或者不可用</MESSAGE></STATUS></RESULTS>";
+				}
+				
 				TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(itemCode, site.getId());
 				if (inventory == null)
 				{
@@ -1371,7 +1371,7 @@ public class CallEBSImpl implements ICallEBS {
 					tdDiySiteInventoryLogService.saveChangeLog(inventory, quantity, null, null, transType);
 				}
 				inventory.setInventory(inventory.getInventory() + quantity);
-				tdDiySiteInventoryLogService.saveChangeLog(inventory, quantity, null, null,(quantity > 0 ? TdDiySiteInventoryLog.CHANGETYPE_DIYSITE_ADD :TdDiySiteInventoryLog.CHANGETYPE_DIYSITE_SUB));
+				tdDiySiteInventoryLogService.saveChangeLog(inventory, quantity, null, null,transType);
 				tdDiySiteInventoryService.save(inventory);
 				
 			}

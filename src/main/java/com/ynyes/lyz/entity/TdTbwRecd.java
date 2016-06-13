@@ -136,6 +136,10 @@ public class TdTbwRecd {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date initTime;
 
+	//分公司Id
+	@Column
+	private Long cCompanyId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -352,5 +356,14 @@ public class TdTbwRecd {
 		this.initTime = initTime;
 	}
 
+	public Long getcCompanyId()
+	{
+		return cCompanyId;
+	}
+
+	public void setcCompanyId(Long cCompanyId)
+	{
+		this.cCompanyId = cCompanyId;
+	}
 	
 }
