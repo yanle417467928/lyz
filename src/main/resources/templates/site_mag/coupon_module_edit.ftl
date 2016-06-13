@@ -105,7 +105,7 @@ $(function () {
         <dt>城市</dt>
         <dd>
             <div class="rule-single-select">
-            <select name="cityId" id="cityId" datatype="*" sucmsg=" ">
+            <select name="cityId" id="cityId" datatype="*" sucmsg=" " onchange="javascript:searchGoods();">
             	<#if city_list??>
             		<#list city_list as item>
                 		<option value="${item.sobIdCity?c}" <#if module?? && module.cityId == item.sobIdCity>selected="selected"</#if>>${item.cityName!''}</option>
@@ -174,10 +174,11 @@ $(function () {
 function searchGoods()
 {
     var keywords = $("#keywords").val();
+    var cityId = $("#cityId").val();
     $.ajax({
         type : "post",
         url : "/Verwalter/coupon/search",
-        data : {"keywords":keywords},
+        data : {"keywords":keywords,"cityId":cityId,"searchType":1},
         success:function(res)
         {
             $("#goodsDiv").html(res);

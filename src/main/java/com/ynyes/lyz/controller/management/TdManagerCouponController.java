@@ -797,11 +797,11 @@ public class TdManagerCouponController extends TdManagerBaseController {
 
 	/**
 	 * 指定商品券和产品券 关键字收索商品
-	 * 搜索条件增加公司id 增加城市字段
+	 * 搜索条件增加公司id 增加城市字段  增加搜索类型(searchType):1L优惠卷模板搜索
 	 * @author Max
 	 */
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public String goodsSeach(String keywords, Integer page, HttpServletRequest req, ModelMap map,Long brandId,Long cityId) {
+	public String goodsSeach(String keywords, Integer page, HttpServletRequest req, ModelMap map,Long brandId,Long cityId,Long searchType) {
 
 		TdCity city=null;
 		if(cityId!=null){
@@ -817,7 +817,14 @@ public class TdManagerCouponController extends TdManagerBaseController {
 			brandId=-1L;
 		}
 		//查询商品
-		List<TdGoods> goods_list= tdGoodsService.queryCouponGooddsOrderBySortIdAsc(cityCode, brandId, keywords);
+		List<TdGoods> goods_list=null;
+		if(searchType==1L){
+			//优惠卷模板搜索 商品不分品牌
+			cityCode=cityId;
+			goods_list=tdGoodsService.queryCouponGooddsOrderBySortIdAsc(cityCode, keywords);
+		}else{
+			goods_list= tdGoodsService.queryCouponGooddsOrderBySortIdAsc(cityCode, brandId, keywords);
+		}
 		map.addAttribute("goodsList",goods_list);
 		
 		return "/site_mag/coupon_goods";

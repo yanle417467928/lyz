@@ -517,4 +517,17 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 			+ "and pli.startDateActive<=SYSDATE() and (pli.endDateActive>=SYSDATE() "
 			+ "or pli.endDateActive is null ) and g.isOnSale =1 and (g.isCoupon=0 or g.isCoupon is null)")
 	List<TdGoods> queryCouponGooddsOrderBySortIdAsc(Long cityId,Long brandId,String keywords);
+	
+	/**
+	 * 优惠卷模板商品查询
+	 * @param cityId 城市id
+	 * @param keywords 关键字
+	 * @author zp
+	 */
+	@Query("select g from TdGoods g,TdPriceListItem pli,TdPriceList pl where "
+			+ "g.inventoryItemId=pli.goodsId and pli.priceListId =pl.listHeaderId and pl.cityId=?1 "
+			+ "and (g.title like %?2% or g.subTitle like %?2% or g.detail like %?2% or g.code like %?2% ) "
+			+ "and pli.startDateActive<=SYSDATE() and (pli.endDateActive>=SYSDATE() "
+			+ "or pli.endDateActive is null ) and g.isOnSale =1 and (g.isCoupon=0 or g.isCoupon is null)")
+	List<TdGoods> queryCouponGooddsOrderBySortIdAsc(Long cityId,String keywords);
 }
