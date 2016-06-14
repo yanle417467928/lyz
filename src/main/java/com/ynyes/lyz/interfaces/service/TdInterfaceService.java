@@ -1,6 +1,7 @@
 package com.ynyes.lyz.interfaces.service;
 
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -910,10 +911,12 @@ public class TdInterfaceService {
 		case ORDERRECEIVEINF:
 		{
 			TdOrderReceiveInf object = (TdOrderReceiveInf)entity;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+			String receiveDate = sdf.format(object.getReceiveDate());
 			xml =   "<TABLE><SOB_ID>" + object.getSobId() + "</SOB_ID>"
 					+ "<HEADER_ID>" + object.getHeaderId() + "</HEADER_ID>"
 					+ "<ORDER_NUMBER>" + object.getOrderNumber() + "</ORDER_NUMBER>"
-					+ "<RECEIVE_DATE>" + object.getReceiveDate() + "</RECEIVE_DATE>"
+					+ "<RECEIVE_DATE>" + receiveDate + "</RECEIVE_DATE>"
 					+ "<DELIVER_TYPE_TITLE>" + object.getDeliverTypeTitle() + "</DELIVER_TYPE_TITLE>"
 					+ "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
 					+ "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
@@ -1091,6 +1094,8 @@ public class TdInterfaceService {
 			{
 				TdOrderReceiveInf orderReceiveInf = (TdOrderReceiveInf)object;
 				String orderInfXML = this.XMLWithEntity(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+				orderInfXML = "<ERP>" + orderInfXML + "</ERP>";
+				orderInfXML = orderInfXML.replace("null", "");
 				Object[] orderInf = { INFConstants.INF_ORDER_STR, "1", orderInfXML };
 				try
 				{
@@ -1108,6 +1113,8 @@ public class TdInterfaceService {
 			{
 				TdCashReciptInf cashReceiveInf = (TdCashReciptInf)object;
 				String cashReceiveInfXML = this.XMLWithEntity(cashReceiveInf, INFTYPE.CASHRECEIPTINF);
+				cashReceiveInfXML = "<ERP>" + cashReceiveInfXML + "</ERP>";
+				cashReceiveInfXML = cashReceiveInfXML.replace("null", "");
 				Object[] orderInf = { INFConstants.INF_CASH_RECEIPTS_STR, "1", cashReceiveInfXML };
 				try
 				{
