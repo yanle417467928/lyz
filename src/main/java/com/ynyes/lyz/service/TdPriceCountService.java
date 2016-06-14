@@ -1,5 +1,7 @@
 package com.ynyes.lyz.service;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ibm.icu.util.Calendar;
+import com.ynyes.lyz.entity.TdBalanceLog;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdCouponModule;
@@ -47,6 +50,9 @@ public class TdPriceCountService {
 
 	@Autowired
 	private TdCouponModuleService tdCouponModuleService;
+	
+	@Autowired
+	private TdBalanceLogService tdBalanceLogService;
 
 	/**
 	 * 计算订单价格和能使用的最大的预存款的方法
@@ -447,9 +453,54 @@ public class TdPriceCountService {
 		user.setBalance(user.getBalance() + unCashBalanceUsed + cashBalanceUsed);
 		// 开始返还用户的不可提现余额
 		user.setUnCashBalance(user.getUnCashBalance() + unCashBalanceUsed);
+		if(unCashBalanceUsed>0){
+			//添加退还日志
+			TdBalanceLog balanceLog=new TdBalanceLog();
+			balanceLog.setUserId(user.getId());
+			balanceLog.setUsername(user.getUsername());
+			balanceLog.setMoney(unCashBalanceUsed);
+			balanceLog.setType(4L);
+			balanceLog.setCreateTime(new Date());
+			balanceLog.setFinishTime(new Date());
+			balanceLog.setIsSuccess(true);
+			balanceLog.setBalanceType(2L);
+			balanceLog.setBalance(user.getUnCashBalance());
+			balanceLog.setOperator(user.getUsername());
+			try {
+				balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+			} catch (UnknownHostException e) {
+				System.out.println("获取ip地址报错");
+				e.printStackTrace();
+			}
+			balanceLog.setReason("取消订单退款");
+			balanceLog.setOrderNumber(order.getOrderNumber());
+			tdBalanceLogService.save(balanceLog);
+		}
 		// 开始返还用户的可提现余额
 		user.setCashBalance(user.getCashBalance() + cashBalanceUsed);
-
+		if(cashBalanceUsed>0){
+			//添加退还日志
+			TdBalanceLog balanceLog=new TdBalanceLog();
+			balanceLog.setUserId(user.getId());
+			balanceLog.setUsername(user.getUsername());
+			balanceLog.setMoney(cashBalanceUsed);
+			balanceLog.setType(4L);
+			balanceLog.setCreateTime(new Date());
+			balanceLog.setFinishTime(new Date());
+			balanceLog.setIsSuccess(true);
+			balanceLog.setBalanceType(2L);
+			balanceLog.setBalance(user.getCashBalance());
+			balanceLog.setOperator(user.getUsername());
+			try {
+				balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+			} catch (UnknownHostException e) {
+				System.out.println("获取ip地址报错");
+				e.printStackTrace();
+			}
+			balanceLog.setReason("取消订单退款");
+			balanceLog.setOrderNumber(order.getOrderNumber());
+			tdBalanceLogService.save(balanceLog);
+		}
 		user = tdUserService.save(user);
 
 		// 拆分使用的现金券的id
@@ -899,6 +950,28 @@ public class TdPriceCountService {
 									user.setUnCashBalance(user.getUnCashBalance() + total);
 									user.setBalance(user.getBalance() + total);
 									tdUserService.save(user);
+									//添加退还日志
+									TdBalanceLog balanceLog=new TdBalanceLog();
+									balanceLog.setUserId(user.getId());
+									balanceLog.setUsername(user.getUsername());
+									balanceLog.setMoney(total);
+									balanceLog.setType(4L);
+									balanceLog.setCreateTime(new Date());
+									balanceLog.setFinishTime(new Date());
+									balanceLog.setIsSuccess(true);
+									balanceLog.setBalanceType(2L);
+									balanceLog.setBalance(user.getUnCashBalance());
+									balanceLog.setOperator(user.getUsername());
+									try {
+										balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+									} catch (UnknownHostException e) {
+										System.out.println("获取ip地址报错");
+										e.printStackTrace();
+									}
+									balanceLog.setReason("订单退款");
+									balanceLog.setOrderNumber(order.getOrderNumber());
+									tdBalanceLogService.save(balanceLog);
+									
 								}
 							}
 						}
