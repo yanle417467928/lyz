@@ -672,14 +672,14 @@ public class TdManagerGoodsController {
 		//添加一个不存在的Id 避免空值报错
 		categoryIdList.add(-1L);
 		//判断是否选择城市
-		if(cityId==null){
-			List<TdPriceList> priceList= tdPriceListService.findAll();
-			if(priceList!=null && priceList.size()>0){
-				//循环价目表头添加到查询条件中
-				for (TdPriceList tdPriceList : priceList) {
-					priceListIdList.add(tdPriceList.getListHeaderId());
-				}
-			}
+		if(cityId==null){//不选择城市就不
+//			List<TdPriceList> priceList= tdPriceListService.findAll();
+//			if(priceList!=null && priceList.size()>0){
+//				//循环价目表头添加到查询条件中
+//				for (TdPriceList tdPriceList : priceList) {
+//					priceListIdList.add(tdPriceList.getListHeaderId());
+//				}
+//			}
 		}else{
 			//查询选择的城市
 			TdCity city= tdCityService.findOne(cityId);

@@ -35,6 +35,7 @@ $(function () {
     //根据城市选择门店
     $("#cityId").change(function(){
         getDiySiteList(this);
+        removeGoodsAndGifts();
     });
     
     //初始化上传控件
@@ -200,6 +201,15 @@ $(function () {
                     alert("error code : -1 + " + res);
                 }
         });
+    }
+    //清空已选商品好赠品
+    function removeGoodsAndGifts(){
+    	//删除商品及赠品
+    	$('tr[class=td_c]').remove();
+    	//修改 商品总算
+    	$('#totalComb').val('0');
+    	//修改赠品总算
+    	$('#totalGift').val('0');
     }
 });
 
