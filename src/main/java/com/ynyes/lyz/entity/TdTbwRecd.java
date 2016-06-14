@@ -135,10 +135,6 @@ public class TdTbwRecd {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date initTime;
-
-	//分公司Id
-	@Column
-	private Long cCompanyId;
 	
 	public Long getId() {
 		return id;
@@ -354,16 +350,6 @@ public class TdTbwRecd {
 
 	public void setInitTime(Date initTime) {
 		this.initTime = initTime;
-	}
-
-	public Long getcCompanyId()
-	{
-		return cCompanyId;
-	}
-
-	public void setcCompanyId(Long cCompanyId)
-	{
-		this.cCompanyId = cCompanyId;
 	}
 	
 }

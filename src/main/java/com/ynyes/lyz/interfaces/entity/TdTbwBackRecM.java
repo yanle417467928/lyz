@@ -106,6 +106,11 @@ public class TdTbwBackRecM extends TdInfBaseEntity
 	//门店退单
 	@Column(length = 30)
 	private String cPoNo;
+	
+	//分公司Id
+	@Column
+	private Long cCompanyId;
+	
 
 	public Long getId()
 	{
@@ -315,6 +320,16 @@ public class TdTbwBackRecM extends TdInfBaseEntity
 	public void setcPoNo(String cPoNo)
 	{
 		this.cPoNo = cPoNo;
+	}
+
+	public Long getcCompanyId()
+	{
+		return cCompanyId;
+	}
+
+	public void setcCompanyId(Long cCompanyId)
+	{
+		this.cCompanyId = cCompanyId;
 	}
 
 	@Override

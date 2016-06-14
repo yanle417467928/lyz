@@ -30,10 +30,12 @@ import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerDiySiteRole;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceList;
@@ -1020,14 +1022,71 @@ public class TdManagerOrderController {
 			}
 			// 确认发货
 			else if (type.equalsIgnoreCase("orderDelivery")) {
-				if (order.getStatusId().equals(3L)) {
+				if (order.getStatusId().equals(3L)) 
+				{
+					if (order.getDeliverTypeTitle() != null && order.getDeliverTypeTitle().equalsIgnoreCase("门店自提"))
+					{
+						
+						// 判断库存
+						Map<String, Long> inventoryMap = new HashMap<String, Long>();
+						
+						Long siteId = order.getDiySiteId();
+						
+						// 商品列表
+						List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+						for (TdOrderGoods tdOrderGoods : orderGoodsList)
+						{
+							if (tdOrderGoods != null)
+							{
+								String sku = tdOrderGoods.getSku();
+								// 判断是否存在 存在累加 不存在默认为0
+								Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
+								inventoryMap.put(sku, quantity + tdOrderGoods.getQuantity());
+							}
+						}
+						// 赠品列表
+						List<TdOrderGoods> giftGoodsList = order.getGiftGoodsList();
+						for (TdOrderGoods giftGoods : giftGoodsList)
+						{
+							if (giftGoods != null) {
+								String sku = giftGoods.getSku();
+								// 判断是否存在 存在累加 不存在默认为0
+								Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
+								inventoryMap.put(sku, quantity + giftGoods.getQuantity());
+							}
+						}
+						// 小辅料列表
+						List<TdOrderGoods> presentedList = order.getPresentedList();
+						for (TdOrderGoods presented : presentedList)
+						{
+							if (presented != null)
+							{
+								String sku = presented.getSku();
+								// 判断是否存在 存在累加 不存在默认为0
+								Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
+								inventoryMap.put(sku, quantity + presented.getQuantity());
+							}
+						}
+
+						for (String sku : inventoryMap.keySet())
+						{
+							TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(sku, siteId);
+							if (diySiteInventory == null || inventoryMap.get(sku) == null || diySiteInventory.getInventory() < inventoryMap.get(sku))
+							{
+								res.put("message", "商品编码为"+ sku +"的库存不足\n,不能确认发货");
+								return res;
+							}
+						}
+					}
 					order.setStatusId(4L);
 					order.setSendTime(new Date());
 				}
 			}
 			// 确认收货
-			else if (type.equalsIgnoreCase("orderReceive")) {
-				if (order.getStatusId().equals(4L)) {
+			else if (type.equalsIgnoreCase("orderReceive"))
+			{
+				if (order.getStatusId().equals(4L))
+				{
 					order.setStatusId(5L);
 					order.setReceiveTime(new Date());
 					

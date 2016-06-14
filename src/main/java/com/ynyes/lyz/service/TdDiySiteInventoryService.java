@@ -151,7 +151,7 @@ public class TdDiySiteInventoryService {
 		TdCity city= tdCityRepo.findByCityName(order.getCity());
 		//订单类型
 		Long orderType=1L;
-		if (order.getIsCoupon() == true)
+		if (order.getIsCoupon() != null && order.getIsCoupon() == true)
 		{
 			return ;
 		}

@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.jws.WebService;
 import javax.xml.parsers.DocumentBuilder;
@@ -1368,9 +1369,9 @@ public class CallWMSImpl implements ICallWMS {
 				String modifiedDt = null;
 				// 分播数量
 				String c_dps_qty = null;
-				
-				//城市sobId
-				Long cCompanyId = null;//分公司Id
+//				有明细转到主档
+//				//城市sobId
+//				Long cCompanyId = null;//分公司Id
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -1555,13 +1556,6 @@ public class CallWMSImpl implements ICallWMS {
 								c_dps_qty = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						else if (childNode.getNodeName().equalsIgnoreCase("c_company_id"))
-						{
-						    if (null != childNode.getChildNodes().item(0))
-						    {
-						    	cCompanyId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
-						    }
-						}
 					}
 				}
 				//保存 修改
@@ -1588,7 +1582,6 @@ public class CallWMSImpl implements ICallWMS {
 				recd.setReserved5(reserved5);
 				recd.setNote(note);
 				recd.setMkUserno(mkUserno);
-				recd.setcCompanyId(cCompanyId);
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 				if (mkDt != null)
 				{
@@ -1627,15 +1620,6 @@ public class CallWMSImpl implements ICallWMS {
 				{
 					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>商品编码为："+ gcode +"的商品不存在或者不可用</MESSAGE></STATUS></RESULTS>";
 				}
-				TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(gcode, cCompanyId);
-				if (inventory == null)
-				{
-					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>城市编码为："+ cCompanyId +"的城市不存在</MESSAGE></STATUS></RESULTS>";
-				}
-				Long cRecQty = Long.parseLong(recQty);
-				inventory.setInventory(inventory.getInventory() + cRecQty);
-				tdDiySiteInventoryService.save(inventory);
-				tdDiySiteInventoryLogService.saveChangeLog(inventory, cRecQty, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_ADD);
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
@@ -1687,6 +1671,8 @@ public class CallWMSImpl implements ICallWMS {
 				String cModifiedDt = null;
 				// 采购单号
 				String cPoNo = null;
+				//城市sobId
+				Long cCompanyId = null;//分公司Id
 
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -1705,164 +1691,175 @@ public class CallWMSImpl implements ICallWMS {
 								cWhNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_owner_no"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_owner_no"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cOwnerNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_rec_no"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_rec_no"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cRecNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_wh_no"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_wh_no"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cWhNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_print_times"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_print_times"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cPrintTimes = Integer.parseInt(childNode.getChildNodes().item(0).getNodeValue());
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_gather_rec_no"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_gather_rec_no"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cGatherRecNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_gather_no"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_gather_no"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cGatherNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_in_class"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_in_class"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cInClass = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_in_no"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_in_no"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cInNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_in_type"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_in_type"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cInType = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_provider_no"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_provider_no"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cProviderNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_plat_no"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_plat_no"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cPlatNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_rec_userno"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_rec_userno"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cRecUserno = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_op_tools"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_op_tools"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cOpTools = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_op_status"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_op_status"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cOpStatus = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_begin_dt"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_begin_dt"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cBeginDt = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_end_dt"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_end_dt"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cEndDt = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_note"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_note"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cNote = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_mk_userno"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_mk_userno"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cMkUserno = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_mk_dt"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_mk_dt"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cMkDt = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_userno"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cModifiedUserno = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_modified_dt"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_modified_dt"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cModifiedDt = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
-						if (childNode.getNodeName().equalsIgnoreCase("c_po_no"))
+						else if (childNode.getNodeName().equalsIgnoreCase("c_po_no"))
 						{
 							if (null != childNode.getChildNodes().item(0))
 							{
 								cPoNo = childNode.getChildNodes().item(0).getNodeValue();
 							}
 						}
+						else if (childNode.getNodeName().equalsIgnoreCase("c_company_id"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						    	cCompanyId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+						    }
+						}
 					}
 				}
 				// 保存修改
-				TdTbwRecm recm = new TdTbwRecm();
+				TdTbwRecm recm = tdTbwRecmService.findByCRecNo(cRecNo);
+				if (recm == null)
+				{
+					recm = new TdTbwRecm();
+				}
 				recm.setcWhNo(cWhNo);
 				recm.setcOwnerNo(cOwnerNo);
 				recm.setcRecNo(cRecNo);
@@ -1929,10 +1926,24 @@ public class CallWMSImpl implements ICallWMS {
 						e.printStackTrace();
 					}
 				}
-				recm.setcPoNo(cPoNo);	
+				recm.setcPoNo(cPoNo);
+				recm.setcCompanyId(cCompanyId);
 				recm.setInitTime(new Date());
 				tdTbwRecmService.save(recm);
-				
+				List<TdTbwRecd> tbwRecds = tdTbwRecdService.findByRecNo(cRecNo);
+				for (TdTbwRecd tdTbwRecd : tbwRecds)
+				{
+					String gcode = tdTbwRecd.getGcode();
+					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(gcode, cCompanyId);
+					if (inventory == null)
+					{
+						return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>城市编码为："+ cCompanyId +"的城市不存在</MESSAGE></STATUS></RESULTS>";
+					}
+					Long cRecQty = Long.parseLong(tdTbwRecd.getRecQty());
+					inventory.setInventory(inventory.getInventory() + cRecQty);
+					tdDiySiteInventoryService.save(inventory);
+					tdDiySiteInventoryLogService.saveChangeLog(inventory, cRecQty, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_ADD);
+				}
 			}
 			
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
@@ -1964,7 +1975,7 @@ public class CallWMSImpl implements ICallWMS {
 				String cMkDt = null;//建立时间
 				String cModifiedUserno = null;//修改人员
 				String cModifiedDt = null;//修改时间
-				Long cCompanyId = null;//分公司Id
+//				Long cCompanyId = null;//分公司Id
 				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
@@ -2133,13 +2144,6 @@ public class CallWMSImpl implements ICallWMS {
 					        cModifiedDt = childNode.getChildNodes().item(0).getNodeValue();
 					    }
 					}
-					else if (childNode.getNodeName().equalsIgnoreCase("c_company_id"))
-					{
-					    if (null != childNode.getChildNodes().item(0))
-					    {
-					    	cCompanyId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
-					    }
-					}
 				}
 				TdTbwBackRecD tbwBackRecD = new TdTbwBackRecD();
 				tbwBackRecD.setcOwnerNo(cOwnerNo);
@@ -2189,7 +2193,6 @@ public class CallWMSImpl implements ICallWMS {
 						e.printStackTrace();
 					}
 				}
-				tbwBackRecD.setcCompanyId(cCompanyId);
 				TdTbwBackRecDService.save(tbwBackRecD);
 				TdGoods tdGoods = tdGoodsService.findByCodeAndStatus(cGcode,1l);
 				if (cRecQty == null)
@@ -2200,15 +2203,7 @@ public class CallWMSImpl implements ICallWMS {
 				{
 					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>商品编码为："+ cGcode +"的商品不存在或者不可用</MESSAGE></STATUS></RESULTS>";
 				}
-				TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(cGcode, cCompanyId);
-				if (inventory == null)
-				{
-					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>城市编码为："+ cCompanyId +"的城市不存在</MESSAGE></STATUS></RESULTS>";
-				}
 				
-				inventory.setInventory(inventory.getInventory() -cRecQty);
-				tdDiySiteInventoryService.save(inventory);
-				tdDiySiteInventoryLogService.saveChangeLog(inventory, -cRecQty, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_SUB);
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
@@ -2236,6 +2231,8 @@ public class CallWMSImpl implements ICallWMS {
 				String cModifiedUserno = null;//修改人员
 				String cModifiedDt = null;//修改时间
 				String cPoNo = null;//门店退单
+				Long cCompanyId = null;//分公司Id
+				
 				Node node = nodeList.item(i);
 				NodeList childNodeList = node.getChildNodes();
 				// 遍历所有TABLE中的字段
@@ -2382,8 +2379,19 @@ public class CallWMSImpl implements ICallWMS {
 					        cPoNo = childNode.getChildNodes().item(0).getNodeValue();
 					    }
 					}
+					else if (childNode.getNodeName().equalsIgnoreCase("c_company_id"))
+					{
+					    if (null != childNode.getChildNodes().item(0))
+					    {
+					    	cCompanyId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+					    }
+					}
 				}
-				TdTbwBackRecM tbwBackRecM = new TdTbwBackRecM();
+				TdTbwBackRecM tbwBackRecM = tdTbwBackRecMService.findByCRecNo(cRecNo);
+				if (tbwBackRecM == null)
+				{
+					tbwBackRecM = new TdTbwBackRecM();
+				}
 				tbwBackRecM.setcWhNo(cWhNo);
 				tbwBackRecM.setcOwnerNo(cOwnerNo);
 				tbwBackRecM.setcRecNo(cRecNo);
@@ -2404,7 +2412,23 @@ public class CallWMSImpl implements ICallWMS {
 				tbwBackRecM.setcModifiedUserno(cModifiedUserno);
 				tbwBackRecM.setcModifiedDt(DateFromString(cModifiedDt));
 				tbwBackRecM.setcPoNo(cPoNo);
+				tbwBackRecM.setcCompanyId(cCompanyId);
 				tdTbwBackRecMService.save(tbwBackRecM);
+				List<TdTbwBackRecD> tbwBackRecDs = TdTbwBackRecDService.findByCRecNo(cRecNo);
+				for (TdTbwBackRecD tdTbwBackRecD : tbwBackRecDs)
+				{
+					String cGcode = tdTbwBackRecD.getcGcode();
+					TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(cGcode, cCompanyId);
+					if (inventory == null)
+					{
+						return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>城市编码为："+ cCompanyId +"的城市不存在</MESSAGE></STATUS></RESULTS>";
+					}
+					Long cRecQty = tdTbwBackRecD.getcRecQty();
+					inventory.setInventory(inventory.getInventory() -cRecQty);
+					tdDiySiteInventoryService.save(inventory);
+					tdDiySiteInventoryLogService.saveChangeLog(inventory, -cRecQty, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_SUB);
+				}
+				
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}

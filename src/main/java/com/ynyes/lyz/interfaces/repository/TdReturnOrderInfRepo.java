@@ -12,7 +12,9 @@ public interface TdReturnOrderInfRepo
 {
 	List<TdReturnOrderInf> findByOrderHeaderId(Long headerId);
 	
-	TdReturnOrderInf findByReturnNumber(String returnNumber);
+//	TdReturnOrderInf findByReturnNumber(String returnNumber);
+	
+	List<TdReturnOrderInf> findByReturnNumber(String returnNumber);
 	
 	TdReturnOrderInf findByOrderNumber(String orderNumber);
 }

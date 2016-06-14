@@ -159,19 +159,21 @@ public class TdInterfaceService {
 	public void sendReturnOrderByAsyn(TdReturnNote returnNote)
 	{
 		sendEbsReturnOrderThread ebsReturnOrderThread = new sendEbsReturnOrderThread(returnNote);
-		ebsReturnOrderThread.run();
+		ebsReturnOrderThread.start();
 	}
 	
 	class sendEbsReturnOrderThread extends Thread
 	{
 		TdReturnNote returnNote;
+		
+		@Override
+		public void run()
+		{
+			sendEbsReturnOrder(returnNote);
+		}
 		public sendEbsReturnOrderThread(TdReturnNote returnNote)
 		{
 			this.returnNote = returnNote;
-		}
-		public void main(String[] args)
-		{
-			sendEbsReturnOrder(returnNote);
 		}
 	}
 	
@@ -186,7 +188,7 @@ public class TdInterfaceService {
 		{
 			return ;
 		}
-		
+		Boolean isSendSuccess = true;
 		//退单头
 		String returnOrderInfXml = this.XmlWithReturnNote(returnNote, INFTYPE.RETURNORDERINF);
 		if (returnOrderInfXml != null)
@@ -197,6 +199,10 @@ public class TdInterfaceService {
 				String object = (String)this.getCall().invoke(orderInf);
 				String resultStr = StringTools.interfaceMessage(object);
 				System.out.println(resultStr);
+				if (resultStr != null)
+				{
+					isSendSuccess = false;
+				}
 			} 
 			catch (RemoteException e)
 			{
@@ -205,7 +211,7 @@ public class TdInterfaceService {
 		}
 		//行
 		String returnGoodsInfXml = this.XmlWithReturnNote(returnNote, INFTYPE.RETURNGOODSINF);
-		if (returnGoodsInfXml != null)
+		if (returnGoodsInfXml != null && isSendSuccess)
 		{
 			Object[] orderGoodsInf = { INFConstants.INF_RT_ORDER_GOODS_STR, "1", returnGoodsInfXml};
 			try
@@ -221,7 +227,7 @@ public class TdInterfaceService {
 		}
 		//券
 		String returnCouponInfXml = this.XmlWithReturnNote(returnNote, INFTYPE.RETURNCOUPONINF);
-		if (returnCouponInfXml != null)
+		if (returnCouponInfXml != null && isSendSuccess)
 		{
 			Object[] orderInf = { INFConstants.INF_RT_ORDER_COUPONS_STR, "1", returnCouponInfXml};
 			try

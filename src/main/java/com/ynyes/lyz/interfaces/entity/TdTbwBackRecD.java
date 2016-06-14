@@ -116,10 +116,6 @@ public class TdTbwBackRecD extends TdInfBaseEntity
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date cModifiedDt;
-	
-	//分公司Id
-	@Column
-	private Long cCompanyId;
 
 	public Long getId()
 	{
@@ -361,16 +357,6 @@ public class TdTbwBackRecD extends TdInfBaseEntity
 		this.cModifiedDt = cModifiedDt;
 	}
 
-	public Long getcCompanyId()
-	{
-		return cCompanyId;
-	}
-
-	public void setcCompanyId(Long cCompanyId)
-	{
-		this.cCompanyId = cCompanyId;
-	}
-
 	@Override
 	public String toString()
 	{
@@ -380,7 +366,7 @@ public class TdTbwBackRecD extends TdInfBaseEntity
 		        + cOpTools + ", cOpStatus=" + cOpStatus + ", cReserved1=" + cReserved1 + ", cReserved2=" + cReserved2
 		        + ", cReserved3=" + cReserved3 + ", cReserved4=" + cReserved4 + ", cReserved5=" + cReserved5
 		        + ", cNote=" + cNote + ", cMkUserno=" + cMkUserno + ", cMkDt=" + cMkDt + ", cModifiedUserno="
-		        + cModifiedUserno + ", cModifiedDt=" + cModifiedDt + ", cCompanyId=" + cCompanyId + "]";
+		        + cModifiedUserno + ", cModifiedDt=" + cModifiedDt + "]";
 	}
 
 }

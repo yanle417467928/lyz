@@ -81,6 +81,14 @@ public class TdTbwBackRecMService
         return (List<TdTbwBackRecM>) repository.findAll();
     }
     
+    public TdTbwBackRecM findByCRecNo(String cRecNo)
+    {
+    	if (cRecNo == null)
+		{
+			return null;
+		}
+    	return repository.findByCRecNo(cRecNo);
+    }
     
     /**
      * 保存

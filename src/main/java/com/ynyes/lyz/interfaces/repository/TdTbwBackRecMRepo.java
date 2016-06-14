@@ -7,5 +7,5 @@ import com.ynyes.lyz.interfaces.entity.TdTbwBackRecM;
 
 public interface TdTbwBackRecMRepo extends PagingAndSortingRepository<TdTbwBackRecM, Long> ,JpaSpecificationExecutor<TdTbwBackRecM>
 {
-
+	TdTbwBackRecM findByCRecNo(String cRecNo);
 }
