@@ -818,7 +818,7 @@ public class TdManagerCouponController extends TdManagerBaseController {
 		}
 		//查询商品
 		List<TdGoods> goods_list=null;
-		if(searchType==1L){
+		if(searchType!=null && searchType==1L){
 			//优惠卷模板搜索 商品不分品牌
 			cityCode=cityId;
 			goods_list=tdGoodsService.queryCouponGooddsOrderBySortIdAsc(cityCode, keywords);
