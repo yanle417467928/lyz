@@ -16,6 +16,6 @@ public interface TdReturnOrderInfRepo
 	
 	List<TdReturnOrderInf> findByReturnNumber(String returnNumber);
 	
-	TdReturnOrderInf findByOrderNumber(String orderNumber);
+	List<TdReturnOrderInf> findByOrderNumber(String orderNumber);
 }
 

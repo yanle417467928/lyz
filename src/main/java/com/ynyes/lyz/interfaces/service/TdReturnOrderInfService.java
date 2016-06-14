@@ -103,7 +103,12 @@ public class TdReturnOrderInfService {
     
     public TdReturnOrderInf findByOrderNumber(String orderNumber)
     {
-    	return repository.findByOrderNumber(orderNumber);
+    	List<TdReturnOrderInf> returnOrderInfs = repository.findByOrderNumber(orderNumber);
+    	if (returnOrderInfs == null  || returnOrderInfs.size() < 1)
+		{
+			return null;
+		}
+    	return returnOrderInfs.get(0);
     }
     
     /**
