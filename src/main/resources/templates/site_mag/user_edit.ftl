@@ -146,6 +146,20 @@ $(function () {
                 }
             });
         }   
+    
+        function changeBalance(){
+        	var ocashBalance=$('#ocashBalance').val();
+        	var ounCashBalance=$('#ounCashBalance').val();
+        	if(isNaN(ocashBalance)){
+        		//alert('可提现预存款必须是数字!');
+        		return;
+        	}
+			if(isNaN(ounCashBalance)){
+				//alert('不可提现预存款必须是数字!');
+				return;
+        	}
+			$('#obalance').val(parseFloat(parseFloat(ocashBalance)+parseFloat(ounCashBalance)).toFixed(2));
+        }
 
 </script>
 </head>
@@ -386,15 +400,15 @@ $(function () {
 <#if !user?? || (user?? && user.userType?? && user.userType == 0 )>
   <dl>
     <dt>总金额</dt>
-    <dd><input name="obalance" type="text" class="input normal" sucmsg=" " value="<#if user?? && user.balance??>${user.balance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
+    <dd><input name="obalance" id="obalance" type="text" class="input normal" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" " value="<#if user?? && user.balance??>${user.balance?string('0.00')}<#else>0</#if>" readonly="readonly"> <span class="Validform_checktip"></span></dd>
   </dl>
   <dl>
     <dt>可提现余额</dt>
-    <dd><input name="ocashBalance" type="text" class="input normal"sucmsg=" " value="<#if user?? && user.cashBalance??>${user.cashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
+    <dd><input name="ocashBalance" id="ocashBalance" onkeyup="changeBalance()" type="text" class="input normal" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" " value="<#if user?? && user.cashBalance??>${user.cashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
   </dl>
   <dl>
     <dt>不可提现余额</dt>
-    <dd><input name="ounCashBalance" type="text" class="input normal"sucmsg=" " value="<#if user?? && user.unCashBalance??>${user.unCashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
+    <dd><input name="ounCashBalance" id="ounCashBalance" onkeyup="changeBalance()" type="text" class="input normal" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" " value="<#if user?? && user.unCashBalance??>${user.unCashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
   </dl>
   </#if>
   <#if !user?? || user?? && user.userType?? && user.userType == 100>
