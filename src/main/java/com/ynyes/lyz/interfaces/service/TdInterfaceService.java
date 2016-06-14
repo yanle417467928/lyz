@@ -159,7 +159,7 @@ public class TdInterfaceService {
 	public void sendReturnOrderByAsyn(TdReturnNote returnNote)
 	{
 		sendEbsReturnOrderThread ebsReturnOrderThread = new sendEbsReturnOrderThread(returnNote);
-		ebsReturnOrderThread.start();
+		ebsReturnOrderThread.run();
 	}
 	
 	class sendEbsReturnOrderThread extends Thread

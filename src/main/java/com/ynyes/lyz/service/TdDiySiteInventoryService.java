@@ -151,7 +151,10 @@ public class TdDiySiteInventoryService {
 		TdCity city= tdCityRepo.findByCityName(order.getCity());
 		//订单类型
 		Long orderType=1L;
-		
+		if (order.getIsCoupon() == true)
+		{
+			return ;
+		}
 		//判断订单类型
 		if("门店自提".equals(order.getDeliverTypeTitle())){ 
 			orderType=2L;
@@ -299,6 +302,10 @@ public class TdDiySiteInventoryService {
 	 */
 	public void changeGoodsInventory(TdReturnNote returnNote,HttpServletRequest req){
 		TdOrder order= orderRepo.findByOrderNumber(returnNote.getOrderNumber());
+		if (order != null && order.getIsCoupon() == true)
+		{
+			return ;
+		}
 		TdCity city= tdCityRepo.findByCityName(order.getCity());
 		//订单类型
 		Long orderType=1L;
