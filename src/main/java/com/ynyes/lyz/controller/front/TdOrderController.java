@@ -97,7 +97,7 @@ public class TdOrderController {
 
 	@Autowired
 	private TdSettingService tdSettingService;
-	
+
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
@@ -156,9 +156,9 @@ public class TdOrderController {
 			tdOrderService.delete(order_temp);
 			return "redirect:/";
 		}
-		//判断商品数量是否为0
+		// 判断商品数量是否为0
 		for (TdOrderGoods tdOrderGoods : goodsList) {
-			if(tdOrderGoods.getQuantity()<1L){
+			if (tdOrderGoods.getQuantity() < 1L) {
 				attr.addAttribute("msg", "亲,商品数量不能小于1");
 				return "redirect:/prompt";
 			}
@@ -308,7 +308,7 @@ public class TdOrderController {
 
 		// 再次计算促销和价格
 		if (null != count) {
-			tdCommonService.getPresent(req, order_temp);
+			tdCommonService.rePresent(req, order_temp);
 			tdPriceCouintService.countPrice(order_temp, realUser);
 		}
 
@@ -478,7 +478,7 @@ public class TdOrderController {
 	 * @author DengXiao
 	 */
 	@RequestMapping(value = "/get/info")
-	public String orderGetInfo(HttpServletRequest req, ModelMap map, Long type,String diySiteName) {
+	public String orderGetInfo(HttpServletRequest req, ModelMap map, Long type, String diySiteName) {
 		// 获取登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
@@ -490,14 +490,14 @@ public class TdOrderController {
 				List<TdDiySite> info_list = tdDiySiteService.findByRegionIdOrderBySortIdAsc(cityId);
 				map.addAttribute("info_list", info_list);
 			} else if (1L == type.longValue()) {
-				//根据门店查询导购
-				TdDiySite diySite=tdDiySiteService.findByTitleAndIsEnableTrue(diySiteName);
-				List<TdUser> info_list=null;
-				if (null != diySite) {//查询门店下面的导购
+				// 根据门店查询导购
+				TdDiySite diySite = tdDiySiteService.findByTitleAndIsEnableTrue(diySiteName);
+				List<TdUser> info_list = null;
+				if (null != diySite) {// 查询门店下面的导购
 					info_list = tdUserService.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(
 							diySite.getRegionId(), diySite.getCustomerId());
 
-				}else{//以前的逻辑查询城市下面的所有导购
+				} else {// 以前的逻辑查询城市下面的所有导购
 					info_list = tdUserService.findByCityIdAndUserTypeOrCityIdAndUserTypeOrderBySortIdAsc(cityId);
 				}
 				map.addAttribute("info_list", info_list);
@@ -593,7 +593,7 @@ public class TdOrderController {
 					order.setSellerUsername(the_seller.getUsername());
 					order.setSellerRealName(the_seller.getRealName());
 					res.put("sellerName", the_seller.getRealName());
-				}else{
+				} else {
 					order.setSellerId(null);
 					order.setSellerUsername(null);
 					order.setSellerRealName(null);
@@ -1217,7 +1217,8 @@ public class TdOrderController {
 									if (null != couponId && couponId.longValue() != coupon.getId().longValue()) {
 										ids += (sCouponId + ",");
 										TdCoupon tempCoupon = tdCouponService.findOne(couponId);
-										if (null != tempCoupon && tempCoupon.getIsBuy()) {
+										if (null != tempCoupon && null != tempCoupon.getIsBuy()
+												&& tempCoupon.getIsBuy()) {
 											buyIds += (sCouponId + ",");
 										}
 									}
@@ -1741,8 +1742,8 @@ public class TdOrderController {
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null != order && null != order.getOrderNumber()) {
 			if (order.getOrderNumber().contains("XN")) {
-				//拆单钱先去扣减库存
-				tdDiySiteInventoryService.changeGoodsInventory(order,2L,req,"发货");
+				// 拆单钱先去扣减库存
+				tdDiySiteInventoryService.changeGoodsInventory(order, 2L, req, "发货");
 				tdCommonService.dismantleOrder(req, username);
 			}
 		}
@@ -1954,7 +1955,7 @@ public class TdOrderController {
 		return "/client/order_user_info";
 	}
 
-	//增加判断库存
+	// 增加判断库存
 	@RequestMapping(value = "/coupon/confirm")
 	@ResponseBody
 	public Map<String, Object> confirm(HttpServletRequest req, ModelMap map) {
@@ -1964,68 +1965,67 @@ public class TdOrderController {
 		// 获取指定的订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null != order) {
-			TdOrder tdOrder=tdOrderService.findOne(order.getId());
+			TdOrder tdOrder = tdOrderService.findOne(order.getId());
 			Long regionId = null;
 			Long diysiteId = tdOrder.getDiySiteId();
 			TdDiySite tdDiySite = tdDiySiteService.findOne(diysiteId);
-			if (tdDiySite != null)
-			{
+			if (tdDiySite != null) {
 				regionId = tdDiySite.getRegionId();
 			}
-			
-			//判断库存
-			Map<String, Long> inventoryMap=new HashMap<String, Long>();
-			//商品列表
-			List<TdOrderGoods> orderGoodsList= tdOrder.getOrderGoodsList();
+
+			// 判断库存
+			Map<String, Long> inventoryMap = new HashMap<String, Long>();
+			// 商品列表
+			List<TdOrderGoods> orderGoodsList = tdOrder.getOrderGoodsList();
 			for (TdOrderGoods tdOrderGoods : orderGoodsList) {
-				if(tdOrderGoods!=null){
-					String sku= tdOrderGoods.getSku();
-					//判断是否存在 存在累加 不存在默认为0
-					Long quantity= inventoryMap.get(sku)==null?0L:inventoryMap.get(sku);
-					inventoryMap.put(sku, quantity+tdOrderGoods.getQuantity());
-					
-					//增加非华润产品不能进行门店自提
+				if (tdOrderGoods != null) {
+					String sku = tdOrderGoods.getSku();
+					// 判断是否存在 存在累加 不存在默认为0
+					Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
+					inventoryMap.put(sku, quantity + tdOrderGoods.getQuantity());
+
+					// 增加非华润产品不能进行门店自提
 					String brandTitle = tdOrderGoods.getBrandTitle();
-					if (brandTitle != null && !brandTitle.equalsIgnoreCase("华润") && tdOrder.getDeliverTypeTitle().equals("门店自提"))
-					{
+					if (brandTitle != null && !brandTitle.equalsIgnoreCase("华润")
+							&& tdOrder.getDeliverTypeTitle().equals("门店自提")) {
 						res.put("status", -3);
 						return res;
 					}
 				}
 			}
-			//赠品列表
-			List<TdOrderGoods> giftGoodsList= tdOrder.getGiftGoodsList();
+			// 赠品列表
+			List<TdOrderGoods> giftGoodsList = tdOrder.getGiftGoodsList();
 			for (TdOrderGoods giftGoods : giftGoodsList) {
-				if(giftGoods!=null){
-					String sku= giftGoods.getSku();
-					//判断是否存在 存在累加 不存在默认为0
-					Long quantity= inventoryMap.get(sku)==null?0L:inventoryMap.get(sku);
-					inventoryMap.put(sku, quantity+giftGoods.getQuantity());
+				if (giftGoods != null) {
+					String sku = giftGoods.getSku();
+					// 判断是否存在 存在累加 不存在默认为0
+					Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
+					inventoryMap.put(sku, quantity + giftGoods.getQuantity());
 				}
 			}
-			//小辅料列表
-			List<TdOrderGoods> presentedList= tdOrder.getPresentedList();
+			// 小辅料列表
+			List<TdOrderGoods> presentedList = tdOrder.getPresentedList();
 			for (TdOrderGoods presented : presentedList) {
-				if(presented!=null){
-					String sku= presented.getSku();
-					//判断是否存在 存在累加 不存在默认为0
-					Long quantity= inventoryMap.get(sku)==null?0L:inventoryMap.get(sku);
-					inventoryMap.put(sku, quantity+presented.getQuantity());
+				if (presented != null) {
+					String sku = presented.getSku();
+					// 判断是否存在 存在累加 不存在默认为0
+					Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
+					inventoryMap.put(sku, quantity + presented.getQuantity());
 				}
 			}
-			
-			for (String sku : inventoryMap.keySet())
-			{
-				TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(sku, regionId);
-				if (diySiteInventory == null || inventoryMap.get(sku) == null ||  diySiteInventory.getInventory() < inventoryMap.get(sku))
-				{
+
+			for (String sku : inventoryMap.keySet()) {
+				TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService
+						.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(sku, regionId);
+				if (diySiteInventory == null || inventoryMap.get(sku) == null
+						|| diySiteInventory.getInventory() < inventoryMap.get(sku)) {
 					res.put("status", -2);
 					return res;
 				}
 			}
-			//再存一次 后面改
+			// 再存一次 后面改
 			req.getSession().setAttribute("order_temp", tdOrder);
-			
+
 			// 获取用户的支付方式
 			Long payTypeId = order.getPayTypeId();
 			TdPayType payType = tdPayTypeService.findOne(payTypeId);
