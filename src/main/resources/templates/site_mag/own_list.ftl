@@ -30,13 +30,14 @@ var theForm = document.forms['form1'];
             theForm.submit();
         }
     }
+   
 </script>
 <!--导航栏-->
 <div class="location" style="position: static; top: 0px;">
   <a href="javascript:history.back(-1);" class="back"><i></i><span>返回上一页</span></a>
   <a href="/Verwalter/center" class="home"><i></i><span>首页</span></a>
   <i class="arrow"></i>
-  <span>评论与退换货</span>
+  <span>订单管理</span>
   <i class="arrow"></i>
   <span>审核欠款</span>  
 </div>
@@ -114,7 +115,6 @@ var theForm = document.forms['form1'];
   </div>
 </div>
 <!--/工具栏-->
-
 <!--列表-->
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ltable">

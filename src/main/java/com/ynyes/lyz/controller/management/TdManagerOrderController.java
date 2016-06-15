@@ -1132,7 +1132,7 @@ public class TdManagerOrderController {
 		res.put("message", "参数错误!");
 		return res;
 	}
-
+	
 	/*---------------------------------------导入表格 begin -------------------------------*/
 
 	/**************
@@ -1197,6 +1197,61 @@ public class TdManagerOrderController {
 		}
 		map.put("code", 0);
 		return map;
+	}
+	
+	/**
+	 * 欠款 还款
+	 * @param id 欠款id
+	 * @param money 现金金额
+	 * @param pos pos金额
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(value = "/own/money")
+	@ResponseBody
+	public Map<String, Object> ownMoney(Long id,Double money,Double pos,HttpServletRequest req) {
+		Map<String, Object> res= new HashMap<String, Object>();
+		String username = (String) req.getSession().getAttribute("manager");
+		//判断登录
+		if (null == username) {
+			res.put("message", "请重新登录");
+			res.put("code", -1);
+			return res;
+		}
+		//查询欠款记录
+		TdOwnMoneyRecord own= tdOwnMoneyRecordService.findOne(id);
+		if(own==null){
+			res.put("message", "未找到欠款记录");
+			res.put("code", -1);
+			return res;
+		}
+		//判断欠款状态
+		if(own.getPayed()!=null && own.getIsPayed()){
+			res.put("message", "欠款已还清");
+			res.put("code", -1);
+			return res;
+		}
+		//为空设置默认值
+		if(money==null){
+			money=0.0;
+		}
+		if(pos==null){
+			pos=0.0;
+		}
+		//判断是否还清
+		if(own.getOwned()!=(money+pos)){
+			res.put("message", "必须一次性还清");
+			res.put("code", -1);
+			return res;
+		}
+		//设置值 并保存
+		own.setBackMoney(money);
+		own.setBackPos(pos);
+		own.setIsPayed(true);
+		tdOwnMoneyRecordService.save(own);
+		res.put("code", 0);
+		res.put("message", "已还款");
+		return res;
 	}
 	
 	/**

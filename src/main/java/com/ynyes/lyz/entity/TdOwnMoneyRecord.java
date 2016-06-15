@@ -69,6 +69,18 @@ public class TdOwnMoneyRecord {
     //是否是欠款记录 （ 后面添加的字段 默认为true表示为欠款记录） zp
     @Column
     private Boolean isOwn;
+    //收款现金
+    @Column
+    private Double money;
+    //收款pos
+    @Column
+    private Double pos;
+    //还款现金
+    @Column
+    private Double backMoney;
+    //还款pos
+    @Column
+    private Double backPos;
     
 
 	public Boolean getIspassed() {
@@ -165,6 +177,38 @@ public class TdOwnMoneyRecord {
 
 	public void setIsOwn(Boolean isOwn) {
 		this.isOwn = isOwn;
+	}
+
+	public Double getMoney() {
+		return money;
+	}
+
+	public void setMoney(Double money) {
+		this.money = money;
+	}
+
+	public Double getPos() {
+		return pos;
+	}
+
+	public void setPos(Double pos) {
+		this.pos = pos;
+	}
+
+	public Double getBackMoney() {
+		return backMoney;
+	}
+
+	public void setBackMoney(Double backMoney) {
+		this.backMoney = backMoney;
+	}
+
+	public Double getBackPos() {
+		return backPos;
+	}
+
+	public void setBackPos(Double backPos) {
+		this.backPos = backPos;
 	}
 	
 }

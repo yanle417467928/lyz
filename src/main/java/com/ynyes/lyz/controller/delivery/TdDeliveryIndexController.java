@@ -796,16 +796,16 @@ public class TdDeliveryIndexController {
 
 	/*
 	 * 申请欠款 
-	 * isOwn 默认为true 
+	 * isOwn 默认为true 增加现金 和pos
 	 */
 	@RequestMapping(value = "/submitOwnMoney/{id}", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> submitMoney(@PathVariable Long id, Double payed, Double owned, HttpServletRequest req,
-			ModelMap map) {
+			ModelMap map,Double money, Double pos) {
 		Map<String, Object> res = new HashMap<String, Object>();
 		res.put("code", 1);
 
-		if (null == payed || null == owned) {
+		if (null == payed || null == owned || null==money || null==pos) {
 			res.put("message", "金额不能为空");
 			return res;
 		}
@@ -814,6 +814,10 @@ public class TdDeliveryIndexController {
 
 		if (null == order) {
 			res.put("message", "订单不存在");
+			return res;
+		}
+		if(payed!=(money+pos)){
+			res.put("message", "现金和pos总额不等于欠款金额");
 			return res;
 		}
 		
@@ -834,6 +838,8 @@ public class TdDeliveryIndexController {
 			rec.setDiyCode(order.getDiySiteCode());
 			rec.setOwned(owned);
 			rec.setPayed(payed);
+			rec.setMoney(money);
+			rec.setPos(pos);
 			rec.setUsername(order.getUsername());
 			if(owned != null && owned==0){
 				rec.setIsOwn(false);
