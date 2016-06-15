@@ -1565,15 +1565,21 @@ public class TdUserController {
 				TdDeliveryInfo deliveryInfo = deliveryInfos.get(0);
 				if (deliveryInfo != null && deliveryInfo.getDriver() != null) {
 					tdUser = tdUserService.findByOpUser(deliveryInfo.getDriver());
-
+					map.addAttribute("user", tdUser);
+				}
+				if(deliveryInfo != null && deliveryInfo.getWhNo() != null){
+					List<TdWareHouse> wareHouseList= TdWareHouseService.findBywhNumberOrderBySortIdAsc(deliveryInfo.getWhNo());
+					if(wareHouseList!=null && wareHouseList.size()>0){
+						map.addAttribute("whName", wareHouseList.get(0).getWhName());
+					}
 				}
 			}
 		}
 		if (tdUser != null) {
 			List<TdGeoInfo> geoInfos = tdGeoInfoService.findByOpUserOrderByTimeDesc(tdUser.getOpUser());
 			if (geoInfos != null && geoInfos.size() > 0) {
-				map.addAttribute("map_x", geoInfos.get(0).getLatitude());
-				map.addAttribute("map_y", geoInfos.get(0).getLongitude());
+				map.addAttribute("map_x", geoInfos.get(geoInfos.size()-1).getLatitude());
+				map.addAttribute("map_y", geoInfos.get(geoInfos.size()-1).getLongitude());
 			}
 		}
 		return "/client/user_order_detail_map";

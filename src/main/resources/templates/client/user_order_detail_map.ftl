@@ -24,6 +24,13 @@
         function show()
         {alert("暂时没有信息")}
         </script>
+        <style type="text/css">
+        .info{
+        	line-height: 2em;
+        	text-indent:2em;
+        	background-color: white;
+        }
+        </style>
     </head>
     <body class="bgc-f3f4f6">
         <!-- 头部 -->
@@ -31,6 +38,11 @@
             <a class="back" href="javascript:history.go(-1);"></a>
             <p>快递位置</p>
         </header>
+        <div class="info">配送员：<#if user??>${user.realName!'' }</#if></div>
+        <div class="info">配送员电话：<#if user??>${user.username!'' }</#if></div>
+        <div class="info">配送仓库：${whName!'' }</div>
+        <div class="br"></div>
+        <div id="container"></div>
         <div id="container"></div>
         <script type="text/javascript">
             var map = new AMap.Map('container',{
