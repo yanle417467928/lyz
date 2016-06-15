@@ -89,7 +89,7 @@ function changeType(e)
     <dt>优惠券类型</dt>
     <dd>
         <div class="rule-single-select">
-            <select id="type" name="typeCategoryId" datatype="n" sucmsg=" " onchange="changeType(this)">
+            <select id="type" name="typeCategoryId" datatype="n" sucmsg=" " onchange="changeType(this)"  <#if coupon??>readOnly="true"</#if>>
                 <#if !coupon??>
                 	<option value="">请选择类型...</option>
                 </#if> 
@@ -105,9 +105,9 @@ function changeType(e)
     <dd>
     	<div class="rule-multi-radio multi-radio">
             <span>
-                <input type="radio" name="typeId" value="1" <#if !coupon?? || coupon.typeId==1>checked="checked"</#if>>
+                <input type="radio" name="typeId" value="1" <#if !coupon?? || coupon.typeId==1>checked="checked"</#if> <#if coupon??>readOnly="true"</#if>>
                 <label>手动发放</label>
-                <input type="radio" name="typeId" value="2" <#if coupon?? && coupon.typeId==2>checked="checked"</#if>>
+                <input type="radio" name="typeId" value="2" <#if coupon?? && coupon.typeId==2>checked="checked"</#if> <#if coupon??>readOnly="true"</#if>>
                 <label>用户抢券</label>
             </span>
         </div>
@@ -117,7 +117,7 @@ function changeType(e)
             <dt>城市</dt>
             <dd>
                 <div class="rule-single-select">
-                    <select name="cityId" id="cityId"  datatype="*" sucmsg=" " <#if !coupon??>onchange="javascript:searchGoods();"</#if>>
+                    <select name="cityId" id="cityId"  datatype="*" sucmsg=" " <#if !coupon??>onchange="javascript:searchGoods();"</#if> <#if coupon??>readOnly="true"</#if>>
                         <#if !activity_gift??>
                         <option value="">请选择城市...</option>
                         </#if>
@@ -135,7 +135,7 @@ function changeType(e)
     <dt>所属公司</dt>
     <dd>
         <div class="rule-single-select">
-            <select name="brandId" id="brandId" <#if !coupon??>onchange="javascript:searchGoods();"</#if>>
+            <select name="brandId" id="brandId" <#if !coupon??>onchange="javascript:searchGoods();"</#if> <#if coupon??>readOnly="true"</#if>>
             	<option value="">请选择...</option>
                 <#if brand_list??>
                     <#list brand_list as item>
@@ -149,14 +149,14 @@ function changeType(e)
   <dl>
     <dt>现金券名称</dt>
     <dd>
-      <input name="typeTitle" type="text" value="<#if coupon??&&coupon.typeTitle??>${coupon.typeTitle!''}</#if>" class="input txt100" datatype="*2-255" sucmsg=" ">
+      <input name="typeTitle" type="text" value="<#if coupon??&&coupon.typeTitle??>${coupon.typeTitle!''}</#if>" class="input txt100" datatype="*2-255" sucmsg=" " <#if coupon??>readOnly="true"</#if>>
       <span class="Validform_checktip">*</span>
     </dd>
   </dl>
   <dl>
     <dt>现金券金额</dt>
     <dd>
-      <input name="price" type="text" value="<#if coupon??&&coupon.price??>${coupon.price?string("0.00")}<#else>0.00</#if>" class="input txt100" datatype="/^\d{0,8}\.{0,1}(\d{1,2})?$/" sucmsg=" ">
+      <input name="price" type="text" value="<#if coupon??&&coupon.price??>${coupon.price?string("0.00")}<#else>0.00</#if>" class="input txt100" datatype="/^\d{0,8}\.{0,1}(\d{1,2})?$/" sucmsg=" " <#if coupon??>readOnly="true"</#if>>
       <span class="Validform_checktip">*仅现金券设置</span>
     </dd>
   </dl>
@@ -164,7 +164,7 @@ function changeType(e)
         <dt>到期时间</dt>
         <dd>
             <div class="input-date">
-                <input name="expireTime" type="text" value="<#if coupon??>${coupon.expireTime!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                <input name="expireTime" type="text" value="<#if coupon??>${coupon.expireTime!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " <#if coupon??>readOnly="true"</#if>>
                 <i>日期</i>
             </div>
             <span class="Validform_checktip"></span>
@@ -173,7 +173,7 @@ function changeType(e)
   <dl>
     <dt>剩余数量</dt>
     <dd>
-      <input name="leftNumber" type="text" value="<#if coupon??&&coupon.leftNumber??>${coupon.leftNumber?c!""}<#else>1</#if>" class="input small" datatype="n" sucmsg=" ">
+      <input name="leftNumber" type="text" value="<#if coupon??&&coupon.leftNumber??>${coupon.leftNumber?c!""}<#else>1</#if>" class="input small" datatype="n" sucmsg=" " <#if coupon??>readOnly="true"</#if>>
       <span class="Validform_checktip">*可用数量</span>
     </dd>
   </dl>
@@ -181,8 +181,8 @@ function changeType(e)
         <dl>
             <dt>指定产品</dt>
             <dd>
-              <input name="goodsId" type="hidden" value="${cou_goods.id?c}" >
-              <input  type="text" value="${cou_goods.title!''}" name="goodsName" class="input text">
+              <input name="goodsId" type="hidden" value="${cou_goods.id?c}"  <#if coupon??>readOnly="true"</#if>>
+              <input  type="text" value="${cou_goods.title!''}" name="goodsName" class="input text" <#if coupon??>readOnly="true"</#if>>
               <span class="Validform_checktip">*仅相对于指定商品券和产品券</span>
             </dd>
          </dl>
@@ -190,7 +190,7 @@ function changeType(e)
   <dl>
     <dt>排序数字</dt>
     <dd>
-      <input name="sortId" type="text" value="<#if coupon??>${coupon.sortId!""}<#else>99</#if>" class="input small" datatype="n" sucmsg=" " errormsg="请输入不超过100的2位小数">
+      <input name="sortId" type="text" value="<#if coupon??>${coupon.sortId!""}<#else>99</#if>" class="input small" datatype="n" sucmsg=" " errormsg="请输入不超过100的2位小数" <#if coupon??>readOnly="true"</#if>>
       <span class="Validform_checktip">*数字，越小越向前</span>
     </dd>
   </dl>
@@ -198,7 +198,7 @@ function changeType(e)
   <dl id="search" style="display:none;">
     <dt>产品关键字</dt>
     <dd>
-      <input  type="text" value="" id="keywords" class="input text"  onblur="javascript:searchGoods();">
+      <input  type="text" value="" id="keywords" class="input text"  onblur="javascript:searchGoods();" <#if coupon??>readOnly="true"</#if>>
       <span class="Validform_checktip">*仅相对于指定商品券和产品券</span>
     </dd>
   </dl>
@@ -230,7 +230,9 @@ function searchGoods()
 <!--工具栏-->
 <div class="page-footer">
   <div class="btn-list">
+  	<#if !coupon??>
     <input type="submit" name="btnSubmit" value="提交保存" id="btnSubmit" class="btn">
+    </#if>
     <input name="btnReturn" type="button" value="返回上一页" class="btn yellow" onclick="javascript:history.back(-1);">
   </div>
   <div class="clear"></div>

@@ -103,7 +103,7 @@ function __doPostBack(eventTarget, eventArgument) {
                 <td><input name="listSortId" type="text" disabled="" value="${item.sortId!""}" class="sort" onkeydown="return checkNumber(event);"></td>
                 <td align="center">
                     <#if item.typeId?? && item.typeId==1><a href="/Verwalter/coupon/grant/${item.id?c}" >发放</a>&nbsp/&nbsp;</#if>
-                    <a href="/Verwalter/coupon/edit?id=${item.id?c}">修改</a>
+                    <a href="/Verwalter/coupon/edit?id=${item.id?c}">查看</a>
                 </td>
               </tr>
         </#list>

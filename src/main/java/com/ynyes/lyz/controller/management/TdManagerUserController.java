@@ -242,10 +242,6 @@ public class TdManagerUserController {
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 
-		// 等级list
-		// map.addAttribute("userType_list",
-		// tdUserLevelService.findIsEnableTrue());
-
 		Page<TdUser> userPage = null;
 
 		if (null == roleId) {

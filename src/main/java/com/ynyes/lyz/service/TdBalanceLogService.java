@@ -7,6 +7,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.ynyes.lyz.entity.TdBalanceLog;
@@ -33,38 +35,43 @@ public class TdBalanceLogService {
 	}
 
 	public TdBalanceLog findOne(Long id) {
-		if(null == id){
+		if (null == id) {
 			return null;
 		}
 		return repository.findOne(id);
 	}
-	
-	public List<TdBalanceLog> findAll(){
+
+	public List<TdBalanceLog> findAll() {
 		return (List<TdBalanceLog>) repository.findAll();
 	}
-	
+
 	/**
 	 * 查找指定用户的钱包操作记录（按照生成时间倒序排序）
 	 * 
 	 * @author dengxiao
 	 */
-	public List<TdBalanceLog> findByUserIdOrderByCreateTimeDesc(Long userId){
-		if(null == userId){
+	public List<TdBalanceLog> findByUserIdOrderByCreateTimeDesc(Long userId) {
+		if (null == userId) {
 			return null;
 		}
 		return repository.findByUserIdOrderByCreateTimeDesc(userId);
 	}
-	
+
 	/**
 	 * 查找指定用户的钱包操作记录——分页（按照生成时间倒序排序）
 	 * 
 	 * @author dengxiao
 	 */
-	public Page<TdBalanceLog> findByUserIdAndIsSuccessTrueOrderByCreateTimeDesc(Long userId,int page,int size){
-		if(null == userId){
+	public Page<TdBalanceLog> findByUserIdAndIsSuccessTrueOrderByCreateTimeDesc(Long userId, int page, int size) {
+		if (null == userId) {
 			return null;
 		}
 		PageRequest pageRequest = new PageRequest(page, size);
 		return repository.findByUserIdAndIsSuccessTrueOrderByCreateTimeDesc(userId, pageRequest);
+	}
+
+	public Page<TdBalanceLog> findAll(int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.DESC, "finishTime"));
+		return repository.findAll(pageRequest);
 	}
 }

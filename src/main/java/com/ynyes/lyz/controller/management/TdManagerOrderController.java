@@ -126,62 +126,60 @@ public class TdManagerOrderController {
 
 	@Autowired
 	private TdPriceListService tdPriceListService;
-	
+
 	@Autowired
 	private TdManagerService tdManagerService;
-	
+
 	@Autowired
 	private TdManagerRoleService tdManagerRoleService;
-	
+
 	@Autowired
 	private TdOwnMoneyRecordService tdOwnMoneyRecordService;
-	
+
 	@Autowired
 	private TdDeliveryInfoService tdDeliveryInfoService;
-	
+
 	@Autowired
 	private TdCommonService tdCommonService;
-	
+
 	@Autowired
 	private TdWareHouseService tdWareHouseService;
-	
+
 	@Autowired
 	private TdPriceCountService tdPriceCountService;
-	
+
 	@Autowired
 	private TdDiySiteRoleService tdDiySiteRoleService;
-	
+
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
-	
+
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
-	
-	 /**
+
+	/**
 	 * @author lc
 	 * @注释：下载
 	 */
-	public Boolean download(HSSFWorkbook wb, String exportUrl, HttpServletResponse resp,String fileName){
-		String filename="table";
+	public Boolean download(HSSFWorkbook wb, String exportUrl, HttpServletResponse resp, String fileName) {
+		String filename = "table";
 		try {
 			filename = new String(fileName.getBytes("GBK"), "ISO-8859-1");
 		} catch (UnsupportedEncodingException e1) {
 			System.out.println("下载文件名格式转换错误！");
 		}
-		try
-		{
+		try {
 			OutputStream os;
 			try {
 				os = resp.getOutputStream();
 				try {
-					
+
 					resp.reset();
-					resp.setHeader("Content-Disposition", "attachment; filename=" + filename +".xls");
+					resp.setHeader("Content-Disposition", "attachment; filename=" + filename + ".xls");
 					resp.setContentType("application/octet-stream; charset=utf-8");
 					wb.write(os);
 					os.flush();
-				}
-				finally {
+				} finally {
 					if (os != null) {
 						os.close();
 					}
@@ -189,11 +187,10 @@ public class TdManagerOrderController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}catch (Exception e)  
-		{  
-			e.printStackTrace();  
-		} 
-		return true;	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 	// 城市选择
@@ -292,9 +289,7 @@ public class TdManagerOrderController {
 			{
 				if (null == keywords) {
 					map.addAttribute("pay_type_page", tdPayTypeService.findAllOrderBySortIdAsc(page, size));
-				} 
-				else
-				{
+				} else {
 					map.addAttribute("pay_type_page", tdPayTypeService.searchAllOrderBySortIdAsc(keywords, page, size));
 				}
 
@@ -338,175 +333,152 @@ public class TdManagerOrderController {
 
 		return "/site_mag/pay_type_list";
 	}
-	
-	
+
 	// 欠款审核
-	//增加搜索功能 增加城市和门店权限 zp
+	// 增加搜索功能 增加城市和门店权限 zp
 	@RequestMapping(value = "/own/list")
-	public String ownList(HttpServletRequest req, Integer page, Long isEnable, Integer size,ModelMap map, String __EVENTTARGET,
-			String __EVENTARGUMENT, String __VIEWSTATE,Long[] listChkId,Long isPayed,String keywords,String diyCode,String city,Long ispassed)
-	{
+	public String ownList(HttpServletRequest req, Integer page, Long isEnable, Integer size, ModelMap map,
+			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listChkId, Long isPayed,
+			String keywords, String diyCode, String city, Long ispassed) {
 		String username = (String) req.getSession().getAttribute("manager");
-		if (null == username) 
-		{
+		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
 		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
 		TdManagerRole tdManagerRole = null;
-		if (null != tdManager && null != tdManager.getRoleId())
-		{
+		if (null != tdManager && null != tdManager.getRoleId()) {
 			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
-			if (tdManagerRole == null)
-			{
+			if (tdManagerRole == null) {
 				return "redirect:/Verwalter/login";
 			}
-			if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) 
-			{
+			if (tdManagerRole.getTitle().equalsIgnoreCase("门店")) {
 				diyCode = tdManager.getDiyCode();
 			}
 		}
-		
-		//查询用户管辖门店权限
-    	TdManagerDiySiteRole diySiteRole= tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
-    	//获取管理员管辖城市
-    	List<TdCity> cityList= new ArrayList<TdCity>();
-    	//获取管理员管辖门店
-    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
-    	
-    	//管理员获取管辖的城市和门店
-    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
-		
-		if (null == page || page < 0) 
-		{
+
+		// 查询用户管辖门店权限
+		TdManagerDiySiteRole diySiteRole = tdDiySiteRoleService.findByTitle(tdManagerRole.getTitle());
+		// 获取管理员管辖城市
+		List<TdCity> cityList = new ArrayList<TdCity>();
+		// 获取管理员管辖门店
+		List<TdDiySite> diyList = new ArrayList<TdDiySite>();
+
+		// 管理员获取管辖的城市和门店
+		tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, diySiteRole, tdManagerRole, tdManager);
+
+		if (null == page || page < 0) {
 			page = 0;
 		}
-		
-		if (null != __EVENTTARGET)
-		{
-			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
-			{
-				if (null != __EVENTARGUMENT)
-				{
+
+		if (null != __EVENTTARGET) {
+			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
+				if (null != __EVENTARGUMENT) {
 					page = Integer.parseInt(__EVENTARGUMENT);
 				}
 			}
 		}
 
-		if (null == size || size <= 0) 
-		{
+		if (null == size || size <= 0) {
 			size = SiteMagConstant.pageSize;
 		}
-		
-		
-		if (null != __EVENTTARGET)
-		{
-			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
-			{
-				if (null != __EVENTARGUMENT)
-				{
+
+		if (null != __EVENTTARGET) {
+			if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
+				if (null != __EVENTARGUMENT) {
 					page = Integer.parseInt(__EVENTARGUMENT);
 				}
-			}
-			else if (__EVENTTARGET.equalsIgnoreCase("btnEnable")) 
-			{
-				if (null != listChkId)
-				{
+			} else if (__EVENTTARGET.equalsIgnoreCase("btnEnable")) {
+				if (null != listChkId) {
 					btnEnale(listChkId);
 				}
-			}
-			else if (__EVENTTARGET.equalsIgnoreCase("btnNotEnable")) 
-			{
-				if (null != listChkId)
-				{
+			} else if (__EVENTTARGET.equalsIgnoreCase("btnNotEnable")) {
+				if (null != listChkId) {
 					btnNotEnale(listChkId);
 				}
-			}else if(__EVENTTARGET.equalsIgnoreCase("statusId")){
-				page=0;
-			}else if(__EVENTTARGET.equalsIgnoreCase("payLeft")){
-				page=0;
-			}
-			else if(__EVENTTARGET.equalsIgnoreCase("btnSearch")){
-				page=0;
+			} else if (__EVENTTARGET.equalsIgnoreCase("statusId")) {
+				page = 0;
+			} else if (__EVENTTARGET.equalsIgnoreCase("payLeft")) {
+				page = 0;
+			} else if (__EVENTTARGET.equalsIgnoreCase("btnSearch")) {
+				page = 0;
 			}
 		}
-		
-		//修改城市刷新门店列表
-		if(StringUtils.isNotBlank(city)){
-			//需要删除的diy
-			List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
+
+		// 修改城市刷新门店列表
+		if (StringUtils.isNotBlank(city)) {
+			// 需要删除的diy
+			List<TdDiySite> diyRemoveList = new ArrayList<TdDiySite>();
 			for (TdDiySite tdDiySite : diyList) {
-				if(!city.equals(tdDiySite.getCity())){
+				if (!city.equals(tdDiySite.getCity())) {
 					diyRemoveList.add(tdDiySite);
-					if(tdDiySite.getStoreCode().equals(diyCode)){
-						diyCode=null;
+					if (tdDiySite.getStoreCode().equals(diyCode)) {
+						diyCode = null;
 					}
 				}
 			}
 			diyList.removeAll(diyRemoveList);
 		}
-		
-		//权限门店
-		List<String> roleDiyCodes=new ArrayList<String>();
-		if(diyList!=null && diyList.size()>0){
+
+		// 权限门店
+		List<String> roleDiyCodes = new ArrayList<String>();
+		if (diyList != null && diyList.size() > 0) {
 			for (TdDiySite diy : diyList) {
 				roleDiyCodes.add(diy.getStoreCode());
 			}
 		}
-		
-		//搜索条件城市 数据库里面没有城市 转换为门code查询
-		List<String> cityDiyCodes=new ArrayList<String>();
-		TdCity tdCity= tdCityService.findByCityName(city);
-		if(tdCity!=null){
-			 List<TdDiySite> diySiteList= tdDiySiteService.findByCityId(tdCity.getId());
-			 if(diySiteList!=null && diySiteList.size()>0){
-				 for (TdDiySite tdDiySite : diySiteList) {
-					if(roleDiyCodes.contains(tdDiySite.getStoreCode())){
+
+		// 搜索条件城市 数据库里面没有城市 转换为门code查询
+		List<String> cityDiyCodes = new ArrayList<String>();
+		TdCity tdCity = tdCityService.findByCityName(city);
+		if (tdCity != null) {
+			List<TdDiySite> diySiteList = tdDiySiteService.findByCityId(tdCity.getId());
+			if (diySiteList != null && diySiteList.size() > 0) {
+				for (TdDiySite tdDiySite : diySiteList) {
+					if (roleDiyCodes.contains(tdDiySite.getStoreCode())) {
 						cityDiyCodes.add(tdDiySite.getStoreCode());
 					}
 				}
-			 }else{
-				 //城市下面没有门店  默认为null  查询不到任何门店
-				 cityDiyCodes.add("null");
-			 }
+			} else {
+				// 城市下面没有门店 默认为null 查询不到任何门店
+				cityDiyCodes.add("null");
+			}
 		}
-		Page<TdOwnMoneyRecord> ownMoneyPage=  tdOwnMoneyRecordService.searchOwnList(diyCode, keywords, isEnable,isPayed,ispassed,roleDiyCodes,cityDiyCodes, size, page);
-		
-		map.addAttribute("own_page",ownMoneyPage);
-		
-		List<TdOwnMoneyRecord> ownList= ownMoneyPage.getContent();
-		//循环获取用户名称
-		Map<String, Object> nameMap=new HashMap<String, Object>();
-		if(ownList!=null && ownList.size()>0){
+		Page<TdOwnMoneyRecord> ownMoneyPage = tdOwnMoneyRecordService.searchOwnList(diyCode, keywords, isEnable,
+				isPayed, ispassed, roleDiyCodes, cityDiyCodes, size, page);
+
+		map.addAttribute("own_page", ownMoneyPage);
+
+		List<TdOwnMoneyRecord> ownList = ownMoneyPage.getContent();
+		// 循环获取用户名称
+		Map<String, Object> nameMap = new HashMap<String, Object>();
+		if (ownList != null && ownList.size() > 0) {
 			for (TdOwnMoneyRecord own : ownList) {
 				String ownUsername = own.getUsername();
-				if(nameMap.containsKey(ownUsername))
-				{
+				if (nameMap.containsKey(ownUsername)) {
 					continue;
-				}
-				else
-				{
+				} else {
 					TdUser tdUser = tdUserService.findByUsername(ownUsername);
-					if(null != tdUser && StringUtils.isNotBlank(ownUsername)){
+					if (null != tdUser && StringUtils.isNotBlank(ownUsername)) {
 						nameMap.put(ownUsername, tdUser.getRealName());
 					}
 				}
 			}
 		}
-		
-		map.addAttribute("name_map",nameMap);
-		
-		//用户管辖的门店和城市
-		map.addAttribute("diySiteList",diyList);
+
+		map.addAttribute("name_map", nameMap);
+
+		// 用户管辖的门店和城市
+		map.addAttribute("diySiteList", diyList);
 		map.addAttribute("cityList", cityList);
 		map.addAttribute("page", page);
 		map.addAttribute("size", size);
 		map.addAttribute("__EVENTTARGET", __EVENTTARGET);
 		map.addAttribute("__EVENTARGUMENT", __EVENTARGUMENT);
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
-		map.addAttribute("statusId",isEnable);
-		map.addAttribute("payLeft",isPayed);
-		map.addAttribute("ispassed",ispassed);
-		map.addAttribute("keywords",keywords);
+		map.addAttribute("statusId", isEnable);
+		map.addAttribute("payLeft", isPayed);
+		map.addAttribute("ispassed", ispassed);
+		map.addAttribute("keywords", keywords);
 		map.addAttribute("cityName", city);
 		map.addAttribute("diyCode", diyCode);
 		return "/site_mag/own_list";
@@ -591,27 +563,41 @@ public class TdManagerOrderController {
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		map.addAttribute("statusId", statusId);
 		if (null != id) {
-			TdOrder order=tdOrderService.findOne(id);
+			TdOrder order = tdOrderService.findOne(id);
 			map.addAttribute("order", tdOrderService.findOne(id));
-			//仓库
-			if(null != order){
-				List<TdDeliveryInfo> deliveryList=tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
-				if(null!=deliveryList && deliveryList.size()>0){
-					List<TdWareHouse> wareHouseList= tdWareHouseService.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
-					if(null != wareHouseList && wareHouseList.size()>0){
+			// 仓库
+			if (null != order) {
+				List<TdDeliveryInfo> deliveryList = tdDeliveryInfoService
+						.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+				if (null != deliveryList && deliveryList.size() > 0) {
+					List<TdWareHouse> wareHouseList = tdWareHouseService
+							.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
+					if (null != wareHouseList && wareHouseList.size() > 0) {
 						map.addAttribute("tdWareHouse", wareHouseList.get(0));
 					}
 				}
 			}
+			// 查询配送信息
+			List<TdDeliveryInfo> info_list = tdDeliveryInfoService
+					.findByOrderNumberOrderByBeginDtDesc(order.getMainOrderNumber());
+			if (null != info_list && info_list.size() != 0) {
+				TdDeliveryInfo info = info_list.get(0);
+				if(null != info){
+					String opUser = info.getOpUser();
+					TdUser deliveryUser = tdUserService.findByOpUser(opUser);
+					map.addAttribute("deliveryUser", deliveryUser);
+				}
+				
+			}
 		}
+
 		return "/site_mag/order_edit";
 	}
 
 	@RequestMapping(value = "/save")
 	public String orderEdit(TdOrder tdOrder, Long statusId, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
-		if (null == username)
-		{
+		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
 
@@ -630,34 +616,32 @@ public class TdManagerOrderController {
 	@RequestMapping(value = "/list/{statusId}")
 	public String goodsListDialog(String keywords, @PathVariable Long statusId, Integer page, Integer size,
 			String __EVENTTARGET, String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId,
-			ModelMap map, HttpServletRequest req,String orderStartTime,String orderEndTime,String realName,String sellerRealName,String shippingAddress,String shippingPhone,
-			String deliveryTime,String userPhone,Long orderStatusId,String shippingName,String sendTime,String diyCode,String city) {
+			ModelMap map, HttpServletRequest req, String orderStartTime, String orderEndTime, String realName,
+			String sellerRealName, String shippingAddress, String shippingPhone, String deliveryTime, String userPhone,
+			Long orderStatusId, String shippingName, String sendTime, String diyCode, String city) {
 		String username = (String) req.getSession().getAttribute("manager");
 
-		if (null == username)
-		{
+		if (null == username) {
 			return "redirect:/Verwalter/login";
 		}
 
 		TdManager tdManager = tdManagerService.findByUsernameAndIsEnableTrue(username);
 		TdManagerRole tdManagerRole = null;
-		if (null != tdManager && null != tdManager.getRoleId())
-		{
+		if (null != tdManager && null != tdManager.getRoleId()) {
 			tdManagerRole = tdManagerRoleService.findOne(tdManager.getRoleId());
 		}
-		if (tdManagerRole == null)
-		{
+		if (tdManagerRole == null) {
 			return "redirect:/Verwalter/login";
 		}
-		
-		//获取管理员管辖城市
-    	List<TdCity> cityList= new ArrayList<TdCity>();
-    	//获取管理员管辖门店
-    	List<TdDiySite> diyList=new ArrayList<TdDiySite>(); 
-    	
-    	//管理员获取管辖的城市和门店
-    	tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, username);
-		
+
+		// 获取管理员管辖城市
+		List<TdCity> cityList = new ArrayList<TdCity>();
+		// 获取管理员管辖门店
+		List<TdDiySite> diyList = new ArrayList<TdDiySite>();
+
+		// 管理员获取管辖的城市和门店
+		tdDiySiteRoleService.userRoleCityAndDiy(cityList, diyList, username);
+
 		if (null == page || page < 0) {
 			page = 0;
 		}
@@ -665,113 +649,104 @@ public class TdManagerOrderController {
 		if (null == size || size <= 0) {
 			size = SiteMagConstant.pageSize;
 		}
-		
+
 		if (null != __EVENTTARGET) {
-			if (__EVENTTARGET.equalsIgnoreCase("btnCancel"))
-			{
+			if (__EVENTTARGET.equalsIgnoreCase("btnCancel")) {
 				btnCancel(listId, listChkId);
 				tdManagerLogService.addLog("cancel", "取消订单", req);
-			} 
-			else if (__EVENTTARGET.equalsIgnoreCase("btnConfirm"))
-			{
+			} else if (__EVENTTARGET.equalsIgnoreCase("btnConfirm")) {
 				btnConfirm(listId, listChkId);
 				tdManagerLogService.addLog("confirm", "确认订单", req);
-			}
-			else if (__EVENTTARGET.equalsIgnoreCase("btnDelete"))
-			{
+			} else if (__EVENTTARGET.equalsIgnoreCase("btnDelete")) {
 				btnDelete(listId, listChkId);
 				tdManagerLogService.addLog("delete", "删除订单", req);
-			}
-			else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) 
-			{
-				if (null != __EVENTARGUMENT) 
-				{
+			} else if (__EVENTTARGET.equalsIgnoreCase("btnPage")) {
+				if (null != __EVENTARGUMENT) {
 					page = Integer.parseInt(__EVENTARGUMENT);
 				}
-			}else if(__EVENTTARGET.equals("btnSearch")){
-				page=0;
+			} else if (__EVENTTARGET.equals("btnSearch")) {
+				page = 0;
 			}
 		}
-		//修改城市刷新门店列表
-		if(StringUtils.isNotBlank(city)){
-			//需要删除的diy
-			List<TdDiySite> diyRemoveList=new ArrayList<TdDiySite>(); 
+		// 修改城市刷新门店列表
+		if (StringUtils.isNotBlank(city)) {
+			// 需要删除的diy
+			List<TdDiySite> diyRemoveList = new ArrayList<TdDiySite>();
 			for (TdDiySite tdDiySite : diyList) {
-				if(!city.equals(tdDiySite.getCity())){
+				if (!city.equals(tdDiySite.getCity())) {
 					diyRemoveList.add(tdDiySite);
-					if(tdDiySite.getStoreCode().equals(diyCode)){
-						diyCode=null;
+					if (tdDiySite.getStoreCode().equals(diyCode)) {
+						diyCode = null;
 					}
 				}
 			}
 			diyList.removeAll(diyRemoveList);
 		}
 
-			if (null != statusId)
-			{
-				List<String> usernameList=new ArrayList<String>();
-				Boolean isNotFindUser=false;
-				if(StringUtils.isNotBlank(realName)){ //根据会员真实姓名查询用户名
-					List<TdUser> userList= tdUserService.findByRealName(realName);
-					if(null != userList && userList.size()>0){
-						for (TdUser tdUser : userList) {
-							usernameList.add(tdUser.getUsername());
-						}
-					}else{
-						isNotFindUser=true; 
+		if (null != statusId) {
+			List<String> usernameList = new ArrayList<String>();
+			Boolean isNotFindUser = false;
+			if (StringUtils.isNotBlank(realName)) { // 根据会员真实姓名查询用户名
+				List<TdUser> userList = tdUserService.findByRealName(realName);
+				if (null != userList && userList.size() > 0) {
+					for (TdUser tdUser : userList) {
+						usernameList.add(tdUser.getUsername());
 					}
-				}
-				if(!isNotFindUser){
-					//城市名称列表
-					List<String> roleCityNames=new ArrayList<String>();
-					if(cityList!=null && cityList.size()>0){
-						for (TdCity tdCity : cityList) {
-							roleCityNames.add(tdCity.getCityName());
-						}
-					}
-					//门店
-					List<String> roleDiyCodes=new ArrayList<String>();
-					if(diyList!=null && diyList.size()>0){
-						for (TdDiySite diy : diyList) {
-							roleDiyCodes.add(diy.getStoreCode());
-						}
-					}
-					//订单的city字段为收货人地址 
-					//搜索条件城市 数据库里面没有城市 转换为门code查询
-					List<String> cityDiyCodes=new ArrayList<String>();
-					TdCity tdCity= tdCityService.findByCityName(city);
-					if(tdCity!=null){
-						 List<TdDiySite> diySiteList= tdDiySiteService.findByCityId(tdCity.getId());
-						 if(diySiteList!=null && diySiteList.size()>0){
-							 for (TdDiySite tdDiySite : diySiteList) {
-								if(roleDiyCodes.contains(tdDiySite.getStoreCode())){
-									cityDiyCodes.add(tdDiySite.getStoreCode());
-								}
-							}
-						 }else{
-							 //城市下面没有门店  默认为null  查询不到任何门店
-							 cityDiyCodes.add("null");
-						 }
-					}
-					
-						map.addAttribute("order_page", tdOrderService.findAll(keywords,orderStartTime,orderEndTime, usernameList, sellerRealName, shippingAddress, shippingPhone,
-					 deliveryTime, userPhone, shippingName, sendTime,statusId,diyCode,city,cityDiyCodes,roleDiyCodes, size, page));
+				} else {
+					isNotFindUser = true;
 				}
 			}
-		
-		@SuppressWarnings("unchecked")
-		Page<TdOrder> orders1 = (Page<TdOrder>)map.get("order_page");
-		if (orders1 != null)
-		{
-			List<TdOrder> orderlist = orders1.getContent();
-			Map<String,String> nameMap = getUserRealNameFormTdOder(orderlist);
-			if (nameMap != null)
-			{
-				map.addAttribute("name_map",nameMap);
+			if (!isNotFindUser) {
+				// 城市名称列表
+				List<String> roleCityNames = new ArrayList<String>();
+				if (cityList != null && cityList.size() > 0) {
+					for (TdCity tdCity : cityList) {
+						roleCityNames.add(tdCity.getCityName());
+					}
+				}
+				// 门店
+				List<String> roleDiyCodes = new ArrayList<String>();
+				if (diyList != null && diyList.size() > 0) {
+					for (TdDiySite diy : diyList) {
+						roleDiyCodes.add(diy.getStoreCode());
+					}
+				}
+				// 订单的city字段为收货人地址
+				// 搜索条件城市 数据库里面没有城市 转换为门code查询
+				List<String> cityDiyCodes = new ArrayList<String>();
+				TdCity tdCity = tdCityService.findByCityName(city);
+				if (tdCity != null) {
+					List<TdDiySite> diySiteList = tdDiySiteService.findByCityId(tdCity.getId());
+					if (diySiteList != null && diySiteList.size() > 0) {
+						for (TdDiySite tdDiySite : diySiteList) {
+							if (roleDiyCodes.contains(tdDiySite.getStoreCode())) {
+								cityDiyCodes.add(tdDiySite.getStoreCode());
+							}
+						}
+					} else {
+						// 城市下面没有门店 默认为null 查询不到任何门店
+						cityDiyCodes.add("null");
+					}
+				}
+
+				map.addAttribute("order_page",
+						tdOrderService.findAll(keywords, orderStartTime, orderEndTime, usernameList, sellerRealName,
+								shippingAddress, shippingPhone, deliveryTime, userPhone, shippingName, sendTime,
+								statusId, diyCode, city, cityDiyCodes, roleDiyCodes, size, page));
 			}
 		}
-		//用户管辖的门店和城市
-		map.addAttribute("diySiteList",diyList);
+
+		@SuppressWarnings("unchecked")
+		Page<TdOrder> orders1 = (Page<TdOrder>) map.get("order_page");
+		if (orders1 != null) {
+			List<TdOrder> orderlist = orders1.getContent();
+			Map<String, String> nameMap = getUserRealNameFormTdOder(orderlist);
+			if (nameMap != null) {
+				map.addAttribute("name_map", nameMap);
+			}
+		}
+		// 用户管辖的门店和城市
+		map.addAttribute("diySiteList", diyList);
 		map.addAttribute("cityList", cityList);
 		// 参数注回
 		map.addAttribute("orderNumber", keywords);
@@ -788,7 +763,7 @@ public class TdManagerOrderController {
 		map.addAttribute("statusId", statusId);
 		map.addAttribute("diyCode", diyCode);
 		map.addAttribute("cityname", city);
-		
+
 		map.addAttribute("page", page);
 		map.addAttribute("size", size);
 		map.addAttribute("keywords", keywords);
@@ -884,12 +859,11 @@ public class TdManagerOrderController {
 			return "redirect:/Verwalter/login";
 		}
 
-		if (tdDiySite.getCityId() != null)
-		{
+		if (tdDiySite.getCityId() != null) {
 			TdCity tdCity = tdCityService.findOne(tdDiySite.getCityId());
 			tdDiySite.setCity(tdCity.getCityName());
 		}
-		
+
 		if (null == tdDiySite.getId()) {
 			tdManagerLogService.addLog("add", "新增门店", req);
 		} else {
@@ -1018,26 +992,22 @@ public class TdManagerOrderController {
 					order.setStatusId(5L);
 					order.setPayTime(new Date());
 				}
-				
+
 			}
 			// 确认发货
 			else if (type.equalsIgnoreCase("orderDelivery")) {
-				if (order.getStatusId().equals(3L)) 
-				{
-					if (order.getDeliverTypeTitle() != null && order.getDeliverTypeTitle().equalsIgnoreCase("门店自提"))
-					{
-						
+				if (order.getStatusId().equals(3L)) {
+					if (order.getDeliverTypeTitle() != null && order.getDeliverTypeTitle().equalsIgnoreCase("门店自提")) {
+
 						// 判断库存
 						Map<String, Long> inventoryMap = new HashMap<String, Long>();
-						
+
 						Long siteId = order.getDiySiteId();
-						
+
 						// 商品列表
 						List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
-						for (TdOrderGoods tdOrderGoods : orderGoodsList)
-						{
-							if (tdOrderGoods != null)
-							{
+						for (TdOrderGoods tdOrderGoods : orderGoodsList) {
+							if (tdOrderGoods != null) {
 								String sku = tdOrderGoods.getSku();
 								// 判断是否存在 存在累加 不存在默认为0
 								Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
@@ -1046,8 +1016,7 @@ public class TdManagerOrderController {
 						}
 						// 赠品列表
 						List<TdOrderGoods> giftGoodsList = order.getGiftGoodsList();
-						for (TdOrderGoods giftGoods : giftGoodsList)
-						{
+						for (TdOrderGoods giftGoods : giftGoodsList) {
 							if (giftGoods != null) {
 								String sku = giftGoods.getSku();
 								// 判断是否存在 存在累加 不存在默认为0
@@ -1057,10 +1026,8 @@ public class TdManagerOrderController {
 						}
 						// 小辅料列表
 						List<TdOrderGoods> presentedList = order.getPresentedList();
-						for (TdOrderGoods presented : presentedList)
-						{
-							if (presented != null)
-							{
+						for (TdOrderGoods presented : presentedList) {
+							if (presented != null) {
 								String sku = presented.getSku();
 								// 判断是否存在 存在累加 不存在默认为0
 								Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
@@ -1068,12 +1035,12 @@ public class TdManagerOrderController {
 							}
 						}
 
-						for (String sku : inventoryMap.keySet())
-						{
-							TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(sku, siteId);
-							if (diySiteInventory == null || inventoryMap.get(sku) == null || diySiteInventory.getInventory() < inventoryMap.get(sku))
-							{
-								res.put("message", "商品编码为"+ sku +"的库存不足\n,不能确认发货");
+						for (String sku : inventoryMap.keySet()) {
+							TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService
+									.findByGoodsCodeAndDiySiteId(sku, siteId);
+							if (diySiteInventory == null || inventoryMap.get(sku) == null
+									|| diySiteInventory.getInventory() < inventoryMap.get(sku)) {
+								res.put("message", "商品编码为" + sku + "的库存不足\n,不能确认发货");
 								return res;
 							}
 						}
@@ -1083,19 +1050,15 @@ public class TdManagerOrderController {
 				}
 			}
 			// 确认收货
-			else if (type.equalsIgnoreCase("orderReceive"))
-			{
-				if (order.getStatusId().equals(4L))
-				{
+			else if (type.equalsIgnoreCase("orderReceive")) {
+				if (order.getStatusId().equals(4L)) {
 					order.setStatusId(5L);
 					order.setReceiveTime(new Date());
-					
-					if (order.getDeliverTypeTitle().equalsIgnoreCase("门店自提"))
-					{
+
+					if (order.getDeliverTypeTitle().equalsIgnoreCase("门店自提")) {
 						// add send receive time to ebs
 						TdOrderReceiveInf orderReceiveInf = tdInterfaceService.initOrderReceiveByOrder(order);
-						if (orderReceiveInf != null)
-						{
+						if (orderReceiveInf != null) {
 							tdInterfaceService.ebsWithObject(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
 						}
 					}
@@ -1112,11 +1075,10 @@ public class TdManagerOrderController {
 				}
 			}
 			// 确认取消
-			else if (type.equalsIgnoreCase("orderCancel")) 
-			{
+			else if (type.equalsIgnoreCase("orderCancel")) {
 				if (order.getStatusId().equals(1L) || order.getStatusId().equals(2L) || order.getStatusId().equals(3L)) // zhangji
 				{
-					this.cancelRelativeOrderBySubOrder(order,username,req);
+					this.cancelRelativeOrderBySubOrder(order, username, req);
 					order.setStatusId(7L);
 					order.setCancelTime(new Date());
 				}
@@ -1155,7 +1117,7 @@ public class TdManagerOrderController {
 			model.addAttribute("tdDiySite", tdDiySiteService.findOne(diySiteId));
 		}
 	}
-	
+
 	@RequestMapping(value = "/own/edit")
 	public String ownEdit(Long id, String __VIEWSTATE, ModelMap map, HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("manager");
@@ -1165,19 +1127,22 @@ public class TdManagerOrderController {
 
 		map.addAttribute("__VIEWSTATE", __VIEWSTATE);
 		if (null != id) {
-			TdOwnMoneyRecord own= tdOwnMoneyRecordService.findOne(id);
-			String mainOrderNumber= own.getOrderNumber();
-			System.out.println(mainOrderNumber.substring(2,mainOrderNumber.length()));
-			List<TdOrder> orderList=tdOrderService.findByOrderNumberContaining(mainOrderNumber.substring(2,mainOrderNumber.length()));
-			map.addAttribute("orderList",orderList);
+			TdOwnMoneyRecord own = tdOwnMoneyRecordService.findOne(id);
+			String mainOrderNumber = own.getOrderNumber();
+			System.out.println(mainOrderNumber.substring(2, mainOrderNumber.length()));
+			List<TdOrder> orderList = tdOrderService
+					.findByOrderNumberContaining(mainOrderNumber.substring(2, mainOrderNumber.length()));
+			map.addAttribute("orderList", orderList);
 			map.addAttribute("order", orderList.get(0));
 			map.addAttribute("consult", own);
-			//仓库
-			if(null != orderList){
-				List<TdDeliveryInfo> deliveryList=tdDeliveryInfoService.findByOrderNumberOrderByBeginDtDesc(mainOrderNumber);
-				if(null!=deliveryList && deliveryList.size()>0){
-					List<TdWareHouse> wareHouseList= tdWareHouseService.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
-					if(null != wareHouseList && wareHouseList.size()>0){
+			// 仓库
+			if (null != orderList) {
+				List<TdDeliveryInfo> deliveryList = tdDeliveryInfoService
+						.findByOrderNumberOrderByBeginDtDesc(mainOrderNumber);
+				if (null != deliveryList && deliveryList.size() > 0) {
+					List<TdWareHouse> wareHouseList = tdWareHouseService
+							.findBywhNumberOrderBySortIdAsc(deliveryList.get(0).getWhNo());
+					if (null != wareHouseList && wareHouseList.size() > 0) {
 						map.addAttribute("tdWareHouse", wareHouseList.get(0));
 					}
 				}
@@ -1185,21 +1150,23 @@ public class TdManagerOrderController {
 		}
 		return "/site_mag/own_edit";
 	}
+
 	@RequestMapping(value = "/own/save")
 	@ResponseBody
-	public Map<String, Object> ownSave(Long id,Long type, HttpServletRequest req){
-		Map<String, Object> map=new HashMap<String,Object>();
-		Long[] ids={id};
-		if(type==1){
+	public Map<String, Object> ownSave(Long id, Long type, HttpServletRequest req) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Long[] ids = { id };
+		if (type == 1) {
 			btnEnale(ids);
-		}else{
+		} else {
 			btnNotEnale(ids);
 		}
 		map.put("code", 0);
 		return map;
 	}
-	
+
 	/**
+<<<<<<< HEAD
 	 * 欠款 还款
 	 * @param id 欠款id
 	 * @param money 现金金额
@@ -1257,60 +1224,51 @@ public class TdManagerOrderController {
 	/**
 	 * 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
 	 * req 记录库存用
+=======
+	 * 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉 req 记录库存用
+	 * 
+>>>>>>> refs/remotes/origin/master
 	 * @param order
 	 */
-	private void cancelRelativeOrderBySubOrder(TdOrder order,String username,HttpServletRequest req)
-	{
-		
+	private void cancelRelativeOrderBySubOrder(TdOrder order, String username, HttpServletRequest req) {
+
 		Long realUserId = order.getRealUserId();
 		TdUser realUser = null;
-		if (realUserId == null)
-		{
+		if (realUserId == null) {
 			realUser = tdUserService.findByUsername(order.getUsername());
-		}
-		else
-		{
+		} else {
 			realUser = tdUserService.findOne(realUserId);
 		}
-		
+
 		String orderNumberTemp = order.getOrderNumber();
 		String newOrderNumber = "";
 		// 通过计算得到订单的数字部分
-		for (int i = 0; i < orderNumberTemp.length(); i++)
-		{
-			if (orderNumberTemp.charAt(i) >= 48 && orderNumberTemp.charAt(i) <= 57)
-			{
+		for (int i = 0; i < orderNumberTemp.length(); i++) {
+			if (orderNumberTemp.charAt(i) >= 48 && orderNumberTemp.charAt(i) <= 57) {
 				newOrderNumber += orderNumberTemp.charAt(i);
 			}
 		}
 		List<TdOrder> list = tdOrderService.findByOrderNumberContaining(newOrderNumber);
 		// 进行遍历操作
-		if (null != list && list.size() > 0) 
-		{
-			for (TdOrder subOrder : list) 
-			{
-				if (null != subOrder) 
-				{
+		if (null != list && list.size() > 0) {
+			for (TdOrder subOrder : list) {
+				if (null != subOrder) {
 					// 设置订单状态为取消状态，同时记录已退货属性
 					Long statusId = subOrder.getStatusId();
-					if (null != statusId && 3L == statusId.longValue()) 
-					{
+					if (null != statusId && 3L == statusId.longValue()) {
 						// 在此进行资金和优惠券的退还
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
-						
-						//增加库存
-						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req,"退货");
-						
+
+						// 增加库存
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L, req, "退货");
+
 						// 通知物流
-						if (StringUtils.isNotBlank(order.getRemarkInfo()))
-						{
+						if (StringUtils.isNotBlank(order.getRemarkInfo())) {
 							order.setRemarkInfo(order.getRemarkInfo() + "管理员取消订单：" + username);
-						}
-						else
-						{
+						} else {
 							order.setRemarkInfo("管理员取消订单：" + username);
 						}
-						TdReturnNote returnNote = tdCommonService.MakeReturnNote(order,1L,username);
+						TdReturnNote returnNote = tdCommonService.MakeReturnNote(order, 1L, username);
 						tdCommonService.sendBackMsgToWMS(returnNote);
 					}
 					subOrder.setStatusId(7L);
@@ -1460,23 +1418,27 @@ public class TdManagerOrderController {
 			}
 		}
 	}
+
 	private void btnEnale(Long[] chkIds) {
-		if ( null == chkIds || chkIds.length < 1) {
+		if (null == chkIds || chkIds.length < 1) {
 			return;
 		}
 
 		for (Long chkId : chkIds) {
 			if (chkId >= 0) {
 				TdOwnMoneyRecord ownMoneyRecord = tdOwnMoneyRecordService.findOne(chkId);
-				//已审核过就不能修改
-				if (ownMoneyRecord != null && (ownMoneyRecord.getIsEnable()==null || !ownMoneyRecord.getIsEnable()) )
-				{
-					
-					/*//修改订单实际付款  逻辑修改
-					TdOrder order=tdOrderService.findByOrderNumber(ownMoneyRecord.getOrderNumber());
-					order.setActualPay(order.getActualPay()==null?0:order.getActualPay()+ownMoneyRecord.getPayed());
-					tdOrderService.save(order);*/
-					
+				// 已审核过就不能修改
+				if (ownMoneyRecord != null && (ownMoneyRecord.getIsEnable() == null || !ownMoneyRecord.getIsEnable())) {
+
+					/*
+					 * //修改订单实际付款 逻辑修改 TdOrder
+					 * order=tdOrderService.findByOrderNumber(ownMoneyRecord.
+					 * getOrderNumber());
+					 * order.setActualPay(order.getActualPay()==null?0:order.
+					 * getActualPay()+ownMoneyRecord.getPayed());
+					 * tdOrderService.save(order);
+					 */
+
 					ownMoneyRecord.setIsEnable(true);
 					ownMoneyRecord.setIspassed(true);
 					tdOwnMoneyRecordService.save(ownMoneyRecord);
@@ -1484,16 +1446,16 @@ public class TdManagerOrderController {
 			}
 		}
 	}
+
 	private void btnNotEnale(Long[] chkIds) {
-		if ( null == chkIds || chkIds.length < 1) {
+		if (null == chkIds || chkIds.length < 1) {
 			return;
 		}
 
 		for (Long chkId : chkIds) {
 			if (chkId >= 0) {
 				TdOwnMoneyRecord ownMoneyRecord = tdOwnMoneyRecordService.findOne(chkId);
-				if (ownMoneyRecord != null && (ownMoneyRecord.getIsEnable()==null || !ownMoneyRecord.getIsEnable()))
-				{
+				if (ownMoneyRecord != null && (ownMoneyRecord.getIsEnable() == null || !ownMoneyRecord.getIsEnable())) {
 					ownMoneyRecord.setIsEnable(true);
 					ownMoneyRecord.setIspassed(false);
 					tdOwnMoneyRecordService.save(ownMoneyRecord);
@@ -1501,22 +1463,17 @@ public class TdManagerOrderController {
 			}
 		}
 	}
-	
-	private Map<String,String> getUserRealNameFormTdOder(List<TdOrder> orders)
-	{
-		
+
+	private Map<String, String> getUserRealNameFormTdOder(List<TdOrder> orders) {
+
 		Map<String, String> map = new HashMap<>();
-		for (TdOrder tdOrder : orders)
-		{
+		for (TdOrder tdOrder : orders) {
 			String username = tdOrder.getUsername();
-			if(map.containsKey(username))
-			{
+			if (map.containsKey(username)) {
 				continue;
-			}
-			else
-			{
+			} else {
 				TdUser tdUser = tdUserService.findByUsername(username);
-				if(null != tdUser && StringUtils.isNotBlank(username)){
+				if (null != tdUser && StringUtils.isNotBlank(username)) {
 					map.put(username, tdUser.getRealName());
 				}
 			}
@@ -1524,7 +1481,5 @@ public class TdManagerOrderController {
 
 		return map;
 	}
-    
-	
-	
+
 }

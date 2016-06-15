@@ -160,6 +160,14 @@ public class TdArticleService {
 
 		return repository.findByCategoryIdOrderBySortIdAsc(catId);
 	}
+	
+	public List<TdArticle> findByCategoryIdAndStatusId(Long catId) {
+		if (null == catId) {
+			return null;
+		}
+
+		return repository.findByCategoryIdAndStatusIdOrderBySortIdAsc(catId,0L);
+	}
 
 	public int countByCategoryId(Long catId) {
 		if (null == catId) {
