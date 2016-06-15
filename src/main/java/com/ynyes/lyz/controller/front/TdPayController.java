@@ -194,6 +194,7 @@ public class TdPayController {
 						log.setFinishTime(new Date());
 						log.setIsSuccess(true);
 						log.setBalance(user.getBalance());
+						log.setOrderNumber(out_trade_no);
 						tdBalanceLogService.save(log);
 					}
 				} else {
@@ -378,6 +379,7 @@ public class TdPayController {
 						log.setFinishTime(new Date());
 						log.setIsSuccess(true);
 						log.setBalance(user.getBalance());
+						log.setOrderNumber(out_trade_no);
 						tdBalanceLogService.save(log);
 					}
 				} else {
@@ -591,6 +593,7 @@ public class TdPayController {
 							log.setFinishTime(new Date());
 							log.setIsSuccess(true);
 							log.setBalance(user.getBalance());
+							log.setOrderNumber(ORDERID);
 							tdBalanceLogService.save(log);
 						}
 					}

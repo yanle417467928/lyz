@@ -861,8 +861,8 @@
                             订单使用预存款
                         </th>
                         <td>
-                         可用预存款：<#if order.cashBalanceUsed??> ${order.cashBalanceUsed?string("0.00")}<#else>0.00</#if>元 | 
-                        不可用预存款：<#if order.unCashBalanceUsed??>${order.unCashBalanceUsed?string("0.00")}<#else>0.00</#if>元
+                         可提现预存款：<#if order.cashBalanceUsed??> ${order.cashBalanceUsed?string("0.00")}<#else>0.00</#if>元 | 
+                        不可提现预存款：<#if order.unCashBalanceUsed??>${order.unCashBalanceUsed?string("0.00")}<#else>0.00</#if>元
                             </td>
                     </tr>
                     <tr>
@@ -975,6 +975,18 @@
                             配送仓库
                         </th>
                         <td><#if tdWareHouse??>${tdWareHouse.whName!''}</#if></td>
+                    </tr>
+                    <tr>
+                        <th>
+                            配送员姓名
+                        </th>
+                        <td><#if deliveryUser??>${deliveryUser.realName!''}</#if></td>
+                    </tr>
+                    <tr>
+                        <th>
+                            配送员联系电话
+                        </th>
+                        <td><#if deliveryUser??>${deliveryUser.username!''}</#if></td>
                     </tr>
                     <tr>
                         <th>

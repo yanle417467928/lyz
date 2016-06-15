@@ -18,11 +18,12 @@ public interface TdBalanceLogRepo
 	 * @author dengxiao
 	 */
 	List<TdBalanceLog> findByUserIdOrderByCreateTimeDesc(Long userId);
-	
+
 	/**
 	 * 查找指定用户的钱包操作记录——分页（按照生成时间倒序排序）
 	 * 
 	 * @author dengxiao
 	 */
-	Page<TdBalanceLog> findByUserIdAndIsSuccessTrueOrderByCreateTimeDesc(Long userId,Pageable pageRequest);
+	Page<TdBalanceLog> findByUserIdAndIsSuccessTrueOrderByCreateTimeDesc(Long userId, Pageable pageRequest);
+
 }
