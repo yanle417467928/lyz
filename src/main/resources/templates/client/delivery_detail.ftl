@@ -142,6 +142,32 @@ function submitOwnMoney()
 {
 	var payed = document.getElementById("payed").value;
 	var owned = document.getElementById("owned").value;
+	var money = document.getElementById("money").value;
+	var pos = document.getElementById("pos").value;
+	
+	<#-- 首先判断输入的值是不是一个数字 -->
+	if(isNaN(money)){
+		warning("亲，请输入一个正确的数字");
+		return;
+	}
+	
+	<#-- 再次判断输入的值是否大于0 -->
+	if(money<0){
+		warning("亲，不能输入负数");
+		return;
+	}
+	
+	<#-- 首先判断输入的值是不是一个数字 -->
+	if(isNaN(pos)){
+		warning("亲，请输入一个正确的数字");
+		return;
+	}
+	
+	<#-- 再次判断输入的值是否大于0 -->
+	if(pos<0){
+		warning("亲，不能输入负数");
+		return;
+	}
 	
 	<#-- 首先判断输入的值是不是一个数字 -->
 	if(isNaN(payed)){
@@ -171,7 +197,7 @@ function submitOwnMoney()
 		url: "/delivery/submitOwnMoney/<#if td_order??>${td_order.id?c}<#else>0</#if>",
 		type: "post",
 		dataType: "json",
-		data: {"payed": payed, "owned": owned},
+		data: {"payed": payed, "owned": owned,"money":money,"pos":pos},
 		success: function(data)
 		{
         	if (data.code == 0)
@@ -201,6 +227,7 @@ function imgChange(){
 	} 
 }
 function payedChange(){
+	$('#payed').val((parseFloat($('#money').val())+parseFloat($('#pos').val())).toFixed(2) );
 	$('#owned').val(($('#agencyFund').html()-$('#payed').val()).toFixed(2) );
 }
 </script>
@@ -215,7 +242,9 @@ function payedChange(){
   <div id="arreabox" style="top:50%">
     <form>
       <div class="title" id="titleName">填写代收金额</div>   
-      <div class="text1">已交款<input type="text" id="payed" value="0" oninput="payedChange()">元</div>
+      <div class="text1">现金<input type="number" id="money" value="0" oninput="payedChange()">元</div>
+      <div class="text1">pos<input type="number" id="pos" value="0" oninput="payedChange()">元</div>
+      <div class="text1">已交款<input type="text" id="payed" value="0" oninput="payedChange()" readonly="readonly">元</div>
       <div class="text1">欠款&nbsp;&nbsp;<input type="text" id="owned" value="<#if td_order.allTotalPay??>${td_order.allTotalPay?c}<#else>0</#if>" readonly="readonly">元</div>
       <div class="button-group">
         <a class="sure" href="#" onclick="pupclose()">关闭</a>

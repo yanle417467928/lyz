@@ -9,11 +9,49 @@
 <script type="text/javascript" src="/mag/js/lhgdialog.js"></script>
 <script type="text/javascript" src="/mag/js/layout.js"></script>
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+.dialog{
+	position: fixed;
+	_position:absolute;
+	z-index:1;
+	top: 50%;
+	left: 50%;
+	margin: -141px 0 0 -201px;
+	width: 400px;
+	height:190px;
+	border:1px solid #CCC;
+	line-height: 190px;
+	text-align:center;
+	font-size: 14px;
+	background-color:#F4F4F4;
+	overflow:hidden;
+	border: 1px solid #cccccc;
+	display: none;
+}	
+.dialog_row{
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+}
+.dialog_title{
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+}
+.dialog_btn{
+	width:60px;
+	height: 30px;
+	line-height: 30px;
+	margin-left: 20px;
+    margin-top: 30px;
+}
+</style>
     <script type="text/javascript">
     $(function () {
         $("#auditYes").click(function () { auditYes(1); });   //通过审核
         $("#auditNo").click(function () { auditYes(0); });   //不通过审核
         $("#signPhoto").click(function () { imgChange(); }); //修改签收图片大小
+        $("#backMoney").click(function () { showDialog(); }); //显示还款窗口
     });
   //通过审核
     function auditYes(type) {
@@ -64,6 +102,41 @@
                 }
              }
         });
+    }
+    //打开还款窗口
+    function showDialog(){
+    	$(".dialog").show();
+    }
+    //关闭还款窗口
+    function hiddenDialog(){
+    	$(".dialog").hide();
+    }
+    //提交还款
+    function sumbitBackMoney(owned,id){
+    	var money=$('#money').val();
+    	var pos=$('#pos').val();
+    	
+    	if(parseFloat(money)+parseFloat(pos)==owned){
+    		 $.ajax({
+    	            type: "post",
+    	            url: "/Verwalter/order/own/money",
+    	            data: {"id":id,"money":money,"pos":pos},
+    	            dataType: "json",
+    	            error: function (XMLHttpRequest, textStatus, errorThrown) {
+    	            	 $.dialog.alert('错误提示：' + '网络连接失败', function () { });
+    	            },
+    	            success: function (data) {
+    	                 if (data.code == -1) {
+    	                	 $.dialog.alert('错误提示：' + data.message, function () { });
+    	                } else if(data.code == 0){
+    	                	$.dialog.tips(data.message, 2, '32X32/succ.png', function () { location.reload(); }); //刷新页面
+    	                }
+    	             }
+    	        });
+    	}else{
+    		alert("必须一次性还清！");
+    	}
+    	
     }
     </script>
 </head>
@@ -342,6 +415,34 @@
                         <td width="80%">
                             ${order.allTotalPay?string("0.00")}元</td>
                     </tr>
+                    <tr>
+                        <th>
+                            收款现金
+                        </th>
+                        <td width="80%">
+                            ${consult.money!'0'?number?string("0.00")}元</td>
+                    </tr>
+                    <tr>
+                        <th>
+                            收款pos
+                        </th>
+                        <td width="80%">
+                            ${consult.pos!'0'?number?string("0.00")}元</td>
+                    </tr>
+                    <tr>
+                        <th>
+                            还款现金
+                        </th>
+                        <td width="80%">
+                            ${consult.backMoney!'0'?number?string("0.00")}元</td>
+                    </tr>
+                    <tr>
+                        <th>
+                            还款pos
+                        </th>
+                        <td width="80%">
+                            ${consult.backPos!'0'?number?string("0.00")}元</td>
+                    </tr>
                 </tbody>
                 </table>
             </dd>
@@ -455,6 +556,9 @@
         	<input type="button" value="通过" class="btn " id="auditYes">
         	<input type="button" value="不通过" class="btn "  id="auditNo">
         	</#if>
+        	<#if consult.isEnable?? && consult.isEnable==true && consult.ispassed==true && consult.isPayed==false>
+        	<input type="button" value="还款" class="btn "  id="backMoney">
+        	</#if>
             <input type="button" value="返回上一页" class="btn yellow" onclick="javascript:history.back(-1);">
             <span style="margin-left: 33px;"> 收款：<#if consult.payed??>${consult.payed?c}<#else>0</#if><b></b>   |<b></b> 欠款：<#if consult.owned??>${consult.owned?c}<#else>0</#if></span>
         </div>
@@ -462,4 +566,11 @@
         </div>
     </div>
     <!--/工具栏-->
+    <!--还款-->
+<div class="dialog">
+	<div class="dialog_title">还款 </div>
+	<div class="dialog_row">现金：<input id="money" type="number" value="0" /> </div>
+	<div class="dialog_row">pos：<input id="pos" type="number" value="0" /> </div>
+	<div class="dialog_row"><input onclick="sumbitBackMoney(<#if consult.owned??>${consult.owned?c}<#else>0</#if>,${consult.id })" class="dialog_btn" type="button" value="确定" /><input onclick="hiddenDialog()" class="dialog_btn" type="button" value="取消" /> </div>
+</div>
 </body></html>

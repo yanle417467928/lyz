@@ -77,9 +77,9 @@
                                     <img src="${item.coverImageUri!''}" />
                                 </a>
                             </dt>
-                            <dd>
-                                <p onclick="window.location.href='/goods/detail/${item.id?c}'">${item.title!''}</p>
-                                <div class="fen_div01">
+                            <dd style="float: left;max-width: 90%;width: 70%">
+                                <p style="width: 60%" onclick="window.location.href='/goods/detail/${item.id?c}'">${item.title!''}</p>
+                                <div class="fen_div01" style="float: right;margin-top: 15px;width: auto;">
                                     <#-- 用户存储指定商品的库存 -->
                                     <#-- <input type="hidden" id="inventory${item.id?c}" value="<#if item.leftNumber??>${item.leftNumber?c}<#else>0</#if>"> -->
                                     <input type="hidden" id="inventory${item.id?c}" value="<#if ("goodInventory"+item.id?c)?eval??>${("goodInventory"+item.id?c)?eval?c}<#else>0</#if>">
