@@ -10,10 +10,12 @@ import com.ynyes.lyz.interfaces.entity.TdReturnOrderInf;
 public interface TdReturnOrderInfRepo
 		extends PagingAndSortingRepository<TdReturnOrderInf, Long>, JpaSpecificationExecutor<TdReturnOrderInf> 
 {
-	List<TdReturnOrderInf> findByorderHeaderId(Long headerId);
+	List<TdReturnOrderInf> findByOrderHeaderId(Long headerId);
 	
-	TdReturnOrderInf findByReturnNumber(String returnNumber);
+//	TdReturnOrderInf findByReturnNumber(String returnNumber);
 	
-	TdReturnOrderInf findByOrderNumber(String orderNumber);
+	List<TdReturnOrderInf> findByReturnNumber(String returnNumber);
+	
+	List<TdReturnOrderInf> findByOrderNumber(String orderNumber);
 }
 

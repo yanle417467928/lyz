@@ -69,6 +69,8 @@ public class SimpleExpression implements Criterion {
 				return builder.isNull(expression);
 			case NOTNULL:
 				return builder.isNotNull(expression);
+			case NLIKE:
+				return builder.notLike((Expression<String>) expression, "%" + value + "%");
 			default:
 				return null;
 			}

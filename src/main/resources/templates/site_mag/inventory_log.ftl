@@ -11,7 +11,7 @@
 </head>
 
 <body class="mainbody"><div class="" style="left: 0px; top: 0px; visibility: hidden; position: absolute;"><table class="ui_border"><tbody><tr><td class="ui_lt"></td><td class="ui_t"></td><td class="ui_rt"></td></tr><tr><td class="ui_l"></td><td class="ui_c"><div class="ui_inner"><table class="ui_dialog"><tbody><tr><td colspan="2"><div class="ui_title_bar"><div class="ui_title" unselectable="on" style="cursor: move;"></div><div class="ui_title_buttons"><a class="ui_min" href="javascript:void(0);" title="最小化" style="display: inline-block;"><b class="ui_min_b"></b></a><a class="ui_max" href="javascript:void(0);" title="最大化" style="display: inline-block;"><b class="ui_max_b"></b></a><a class="ui_res" href="javascript:void(0);" title="还原"><b class="ui_res_b"></b><b class="ui_res_t"></b></a><a class="ui_close" href="javascript:void(0);" title="关闭(esc键)" style="display: inline-block;">×</a></div></div></td></tr><tr><td class="ui_icon" style="display: none;"></td><td class="ui_main" style="width: auto; height: auto;"><div class="ui_content" style="padding: 10px;"></div></td></tr><tr><td colspan="2"><div class="ui_buttons" style="display: none;"></div></td></tr></tbody></table></div></td><td class="ui_r"></td></tr><tr><td class="ui_lb"></td><td class="ui_b"></td><td class="ui_rb" style="cursor: se-resize;"></td></tr></tbody></table></div>
-<form name="form1" method="post" action="/Verwalter/goods/inventory/list" id="form1">
+<form name="form1" method="post" action="/Verwalter/goods/inventory/log" id="form1">
 <div>
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="${__EVENTTARGET!""}">
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="${__EVENTARGUMENT!""}">
@@ -61,11 +61,13 @@ var theForm = document.forms['form1'];
   <tbody>
   <tr class="odd_bg">
     <th width="8%">选择</th>
-    <th align="center" width="15%">用户名</th>
-    <th align="center" width="15%">类型</th>
-    <th>所属门店</th>
-    <th align="center" width="15%">产品名</th>
-    <th align="center" width="15%">改变时间</th>
+    <th align="left" width="8%">用户名</th>
+    <th align="left" width="8%">类型</th>
+    <th align="left" width="8%">所属门店</th>
+    <th align="left" width="15%">产品编码</th>
+    <th align="left" >产品名</th>
+    <th align="left" width="4%">改变数量</th>
+    <th align="left" width="15%">改变时间</th>
   </tr>
 
     <#if log_page??>
@@ -77,11 +79,13 @@ var theForm = document.forms['form1'];
                     </span>
                     <input type="hidden" name="listId" id="listId" value="${item.id?c}">
                 </td>
-                <td align="center">${item.username!""}</td>
-                <td align="center"><#if item.isManager == true >管理员<#else>用户购买</#if></td>
-                <td align="center">${item.cityName!''}，${item.siteName!''}</td>
-                <td align="center">${item.goodsTitle!""}</td>
-                <td align="center"><#if item.updateTime??>${item.updateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
+                <td align="left">${item.manager!""}</td>
+                <td align="left"><#if item.description??>${item.description!""}<#else>无</#if></td>
+                <td align="left"><#if item.regionName??>${item.regionName!'无'}<#else>${item.diySiteTitle!'无'}</#if></td>
+                <td align="left">${item.goodsSku!""}</td>
+                <td align="left">${item.goodsTitle!""}</td>
+                <td align="left">${item.changeValue!""}</td>
+                <td align="left"><#if item.changeDate??>${item.changeDate?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
             </tr>
         </#list>
     </#if>

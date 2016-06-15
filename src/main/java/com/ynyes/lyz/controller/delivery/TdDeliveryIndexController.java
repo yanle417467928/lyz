@@ -37,9 +37,14 @@ import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
+import com.ynyes.lyz.interfaces.entity.TdCashReciptInf;
+import com.ynyes.lyz.interfaces.service.TdInterfaceService;
+import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
+import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
@@ -86,6 +91,12 @@ public class TdDeliveryIndexController {
 
 	@Autowired
 	private TdPriceCountService tdPriceCountService;
+	
+	@Autowired
+	private TdInterfaceService tdInterfaceService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	@RequestMapping
 	public String deliveryIndex(HttpServletRequest req) {
@@ -461,6 +472,8 @@ public class TdDeliveryIndexController {
 				for (TdOrder subOrder : orderList) {
 					subOrder.setStatusId(5L);
 					subOrder.setDeliveryTime(new Date());
+					TdCashReciptInf cashReciptInf = tdInterfaceService.initCashReciptByOrder(subOrder);
+					tdInterfaceService.ebsWithObject(cashReciptInf, INFTYPE.CASHRECEIPTINF);
 					subOrder = tdOrderService.save(subOrder);
 				}
 			}
@@ -502,10 +515,13 @@ public class TdDeliveryIndexController {
 			return res;
 		}
 
-		returnNote.setStatusId(3L);
+		returnNote.setStatusId(4L);
 		returnNote.setRecvTime(new Date());
-
+		
 		returnNote = tdReturnNoteService.save(returnNote);
+		
+		//增加库存
+		tdDiySiteInventoryService.changeGoodsInventory(returnNote,req);
 		
 //		 自动通知WMS
 //		tdCommonService.sendBackMsgToWMS(returnNote);
@@ -570,7 +586,7 @@ public class TdDeliveryIndexController {
 
 			if (null != orderList)
 			{
-				for (TdOrder subOrder : orderList) 
+				for (TdOrder subOrder : orderList)
 				{
 					subOrder.setStatusId(12L);
 					subOrder.setDeliveryTime(new Date());
@@ -578,7 +594,7 @@ public class TdDeliveryIndexController {
 					subOrder = tdOrderService.save(subOrder);
 
 					// 生成退货单
-					if (null != subOrder) 
+					if (null != subOrder)
 					{
 						TdReturnNote returnNote = new TdReturnNote();
 
@@ -758,6 +774,12 @@ public class TdDeliveryIndexController {
 						// 保存退货单
 						tdReturnNoteService.save(returnNote);
 						
+						//增加库存
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req,"退货");
+						
+						tdInterfaceService.initReturnOrder(returnNote);
+						tdInterfaceService.initReturnCouponInfByOrder(subOrder, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
+						tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 
 						subOrder.setStatusId(12L);
 						subOrder.setIsRefund(true);

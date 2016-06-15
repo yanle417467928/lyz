@@ -79,6 +79,18 @@ function downloaddateurl(type,url){
                     </li>
                     
                 </ul>
+                <div class="menu-list">
+	              	<div class="rule-single-select">
+	                       <select name="statusId" id="statusId" onchange="javascript:setTimeout(__doPostBack('changeStatusId',''), 0)">
+	                       <option value="" >订单状态</option>      
+	                       	<option value="1" <#if statusId?? && statusId==1>selected</#if> >待通知物流</option>
+	                       	<option value="2" <#if statusId?? && statusId==2>selected</#if> >待取货</option>
+	                       	<option value="3" <#if statusId?? && statusId==3>selected</#if> >待确认收货</option>
+	                       	<option value="4" <#if statusId?? && statusId==4>selected</#if> >待退款</option>
+	                       	<option value="5" <#if statusId?? && statusId==5>selected</#if> >已完成</option>
+	                       </select>
+	           		</div>
+	           	</div>
                  <#if cityList?? && cityList?size gt 0 >
           	<div class="menu-list">
               	<div class="rule-single-select">
@@ -123,6 +135,9 @@ function downloaddateurl(type,url){
         <th align="left">
             退货单号
         </th>
+        <th align="left">
+            订单状态
+        </th>
          <th align="left" width="12%">
             申请用户
         </th>
@@ -157,6 +172,7 @@ function downloaddateurl(type,url){
                 </td>
                 <td>
                     <a href="/Verwalter/returnNote/returnNote/edit?id=${returnNote.id?c}">${returnNote.returnNumber!""}</a></td>
+                <td>${returnNote.statusName!""}</td>
                 <td>${returnNote.username!""}</td>
                 <td><#if name_map??>${name_map[returnNote.username]!''}</#if></td>
                 <td>${returnNote.diySiteTitle!""}</td>

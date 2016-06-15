@@ -84,7 +84,7 @@ var seller = {
 			},
 			success : function(res) {
 				close(1);
-				seller.getE("changeInfo").innerHTML = res;
+				$("#changeInfo").html(res);
 			}
 		});
 	},

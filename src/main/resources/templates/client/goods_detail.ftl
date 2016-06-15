@@ -11,10 +11,12 @@
 		<link rel="stylesheet" type="text/css" href="/client/css/my_base.css"/>
 		<link rel="stylesheet" type="text/css" href="/client/css/main.css"/>
 		<link rel="stylesheet" type="text/css" href="/client/css/other.css"/>
+		<link rel="stylesheet" type="text/css" href="/client/css/swiper.min.css"/>
 		
 		<script src="/client/js/goods_list.js" type="text/javascript"></script>
 		<script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
 		<script src="/client/js/rich_lee.js" type="text/javascript"></script>
+		<script src="/client/js/swiper.min.js" type="text/javascript"></script>
 	</head>
 	<style>
 	   .isCollectTrue{
@@ -41,28 +43,36 @@
             <div id="color_package_select">
                 <#include "/client/color_package.ftl">            
             </div>
+            
 			
 			<div class="det_banner">
-			    <#if goods??&&goods.showPictures??>
-    				<div class="det_scroll">
-    				    <#list goods.showPictures?split(",") as pic>
-    					   <img src="${pic!''}">
-    					</#list>
-    				</div>
-				</#if>
-    			<div class="det_title">
+    			<div class="det_title" style="z-index: 2;">
     				<span onclick="javascript:history.go(-1);"></span>
     				<span></span>
     			</div>
-    			<#if goods??&&goods.showPictures??>
-    				<div class="dtbanner_btn">
-    					<ul>
-    					   <#list goods.showPictures?split(",") as pic>
-						      <li></li>
-    					   </#list>
-    					</ul>
-    				</div>
-				</#if>
+				<#if goods??&&goods.showPictures??>
+                <div class="det_banner">
+                    <div class="swiper-container" style="width: 100%;height: 100%;">
+                        <div class="swiper-wrapper">
+                            <#list goods.showPictures?split(",") as pic>
+	                            <#if pic_has_next>
+	                                <div class="swiper-slide orange-slide">
+	                               		<img src="${pic!''}">
+	                                </div>
+	                             </#if>
+                            </#list>
+                        </div>
+                   	 	<div class="swiper-pagination"></div>
+                	</div>
+	                <script type="text/javascript">
+	                    var mySwiper = new Swiper('.swiper-container',{
+	                        loop: false,
+	                        autoplay: 3000,
+	                        pagination : '.swiper-pagination'
+	                    });   
+	                </script>
+                </div>
+            	</#if>
 			</div>
 			<div class="index_test_box"></div>
 			<section class="det_content">
@@ -73,8 +83,10 @@
     					<p>￥<#if priceListItem??&&priceListItem.salePrice??>${priceListItem.salePrice?string("0.00")}<#else>0.00</#if></p>
     					<p>销量：${goods.soldNumber!'0'}件</p>
     					<#-- 该标签用以存储库存 -->
-    					<input type="hidden" id="inventory${goods.id?c}" value="<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>">
-    					<p>库存：<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>件</p>
+    					<#--<input type="hidden" id="inventory${goods.id?c}" value="<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>">
+    					<p>库存：<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>件</p>-->
+    					<input type="hidden" id="inventory${goods.id?c}" value="<#if diySiteInventory?? && diySiteInventory.inventory??>${diySiteInventory.inventory?c}<#else>0</#if>">
+    					<p>库存：<#if diySiteInventory?? && diySiteInventory.inventory??>${diySiteInventory.inventory?c}<#else>0</#if>件</p>
 					</#if>
 				</div>
 				<div class="index_test_box"></div>

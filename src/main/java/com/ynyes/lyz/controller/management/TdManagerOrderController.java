@@ -30,10 +30,12 @@ import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryType;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdManager;
 import com.ynyes.lyz.entity.TdManagerDiySiteRole;
 import com.ynyes.lyz.entity.TdManagerRole;
 import com.ynyes.lyz.entity.TdOrder;
+import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceList;
@@ -50,6 +52,7 @@ import com.ynyes.lyz.service.TdCommonService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDeliveryTypeService;
 import com.ynyes.lyz.service.TdDistrictService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsService;
@@ -150,6 +153,9 @@ public class TdManagerOrderController {
 	
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 	
 	 /**
 	 * @author lc
@@ -889,7 +895,6 @@ public class TdManagerOrderController {
 		} else {
 			tdManagerLogService.addLog("edit", "修改门店", req);
 		}
-		
 
 		tdDiySiteService.save(tdDiySite);
 
@@ -1013,25 +1018,86 @@ public class TdManagerOrderController {
 					order.setStatusId(5L);
 					order.setPayTime(new Date());
 				}
+				
 			}
 			// 确认发货
 			else if (type.equalsIgnoreCase("orderDelivery")) {
-				if (order.getStatusId().equals(3L)) {
+				if (order.getStatusId().equals(3L)) 
+				{
+					if (order.getDeliverTypeTitle() != null && order.getDeliverTypeTitle().equalsIgnoreCase("门店自提"))
+					{
+						
+						// 判断库存
+						Map<String, Long> inventoryMap = new HashMap<String, Long>();
+						
+						Long siteId = order.getDiySiteId();
+						
+						// 商品列表
+						List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+						for (TdOrderGoods tdOrderGoods : orderGoodsList)
+						{
+							if (tdOrderGoods != null)
+							{
+								String sku = tdOrderGoods.getSku();
+								// 判断是否存在 存在累加 不存在默认为0
+								Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
+								inventoryMap.put(sku, quantity + tdOrderGoods.getQuantity());
+							}
+						}
+						// 赠品列表
+						List<TdOrderGoods> giftGoodsList = order.getGiftGoodsList();
+						for (TdOrderGoods giftGoods : giftGoodsList)
+						{
+							if (giftGoods != null) {
+								String sku = giftGoods.getSku();
+								// 判断是否存在 存在累加 不存在默认为0
+								Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
+								inventoryMap.put(sku, quantity + giftGoods.getQuantity());
+							}
+						}
+						// 小辅料列表
+						List<TdOrderGoods> presentedList = order.getPresentedList();
+						for (TdOrderGoods presented : presentedList)
+						{
+							if (presented != null)
+							{
+								String sku = presented.getSku();
+								// 判断是否存在 存在累加 不存在默认为0
+								Long quantity = inventoryMap.get(sku) == null ? 0L : inventoryMap.get(sku);
+								inventoryMap.put(sku, quantity + presented.getQuantity());
+							}
+						}
+
+						for (String sku : inventoryMap.keySet())
+						{
+							TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(sku, siteId);
+							if (diySiteInventory == null || inventoryMap.get(sku) == null || diySiteInventory.getInventory() < inventoryMap.get(sku))
+							{
+								res.put("message", "商品编码为"+ sku +"的库存不足\n,不能确认发货");
+								return res;
+							}
+						}
+					}
 					order.setStatusId(4L);
 					order.setSendTime(new Date());
 				}
 			}
 			// 确认收货
-			else if (type.equalsIgnoreCase("orderReceive")) {
-				if (order.getStatusId().equals(4L)) {
+			else if (type.equalsIgnoreCase("orderReceive"))
+			{
+				if (order.getStatusId().equals(4L))
+				{
 					order.setStatusId(5L);
 					order.setReceiveTime(new Date());
 					
-					// add send receive time to ebs
-					TdOrderReceiveInf orderReceiveInf = tdInterfaceService.initOrderReceiveByOrder(order);
-					if (orderReceiveInf != null)
+					if (order.getDeliverTypeTitle().equalsIgnoreCase("门店自提"))
 					{
-						tdInterfaceService.ebsWithObject(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+						// add send receive time to ebs
+						TdOrderReceiveInf orderReceiveInf = tdInterfaceService.initOrderReceiveByOrder(order);
+						if (orderReceiveInf != null)
+						{
+							tdInterfaceService.ebsWithObject(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+						}
 					}
 				}
 			}
@@ -1050,7 +1116,7 @@ public class TdManagerOrderController {
 			{
 				if (order.getStatusId().equals(1L) || order.getStatusId().equals(2L) || order.getStatusId().equals(3L)) // zhangji
 				{
-					this.cancelRelativeOrderBySubOrder(order,username);
+					this.cancelRelativeOrderBySubOrder(order,username,req);
 					order.setStatusId(7L);
 					order.setCancelTime(new Date());
 				}
@@ -1135,9 +1201,10 @@ public class TdManagerOrderController {
 	
 	/**
 	 * 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
+	 * req 记录库存用
 	 * @param order
 	 */
-	private void cancelRelativeOrderBySubOrder(TdOrder order,String username)
+	private void cancelRelativeOrderBySubOrder(TdOrder order,String username,HttpServletRequest req)
 	{
 		
 		Long realUserId = order.getRealUserId();
@@ -1175,6 +1242,9 @@ public class TdManagerOrderController {
 					{
 						// 在此进行资金和优惠券的退还
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
+						
+						//增加库存
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req,"退货");
 						
 						// 通知物流
 						if (StringUtils.isNotBlank(order.getRemarkInfo()))

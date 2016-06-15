@@ -33,6 +33,7 @@ import com.ynyes.lyz.interfaces.entity.TdReturnTimeInf;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteRoleService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdManagerLogService;
@@ -102,11 +103,14 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 	@Autowired
 	private TdDiySiteRoleService tdDiySiteRoleService;
 	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
+	
 	// 列表
 	@RequestMapping(value = "/{type}/list")
 	public String list(@PathVariable String type, Integer page, Integer size, String keywords, String __EVENTTARGET,
 			String __EVENTARGUMENT, String __VIEWSTATE, Long[] listId, Integer[] listChkId, Double[] listSortId,
-			ModelMap map, HttpServletRequest req,Long diyCode,String city) {
+			ModelMap map, HttpServletRequest req,Long diyCode,String city,Long statusId) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -238,7 +242,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					 }
 				}
 				
-				Page<TdReturnNote> returnNotePage= tdReturnNoteService.searchReturnList(keywords, diyCode, roleDiyCodes, cityDiyCodes, size, page);
+				Page<TdReturnNote> returnNotePage= tdReturnNoteService.searchReturnList(keywords, diyCode, roleDiyCodes, cityDiyCodes, size, page,statusId);
 				map.addAttribute("returnNote_page", returnNotePage);
 				//循环获取用户名称
 				List<TdReturnNote> returnNoteList= returnNotePage.getContent();
@@ -265,6 +269,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				map.addAttribute("cityList", cityList);
 				map.addAttribute("cityName", city);
 				map.addAttribute("diyCode", diyCode);
+				map.addAttribute("statusId", statusId);
 				
 				//以前的查询  zp
 //				String siteName = tdReturnNoteService.findSiteTitleByUserName(username);
@@ -308,7 +313,9 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			if (type.equalsIgnoreCase("returnNote")) // 支付方式
 			{
 				if (null != id) {
-					map.addAttribute("returnNote", tdReturnNoteService.findOne(id));
+					TdReturnNote returnNote= tdReturnNoteService.findOne(id);
+					map.addAttribute("returnNote", returnNote);
+					map.addAttribute("user",tdUserService.findByUsername(returnNote.getUsername()));
 				}
 
 				return "/site_mag/returnNote_edit";
@@ -354,6 +361,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				{
 					// 生成收货通知
 					tdCommonService.sendBackToWMS(returnNote);
+					tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 					if (returnNote.getStatusId() == 1)
 					{
 						returnNote.setStatusId(2L);
@@ -376,6 +384,9 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					returnNote.setStatusId(3L);
 					returnNote.setReceiveTime(new Date());
 				}
+				//修改库存
+				tdDiySiteInventoryService.changeGoodsInventory(returnNote,req);
+				
 			}
 			// 确认验货
 			else if ("examineReturn".equalsIgnoreCase(type)) {
@@ -462,5 +473,4 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			}
 		}
 	}
-
 }

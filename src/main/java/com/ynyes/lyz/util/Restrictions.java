@@ -165,4 +165,16 @@ public class Restrictions {
 		public static SimpleExpression isNotNull(String fieldName) {
 			return new SimpleExpression (fieldName, null, Operator.NOTNULL);
 		}
+		
+		/**
+		 * 模糊匹配不等
+		 * @param fieldName
+		 * @param value
+		 * @param ignoreNull
+		 * @return
+		 */
+		public static SimpleExpression notLike(String fieldName, String value, boolean ignoreNull) {
+			if(StringUtils.isEmpty(value))return null;
+			return new SimpleExpression (fieldName, value, Operator.NLIKE);
+		}
 }

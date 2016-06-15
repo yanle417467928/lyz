@@ -138,7 +138,7 @@
             <section class="my_order">
                 <input id="typeId" type="hidden" value="${typeId!'0'}">
                 <div class="searchbox bgc-f3f4f6 bdt">
-                    <input type="text" id="keywords" placeholder="订单号/用户名">
+                    <input type="text" id="keywords" placeholder="订单号/用户信息/收货人信息">
                     <a href="javascript:searchOrder();"></a>
                 </div>          
                 <!-- 订单管理 -->
@@ -216,7 +216,7 @@
                                                 <#break>
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">物流详情</a>
+                                                    <a href="/user/order/map?oid=${item.id?c}">物流详情</a>
                                                     <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
@@ -305,7 +305,7 @@
                                                 <#break>
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">物流详情</a>
+                                                    <a href="/user/order/map?oid=${item.id?c}">物流详情</a>
                                                     <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
@@ -394,7 +394,7 @@
                                                 <#break>
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">物流详情</a>
+                                                    <a href="/user/order/map?oid=${item.id?c}">物流详情</a>
                                                     <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
@@ -483,7 +483,7 @@
                                                 <#break>
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
-                                                    <a href="">物流详情</a>
+                                                    <a href="/user/order/map?oid=${item.id?c}">物流详情</a>
                                                     <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>

@@ -12,8 +12,8 @@
             </dt>
             <dd>
                 <#-- 用户存储指定商品的库存 -->
-                <input type="hidden" id="inventory${goods.id?c}" value="<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>">
-                <#--<input type="hidden" id="inventory${goods.id?c}" value="<#if ("goodInventory"+goods_index)?eval??>${("goodInventory"+goods_index)?eval?c}<#else>0</#if>">-->
+                <#--<input type="hidden" id="inventory${goods.id?c}" value="<#if goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>">-->
+                <input type="hidden" id="inventory${goods.id?c}" value="<#if ("goodInventory"+goods_index)?eval??>${("goodInventory"+goods_index)?eval?c}<#else>0</#if>">
                 <#-- 商品的标题，点击可跳转到详情页 -->
                 <p onclick="window.location.href='/goods/detail/${goods.id?c}'">${goods.title!''}</p>
                 <label>${goods.code!''}</label>
@@ -27,7 +27,7 @@
                         </#if>
                     </#if>
                     <a href="javascript:changeQuantity(${goods.id?c},'add');">+</a>
-                    <input min="0" class="goodsSelectedQuantity" type="number" id="quantity${goods.id?c}" value="0" onkeyup="keyup(this)" onafterpaste="afterpaste(this)">
+                    <input min="0" class="goodsSelectedQuantity" type="number" id="quantity${goods.id?c}" value="0" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onchange="changeQuantity(${goods.id?c})">
                     <a href="javascript:changeQuantity(${goods.id?c},'delete');">-</a>
                 </div>
                 <div class="fen_div02" value="${goods_index} ">
@@ -44,7 +44,8 @@
                 </div>
             </dd>
         </dl>   
+        <div class="index_test_box"></div>
     </#if>
-    <div class="index_test_box"></div>
+    
 </#list>
 </#if>

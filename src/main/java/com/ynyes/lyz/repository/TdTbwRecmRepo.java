@@ -12,6 +12,7 @@ import com.ynyes.lyz.entity.TdTbwRecm;
  *
  */
 
-public interface TdTbwRecmRepo extends PagingAndSortingRepository<TdTbwRecm, Long>, JpaSpecificationExecutor<TdTbwRecm> {
-	
+public interface TdTbwRecmRepo extends PagingAndSortingRepository<TdTbwRecm, Long>, JpaSpecificationExecutor<TdTbwRecm>
+{
+	TdTbwRecm findByCRecNo(String cRecNo);
 }

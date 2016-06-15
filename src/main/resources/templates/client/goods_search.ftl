@@ -81,7 +81,8 @@
                                 <p onclick="window.location.href='/goods/detail/${item.id?c}'">${item.title!''}</p>
                                 <div class="fen_div01">
                                     <#-- 用户存储指定商品的库存 -->
-                                    <input type="hidden" id="inventory${item.id?c}" value="<#if item.leftNumber??>${item.leftNumber?c}<#else>0</#if>">
+                                    <#-- <input type="hidden" id="inventory${item.id?c}" value="<#if item.leftNumber??>${item.leftNumber?c}<#else>0</#if>"> -->
+                                    <input type="hidden" id="inventory${item.id?c}" value="<#if ("goodInventory"+item.id?c)?eval??>${("goodInventory"+item.id?c)?eval?c}<#else>0</#if>">
                                     <#if ("priceListItem"+item.id?c)?eval??>
                                         <#if ("priceListItem"+item.id?c)?eval.isPromotion??&&("priceListItem"+item.id?c)?eval.isPromotion==true>
                                             <span>促销</span>

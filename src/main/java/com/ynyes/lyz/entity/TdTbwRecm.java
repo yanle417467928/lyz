@@ -120,6 +120,10 @@ public class TdTbwRecm {
 	// 采购单号
 	@Column(length = 30)
 	private String cPoNo;
+
+	//分公司Id
+	@Column
+	private Long cCompanyId;
 	
 	// 记录产生时间（收到wms信息生成此记录的时间）
 	@Column
@@ -309,6 +313,16 @@ public class TdTbwRecm {
 
 	public void setcPoNo(String cPoNo) {
 		this.cPoNo = cPoNo;
+	}
+
+	public Long getcCompanyId()
+	{
+		return cCompanyId;
+	}
+
+	public void setcCompanyId(Long cCompanyId)
+	{
+		this.cCompanyId = cCompanyId;
 	}
 
 	public Date getInitTime() {

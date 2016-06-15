@@ -19,6 +19,7 @@ import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
@@ -31,6 +32,7 @@ import com.ynyes.lyz.entity.TdUserComment;
 import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdCartGoodsService;
 import com.ynyes.lyz.service.TdCommonService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdProductCategoryService;
@@ -72,6 +74,9 @@ public class TdGoodsController {
 	
 	@Autowired
 	private TdProductCategoryService tdProductCategoryService;
+	
+	@Autowired
+	TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	/*
 	 *********************************** 普通下单模式的控制器和方法********************************************
@@ -457,15 +462,41 @@ public class TdGoodsController {
 		if (null != all && all.size() >= 1) {
 			map.addAttribute("phone", all.get(0).getTelephone());
 		}
-
+		//获取商品单店库存
+		TdDiySiteInventory  diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), diySite.getRegionId());
+		
+		
+		map.addAttribute("diySiteInventory", diySiteInventory);
 		map.addAttribute("activity_list", activity_list);
 		map.addAttribute("isCollect", isCollect);
+		//只判断是否有值 有值不刷新
+		req.getSession().setAttribute("noRefresh", "1");
 		return "/client/goods_detail";
 	}
-
+	
+	/**
+	 * 判断是否刷新(没用)
+	 * 
+	 * @author zp
+	 */
+	@RequestMapping(value = "/listRefresh")
+	@ResponseBody
+	public Map<String, Object> listRefresh(HttpServletRequest req, Long goodsId) {  
+		Map<String, Object> res = new HashMap<>();
+		Object obj= req.getSession().getAttribute("noRefresh");
+		//1 刷新 2 不刷新
+		if(obj==null){
+			res.put("type", 1);
+		}else{
+			res.put("type", 2);
+			req.getSession().removeAttribute("noRefresh");
+		}
+		return res;
+	}
+	
 	/**
 	 * 添加收藏的方法
-	 * 
+	 *  
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/operate/collection")
@@ -497,7 +528,7 @@ public class TdGoodsController {
 
 	/**
 	 * 跳转到商品搜索页面的方法
-	 * 修改商品查询方法  按价格查询暂时隐藏 zp
+	 * 修改商品查询方法  按价格查询暂时隐藏 添加单店库存 zp
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/search")
@@ -514,6 +545,8 @@ public class TdGoodsController {
 		List<String> categoryTitle=new ArrayList<String>();
 		TdProductCategory  productCategory= tdProductCategoryService.findByTitle(keywords);
 		if(productCategory!=null){
+			 //分类存在只查找分类
+			 keywords=null;
 			 List<TdProductCategory> productCategoryList= tdProductCategoryService.findByParentIdOrderBySortIdAsc(productCategory.getId());
 			 if(productCategoryList!=null && productCategoryList.size()>0){
 				 for (TdProductCategory tdProductCategory : productCategoryList) {
@@ -523,7 +556,7 @@ public class TdGoodsController {
 		}
 		
 //		// 获取用户的门店
-//		TdDiySite diySite = tdCommonService.getDiySite(req);
+		TdDiySite diySite = tdCommonService.getDiySite(req);
 
 		if (null == param) {
 			param = "0-0-0-0";
@@ -592,10 +625,21 @@ public class TdGoodsController {
 						priceListItem.setIsPromotion(tdCommonService.isJoinActivity(req, goods));
 						map.addAttribute("priceListItem" + goods.getId(), priceListItem);
 						visible_list.add(goods);
+						
+						//设置商品单店库存
+						TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), diySite.getRegionId());
+						if(diySiteInventory!=null){
+							map.addAttribute("goodInventory" + goods.getId(), diySiteInventory.getInventory());
+						}
 					}
 				}
+				
+				
 			}
 		}
+		
+		
+		
 		map.addAttribute("selected_rule", Long.parseLong(sortFiled));
 		map.addAttribute("rule1", rule1);
 		map.addAttribute("rule2", rule2);

@@ -1,5 +1,7 @@
 package com.ynyes.lyz.interfaces.service;
 
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +35,7 @@ import com.ynyes.lyz.interfaces.entity.TdReturnGoodsInf;
 import com.ynyes.lyz.interfaces.entity.TdReturnOrderInf;
 import com.ynyes.lyz.interfaces.entity.TdReturnTimeInf;
 import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
+import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.interfaces.utils.InterfaceConfigure;
 import com.ynyes.lyz.interfaces.utils.StringTools;
 import com.ynyes.lyz.service.TdCouponService;
@@ -70,28 +73,39 @@ public class TdInterfaceService {
 	private TdReturnOrderInfService tdReturnOrderInfService;
 	
 	@Autowired
-	private TdReturnGoodsInfService TdReturnGoodsInfService;
+	private TdReturnGoodsInfService tdReturnGoodsInfService;
+	
+	@Autowired
+	private TdReturnCouponInfService tdReturnCouponInfService;
 	
 	@Autowired
 	private TdReturnTimeInfService tdReturnTimeInfService;
 	
 	@Autowired
+	private TdCashReciptInfService tdCashReciptInfService;
+	
+	@Autowired
+	private TdCashRefundInfService tdCashRefundInfService;
+	
+	@Autowired
 	private TdOrderService tdOrderService;
 	
-	static Call call;
+	private Call call;
+	
+//	private org.apache.axis.client.Service wbService = new  org.apache.axis.client.Service();
 	
 	/**
 	 * 访问WebService的服务端
 	 * 
 	 * @return Call
 	 */
-	public static Call getCall()
+	public Call getCall()
 	{
 		if (call != null) 
 		{
 			return call;
 		}
-		try 
+		try
 		{
 //			String urlname = "http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl";
 //			String urlname = getEbsWebServiceUrlByLocalHost();
@@ -113,12 +127,11 @@ public class TdInterfaceService {
 			wsSecHeaderElm.addChildElement(userNameTokenElm);
 			SOAPHeaderElement soapHeaderElement =  new SOAPHeaderElement(wsSecHeaderElm);
 //			soapHeaderElement.setMustUnderstand(true);
-			org.apache.axis.client.Service s = new  org.apache.axis.client.Service();
-			call = (Call) s.createCall();
-//			call.setTimeout(new Integer(5000));
+			org.apache.axis.client.Service wbService = new  org.apache.axis.client.Service();
+			call = (Call) wbService.createCall();
+			call.setTimeout(new Integer(5000));
 			QName EBSQName = new QName("http://xmlns.oracle.com/apps/cux/soaprovider/plsql/cux_app_webservice_pkg/get_xml/", "GET_XML");
 			call.setOperationName(EBSQName);
-			call.setTimeout(100000);
 			call.setEncodingStyle("UTF-8");
 			call.setTargetEndpointAddress(InterfaceConfigure.getEBS_WS_URL());
 			call.setReturnType(XMLType.XSD_STRING);
@@ -143,7 +156,99 @@ public class TdInterfaceService {
 			return null;
 		}
 	}
-
+	
+	public void sendReturnOrderByAsyn(TdReturnNote returnNote)
+	{
+		sendEbsReturnOrderThread ebsReturnOrderThread = new sendEbsReturnOrderThread(returnNote);
+		ebsReturnOrderThread.start();
+	}
+	
+	class sendEbsReturnOrderThread extends Thread
+	{
+		TdReturnNote returnNote;
+		
+		@Override
+		public void run()
+		{
+			sendEbsReturnOrder(returnNote);
+		}
+		public sendEbsReturnOrderThread(TdReturnNote returnNote)
+		{
+			this.returnNote = returnNote;
+		}
+	}
+	
+	private void sendEbsReturnOrder(TdReturnNote returnNote)
+	{
+		if (returnNote == null)
+		{
+			return ;
+		}
+		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
+		if (returnOrderInf == null)
+		{
+			return ;
+		}
+		Boolean isSendSuccess = true;
+		//退单头
+		String returnOrderInfXml = this.XmlWithReturnNote(returnNote, INFTYPE.RETURNORDERINF);
+		if (returnOrderInfXml != null)
+		{
+			Object[] orderInf = { INFConstants.INF_RT_ORDER_STR, "1", returnOrderInfXml};
+			try
+			{
+				String object = (String)this.getCall().invoke(orderInf);
+				String resultStr = StringTools.interfaceMessage(object);
+				System.out.println(resultStr);
+				if (resultStr != null)
+				{
+					isSendSuccess = false;
+				}
+			} 
+			catch (RemoteException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		//行
+		String returnGoodsInfXml = this.XmlWithReturnNote(returnNote, INFTYPE.RETURNGOODSINF);
+		if (returnGoodsInfXml != null && isSendSuccess)
+		{
+			Object[] orderGoodsInf = { INFConstants.INF_RT_ORDER_GOODS_STR, "1", returnGoodsInfXml};
+			try
+			{
+				String object = (String)this.getCall().invoke(orderGoodsInf);
+				String resultStr = StringTools.interfaceMessage(object);
+				System.out.println(resultStr);
+			} 
+			catch (RemoteException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		//券
+		String returnCouponInfXml = this.XmlWithReturnNote(returnNote, INFTYPE.RETURNCOUPONINF);
+		if (returnCouponInfXml != null && isSendSuccess)
+		{
+			Object[] orderInf = { INFConstants.INF_RT_ORDER_COUPONS_STR, "1", returnCouponInfXml};
+			try
+			{
+				String object = (String)this.getCall().invoke(orderInf);
+				String resultStr = StringTools.interfaceMessage(object);
+				System.out.println(resultStr);
+			} 
+			catch (RemoteException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		
+	}
+	
+	
+	
+/**     -=-=-=-=-=-=-     生成实体类       -=-=-=-=-=-=-       **/
 	
 	/**
 	 * 根据订单生成销售订单相关数据
@@ -162,12 +267,14 @@ public class TdInterfaceService {
 		}
 		orderInf = new TdOrderInf();
 		TdDiySite diySite = tdDiySiteService.findOne(tdOrder.getDiySiteId());
+		Long SobId = 0L;
 		if (diySite != null)
 		{
-			orderInf.setSobId(diySite.getRegionId());
+			SobId = diySite.getRegionId();
 		}
 		
 //		orderInf.setHeaderId(tdOrder.getId());
+		orderInf.setSobId(SobId);
 		orderInf.setOrderNumber(tdOrder.getOrderNumber());
 		orderInf.setOrderDate(tdOrder.getOrderTime());
 		orderInf.setMainOrderNumber(tdOrder.getMainOrderNumber());
@@ -191,7 +298,7 @@ public class TdInterfaceService {
 		orderInf.setPayDate(tdOrder.getPayTime());
 		orderInf.setPayAmt(booleanByStr(orderInf.getIsonlinepay())?tdOrder.getTotalPrice():0);
 		orderInf.setPrepayAmt(tdOrder.getCashBalanceUsed() + tdOrder.getUnCashBalanceUsed());
-		orderInf.setRecAmt(tdOrder.getTotalPrice());
+		orderInf.setRecAmt(tdOrder.getTotalPrice() - orderInf.getPrepayAmt());
 		tdOrderInfService.save(orderInf);
 		
 		
@@ -280,8 +387,33 @@ public class TdInterfaceService {
 				}
 			}
 		}
+		
+		//收款
+		if (tdOrder.getOtherPay()!= null && tdOrder.getOtherPay() != 0)
+		{
+			TdCashReciptInf cashReciptInf = new TdCashReciptInf();
+			cashReciptInf.setSobId(SobId);
+			cashReciptInf.setReceiptNumber(tdOrder.getOrderNumber());
+			cashReciptInf.setUserid(tdOrder.getRealUserId());
+			cashReciptInf.setUsername(tdOrder.getRealUserRealName());
+			cashReciptInf.setUserphone(tdOrder.getRealUserUsername());
+			cashReciptInf.setDiySiteCode(tdOrder.getDiySiteCode());
+			cashReciptInf.setReceiptClass(StringTools.productClassStrByBoolean(tdOrder.getIsCoupon()));
+			cashReciptInf.setOrderHeaderId(orderInf.getHeaderId());
+			cashReciptInf.setOrderNumber(tdOrder.getOrderNumber());
+			cashReciptInf.setProductType(StringTools.getProductStrByOrderNumber(tdOrder.getOrderNumber()));
+			cashReciptInf.setReceiptType(tdOrder.getPayTypeTitle());
+			cashReciptInf.setReceiptDate(new Date());
+			cashReciptInf.setAmount(tdOrder.getOtherPay());
+			tdCashReciptInfService.save(cashReciptInf);
+		}
 	}
 	
+	/**
+	 * 生成销售单的收货时间，收到货的时间
+	 * @param tdOrder
+	 * @return
+	 */
 	public TdOrderReceiveInf initOrderReceiveByOrder(TdOrder tdOrder)
 	{
 		TdOrderReceiveInf orderReceiveInf = new TdOrderReceiveInf();
@@ -296,7 +428,7 @@ public class TdInterfaceService {
 				orderReceiveInf.setSobId(diySite.getRegionId());
 			}
 			TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
-			if (tdOrderInf != null) 
+			if (tdOrderInf != null)
 			{
 				orderReceiveInf.setHeaderId(tdOrderInf.getHeaderId());
 			}
@@ -306,6 +438,84 @@ public class TdInterfaceService {
 			return tdOrderReceiveInfService.save(orderReceiveInf);
 		}
 		return null;
+	}
+	
+	
+	/**
+	 * 收款
+	 * @param tdOrder
+	 * @return
+	 */
+	public TdCashReciptInf initCashReciptByOrder(TdOrder tdOrder)
+	{
+		if (tdOrder == null)
+		{
+			return null;
+		}
+		
+		
+		if (tdOrder.getOtherPay()!= null && tdOrder.getOtherPay() != 0)
+		{
+			TdOrderInf orderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
+			if (orderInf == null) 
+			{
+				return null;
+			}
+			
+			TdDiySite diySite = tdDiySiteService.findOne(tdOrder.getDiySiteId());
+			Long SobId = 0L;
+			if (diySite != null)
+			{
+				SobId = diySite.getRegionId();
+			}
+			TdCashReciptInf cashReciptInf = new TdCashReciptInf();
+			cashReciptInf.setSobId(SobId);
+			cashReciptInf.setReceiptNumber(tdOrder.getOrderNumber());
+			cashReciptInf.setUserid(tdOrder.getRealUserId());
+			cashReciptInf.setUsername(tdOrder.getRealUserRealName());
+			cashReciptInf.setUserphone(tdOrder.getRealUserUsername());
+			cashReciptInf.setDiySiteCode(tdOrder.getDiySiteCode());
+			cashReciptInf.setReceiptClass(StringTools.productClassStrByBoolean(tdOrder.getIsCoupon()));
+			cashReciptInf.setOrderHeaderId(orderInf.getHeaderId());
+			cashReciptInf.setOrderNumber(tdOrder.getOrderNumber());
+			cashReciptInf.setProductType(StringTools.getProductStrByOrderNumber(tdOrder.getOrderNumber()));
+			cashReciptInf.setReceiptType(tdOrder.getPayTypeTitle());
+			cashReciptInf.setReceiptDate(new Date());
+			cashReciptInf.setAmount(tdOrder.getOtherPay());
+			return tdCashReciptInfService.save(cashReciptInf);
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * 退款
+	 * @param tdOrder
+	 * @return
+	 */
+	public TdCashRefundInf initCashRefundInf(TdOrder tdOrder)
+	{
+		if (tdOrder == null)
+		{
+			return null;
+		}
+		TdCashRefundInf cashRefundInf = new TdCashRefundInf();
+//		cashRefundInf.setSobId();
+//		cashRefundInf.setReceiptId();
+//		cashRefundInf.setReceiptNumber();
+//		cashRefundInf.setUserid();
+//		cashRefundInf.setUsername();
+//		cashRefundInf.setUserphone();
+//		cashRefundInf.setDiySiteCode();
+//		cashRefundInf.setReceiptClass();
+//		cashRefundInf.setOrderHeaderId();
+//		cashRefundInf.setOrderNumber();
+//		cashRefundInf.setProductType();
+//		cashRefundInf.setReceiptType();
+//		cashRefundInf.setReceiptDate();
+//		cashRefundInf.setAmount();
+		return tdCashRefundInfService.save(cashRefundInf);
+		
 	}
 	
 	/**
@@ -340,14 +550,14 @@ public class TdInterfaceService {
 		if(returnNote==null){
 			return;
 		}
-		
+
 		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
 		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(returnNote.getOrderNumber());
 		if (returnOrderInf != null || tdOrderInf == null)
 		{
 			return ;
 		}
-		
+
 		returnOrderInf = new TdReturnOrderInf();
 		TdDiySite diySite= tdDiySiteService.findOne(returnNote.getDiySiteId());
 		if(diySite!=null){
@@ -403,7 +613,7 @@ public class TdInterfaceService {
 				goodsInf.setQuantity(tdOrderGoods.getQuantity());
 //				goodsInf.setJxPrice(tdOrderGoods.g());
 				goodsInf.setLsPrice(tdOrderGoods.getReturnUnitPrice());
-				TdReturnGoodsInfService.save(goodsInf);
+				tdReturnGoodsInfService.save(goodsInf);
 			}
 		}
 		
@@ -412,6 +622,11 @@ public class TdInterfaceService {
 //		tdReturnCouponInf.setRtHeaderId(rtHeaderId);
 	}
 	
+	/**
+	 * 根据订单生成退货时的优惠券
+	 * @param tdOrder
+	 * @param type
+	 */
 	public void initReturnCouponInfByOrder(TdOrder tdOrder,Integer type)
 	{
 		// type 0:取消订单 1:其他退货
@@ -422,7 +637,7 @@ public class TdInterfaceService {
 			return ;
 		}
 		List<TdOrderCouponInf> couponInfs = tdOrderCouponInfService.findByorderHeaderId(tdOrderInf.getHeaderId());
-		if (type == 0) 
+		if (type == INFConstants.INF_RETURN_ORDER_CANCEL_INT) 
 		{
 			if (couponInfs != null && couponInfs.size() >0)
 			{
@@ -437,7 +652,7 @@ public class TdInterfaceService {
 				}
 			}
 		}
-		else if (type == 1)
+		else if (type == INFConstants.INF_RETURN_ORDER_SUB_INT)
 		{
 			List<TdCoupon> coupons = tdCouponService.findByTypeIdAndOrderId(3l, tdOrder.getId());
 			if (coupons != null && coupons.size() > 0)
@@ -485,6 +700,9 @@ public class TdInterfaceService {
 		return "N";
 	}
 	
+	
+	/**     -=-=-=-=-=-=-     生成XML       -=-=-=-=-=-=-       **/
+	
 	public String XmlByOrder(TdOrder tdOrder, INFTYPE type)
 	{
 		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
@@ -523,11 +741,81 @@ public class TdInterfaceService {
 			}
 			break;
 		}
+		case CASHRECEIPTINF :
+		{
+			List<TdCashReciptInf> cashReciptInfs = tdCashReciptInfService.findByOrderHeaderId(tdOrderInf.getHeaderId());
+			for (TdCashReciptInf tdCashReciptInf : cashReciptInfs)
+			{
+				String cashReciptInfXml = XMLWithEntity(tdCashReciptInf, INFTYPE.CASHRECEIPTINF);
+				if (org.apache.commons.lang3.StringUtils.isNotBlank(cashReciptInfXml))
+				{
+					stringList.add(cashReciptInfXml);
+				}
+			}
+			break;
+		}
 		default:
 			break;
 		}
 		return XmlWithTables(stringList);
 		
+	}
+	
+	
+	public String XmlWithReturnNote(TdReturnNote returnNote,INFTYPE type)
+	{
+		if (returnNote == null || type == null)
+		{
+			return null;
+		}
+		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
+		if (returnOrderInf == null)
+		{
+			return null;
+		}
+		List<String> entityListStr = new ArrayList<String>();
+		
+		switch (type)
+		{
+			case RETURNORDERINF:
+			{
+				String entityStr = this.XMLWithEntity(returnOrderInf, INFTYPE.RETURNORDERINF);
+				entityListStr.add(entityStr);
+				break;
+			}
+			case RETURNGOODSINF:
+			{
+				List<TdReturnGoodsInf> returnGoodsInfs = tdReturnGoodsInfService.findByRtHeaderId(returnOrderInf.getRtHeaderId());
+				if (returnGoodsInfs == null || returnGoodsInfs.size() < 1)
+				{
+					return null;
+				}
+				for (TdReturnGoodsInf tdReturnGoodsInf : returnGoodsInfs)
+				{
+					String entityStr = this.XMLWithEntity(tdReturnGoodsInf, INFTYPE.RETURNGOODSINF);
+					entityListStr.add(entityStr);
+				}
+				break;
+			}
+			case RETURNCOUPONINF:
+			{
+				List<TdReturnCouponInf> returnCouponInfs = tdReturnCouponInfService.findByRtHeaderId(returnOrderInf.getRtHeaderId());
+				if (returnCouponInfs == null || returnCouponInfs.size() < 1)
+				{
+					return null;
+				}
+				for (TdReturnCouponInf tdReturnCouponInf : returnCouponInfs)
+				{
+					String entityStr = this.XMLWithEntity(tdReturnCouponInf, INFTYPE.RETURNCOUPONINF);
+					entityListStr.add(entityStr);
+				}
+				break;
+			}
+			default:
+				break;
+		}
+		
+		return XmlWithTables(entityListStr);
 	}
 	
 	/**
@@ -623,10 +911,12 @@ public class TdInterfaceService {
 		case ORDERRECEIVEINF:
 		{
 			TdOrderReceiveInf object = (TdOrderReceiveInf)entity;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+			String receiveDate = sdf.format(object.getReceiveDate());
 			xml =   "<TABLE><SOB_ID>" + object.getSobId() + "</SOB_ID>"
 					+ "<HEADER_ID>" + object.getHeaderId() + "</HEADER_ID>"
 					+ "<ORDER_NUMBER>" + object.getOrderNumber() + "</ORDER_NUMBER>"
-					+ "<RECEIVE_DATE>" + object.getReceiveDate() + "</RECEIVE_DATE>"
+					+ "<RECEIVE_DATE>" + receiveDate + "</RECEIVE_DATE>"
 					+ "<DELIVER_TYPE_TITLE>" + object.getDeliverTypeTitle() + "</DELIVER_TYPE_TITLE>"
 					+ "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
 					+ "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
@@ -704,7 +994,7 @@ public class TdInterfaceService {
 					+ "<ATTRIBUTE5>" + object.getAttribute5() + "</ATTRIBUTE5></TABLE>";
 			break;
 		}
-		case CASHRECIPTINF:
+		case CASHRECEIPTINF:
 		{
 			TdCashReciptInf object = (TdCashReciptInf)entity;
 			xml =   "<TABLE><SOB_ID>" + object.getSobId() + "</SOB_ID>"
@@ -788,27 +1078,57 @@ public class TdInterfaceService {
 		return xmlEnd;
 	}
 	
+	/**     -=-=-=-=-=-=-     单个实体类发送EBS       -=-=-=-=-=-=-       **/
+	
+	
+	/**
+	 * 通过相关的实体进行单一的发送给EBS
+	 * @param object
+	 * @param type
+	 */
 	public void ebsWithObject(Object object, INFTYPE type) 
 	{
-		switch (type) {
-		case ORDERRECEIVEINF:
+		switch (type) 
 		{
-			TdOrderReceiveInf orderReceiveInf = (TdOrderReceiveInf)object;
-			String orderInfXML = this.XMLWithEntity(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
-			Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
-			try
+			case ORDERRECEIVEINF:
 			{
-				String result = (String)TdInterfaceService.getCall().invoke(orderInf);
-				System.out.println(result);
+				TdOrderReceiveInf orderReceiveInf = (TdOrderReceiveInf)object;
+				String orderInfXML = this.XMLWithEntity(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+				orderInfXML = "<ERP>" + orderInfXML + "</ERP>";
+				orderInfXML = orderInfXML.replace("null", "");
+				Object[] orderInf = { INFConstants.INF_ORDER_STR, "1", orderInfXML };
+				try
+				{
+					String result = (String)getCall().invoke(orderInf);
+					System.out.println(result);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		break;
-		default:
 			break;
+			
+			case CASHRECEIPTINF:
+			{
+				TdCashReciptInf cashReceiveInf = (TdCashReciptInf)object;
+				String cashReceiveInfXML = this.XMLWithEntity(cashReceiveInf, INFTYPE.CASHRECEIPTINF);
+				cashReceiveInfXML = "<ERP>" + cashReceiveInfXML + "</ERP>";
+				cashReceiveInfXML = cashReceiveInfXML.replace("null", "");
+				Object[] orderInf = { INFConstants.INF_CASH_RECEIPTS_STR, "1", cashReceiveInfXML };
+				try
+				{
+					String result = (String)getCall().invoke(orderInf);
+					System.out.println(result);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			break;
+			default:
+				break;
 		}
 	}
 

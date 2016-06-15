@@ -135,7 +135,7 @@ public class TdTbwRecd {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date initTime;
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -351,6 +351,5 @@ public class TdTbwRecd {
 	public void setInitTime(Date initTime) {
 		this.initTime = initTime;
 	}
-
 	
 }

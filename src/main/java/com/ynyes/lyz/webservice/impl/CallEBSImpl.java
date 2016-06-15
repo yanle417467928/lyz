@@ -42,18 +42,25 @@ import org.xml.sax.SAXException;
 
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdGoodsLimit;
 import com.ynyes.lyz.entity.TdLyzParameter;
 import com.ynyes.lyz.entity.TdPriceList;
 import com.ynyes.lyz.entity.TdPriceListItem;
+import com.ynyes.lyz.entity.TdProductCategory;
+import com.ynyes.lyz.interfaces.entity.TdDiySiteInventoryEbs;
+import com.ynyes.lyz.interfaces.service.TdDiySiteInventoryEbsService;
 import com.ynyes.lyz.service.TdBrandService;
+import com.ynyes.lyz.service.TdDiySiteInventoryLogService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGoodsLimitService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdLyzParameterService;
 import com.ynyes.lyz.service.TdPriceListItemService;
 import com.ynyes.lyz.service.TdPriceListService;
+import com.ynyes.lyz.service.TdProductCategoryService;
 import com.ynyes.lyz.webservice.ICallEBS;
 
 @WebService
@@ -79,6 +86,18 @@ public class CallEBSImpl implements ICallEBS {
 	
 	@Autowired
 	private TdBrandService tdBrandService;
+	
+	@Autowired
+	private TdProductCategoryService tdProductCategoryService;
+	
+	@Autowired
+	private TdDiySiteInventoryEbsService tdDiySiteInventoryEbsService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
+	
+	@Autowired
+	private TdDiySiteInventoryLogService tdDiySiteInventoryLogService;
 
 	public String GetErpInfo(String STRTABLE, String STRTYPE, String XML) 
 	{
@@ -161,7 +180,7 @@ public class CallEBSImpl implements ICallEBS {
 				String address = null;//地址
 				String dept_code = null;//区域编码
 				String dept_desc = null;//区域描述
-				String enabled_flag = null;//分公司ID
+				String enabled_flag = null;//是否生效
 				
 				
 				Node node = nodeList.item(i);
@@ -844,6 +863,30 @@ public class CallEBSImpl implements ICallEBS {
 				{
 					tdLyzParameter = new TdLyzParameter();
 					tdLyzParameter.setCategoryId(category_id);
+					//添加分类
+			        TdProductCategory parentprodcut =tdProductCategoryService.findByTitle(segment1); //一级分类
+			        if(parentprodcut==null){
+			        	parentprodcut=new TdProductCategory();
+			        	parentprodcut.setTitle(segment1);
+			        	parentprodcut.setSortId(99.0);
+			        	parentprodcut.setLayerCount(1L);
+			        	parentprodcut.setInvCategoryId(0L);
+			        	parentprodcut=tdProductCategoryService.save(parentprodcut);
+			        	parentprodcut.setParentTree("["+parentprodcut.getId()+"]");//保存后才能拿到id
+			        	tdProductCategoryService.save(parentprodcut);
+			        }
+			        TdProductCategory prodcut=tdProductCategoryService.findByTitleAndParentId(segment2, parentprodcut.getId()); //二级分类
+			        if(prodcut==null){
+			        	prodcut= new TdProductCategory();
+			        	prodcut.setParentId(parentprodcut.getId());
+			        	prodcut.setTitle(segment2);
+			        	prodcut.setSortId(99.0);
+			        	prodcut.setLayerCount(1L);
+			        	prodcut.setInvCategoryId(category_id);
+			        	prodcut=tdProductCategoryService.save(prodcut);//保存后才能拿到id
+			        	prodcut.setParentTree(parentprodcut.getParentTree()+",["+parentprodcut.getId()+"]");
+			        	tdProductCategoryService.save(prodcut);
+			        }
 				}
 				tdLyzParameter.setConcatenatedSegments(concatenated_segments);
 				tdLyzParameter.setCategorySetName(category_set_name);
@@ -1056,6 +1099,282 @@ public class CallEBSImpl implements ICallEBS {
 				tdDiySiteService.save(tdDiySite);
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
+		}
+		else if (STRTABLE.equalsIgnoreCase("CUXAPP_INV_STORE_TRANS_OUT"))//ebs库存修改
+		{
+			for (int i = 0; i < nodeList.getLength(); i++)
+			{
+				Long sobId = null;//分公司ID
+				Long transId = null;//事务唯一ID
+				String transType = null;//事务类型 "出货单","退货单","盘点入库","盘点出库"
+				String transNumber = null;//门店事务编号
+				Long customerId = null;//门店客户ID
+				String customerNumber = null;//门店客户编号
+				String diySiteCode = null;//门店编号(门店仓库)
+				String shipDate = null;//事务时间 
+				String itemCode = null;//物料编号,SKU
+				Long quantity = null;//数量 "正数"入库，"负数"出库
+				String ebsToAppFlag = null;//
+				String appErrorMessage = null;//
+				String creationDate = null;//
+				Long lastUpdatedBy = null;//
+				String lastUpdateDate = null;//
+				String attribute1 = null;//
+				String attribute2 = null;//
+				String attribute3 = null;//
+				String attribute4 = null;//
+				String attribute5 = null;//
+				
+				Node node = nodeList.item(i);
+				NodeList childNodeList = node.getChildNodes();
+				for (int idx = 0; idx < childNodeList.getLength(); idx++)
+				{
+					Node childNode = childNodeList.item(idx);
+					if (childNode.getNodeType() == Node.ELEMENT_NODE) 
+					{
+						if (childNode.getNodeName().equalsIgnoreCase("SOB_ID"))
+						{
+							// 有值
+							if (null != childNode.getChildNodes().item(0))
+							{
+								sobId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("TRANS_ID"))
+						{
+							// 有值
+							if (null != childNode.getChildNodes().item(0))
+							{
+								transId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+							}
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("TRANS_TYPE"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        transType = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("TRANS_NUMBER"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        transNumber = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("CUSTOMER_ID"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        customerId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("CUSTOMER_NUMBER"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        customerNumber = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("DIY_SITE_CODE"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        diySiteCode = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("SHIP_DATE"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        shipDate = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("ITEM_CODE"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        itemCode = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("QUANTITY"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        quantity = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("EBS_TO_APP_FLAG"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        ebsToAppFlag = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("APP_ERROR_MESSAGE"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        appErrorMessage = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("CREATION_DATE"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        creationDate = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("LAST_UPDATED_BY"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        lastUpdatedBy = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("LAST_UPDATE_DATE"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        lastUpdateDate = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE1"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        attribute1 = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE2"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        attribute2 = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE3"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        attribute3 = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE4"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        attribute4 = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+						else if (childNode.getNodeName().equalsIgnoreCase("ATTRIBUTE5"))
+						{
+						    if (null != childNode.getChildNodes().item(0))
+						    {
+						        attribute5 = childNode.getChildNodes().item(0).getNodeValue();
+						    }
+						}
+					}
+				}
+				
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				TdDiySiteInventoryEbs diySiteInventoryEbs = new TdDiySiteInventoryEbs();
+				diySiteInventoryEbs.setSobId(sobId);
+				diySiteInventoryEbs.setTransId(transId);
+				diySiteInventoryEbs.setTransType(transType);
+				diySiteInventoryEbs.setTransNumber(transNumber);
+				diySiteInventoryEbs.setCustomerId(customerId);
+				diySiteInventoryEbs.setCustomerNumber(customerNumber);
+				diySiteInventoryEbs.setDiySiteCode(diySiteCode);
+				
+				if (shipDate != null)
+				{
+					try
+					{
+						Date ship_date = sdf.parse(shipDate);
+						diySiteInventoryEbs.setShipDate(ship_date);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				diySiteInventoryEbs.setItemCode(itemCode);
+				diySiteInventoryEbs.setQuantity(quantity);
+				diySiteInventoryEbs.setEbsToAppFlag(ebsToAppFlag);
+				diySiteInventoryEbs.setAppErrorMessage(appErrorMessage);
+				
+				if (creationDate != null)
+				{
+					try
+					{
+						Date creation_date = sdf.parse(creationDate);
+						diySiteInventoryEbs.setCreationDate(creation_date);
+					}
+					catch (ParseException e) 
+					{
+						e.printStackTrace();
+					}
+				}
+				
+				diySiteInventoryEbs.setLastUpdatedBy(lastUpdatedBy);
+				
+				if (lastUpdateDate != null)
+				{
+					try
+					{
+						Date last_update_date = sdf.parse(lastUpdateDate);
+						diySiteInventoryEbs.setCreationDate(last_update_date);
+					}
+					catch (ParseException e)
+					{
+						e.printStackTrace();
+					}
+				}
+				diySiteInventoryEbs.setAttribute1(attribute1);
+				diySiteInventoryEbs.setAttribute2(attribute2);
+				diySiteInventoryEbs.setAttribute3(attribute3);
+				diySiteInventoryEbs.setAttribute4(attribute4);
+				diySiteInventoryEbs.setAttribute5(attribute5);
+				
+				tdDiySiteInventoryEbsService.save(diySiteInventoryEbs);
+				
+				TdGoods tdGoods = tdGoodsService.findByCodeAndStatus(itemCode,1l);
+				
+				TdDiySite site = tdDiySiteService.findByStoreCode(diySiteCode);
+				
+				if (tdGoods == null)
+				{
+					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>商品编码为："+ itemCode +"的商品不存在或者不可用</MESSAGE></STATUS></RESULTS>";
+				}
+				if (site == null)
+				{
+					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>门店编码为："+ diySiteCode +"的门店不存在或者不可用</MESSAGE></STATUS></RESULTS>";
+				}
+				
+				TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(itemCode, site.getId());
+				if (inventory == null)
+				{
+					inventory = new TdDiySiteInventory();
+					inventory.setInventory(quantity);
+					inventory.setDiySiteId(site.getId());
+					inventory.setDiySiteName(site.getTitle());
+					inventory.setGoodsCode(tdGoods.getCode());
+					inventory.setGoodsId(tdGoods.getId());
+					inventory.setCategoryId(tdGoods.getCategoryId());
+					inventory.setCategoryIdTree(tdGoods.getCategoryIdTree());
+					inventory.setCategoryTitle(tdGoods.getCategoryTitle());
+					inventory.setDiyCode(site.getStoreCode());
+					inventory.setGoodsTitle(tdGoods.getTitle());
+					inventory.setRegionId(site.getRegionId());
+					inventory.setRegionName(site.getCity());
+					tdDiySiteInventoryLogService.saveChangeLog(inventory, quantity, null, null, transType);
+				}
+				inventory.setInventory(inventory.getInventory() + quantity);
+				tdDiySiteInventoryLogService.saveChangeLog(inventory, quantity, null, null,transType);
+				tdDiySiteInventoryService.save(inventory);
+				
+			}
 		}
 		
 		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";

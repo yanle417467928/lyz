@@ -360,6 +360,15 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 	 * @author dengxiao
 	 */
 	TdGoods findByCode(String code);
+	
+	
+	/**
+	 * 根据sku查找有效商品
+	 * @param code
+	 * @param status
+	 * @return
+	 */
+	TdGoods findByCodeAndInventoryItemStatus(String code ,Long status);
 
 	/**
 	 * 根据关键词模糊查询商品，其涉及到商品的名称，商品的标题，商品的副标题，商品的sku，商品的分类名称，最后按照sortId（排序号）正序排序
@@ -487,4 +496,38 @@ public interface TdGoodsRepo extends PagingAndSortingRepository<TdGoods, Long>, 
 			"(( pl.endDateActive > SYSDATE() AND pl.startDateActive < SYSDATE()) "+
 			"OR (pl.endDateActive is null AND pl.startDateActive < SYSDATE()) ) and g.code = pi.itemNum and pi.priceListId=pl.listHeaderId and pl.cityId= ?1 ") 
 	List<TdGoods> findBySobId(Long sobId);
+	
+	@Query("select g from TdGoods g,TdPriceListItem pli where "
+			+ "g.categoryId in ?2 and g.inventoryItemId=pli.goodsId and pli.priceListId in ?1 and "
+			+ "(g.title like %?3% or g.subTitle like %?3% or g.detail like %?3% or g.code like %?3% ) "
+			+ "and pli.startDateActive<=SYSDATE() and (pli.endDateActive>=SYSDATE() "
+			+ "or pli.endDateActive is null ) and g.isOnSale =1 and (g.isCoupon=0 or g.isCoupon is null)")
+	Page<TdGoods> queryAllOrderBySortIdAsc(List<Long> priceListIdList,List<Long> categoryIdList,String keywords,Pageable page);
+	
+	/**
+	 * 优惠卷商品查询
+	 * @param cityId 城市id
+	 * @param brandId 品牌id
+	 * @param keywords 关键字
+	 * @author zp
+	 */
+	@Query("select g from TdGoods g,TdPriceListItem pli,TdPriceList pl where "
+			+ "g.brandId = ?2 and g.inventoryItemId=pli.goodsId and pli.priceListId =pl.listHeaderId and pl.cityId=?1 "
+			+ "and (g.title like %?3% or g.subTitle like %?3% or g.detail like %?3% or g.code like %?3% ) "
+			+ "and pli.startDateActive<=SYSDATE() and (pli.endDateActive>=SYSDATE() "
+			+ "or pli.endDateActive is null ) and g.isOnSale =1 and (g.isCoupon=0 or g.isCoupon is null)")
+	List<TdGoods> queryCouponGooddsOrderBySortIdAsc(Long cityId,Long brandId,String keywords);
+	
+	/**
+	 * 优惠卷模板商品查询
+	 * @param cityId 城市id
+	 * @param keywords 关键字
+	 * @author zp
+	 */
+	@Query("select g from TdGoods g,TdPriceListItem pli,TdPriceList pl where "
+			+ "g.inventoryItemId=pli.goodsId and pli.priceListId =pl.listHeaderId and pl.cityId=?1 "
+			+ "and (g.title like %?2% or g.subTitle like %?2% or g.detail like %?2% or g.code like %?2% ) "
+			+ "and pli.startDateActive<=SYSDATE() and (pli.endDateActive>=SYSDATE() "
+			+ "or pli.endDateActive is null ) and g.isOnSale =1 and (g.isCoupon=0 or g.isCoupon is null)")
+	List<TdGoods> queryCouponGooddsOrderBySortIdAsc(Long cityId,String keywords);
 }

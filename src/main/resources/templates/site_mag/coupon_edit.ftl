@@ -117,7 +117,7 @@ function changeType(e)
             <dt>城市</dt>
             <dd>
                 <div class="rule-single-select">
-                    <select name="cityId" id="cityId"  datatype="*" sucmsg=" ">
+                    <select name="cityId" id="cityId"  datatype="*" sucmsg=" " <#if !coupon??>onchange="javascript:searchGoods();"</#if>>
                         <#if !activity_gift??>
                         <option value="">请选择城市...</option>
                         </#if>
@@ -210,13 +210,14 @@ function changeType(e)
 <script type="text/javascript">
 function searchGoods()
 {
-	//查询条件增加公司id
+	//查询条件增加公司id 城市id
     var keywords = $("#keywords").val();
     var brandId = $("#brandId").val();
+    var cityId= $("#cityId").val();
     $.ajax({
         type : "post",
         url : "/Verwalter/coupon/search",
-        data : {"keywords":keywords,"brandId":brandId},
+        data : {"keywords":keywords,"brandId":brandId,"cityId":cityId},
         success:function(res)
         {
             $("#goodsDiv").html(res);

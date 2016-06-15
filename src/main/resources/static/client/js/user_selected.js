@@ -10,7 +10,7 @@ function operate(operation, type, id) {
 	var priceElement = $(priceId);
 
 	if (0 == operation) {
-		if (1 == quantity) {
+		if (0 == quantity) {
 			warning("亲，不能再少了");
 			return;
 		}
@@ -23,11 +23,26 @@ function operate(operation, type, id) {
 		}
 	}
 	
-	if(quantity>inventory){
-		$(elementId).val(inventory);
-		warning("亲，库存只有这么多啦");
+	if(parseInt(quantity)<0){
+		$(elementId).val(0);
+		warning("亲，数量不能小于0");
 		return;
 	}
+	
+	if(parseInt(inventory)<0){
+		$(elementId).val(0);
+		warning("亲，库存不足");
+		return;
+	}
+	
+	//数字比较
+	if(parseInt(quantity)>parseInt(inventory)){
+		$(elementId).val(inventory);
+		warning("亲，库存只有这么多啦");
+	}
+	
+	
+		
 	//增加当前数量参数
 	// 开启等待图标
 	wait();

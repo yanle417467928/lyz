@@ -96,12 +96,12 @@ function pay() {
 			}
 			if (3 == res.status) {
 				if ("支付宝" == res.title) {
-					window.location.href = "/pay/alipay?id=" + res.order_id
+					window.location.href = "/pay/alipay?number=" + res.order_number
 							+ "&type=0";
 				} else if (res.title == "微信支付") {
 					document.location = "WXAppPay:WX:" + res.order_id;
 				} else if ("银行卡" === res.title) {
-					window.location.href = "/pay/union?id=" + res.order_id
+					window.location.href = "/pay/union?number=" + res.order_number
 							+ "&type=0";
 				}
 			}
@@ -124,8 +124,16 @@ function confirmPay() {
 				close(-1);
 				warning("该订单不能选择'货到付款'或'到店支付'");
 			}
+			else if (-2 === res.status) {
+				close(-1);
+				warning("商品库存不足,请重新下单！");
+			}
+			else if (-3 === res.status) {
+				close(-1);
+				warning("非华润产品请选择物流配送！");
+			}
 
-			if (0 === res.status) {
+			else if (0 === res.status) {
 				pay();
 			}
 		}

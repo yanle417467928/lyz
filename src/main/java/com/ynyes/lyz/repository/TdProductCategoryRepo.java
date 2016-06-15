@@ -62,4 +62,10 @@ public interface TdProductCategoryRepo
 	 */
 	@Query("select c from TdProductCategory c where c.id in ?1 group by c.id order by c.sortId asc")
 	List<TdProductCategory> findByIdInGroupByIdOrderBySortIdAsc(List<Long> ids);
+	
+	/**
+	 * 查找指定父类下面的子类 
+	 * @author zp
+	 */
+	TdProductCategory findByTitleAndParentId(String title,Long parentId);
 }

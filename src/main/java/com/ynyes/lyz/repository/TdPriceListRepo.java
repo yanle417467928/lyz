@@ -32,5 +32,9 @@ public interface TdPriceListRepo extends
 	 */
 	List<TdPriceList> findByPriceTypeAndCityIdAndStartDateActiveBeforeAndEndDateActiveAfterAndActiveFlag(
 			String priceType, Long cityId, Date begin, Date finish, String flag);
+	/**
+	 * 根据城市编号查询价目表头
+	 */
+	List<TdPriceList> findByCityId(Long cityId);
 
 }

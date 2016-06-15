@@ -80,6 +80,12 @@ public class TdGoodsInOut {
 	//配送人电话
 	@Column
 	private String deliverUsername;
+	//退货人姓名
+	@Column
+	private String shippingName;
+	//退货人电话
+	@Column
+	private String shippingPhone;
 	//退货地址
 	@Column
 	private String shippingAddress;
@@ -260,6 +266,18 @@ public class TdGoodsInOut {
 	}
 	public void setDiyId(Long diyId) {
 		this.diyId = diyId;
+	}
+	public String getShippingName() {
+		return shippingName;
+	}
+	public void setShippingName(String shippingName) {
+		this.shippingName = shippingName;
+	}
+	public String getShippingPhone() {
+		return shippingPhone;
+	}
+	public void setShippingPhone(String shippingPhone) {
+		this.shippingPhone = shippingPhone;
 	}
 	
 }

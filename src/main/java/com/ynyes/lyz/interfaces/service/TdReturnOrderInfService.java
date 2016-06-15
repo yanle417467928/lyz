@@ -93,12 +93,22 @@ public class TdReturnOrderInfService {
     
     public TdReturnOrderInf findByReturnNumber(String returnNumber)
     {
-    	return repository.findByReturnNumber(returnNumber);
+    	List<TdReturnOrderInf> returnOrderInfs = repository.findByReturnNumber(returnNumber);
+    	if (returnOrderInfs == null  || returnOrderInfs.size() < 1)
+		{
+			return null;
+		}
+    	return returnOrderInfs.get(0);
     }
     
     public TdReturnOrderInf findByOrderNumber(String orderNumber)
     {
-    	return repository.findByOrderNumber(orderNumber);
+    	List<TdReturnOrderInf> returnOrderInfs = repository.findByOrderNumber(orderNumber);
+    	if (returnOrderInfs == null  || returnOrderInfs.size() < 1)
+		{
+			return null;
+		}
+    	return returnOrderInfs.get(0);
     }
     
     /**

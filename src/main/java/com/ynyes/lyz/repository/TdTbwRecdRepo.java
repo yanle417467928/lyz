@@ -1,5 +1,7 @@
 package com.ynyes.lyz.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -12,6 +14,7 @@ import com.ynyes.lyz.entity.TdTbwRecd;
  *
  */
 
-public interface TdTbwRecdRepo extends PagingAndSortingRepository<TdTbwRecd, Long>, JpaSpecificationExecutor<TdTbwRecd> {
-	
+public interface TdTbwRecdRepo extends PagingAndSortingRepository<TdTbwRecd, Long>, JpaSpecificationExecutor<TdTbwRecd> 
+{
+	List<TdTbwRecd> findByRecNo(String recNo);
 }

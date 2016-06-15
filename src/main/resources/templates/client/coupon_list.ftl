@@ -13,7 +13,7 @@
     	<link rel="stylesheet" type="text/css" href="/client/css/other.css"/>
     	
     	<script src="/client/js/jquery-1.11.0.js" type="text/javascript"></script>
-    	<script src="/client/js/rich_lee.js" type="text/javascript"></script>
+    	
     </head>
     <style type="text/css">
     	.add_1_17{
@@ -28,9 +28,39 @@
     	$(function(){
     	  changest('.tab-view .title-1 li a','.tab-content','red');
     	})
-    	
+    	function html_hi(){
+	var oHtml = document.getElementsByTagName('html')[0];
+	var win_hi = window.screen.height;
+	var doc_hi =document.documentElement.offsetHeight;
+	if(doc_hi>=win_hi){
+		oHtml.style.height = doc_hi + 'px';
+	}else{
+		oHtml.style.height = win_hi + 'px';
+	};
+	
+};
+////////////////////////////////////////		
+function changest(obj,obj_show,sty){
+	var ang = $(obj);
+	var ang_img = $(obj_show);
+	ang_img[0].style.display = 'block';
+	ang[0].className = sty;
+	for(var i=0;i<ang.length;i++){
+		ang[i].index = i;
+		ang[i].onclick = function(){
+			for(var i=0;i<ang.length;i++){
+				ang_img[i].style.display = 'none';
+				ang[i].className = '';
+			};
+			this.className = sty;
+			ang_img[this.index].style.display = 'block';
+		};
+	};
+};	
     </script>
     <body style="height: 100%; background: #f3f4f6;">
+    <#-- 引入警告提示样式 -->
+        <#include "/client/common_warn.ftl">
     	<div>
     		<div class="sec_header">
     			<a class="back" href="javascript:history.go(-1);"></a>
@@ -39,11 +69,11 @@
     		<article class="product-volume">
     <div class="tab-view">
       <ul class="title-1">
-        <li><a href="javascript:;">现金券</a></li>
-        <li><a href="javascript:;">产品券</a></li>
+        <li style="width: 49%;"><a href="javascript:;">现金券</a></li>
+        <li style="width: 49%;"><a href="javascript:;">产品券</a></li>
       </ul>
     <!--  <div style="width: 100%;height: 40px;line-height: 40px;text-align: center;background: white;margin-top: 10px;">剩余优惠券：<font style="color: red;">3213</font>张</div>-->
-      <ul class="tab-content">
+      <ul class="tab-content" style="clear: both;">
         <!-- 未使用 -->
             <li class="li1">
                 <#if couponList??>
@@ -77,17 +107,20 @@ function grant(id)
       type : "post",
       data : {"id":id},
       success:function(data){
-          alert(data.msg);
-          if(data.code==1)
-          {
-              location.replace("/coupon/list");
-          }
+    	  warning(data.msg);
+    	  var timer = setTimeout(function(){
+    		  if(data.code==1)
+              {
+                  location.replace("/coupon/list");
+              }
+          },1000);
+         
       }
   });
 }
 
 </script>      
-      <ul class="tab-content">
+      <ul class="tab-content" style="clear: both;">
         
         <!-- 未使用 -->
         <li class="li1">

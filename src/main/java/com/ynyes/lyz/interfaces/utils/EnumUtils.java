@@ -47,7 +47,7 @@ public class EnumUtils {
 		/**
 		 * 收款表
 		 */
-		CASHRECIPTINF,
+		CASHRECEIPTINF,
 		
 		/**
 		 * 退款表

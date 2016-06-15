@@ -43,6 +43,9 @@ public class TdSalesDetail {
 	//收货人
 	@Column
 	private String shippingName;
+	//收货人
+	@Column
+	private String shippingPhone;
 	//产品编号
 	@Column
 	private String sku;
@@ -99,6 +102,12 @@ public class TdSalesDetail {
 	//门店id
 	@Column
 	private Long diyId;
+	//一级分类名称
+	@Column
+	private String parentCategoryTitle;
+	//客户备注
+	@Column
+	private String remarkInfo;
 	
 	public Long getId() {
 		return id;
@@ -268,6 +277,23 @@ public class TdSalesDetail {
 	public void setDiyId(Long diyId) {
 		this.diyId = diyId;
 	}
-	
+	public String getShippingPhone() {
+		return shippingPhone;
+	}
+	public void setShippingPhone(String shippingPhone) {
+		this.shippingPhone = shippingPhone;
+	}
+	public String getParentCategoryTitle() {
+		return parentCategoryTitle;
+	}
+	public void setParentCategoryTitle(String parentCategoryTitle) {
+		this.parentCategoryTitle = parentCategoryTitle;
+	}
+	public String getRemarkInfo() {
+		return remarkInfo;
+	}
+	public void setRemarkInfo(String remarkInfo) {
+		this.remarkInfo = remarkInfo;
+	}
 	
 }

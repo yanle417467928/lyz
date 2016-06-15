@@ -36,12 +36,14 @@ import com.ynyes.lyz.entity.TdDeliveryInfo;
 import com.ynyes.lyz.entity.TdDeliveryInfoDetail;
 import com.ynyes.lyz.entity.TdDistrict;
 import com.ynyes.lyz.entity.TdDiySite;
+import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGeoInfo;
 import com.ynyes.lyz.entity.TdGoods;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceListItem;
+import com.ynyes.lyz.entity.TdRecharge;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdSetting;
 import com.ynyes.lyz.entity.TdShippingAddress;
@@ -54,6 +56,7 @@ import com.ynyes.lyz.entity.TdUserSuggestion;
 import com.ynyes.lyz.entity.TdUserSuggestionCategory;
 import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
+import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.service.TdActivityService;
 import com.ynyes.lyz.service.TdArticleCategoryService;
 import com.ynyes.lyz.service.TdArticleService;
@@ -65,6 +68,7 @@ import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDeliveryInfoDetailService;
 import com.ynyes.lyz.service.TdDeliveryInfoService;
 import com.ynyes.lyz.service.TdDistrictService;
+import com.ynyes.lyz.service.TdDiySiteInventoryService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
@@ -72,7 +76,7 @@ import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
-import com.ynyes.lyz.service.TdPriceListItemService;
+import com.ynyes.lyz.service.TdReChargeService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
@@ -111,9 +115,6 @@ public class TdUserController {
 
 	@Autowired
 	private TdUserSuggestionCategoryService tdUserSuggestionCategoryService;
-
-	@Autowired
-	private TdPriceListItemService tdPriceListItemService;
 
 	@Autowired
 	private TdUserSuggestionService tdUserSuggestionService;
@@ -181,9 +182,15 @@ public class TdUserController {
 
 	@Autowired
 	private TdPayTypeService tdPayTypeService;
-	
+
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
+
+	@Autowired
+	private TdReChargeService tdReChargeService;
+	
+	@Autowired
+	private TdDiySiteInventoryService tdDiySiteInventoryService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -381,8 +388,12 @@ public class TdUserController {
 			for (int i = 0; i < collect_list.size(); i++) {
 				TdUserCollect userCollect = collect_list.get(i);
 				if (null != userCollect) {
-					TdPriceListItem priceListItem = tdPriceListItemService
-							.findByPriceListIdAndGoodsId(diySite.getPriceListId(), userCollect.getGoodsId());
+					// 调用公共方法查询价格
+					TdGoods goods = tdGoodsService.findOne(userCollect.getGoodsId());
+					TdPriceListItem priceListItem = tdCommonService.getGoodsPrice(req, goods);
+					// TdPriceListItem priceListItem = tdPriceListItemService
+					// .findByPriceListIdAndGoodsId(diySite.getPriceListId(),
+					// userCollect.getGoodsId());
 					map.addAttribute("priceListItem" + i, priceListItem);
 				}
 			}
@@ -515,7 +526,7 @@ public class TdUserController {
 
 	/**
 	 * 跳转到我的已选页面的方法
-	 * 
+	 * 增加单店库存 zp
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/selected")
@@ -527,7 +538,9 @@ public class TdUserController {
 		}
 
 		Double total_price = 0.0;
-
+		
+		TdDiySite diySite= tdCommonService.getDiySite(req);
+		
 		// 获取所有已选的商品
 		List<TdCartGoods> all_selected = tdCartGoodsService.findByUserId(user.getId());
 		for (int i = 0; i < all_selected.size(); i++) {
@@ -536,15 +549,32 @@ public class TdUserController {
 			if (null != cartGoods) {
 				TdGoods goods = tdGoodsService.findOne(cartGoods.getGoodsId());
 				if (null != goods) {
-					map.addAttribute("goods" + i, goods.getLeftNumber());
+					//查询商品单店库存
+					TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), diySite.getRegionId());
+					//设置单店库存
+					if(diySiteInventory!=null){
+						map.addAttribute("goods" + i, diySiteInventory.getInventory());
+					}else{
+						map.addAttribute("goods" + i, 0);
+					}
+					
+					
 					// 如果已选数量大于了最大库存，则消减已选数量
-					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > goods.getLeftNumber()) {
-						cartGoods.setQuantity(goods.getLeftNumber());
-						cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
+					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > diySiteInventory.getInventory()) {
+						//如果为负库存设置为0
+						if(diySiteInventory.getInventory()<0){
+							cartGoods.setQuantity(0L);
+							cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
+						}else{
+							cartGoods.setQuantity(diySiteInventory.getInventory());
+							cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
+						}
+						
 						tdCartGoodsService.save(cartGoods);
 					}
 					total_price += cartGoods.getTotalPrice();
 				}
+				
 			}
 		}
 		map.addAttribute("all_selected", all_selected);
@@ -556,19 +586,26 @@ public class TdUserController {
 	}
 
 	/**
-	 * 更改已选数量的方法
-	 * 可以手动修改数量 zp
-	 * @param operation 0:减一  1:加一  2手动修改数量
+	 * 更改已选数量的方法 可以手动修改数量 zp
+	 * 
+	 * @param operation
+	 *            0:减一 1:加一 2手动修改数量
 	 * @author dengxiao
 	 */
 	@RequestMapping(value = "/selected/change/quantity")
-	public String selectedChangeQuantity(HttpServletRequest req, ModelMap map, Long operation, Long type, Long id,Long quantity) {
+	public String selectedChangeQuantity(HttpServletRequest req, ModelMap map, Long operation, Long type, Long id,
+			Long quantity) {
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 		// 避免“空指针异常”
 		if (null == user) {
 			user = new TdUser();
 		}
+		//设置默认值
+		if(quantity==null){
+			quantity=0L;
+		}
+		
 		List<TdCartGoods> selected_goods = tdCartGoodsService.findByUserId(user.getId());
 		Double total_price = 0.0;
 		// 操作已选商品的情况
@@ -583,14 +620,14 @@ public class TdUserController {
 					if (1L == operation) {
 						cartGoods.setQuantity(cartGoods.getQuantity() + 1);
 					}
-					if(2L==operation){
+					if (2L == operation) {
 						cartGoods.setQuantity(quantity);
 					}
 					tdCartGoodsService.save(cartGoods);
 				}
 			}
 		}
-
+		TdDiySite diySite= tdCommonService.getDiySite(req);
 		// 获取所有已选的商品
 		for (int i = 0; i < selected_goods.size(); i++) {
 			TdCartGoods cartGoods = selected_goods.get(i);
@@ -598,10 +635,17 @@ public class TdUserController {
 			if (null != cartGoods) {
 				TdGoods goods = tdGoodsService.findOne(cartGoods.getGoodsId());
 				if (null != goods) {
-					map.addAttribute("goods" + i, goods.getLeftNumber());
+					//查询商品单店库存
+					TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), diySite.getRegionId());
+					Long goodsInventory=0L;
+					//设置单店库存
+					if(diySiteInventory!=null){
+						goodsInventory=diySiteInventory.getInventory();
+					}
+					map.addAttribute("goods" + i, goodsInventory);
 					// 如果已选数量大于了最大库存，则消减已选数量
-					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > goods.getLeftNumber()) {
-						cartGoods.setQuantity(goods.getLeftNumber());
+					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > goodsInventory) {
+						cartGoods.setQuantity(goodsInventory);
 					}
 					cartGoods.setTotalPrice(cartGoods.getQuantity() * cartGoods.getPrice());
 					cartGoods.setRealTotalPrice(cartGoods.getRealPrice() * cartGoods.getQuantity());
@@ -1099,7 +1143,7 @@ public class TdUserController {
 		Long cityId = user.getCityId();
 
 		TdDiySite site = tdDiySiteService.findByRegionIdAndCustomerId(cityId, customerId);
-		if (null != site && (site.getStatus() == 2)) {
+		if (null != site && (site.getStatus()!=null && site.getStatus() == 2)) {
 			map.addAttribute("isSelected", false);
 		}
 
@@ -1391,7 +1435,10 @@ public class TdUserController {
 					if (null != statusId && 3L == statusId.longValue()) {
 						// 在此进行资金和优惠券的退还
 						tdPriceCountService.cashAndCouponBack(subOrder, realUser);
-
+						
+						//增加库存
+						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req,"退货");
+						
 						// 通知物流
 						TdReturnNote returnNote = tdCommonService.MakeReturnNote(subOrder, 0L, "");
 						tdCommonService.sendBackMsgToWMS(returnNote);
@@ -1742,6 +1789,9 @@ public class TdUserController {
 				tdOrderGoodsService.save(orderGoodsList);
 				// 保存退货单
 				tdReturnNoteService.save(returnNote);
+				
+				tdInterfaceService.initReturnOrder(returnNote);
+				tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_SUB_INT);
 
 				order.setStatusId(9L);
 				order.setIsRefund(true);
@@ -1796,12 +1846,9 @@ public class TdUserController {
 						Double unit = returnUnitPrice.get(goodsId);
 						map.addAttribute("unit" + goodsId, unit);
 						Double lsPrice = 0d;
-						if (goods.getGiftPrice() != null)
-						{
+						if (goods.getGiftPrice() != null) {
 							lsPrice = goods.getGiftPrice();
-						}
-						else
-						{
+						} else {
 							lsPrice = goods.getPrice();
 						}
 						map.addAttribute("price" + goodsId, lsPrice);
@@ -1958,7 +2005,8 @@ public class TdUserController {
 			tdOrderService.save(order);
 			tdReturnNoteService.save(returnNote);
 			tdInterfaceService.initReturnOrder(returnNote);
-			
+			tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_SUB_INT);
+			tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 			// tdCommonService.sendBackToWMS(returnNote);
 		}
 
@@ -1973,15 +2021,18 @@ public class TdUserController {
 	 */
 	@RequestMapping(value = "/show/gift")
 	public String showGift(HttpServletRequest req, ModelMap map) {
+
+		// 创建一个虚拟订单
+		TdOrder order = new TdOrder();
 		// 获取登录的用户
 		String username = (String) req.getSession().getAttribute("username");
-
 		// 获取用户所有的已选商品
 		List<TdCartGoods> all_selected = tdCartGoodsService.findByUsername(username);
 
+		order = tdCommonService.getPresent(req, order);
+
 		// 获取促销赠品
-		List<TdOrderGoods> present = this.getPresent(all_selected, req);
-		map.addAttribute("present", present);
+		map.addAttribute("present", order.getPresentedList());
 
 		// 获取小辅料赠品
 		List<TdOrderGoods> gift = this.getGift(req, all_selected);
@@ -2420,5 +2471,60 @@ public class TdUserController {
 			map.addAttribute("all_return_list", returnList);
 		}
 		return "/client/user_all_return";
+	}
+
+	@RequestMapping(value = "/create/recharge", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> createRecharge(HttpServletRequest req, Double money, String title) {
+		Map<String, Object> res = new HashMap<>();
+		res.put("status", -1);
+
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsername(username);
+		if (null == user) {
+			res.put("message", "未成功获取到登录用户的信息");
+			return res;
+		}
+
+		if (null == money) {
+			res.put("message", "未成功获取到充值金额信息");
+			return res;
+		}
+
+		if (null == title) {
+			res.put("message", "未成功获取到充值方式信息");
+			return res;
+		}
+
+		TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue(title);
+		if (null == payType) {
+			res.put("message", "未成功获取到充值方式信息");
+			return res;
+		}
+
+		// 生成充值单号
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		Date now = new Date();
+		String sDate = sdf.format(now);
+		Random random = new Random();
+		Integer suiji = random.nextInt(900) + 100;
+		String orderNum = sDate + suiji;
+
+		// 生成充值单
+		TdRecharge recharge = new TdRecharge();
+		recharge.setNumber("CZ" + orderNum);
+		recharge.setUserId(user.getId());
+		recharge.setUsername(user.getUsername());
+		recharge.setCreateTime(new Date());
+		recharge.setTotalPrice(money);
+		recharge.setTypeId(payType.getId());
+		recharge.setTypeTitle(payType.getTitle());
+		recharge.setStatusId(1L);
+		tdReChargeService.save(recharge);
+
+		res.put("number", recharge.getNumber());
+
+		res.put("status", 0);
+		return res;
 	}
 }

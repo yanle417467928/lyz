@@ -3,6 +3,8 @@ package com.ynyes.lyz.service;
 import static org.apache.commons.lang3.StringUtils.leftPad;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ import com.ibm.icu.util.Calendar;
 import com.ynyes.lyz.entity.TdActivity;
 import com.ynyes.lyz.entity.TdActivityGift;
 import com.ynyes.lyz.entity.TdActivityGiftList;
+import com.ynyes.lyz.entity.TdBalanceLog;
 import com.ynyes.lyz.entity.TdBrand;
 import com.ynyes.lyz.entity.TdCartColorPackage;
 import com.ynyes.lyz.entity.TdCartGoods;
@@ -56,6 +59,7 @@ import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
+import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.interfaces.utils.StringTools;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
@@ -65,10 +69,10 @@ public class TdCommonService {
 
 	// static String wmsUrl =
 	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
-	static String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
-	static JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
-	static org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
-	static QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
+	private String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
+	private JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
+	private org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
+	private QName WMSName = new QName("http://tempuri.org/", "GetErpInfo");
 
 	@Autowired
 	private TdUserService tdUserService;
@@ -145,32 +149,8 @@ public class TdCommonService {
 	@Autowired
 	private TdInterfaceService tdInterfaceService;
 
-	// static private String getWmsUrlByLocalHost()
-	// {
-	// try
-	// {
-	// InetAddress address = InetAddress.getLocalHost();
-	// System.out.println(address.getAddress());
-	// System.out.println(address.getHostName());
-	// String hostAddress = address.getHostAddress();
-	// if (hostAddress.equalsIgnoreCase("101.200.128.65"))
-	// {
-	// System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlReal);
-	// return wmsUrlReal;
-	// }
-	// else
-	// {
-	// System.out.println("MDJ:WSL:INTERFACE:" + wmsUrlTest);
-	// return wmsUrlTest;
-	// }
-	// }
-	// catch (Exception e)
-	// {
-	// System.out.println(e.getMessage());
-	// System.out.println("MDJ:WSL:INTERFACE+3:" + wmsUrlTest);
-	// return wmsUrlTest;
-	// }
-	// }
+	@Autowired
+	private TdBalanceLogService tdBalanceLogService;
 
 	/**
 	 * 根据仓库编号获取仓库名
@@ -360,6 +340,9 @@ public class TdCommonService {
 
 		returnNote.setReturnGoodsList(orderGoodsList);
 		tdOrderGoodsService.save(orderGoodsList);
+		tdInterfaceService.initReturnOrder(returnNote);
+		tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
+		tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 		return tdReturnNoteService.save(returnNote);
 	}
 
@@ -1261,6 +1244,15 @@ public class TdCommonService {
 		List<TdActivity> activity_list = tdActivityService
 				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
 						diySite.getId() + "", new Date(), giftType);
+		// 为了避免脏数据刷新，创建一个map用于存储已选【id：数量】
+		Map<Long, Long> selected_map = new HashMap<>();
+
+		for (TdCartGoods cartGoods : all_selected) {
+			Long id = cartGoods.getGoodsId();
+			Long quantity = cartGoods.getQuantity();
+
+			selected_map.put(id, quantity);
+		}
 		for (TdActivity activity : activity_list) {
 			// 创建一个布尔变量表示已选商品能否参加指定的活动
 			Boolean isJoin = true;
@@ -1290,16 +1282,6 @@ public class TdCommonService {
 
 			Boolean isCombo = activity.getIsCombo();
 			Boolean isEnoughMoney = activity.getIsEnoughMoney();
-
-			// 为了避免脏数据刷新，创建一个map用于存储已选【id：数量】
-			Map<Long, Long> selected_map = new HashMap<>();
-
-			for (TdCartGoods cartGoods : all_selected) {
-				Long id = cartGoods.getGoodsId();
-				Long quantity = cartGoods.getQuantity();
-
-				selected_map.put(id, quantity);
-			}
 
 			String buyCouponId = order.getBuyCouponId();
 			if (null != buyCouponId && !"".equals(buyCouponId)) {
@@ -1331,33 +1313,23 @@ public class TdCommonService {
 				}
 			}
 
-			// 满数量促销的方法
+			// 组合促销的方法
 			if (null == isEnoughMoney || !isEnoughMoney) {
-				// 满数量组合促销的方法
-				if (null == isCombo || isCombo) {
-					order = this.comboEnoughNumber(req, activity, selected_map, isJoin, realBuy, sortList, totalNumber,
-							isFloat, floatCount, presentedList, order, subPrice);
-					// 满数量阶梯促销的方法
-				} else {
 
-				}
-				// 满金额促销的方法
+				order = this.comboEnoughNumber(req, activity, selected_map, isJoin, realBuy, sortList, totalNumber,
+						isFloat, floatCount, presentedList, order, subPrice, isCombo);
 			} else {
-				// 满金额组合促销的方法
-				if (null == isCombo || isCombo) {
-					order = this.comboEnoughPrice(req, activity, selected_map, isJoin, sortList, totalPrice, subPrice,
-							presentedList, order);
+				// 阶梯促销的方法
+				order = this.comboEnoughPrice(req, activity, selected_map, isJoin, sortList, totalPrice, subPrice,
+						presentedList, order, isCombo);
 
-					// 满金额阶梯促销的方法
-				} else {
-
-				}
 			}
 
 		}
 		order.setPresentedList(presentedList);
 		order = tdOrderService.save(order);
 		return order;
+
 	}
 
 	/**
@@ -1668,6 +1640,56 @@ public class TdCommonService {
 						order.setCashBalanceUsed(Double.parseDouble(scale2_cash));
 						order.setOtherPay(Double.parseDouble(scale2_other));
 						order.setActualPay(order.getUnCashBalanceUsed() + order.getCashBalanceUsed());
+						// order.setTotalPrice(order.getTotalPrice()-order.getUnCashBalanceUsed()-order.getCashBalanceUsed());
+
+						// 记录预存款使用
+						TdUser user = tdUserService.findOne(order.getUserId());
+						// 不可提现预存款
+						if (!".00".equals(scale2_uncash)) {
+							TdBalanceLog balanceLog = new TdBalanceLog();
+							balanceLog.setUserId(order.getRealUserId());
+							balanceLog.setUsername(order.getUsername());
+							balanceLog.setMoney(Double.valueOf(scale2_uncash));
+							balanceLog.setType(3L);
+							balanceLog.setCreateTime(new Date());
+							balanceLog.setFinishTime(new Date());
+							balanceLog.setIsSuccess(true);
+							balanceLog.setReason("订单只支付使用");
+							balanceLog.setBalance(user.getUnCashBalance());
+							balanceLog.setBalanceType(2L);
+							balanceLog.setOperator(order.getUsername());
+							balanceLog.setOrderNumber(order.getOrderNumber());
+							try {
+								balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+							} catch (UnknownHostException e) {
+								System.out.println("获取ip地址报错");
+								e.printStackTrace();
+							}
+							tdBalanceLogService.save(balanceLog);
+						}
+						// 可提现预存款
+						if (!".00".equals(scale2_cash)) {
+							TdBalanceLog balanceLog = new TdBalanceLog();
+							balanceLog.setUserId(order.getRealUserId());
+							balanceLog.setUsername(order.getUsername());
+							balanceLog.setMoney(Double.valueOf(scale2_cash));
+							balanceLog.setType(3L);
+							balanceLog.setCreateTime(new Date());
+							balanceLog.setFinishTime(new Date());
+							balanceLog.setIsSuccess(true);
+							balanceLog.setReason("订单只支付使用");
+							balanceLog.setBalance(user.getCashBalance());
+							balanceLog.setBalanceType(1L);
+							balanceLog.setOperator(order.getUsername());
+							balanceLog.setOrderNumber(order.getOrderNumber());
+							try {
+								balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+							} catch (UnknownHostException e) {
+								System.out.println("获取ip地址报错");
+								e.printStackTrace();
+							}
+							tdBalanceLogService.save(balanceLog);
+						}
 
 					}
 				}
@@ -1676,6 +1698,8 @@ public class TdCommonService {
 
 		// add by Shawn
 		List<TdOrder> orderList = new ArrayList<TdOrder>();
+
+		List<TdOrder> ebsOrderList = new ArrayList<TdOrder>();
 
 		// 遍历存储
 		for (TdOrder order : order_map.values()) {
@@ -1695,6 +1719,7 @@ public class TdCommonService {
 				if ("送货上门".equals(order.getDeliverTypeTitle())) {
 					orderList.add(order);
 				}
+				ebsOrderList.add(order);
 			}
 		}
 
@@ -1718,19 +1743,14 @@ public class TdCommonService {
 		// 清空session中的虚拟订单
 		req.getSession().setAttribute("order_temp", null);
 
-		// CallWMSImpl callWMSImpl = new CallWMSImpl();
-
-		// System.out.println("MDJWS:READY:WMS:" +
-		// orderList.get(0).getMainOrderNumber());
-		// 抛单给WMS
-		// sendMsgToWMS(orderList, order_temp.getOrderNumber());
-
 		// 子线程 抛单给WMS
 		if (isSend) {
 			SendRequisitionToWmsThread requsitThread = new SendRequisitionToWmsThread(orderList,
 					order_temp.getOrderNumber());
 			requsitThread.start();
 		}
+		sendEbsThread ebsThread = new sendEbsThread(ebsOrderList);
+		ebsThread.start();
 	}
 
 	/**
@@ -1904,7 +1924,7 @@ public class TdCommonService {
 	 * @author mdj
 	 *
 	 */
-	// TODO 多线程
+	// TODO 多线程 wms
 	class SendRequisitionToWmsThread extends Thread {
 		List<TdOrder> orderList;
 		String mainOrderNumber;
@@ -1917,29 +1937,40 @@ public class TdCommonService {
 
 		public void run() {
 			sendMsgToWMS(orderList, mainOrderNumber);
+		}
+	}
+
+	class sendEbsThread extends Thread {
+		List<TdOrder> orderList;
+
+		sendEbsThread(List<TdOrder> orderList) {
+			this.orderList = orderList;
+		}
+
+		public void run() {
 			sendOrderToEBS(orderList);
 		}
 	}
 
 	// 传 order 给 EBS
-	private void sendOrderToEBS(List<TdOrder> orderList) 
-	{
+	private void sendOrderToEBS(List<TdOrder> orderList) {
 		for (TdOrder tdOrder : orderList) {
-			if (tdOrder != null && tdOrder.getOrderNumber() != null && tdOrder.getOrderNumber().contains("HR")) {
-				continue;
-			}
+			// if (tdOrder != null && tdOrder.getOrderNumber() != null &&
+			// tdOrder.getOrderNumber().contains("HR"))
+			// {
+			// continue;
+			// }
 			tdInterfaceService.initOrderInf(tdOrder);
 
 			Boolean isOrderInfSucceed = false;
 			// 单头
 			String orderInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERINF);
-			Object[] orderInf = { "TD_ORDER", "1", orderInfXML };
+			Object[] orderInf = { INFConstants.INF_ORDER_STR, "1", orderInfXML };
 			try {
-				String object = (String)TdInterfaceService.getCall().invoke(orderInf);
+				String object = (String) tdInterfaceService.getCall().invoke(orderInf);
 				System.out.println(object);
-				String resultStr =StringTools.interfaceMessage(object);
-				if (org.apache.commons.lang3.StringUtils.isBlank(resultStr))
-				{
+				String resultStr = StringTools.interfaceMessage(object);
+				if (org.apache.commons.lang3.StringUtils.isBlank(resultStr)) {
 					isOrderInfSucceed = true;
 				}
 			} catch (Exception e) {
@@ -1948,9 +1979,9 @@ public class TdCommonService {
 			// 商品
 			String orderGoodsInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERGOODSINF);
 			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderGoodsInfXML) && isOrderInfSucceed) {
-				Object[] orderGoodsInf = { "TD_ORDER_GOODS", "1", orderGoodsInfXML };
+				Object[] orderGoodsInf = { INFConstants.INF_ORDER_GOODS_STR, "1", orderGoodsInfXML };
 				try {
-					Object object = TdInterfaceService.getCall().invoke(orderGoodsInf);
+					Object object = tdInterfaceService.getCall().invoke(orderGoodsInf);
 					System.out.println(object);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -1959,9 +1990,20 @@ public class TdCommonService {
 			// 券
 			String orderCouponInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.ORDERCOUPONINF);
 			if (org.apache.commons.lang3.StringUtils.isNotBlank(orderCouponInfXML) && isOrderInfSucceed) {
-				Object[] orderCouponInf = { "TD_ORDER_COUPONS", "1", orderCouponInfXML };
+				Object[] orderCouponInf = { INFConstants.INF_ORDER_COUPON_STR, "1", orderCouponInfXML };
 				try {
-					Object object = TdInterfaceService.getCall().invoke(orderCouponInf);
+					Object object = tdInterfaceService.getCall().invoke(orderCouponInf);
+					System.out.println(object);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			// 收款
+			String cashreciptInfXML = tdInterfaceService.XmlByOrder(tdOrder, INFTYPE.CASHRECEIPTINF);
+			if (org.apache.commons.lang3.StringUtils.isNotBlank(cashreciptInfXML) && isOrderInfSucceed) {
+				Object[] cashreciptInf = { INFConstants.INF_CASH_RECEIPTS_STR, "1", cashreciptInfXML };
+				try {
+					Object object = tdInterfaceService.getCall().invoke(cashreciptInf);
 					System.out.println(object);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -2831,7 +2873,7 @@ public class TdCommonService {
 	// 促销方案满数量赠送的方法
 	public TdOrder comboEnoughNumber(HttpServletRequest req, TdActivity activity, Map<Long, Long> selected_map,
 			Boolean isJoin, Long realBuy, List<Long> sortList, Long totalNumber, Boolean isFloat, Long floatCount,
-			List<TdOrderGoods> presentedList, TdOrder order, Double subPrice) {
+			List<TdOrderGoods> presentedList, TdOrder order, Double subPrice, Boolean isCombo) {
 		// 获取该活动所需要的商品及其数量的列表
 		Map<Long, Long> cost = new HashMap<>();
 		String goodsAndNumber = activity.getGoodsNumber();
@@ -2886,28 +2928,33 @@ public class TdCommonService {
 					// 判断参与促销的倍数（表示同一个活动可以参加几次）
 					List<Long> mutipuls = new ArrayList<>();
 
-					// 获取倍数关系
-					for (Long goodsId : cost.keySet()) {
-						Long quantity = cost.get(goodsId);
-						Long goods_quantity = selected_map.get(goodsId);
-						if (null == quantity || 0L == quantity.longValue()) {
-							mutipuls.add(1L);
-						} else {
-							Long mutiplu = goods_quantity / quantity;
-							mutipuls.add(mutiplu);
-						}
-					}
+					Long min = 1L;
 
-					if (isFloat) {
-						Long totalNumberMutiplu = 1L;
-						if (0L != totalNumber.longValue()) {
-							totalNumberMutiplu = realBuy / totalNumber;
+					// 满数量组合促销的方法
+					if (null == isCombo || isCombo) {
+						// 获取倍数关系
+						for (Long goodsId : cost.keySet()) {
+							Long quantity = cost.get(goodsId);
+							Long goods_quantity = selected_map.get(goodsId);
+							if (null == quantity || 0L == quantity.longValue()) {
+								mutipuls.add(1L);
+							} else {
+								Long mutiplu = goods_quantity / quantity;
+								mutipuls.add(mutiplu);
+							}
 						}
-						mutipuls.add(totalNumberMutiplu);
-					}
 
-					// 集合中最小的数字即为倍数
-					Long min = Collections.min(mutipuls);
+						if (isFloat) {
+							Long totalNumberMutiplu = 1L;
+							if (0L != totalNumber.longValue()) {
+								totalNumberMutiplu = realBuy / totalNumber;
+							}
+							mutipuls.add(totalNumberMutiplu);
+						}
+
+						// 集合中最小的数字即为倍数
+						min = Collections.min(mutipuls);
+					}
 
 					// 改变剩下的商品的数量
 					for (Long goodsId : cost.keySet()) {
@@ -3008,7 +3055,7 @@ public class TdCommonService {
 	// 组合促销满金额赠的方法
 	public TdOrder comboEnoughPrice(HttpServletRequest req, TdActivity activity, Map<Long, Long> selected_map,
 			Boolean isJoin, List<Long> sortList, Double totalPrice, Double subPrice, List<TdOrderGoods> presentedList,
-			TdOrder order) {
+			TdOrder order, Boolean isCombo) {
 
 		// 创建一个变量用于表示实际参与促销的商品的总价值
 		Double totalCost = 0.00;
@@ -3036,6 +3083,8 @@ public class TdCommonService {
 							{
 								buyQuantity = 0l;
 							}
+							// 记录参加活动的id和数量 接口用
+							cost.put(id, buyQuantity);
 							// 获取指定的商品
 							TdGoods goods = tdGoodsService.findOne(id);
 
@@ -3061,9 +3110,12 @@ public class TdCommonService {
 
 				if (isJoin) {
 					Long min = 1L;
-					// 开始计算倍数关系
-					if (0 != totalPrice) {
-						min = (long) (totalCost / totalPrice);
+
+					if (null == isCombo || isCombo) {
+						// 开始计算倍数关系
+						if (0 != totalPrice) {
+							min = (long) (totalCost / totalPrice);
+						}
 					}
 
 					// 获取实际消耗金额
@@ -3104,7 +3156,7 @@ public class TdCommonService {
 							}
 						}
 					}
-					//不应该显示赠品为0的赠品 zp
+					// 不应该显示赠品为0的赠品 zp
 					if (min > 0) {
 						// 获取赠品队列
 						String giftNumber = activity.getGiftNumber();
@@ -3139,10 +3191,11 @@ public class TdCommonService {
 											orderGoods.setQuantity(quantity * min);
 											orderGoods.setSku(goods.getCode());
 											// 记录活动id
-											orderGoods.setActivityId("M"+activity.getId().toString() + "_" + quantity * min);
+											orderGoods.setActivityId(
+													"M" + activity.getId().toString() + "_" + quantity * min);
 											// 修改订单商品归属活动
-											tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(), min,
-													3L);
+											tdOrderGoodsService.updateOrderGoodsActivity(order, cost, activity.getId(),
+													min, 3L);
 											// 创建一个布尔变量用于表示赠品是否已经在队列中
 											Boolean isHave = false;
 											for (TdOrderGoods single : presentedList) {
@@ -3176,5 +3229,133 @@ public class TdCommonService {
 		}
 
 		return order;
+	}
+
+	public TdOrder rePresent(HttpServletRequest req, TdOrder order) {
+		// 获取用户的已选
+		List<TdOrderGoods> all_selected = order.getOrderGoodsList();
+
+		// 获取赠品列表
+		List<TdOrderGoods> presentedList = order.getPresentedList();
+		
+		order.setActivitySubPrice(0.00);
+
+		presentedList = new ArrayList<>();
+
+		Long giftType = 0L;
+
+		if (null != order.getIsCoupon() && order.getIsCoupon()) {
+			giftType = 1L;
+		}
+
+		// 获取用户的门店
+		TdDiySite diySite = this.getDiySite(req);
+		// 获取用户门店所能参加的活动
+		List<TdActivity> activity_list = tdActivityService
+				.findByDiySiteIdsContainingAndBeginDateBeforeAndFinishDateAfterAndGiftTypeOrderBySortIdAsc(
+						diySite.getId() + "", new Date(), giftType);
+		// 为了避免脏数据刷新，创建一个map用于存储已选【id：数量】
+		Map<Long, Long> selected_map = new HashMap<>();
+
+		for (TdOrderGoods cartGoods : all_selected) {
+			Long id = cartGoods.getGoodsId();
+			Long quantity = cartGoods.getQuantity();
+
+			selected_map.put(id, quantity);
+		}
+
+		// 根据使用的产品券要核减已选商品
+		String sProductCouponIds = order.getProductCouponId();
+		if (null != sProductCouponIds && !"".equalsIgnoreCase(sProductCouponIds)) {
+			String[] sIds = sProductCouponIds.split(",");
+			for (String sId : sIds) {
+				if (null != sId && !"".equalsIgnoreCase(sId)) {
+					Long id = Long.parseLong(sId);
+					TdCoupon coupon = tdCouponService.findOne(id);
+					Long goodsId = coupon.getGoodsId();
+					if (null != selected_map.get(goodsId) && selected_map.get(goodsId) > 0) {
+						selected_map.put(goodsId, selected_map.get(goodsId) - 1);
+					}
+				}
+			}
+		}
+
+		for (TdActivity activity : activity_list) {
+			// 创建一个布尔变量表示已选商品能否参加指定的活动
+			Boolean isJoin = true;
+			// -------------------------------2016-05-20
+			// 09:45:15------------------------------------------
+			// 创建一个布尔变量用于判断该活动是存在浮动商品
+			Boolean isFloat = false;
+			// 获取该活动的最低购买量
+			Long totalNumber = activity.getTotalNumber();
+			if (null == totalNumber) {
+				totalNumber = 0L;
+			}
+			// 创建一个变量用于表示实际购买量
+			Long realBuy = 0L;
+			// 创建一个变量用于表示浮动量
+			Long floatCount = 0L;
+
+			// 创建一个变量用于表示最低购买金额
+			Double totalPrice = activity.getTotalPrice();
+
+			// 创建一个变量用于表示立减金额
+			Double subPrice = activity.getSubPrice();
+
+			// 创建一个存储顺序的集合
+			List<Long> sortList = new ArrayList<>();
+			// --------------------------------------------------------------------------------------------
+
+			Boolean isCombo = activity.getIsCombo();
+			Boolean isEnoughMoney = activity.getIsEnoughMoney();
+
+			String buyCouponId = order.getBuyCouponId();
+			if (null != buyCouponId && !"".equals(buyCouponId)) {
+				presentedList = new ArrayList<>();
+
+				List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+				if (null != orderGoodsList && orderGoodsList.size() > 0) {
+					for (TdOrderGoods orderGoods : orderGoodsList) {
+						Long id = orderGoods.getGoodsId();
+						Long quantity = orderGoods.getQuantity();
+						selected_map.put(id, quantity);
+					}
+				}
+
+				String[] ids = buyCouponId.split(",");
+				if (null != ids && ids.length > 0) {
+					for (String sid : ids) {
+						if (null != sid && !"".equals(sid)) {
+							Long id = Long.parseLong(sid);
+							TdCoupon coupon = tdCouponService.findOne(id);
+							if (null != coupon) {
+								Long goodsId = coupon.getGoodsId();
+								if (null != goodsId) {
+									selected_map.put(goodsId, selected_map.get(goodsId) - 1);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// 组合促销的方法
+			if (null == isEnoughMoney || !isEnoughMoney) {
+
+				order = this.comboEnoughNumber(req, activity, selected_map, isJoin, realBuy, sortList, totalNumber,
+						isFloat, floatCount, presentedList, order, subPrice, isCombo);
+			} else {
+				// 阶梯促销的方法
+				order = this.comboEnoughPrice(req, activity, selected_map, isJoin, sortList, totalPrice, subPrice,
+						presentedList, order, isCombo);
+
+			}
+
+		}
+		order.setPresentedList(presentedList);
+		order = tdOrderService.save(order);
+		return order;
+
 	}
 }

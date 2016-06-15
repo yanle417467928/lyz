@@ -130,7 +130,7 @@
                 </div>
             </section>
             <!-- 退出登陆 -->
-            <a class="jump loginout" href="/login/out">退出登陆</a>
+            <a class="jump loginout" href="/login/out">退出登录</a>
         </article>
         <!-- 账号设置 END -->
     </body>

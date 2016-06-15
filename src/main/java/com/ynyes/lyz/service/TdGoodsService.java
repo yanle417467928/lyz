@@ -1277,6 +1277,14 @@ public class TdGoodsService {
 		}
 		return repository.findByCode(code);
 	}
+	public TdGoods findByCodeAndStatus(String code,Long status)
+	{
+		if (null == code || status == null)
+		{
+			return null;
+		}
+		return repository.findByCodeAndInventoryItemStatus(code, status);
+	}
 
 	/**
 	 * 根据关键词模糊查询商品，其涉及到商品的名称，商品的标题，商品的副标题，商品的sku，最后按照sortId（排序号）正序排序
@@ -1453,6 +1461,7 @@ public class TdGoodsService {
 		if(categoryTitle!=null && categoryTitle.size()>0){
 			c.add(Restrictions.in("categoryTitle",categoryTitle,true));
 		}
+		c.add(Restrictions.eq("isOnSale", true, true));
 		//排序
 		if("0".equals(sortFiled)){
 			if("0".equals(rule)){
@@ -1484,10 +1493,11 @@ public class TdGoodsService {
 	 * @param categoryId 类别id
 	 * @param page 页数
 	 * @param size 行数
+	 * @param isOnsale 商品上下架
 	 * @return 分页结果集
 	 * @author zp
 	 */
-	public Page<TdGoods> searchGoodsList(String keywords,Long brandId,Long categoryId,int page,int size){
+	public Page<TdGoods> searchGoodsList(String keywords,Long brandId,Long categoryId,int page,int size,Boolean isOnSale){
 		//分页加排序
 		PageRequest pageRequest = new PageRequest(page, size,
 				new Sort(Direction.ASC, "sortId").and(new Sort(Direction.DESC, "id")));
@@ -1510,6 +1520,9 @@ public class TdGoodsService {
 		if(brandId!=null){
 			c.add(Restrictions.eq("brandId",brandId,true));
 		}
+		if(isOnSale!=null){
+			c.add(Restrictions.eq("isOnSale", isOnSale, true));
+		}
 		return repository.findAll(c,pageRequest);
 	}
 	
@@ -1524,5 +1537,33 @@ public class TdGoodsService {
 			c.add(Restrictions.eq("brandId", brandId, true));
 		}
 		return repository.findAll(c);
+	}
+	
+	// 查找所有商品按序号排序
+	public Page<TdGoods> queryAllOrderBySortIdAsc(List<Long> priceListIdList,List<Long> categoryIdList,String keywords,int page, int size) {
+		PageRequest pageRequest = new PageRequest(page, size, new Sort(Direction.ASC, "sortId"));
+
+		return repository.queryAllOrderBySortIdAsc(priceListIdList,categoryIdList,keywords,pageRequest);
+	}
+	
+	/**
+	 *优惠卷商品查询
+	 * @param cityId 城市id
+	 * @param brandId 品牌id
+	 * @param keywords 关键字
+	 * @author zp
+	 */
+	public List<TdGoods> queryCouponGooddsOrderBySortIdAsc(Long cityId,Long brandId,String keywords){
+		return repository.queryCouponGooddsOrderBySortIdAsc(cityId, brandId, keywords);
+	}
+	
+	/**
+	 * 优惠卷模板商品查询
+	 * @param cityId 城市id
+	 * @param keywords 关键字
+	 * @author zp
+	 */
+	public List<TdGoods> queryCouponGooddsOrderBySortIdAsc(Long cityId,String keywords){
+		return repository.queryCouponGooddsOrderBySortIdAsc(cityId, keywords);
 	}
 }

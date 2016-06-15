@@ -935,9 +935,9 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	       	//设置标题
 	        HSSFRow row = sheet.createRow((int) 0); 
 	        
-	        String[] cellValues={"门店名称","主单号","分单号","下单时间","订单状态","会员电话","客户名称","产品编号","产品名称","数量",
-	        		"单价","总价","使用可提现金额","使用不可提现金额","备注","中转仓","配送人员","配送人员电话","导购姓名","商品类型","配送方式",
-					"收货人地址","客户备注"};
+	        String[] cellValues={"门店名称","主单号","分单号","下单时间","订单状态","会员电话","会员名称","产品编号","产品名称","数量",
+	        		"单价","总价","使用可提现金额","使用不可提现金额","备注","中转仓","配送人员","配送人员电话","导购姓名","商品类型","商品父类型",
+	        		"配送方式","收货人姓名","收货人电话","收货人地址","订单备注"};
 			cellDates(cellValues, style, row);
 			
 			for(int j=0;j<maxRowNum;j++)
@@ -981,7 +981,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 				}
 				if (salesDetail.getShippingName() != null)
 				{
-					row.createCell(6).setCellValue(salesDetail.getShippingName());
+					row.createCell(6).setCellValue(salesDetail.getRealName());
 				}
 				if (salesDetail.getSku() != null)
 				{
@@ -1034,11 +1034,23 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	        	if(salesDetail.getTitle() != null){
 	        		row.createCell(19).setCellValue(salesDetail.getTitle());
 	        	}
+	        	if(salesDetail.getParentCategoryTitle() != null){
+	        		row.createCell(20).setCellValue(salesDetail.getParentCategoryTitle());
+	        	}
 	        	if(salesDetail.getDeliverTypeTitle()!=null){
-	        		row.createCell(20).setCellValue(salesDetail.getDeliverTypeTitle());
+	        		row.createCell(21).setCellValue(salesDetail.getDeliverTypeTitle());
 	        	}
 	        	if(salesDetail.getShippingAddress()!=null && !"门店自提".equals(salesDetail.getDeliverTypeTitle())){
-	        		row.createCell(21).setCellValue(salesDetail.getShippingAddress());
+	        		row.createCell(22).setCellValue(salesDetail.getShippingName());
+	        	}
+	        	if(salesDetail.getShippingAddress()!=null && !"门店自提".equals(salesDetail.getDeliverTypeTitle())){
+	        		row.createCell(23).setCellValue(salesDetail.getShippingPhone());
+	        	}
+	        	if(salesDetail.getShippingAddress()!=null && !"门店自提".equals(salesDetail.getDeliverTypeTitle())){
+	        		row.createCell(24).setCellValue(salesDetail.getShippingAddress());
+	        	}
+	        	if(salesDetail.getRemarkInfo() != null){
+	        		row.createCell(25).setCellValue(salesDetail.getRemarkInfo());
 	        	}
 				
 //	            System.out.println("正在生成excel文件的 sheet"+(i+1)+"第"+(j+1)+"行");

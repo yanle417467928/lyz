@@ -90,6 +90,14 @@ public class TdTbwRecmService {
         return (List<TdTbwRecm>) repository.findAll();
     }
     
+    public TdTbwRecm findByCRecNo(String cRecNo)
+    {
+    	if (cRecNo == null)
+		{
+			return null;
+		}
+    	return repository.findByCRecNo(cRecNo);
+    }
     
     /**
      * 保存
@@ -99,7 +107,6 @@ public class TdTbwRecmService {
      */
     public TdTbwRecm save(TdTbwRecm e)
     {
-        
         return repository.save(e);
     }
     

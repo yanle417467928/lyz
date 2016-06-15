@@ -35,6 +35,7 @@ $(function () {
     //根据城市选择门店
     $("#cityId").change(function(){
         getDiySiteList(this);
+        removeGoodsAndGifts();
     });
     
     //初始化上传控件
@@ -91,7 +92,7 @@ $(function () {
             max: false,
             min: false,
             title: "赠品",
-            content: 'url:/Verwalter/goods/list/dialog/gift?total=' + $("#var_box_gift").children("tr").length,
+            content: 'url:/Verwalter/goods/list/dialog/gift?total=' + $("#var_box_gift").children("tr").length+'&cityId='+$('#cityId').val(),
             width: 800,
             height: 550
         });
@@ -145,7 +146,7 @@ $(function () {
             max: false,
             min: false,
             title: "商品组合",
-            content: 'url:/Verwalter/goods/list/dialog/comb?total=' + $("#var_box_comb").children("tr").length,
+            content: 'url:/Verwalter/goods/list/dialog/comb?total=' + $("#var_box_comb").children("tr").length+'&cityId='+$('#cityId').val(),
             width: 800,
             height: 550
         });
@@ -200,6 +201,15 @@ $(function () {
                     alert("error code : -1 + " + res);
                 }
         });
+    }
+    //清空已选商品好赠品
+    function removeGoodsAndGifts(){
+    	//删除商品及赠品
+    	$('tr[class=td_c]').remove();
+    	//修改 商品总算
+    	$('#totalComb').val('0');
+    	//修改赠品总算
+    	$('#totalGift').val('0');
     }
 });
 
@@ -272,7 +282,16 @@ function del_goods_comb(obj) {
     $(obj).parent().parent().remove();
     $("#totalComb").val(parseInt($("#totalComb").val())-1);
 }
-
+//判断活动结束时间不能小于开始时间
+function checkDate(){
+	var beginDate= $('#beginDate').val();
+	var finishDate=$('#finishDate').val();
+	if(finishDate<=beginDate){
+		alert("亲,活动结束时间不能小于开始时间");
+		return false;
+	}
+	
+}
   <#if fns??>
   	$(document).ready(function(){
   		alert("保存成功");
@@ -284,7 +303,7 @@ function del_goods_comb(obj) {
 </script>
 </head>
 <body class="mainbody">
-<form method="post" action="/Verwalter/activity/save" id="form1">
+<form method="post" action="/Verwalter/activity/save" id="form1" onsubmit="return checkDate();">
 <div>
 <input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="${__EVENTTARGET!""}" />
 <input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="${__EVENTARGUMENT!""}" />
@@ -374,7 +393,7 @@ function del_goods_comb(obj) {
             <dt>活动开始时间</dt>
             <dd>
                 <div class="input-date">
-                    <input name="beginDate" type="text" value="<#if activity??>${activity.beginDate!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                    <input name="beginDate" id="beginDate" type="text" value="<#if activity??>${activity.beginDate?string("yyyy-MM-dd HH:mm:ss")}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                     <i>日期</i>
                 </div>
                 <span class="Validform_checktip"></span>
@@ -384,7 +403,7 @@ function del_goods_comb(obj) {
             <dt>结束到期时间</dt>
             <dd>
                 <div class="input-date">
-                    <input name="finishDate" type="text" value="<#if activity??>${activity.finishDate!""}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
+                    <input name="finishDate" id="finishDate" type="text" value="<#if activity??>${activity.finishDate?string("yyyy-MM-dd HH:mm:ss")}</#if>" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" ">
                     <i>日期</i>
                 </div>
                 <span class="Validform_checktip"></span>
@@ -426,7 +445,7 @@ function del_goods_comb(obj) {
         <dl>
             <dt>最低购买总量</dt>
             <dd>
-                <input name="totalNumber" type="text" value="<#if activity??&&activity.totalNumber??>${activity.totalNumber!'0'}<#else>0</#if>" class="input normal" datatype="n" sucmsg=" " errormsg="请输入一个正确的整数">
+                <input name="totalNumber" type="text" value="<#if activity??&&activity.totalNumber??>${activity.totalNumber!'1'}<#else>1</#if>" class="input normal" datatype="n" sucmsg=" " errormsg="请输入一个正确的整数">
                 <span class="Validform_checktip"></span>
             </dd>
         </dl>
@@ -478,15 +497,15 @@ function del_goods_comb(obj) {
                                         <input name="combList[${comb_index}].coverImageUri" type="hidden" value="${comb.coverImageUri!''}">
                                         <input type="text" name="combList[${comb_index}].sortId" class="td-input" value="${comb.sortId!''}" style="width:90%;">
                                     </td>
-                                    <td><input type="text" id="id" name="combList[${comb_index}].goodsId" class="td-input" value="${comb.goodsId?c}" style="width:90%;"></td>
+                                    <td><input type="text" id="id" name="combList[${comb_index}].goodsId" class="td-input" value="<#if comb.goodsId??> ${comb.goodsId?c}</#if>" style="width:90%;"></td>
                                     <td>
                                         <input type="text" id="title" name="combList[${comb_index}].goodsTitle" class="td-input" value="${comb.goodsTitle!''}" style="width:90%;">
                                     </td>
                                     <td>
-                                        <input type="text" id="number" name="combList[${comb_index}].number" class="td-input" value="${comb.number?c}" style="width:90%;">
+                                        <input type="text" id="number" name="combList[${comb_index}].number" class="td-input" value="<#if comb.number??>${comb.number?c}</#if>" style="width:90%;">
                                     </td>
                                     <td>
-                                        <input type="text" id="price" name="combList[${comb_index}].goodsPrice" class="td-input" value="${comb.goodsPrice?string("0.00")}" style="width:90%;">
+                                        <input type="text" id="price" name="combList[${comb_index}].goodsPrice" class="td-input" value="<#if comb.goodsPrice??>${comb.goodsPrice?string("0.00")}</#if>" style="width:90%;">
                                     </td>
                                     <td>
                                         <i class="icon"></i>
@@ -543,15 +562,15 @@ function del_goods_comb(obj) {
                                         <input name="giftList[${item_index}].coverImageUri" type="hidden" value="${item.coverImageUri!''}">
                                         <input type="text" name="giftList[${item_index}].sortId" class="td-input" value="${item.sortId!''}" style="width:90%;">
                                     </td>
-                                    <td><input type="text" id="id" name="giftList[${item_index}].goodsId" class="td-input" value="${item.goodsId?c}" style="width:90%;"></td>
+                                    <td><input type="text" id="id" name="giftList[${item_index}].goodsId" class="td-input" value="<#if item.goodsId??>${item.goodsId?c}</#if>" style="width:90%;"></td>
                                     <td>
                                         <input type="text" id="title" name="giftList[${item_index}].goodsTitle" class="td-input" value="${item.goodsTitle!''}" style="width:90%;">
                                     </td>
                                     <td>
-                                        <input type="text" id="number" name="giftList[${item_index}].number" class="td-input" value="${item.number?c}" style="width:90%;">
+                                        <input type="text" id="number" name="giftList[${item_index}].number" class="td-input" value="<#if item.number??>${item.number?c}</#if>" style="width:90%;">
                                     </td>
                                     <td>
-                                        <input type="text" id="price" name="giftList[${item_index}].goodsPrice" class="td-input" value="${item.goodsPrice?string("0.00")}" style="width:90%;">
+                                        <input type="text" id="price" name="giftList[${item_index}].goodsPrice" class="td-input" value="<#if item.goodsPrice??>${item.goodsPrice?string("0.00")}</#if>" style="width:90%;">
                                     </td>
                                     <td>
                                         <i class="icon"></i>
@@ -578,7 +597,7 @@ function del_goods_comb(obj) {
     <!--工具栏-->
     <div class="page-footer">
         <div class="btn-list">
-            <input type="submit" name="btnSubmit" value="提交保存" id="btnSubmit" class="btn">
+            <input type="submit" name="btnSubmit" value="提交保存" id="btnSubmit" class="btn" >
             <input name="btnReturn" type="button" value="返回上一页" class="btn yellow" onclick="javascript:history.back(-1);">
         </div>
         <div class="clear">

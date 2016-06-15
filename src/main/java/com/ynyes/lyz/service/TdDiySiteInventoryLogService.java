@@ -7,6 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.ynyes.lyz.entity.TdDiySiteInventory;
@@ -44,6 +48,11 @@ public class TdDiySiteInventoryLogService {
 	{
 		return (List<TdDiySiteInventoryLog>) repository.findAll();
 	}
+	public Page<TdDiySiteInventoryLog> findAll(int page,int size)
+	{
+		PageRequest pageRequest = new PageRequest(page, size,new Sort(Direction.DESC,"changeDate"));
+		return repository.findAll(pageRequest);
+	}
 	
 	public void saveWithRequsition(HttpServletRequest req,Long oldValue,Long newValue)
 	{
@@ -51,18 +60,26 @@ public class TdDiySiteInventoryLogService {
 		log.setChangeDate(new Date());
 	}
 	
-	public Boolean saveChangeLog(TdDiySiteInventory diySiteInventory,Long changeValue,String orderNumber,HttpServletRequest req)
+	public Boolean saveChangeLog(TdDiySiteInventory diySiteInventory,Long changeValue,String orderNumber,HttpServletRequest req,String changeName)
 	{
 		String username = null;
 		
-		String changeType = "管理员修改";
+		String changeType = "订单修改";
 		if (orderNumber == null && req != null)
 		{
 			username = (String) req.getSession().getAttribute("manager");
-			changeType = "订单修改";
+			changeType = "管理员修改";
 			if (username == null)
 			{
-				return false;
+				username="看到我就表示被黑了";
+			}
+		}
+		if(orderNumber!=null && req != null){
+			username = (String) req.getSession().getAttribute("username");
+			changeType = "管理员修改后台订单";
+			if (username == null)
+			{
+				username="看到我就表示被黑了";
 			}
 		}
 		
@@ -74,11 +91,14 @@ public class TdDiySiteInventoryLogService {
 		log.setGoodsId(diySiteInventory.getGoodsId());
 		log.setGoodsTitle(diySiteInventory.getGoodsTitle());
 		log.setGoodsSku(diySiteInventory.getGoodsCode());
+		log.setAfterChange(diySiteInventory.getInventory());
 		log.setChangeValue(changeValue);
 		log.setChangeDate(new Date());
 		log.setDescription(changeType);
 		log.setOrderNumber(orderNumber);
 		log.setManager(username);
+		log.setChangeType(changeName);
+		this.save(log);
 		return true;
 		
 	}

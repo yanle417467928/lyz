@@ -5,8 +5,8 @@
             <dl>
                 <dt>
                     <#-- 用户存储指定商品的库存 -->
-                    <input type="hidden" id="inventory${goods.id?c}" value="<#if goods??&&goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>">
-                    <#--<input type="hidden" id="inventory${goods.id?c}" value="<#if ("goodInventory"+goods_index)?eval??>${("goodInventory"+goods_index)?eval?c}<#else>0</#if>">-->
+                    <#--<input type="hidden" id="inventory${goods.id?c}" value="<#if goods??&&goods.leftNumber??>${goods.leftNumber?c}<#else>0</#if>">-->
+                    <input type="hidden" id="inventory${goods.id?c}" value="<#if ("goodInventory"+goods_index)?eval??>${("goodInventory"+goods_index)?eval?c}<#else>0</#if>">
                     <#-- 商品的标题，点击可跳转到详情页 -->
                     <h3 onclick="window.location.href='/goods/detail/${goods.id?c}'">${goods.title!''}</h3>
                     <label>${goods.code!''}</label>

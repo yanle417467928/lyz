@@ -34,8 +34,22 @@ public class StringTools {
 	}
 	
 	
+	public static String productClassStrByBoolean(Boolean isCoupon)
+	{
+		if (isCoupon == null || isCoupon == false)
+		{
+			return "订单";
+		}
+		else
+		{
+			return "电子券";
+		}
+	}
+	
 	/**
 	 * 根据接口返回数据判断是传送成功与否
+	 * 
+	 * 失败返回的失败原因
 	 * @param resultStr
 	 * @return
 	 */
@@ -52,13 +66,14 @@ public class StringTools {
 		
 		if (mat.find()) 
 		{
-			System.out.println("CODE is :" + mat.group(0));
+			System.out.println("EBS:" + mat.group(0));
 			String code = mat.group(0).replace("<CODE>", "");
 			code = code.replace("</CODE>", "").trim();
 			if (Integer.parseInt(code) == 0) 
 			{
 				return null;
-			} else
+			}
+			else
 			{
 				String errorMsg = "<MESSAGE>([\\s\\S]*?)</MESSAGE>";
 				pat = Pattern.compile(errorMsg);
@@ -170,7 +185,7 @@ public class StringTools {
 		{
 			return "N";
 		}
-		else 
+		else
 		{
 			return "Y";
 		}

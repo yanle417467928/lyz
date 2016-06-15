@@ -280,6 +280,17 @@
                             </div>
                         </td>
                     </tr>
+                    <tr>
+                    <th width="20%">
+                          用户姓名 	
+                    </th>
+                    <td>
+                    	<div class="position">
+                             <span id="spanAcceptName">${user.realName!""}</span>
+                         </div>
+                    </td>
+                    </tr>
+                    <tr>
                     <th width="20%">
                             当前状态
                         </th>

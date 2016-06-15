@@ -192,5 +192,4 @@ public class TdPriceListItemService {
 		PageRequest pageRequest = new PageRequest(page, size);
 		return repository.findByItemDescContainingOrItemNumContaining(keywords, keywords,pageRequest);
 	}
-	
 }

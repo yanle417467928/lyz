@@ -90,6 +90,14 @@ public class TdTbwRecdService {
         return (List<TdTbwRecd>) repository.findAll();
     }
     
+    public List<TdTbwRecd> findByRecNo(String recNo)
+    {
+    	if (recNo == null)
+		{
+			return null;
+		}
+    	return repository.findByRecNo(recNo);
+    }
     
     /**
      * 保存

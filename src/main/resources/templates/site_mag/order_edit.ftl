@@ -787,6 +787,16 @@
                     <tbody>
                     <tr>
                         <th>
+                       门店名称
+                        </th>
+                        <td>
+                            <div class="position">
+                            <span><#if order.diySiteName??>${order.diySiteName!""}</#if> </span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                         导购名字
                         </th>
                         <td>
@@ -854,6 +864,23 @@
                          可用预存款：<#if order.cashBalanceUsed??> ${order.cashBalanceUsed?string("0.00")}<#else>0.00</#if>元 | 
                         不可用预存款：<#if order.unCashBalanceUsed??>${order.unCashBalanceUsed?string("0.00")}<#else>0.00</#if>元
                             </td>
+                    </tr>
+                    <tr>
+                        <th>
+                    订单在线支付金额                   
+                        </th>
+                        <td>
+                         <#if order.otherPay??> ${order.otherPay?string("0.00")}<#else>0.00</#if>元
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>
+                    货到付款金额                 
+                        </th>
+                        <td>
+                        
+                         ${(order.totalPrice-order.actualPay!'0'?number-order.otherPay!'0'?number)?string("0.00")}元
+                        </td>
                     </tr>
                     <tr>
                         <th>
@@ -979,7 +1006,7 @@
                 <input type="button" id="btnConfirm" value="确认订单" class="btn">
                 <input type="button" id="btnCancel" value="取消订单" class="btn green">
             <#elseif order.statusId==2>
-                    <input type="button" id="btnPayment" value="确认付款" class="btn">
+                    <#--后台确认付款没有拆单 <input type="button" id="btnPayment" value="确认付款" class="btn"> -->
                     <input type="button" id="btnCancel" value="取消订单" class="btn green">
             <#elseif order.statusId==3>
                 <input type="button" id="btnOrderExpress" value="确认发货" class="btn">
