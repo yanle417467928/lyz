@@ -316,7 +316,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					TdReturnNote returnNote= tdReturnNoteService.findOne(id);
 					map.addAttribute("returnNote", returnNote);
 					map.addAttribute("user",tdUserService.findByUsername(returnNote.getUsername()));
-					map.addAttribute("order", tdOrderService.findByOrderNumber(returnNote.getOrderNumber()));
+//					map.addAttribute("order", tdOrderService.findByOrderNumber(returnNote.getOrderNumber()));
 				}
 
 				return "/site_mag/returnNote_edit";
