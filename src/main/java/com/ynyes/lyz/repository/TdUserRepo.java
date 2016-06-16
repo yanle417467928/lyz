@@ -127,4 +127,18 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 */
 	public List<TdUser> findBySellerIdAndUserType(Long sellerId,Long userType);
 	
+	/**
+	 * 查询门店下面的所有会员
+	 * @param diyId 门店id
+	 * @return
+	 */
+	List<TdUser> findByUpperDiySiteId(Long diyId);
+	
+	/**
+	 * 查询城市下面的所有会员
+	 * @param cityId 城市编号
+	 * @return
+	 */
+	List<TdUser> findByCityId(Long cityId);
+	
 }

@@ -51,7 +51,7 @@ function __doPostBack(eventTarget, eventArgument) {
       <div class="menu-list">      
         <div class="rule-single-select single-select">
         <select name="type" onchange="javascript:setTimeout(__doPostBack('type',''), 0)" style="display: none;">
-            <option <#if !type??>selected="selected"</#if>>变更类型</option>
+            <option <#if !type??>selected="selected"</#if> value="">变更类型</option>
             <option <#if type?? && type==0>selected="selected"</#if> value="0">充值</option>
             <option <#if type?? && type==1>selected="selected"</#if> value="1">提现</option>
             <option <#if type?? && type==3>selected="selected"</#if> value="3">消费</option>
@@ -59,6 +59,7 @@ function __doPostBack(eventTarget, eventArgument) {
         </select>
         </div>
       </div>
+      <#--
       	<#if cityList?? && cityList?size gt 0 >
           	<div class="menu-list">
               	<div class="rule-single-select">
@@ -83,6 +84,7 @@ function __doPostBack(eventTarget, eventArgument) {
            		</div>
            	</div>
            	</#if>     
+           	-->
     </div>
     <div class="r-list">
       <input name="keywords" type="text" class="keyword" value="${keywords!""}">

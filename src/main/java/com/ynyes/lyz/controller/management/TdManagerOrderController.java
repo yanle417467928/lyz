@@ -583,7 +583,7 @@ public class TdManagerOrderController {
 			if (null != info_list && info_list.size() != 0) {
 				TdDeliveryInfo info = info_list.get(0);
 				if(null != info){
-					String opUser = info.getOpUser();
+					String opUser = info.getDriver();
 					TdUser deliveryUser = tdUserService.findByOpUser(opUser);
 					map.addAttribute("deliveryUser", deliveryUser);
 				}

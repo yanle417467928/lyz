@@ -374,5 +374,29 @@ public class TdUserService {
 		c.setOrderByDesc("registerTime");
 		return repository.findAll(c,pageRequest);
 	}
+	
+	/**
+	 * 查询门店下面的所有会员
+	 * @param diyId 门店id
+	 * @return
+	 */
+	public List<TdUser> findByUpperDiySiteId(Long diyId){
+		if(diyId==null){
+			return null;
+		}
+		return repository.findByUpperDiySiteId(diyId);
+	}
+	
+	/**
+	 * 查询城市下面的所有会员
+	 * @param cityId 城市编号
+	 * @return
+	 */
+	public List<TdUser> findByCityId(Long cityId){
+		if(cityId==null){
+			return null;
+		}
+		return repository.findByCityId(cityId);
+	}
 
 }
