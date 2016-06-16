@@ -1117,7 +1117,7 @@ public class TdInterfaceService {
 				String orderInfXML = this.XMLWithEntity(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
 				orderInfXML = "<ERP>" + orderInfXML + "</ERP>";
 				orderInfXML = orderInfXML.replace("null", "");
-				Object[] orderInf = { INFConstants.INF_ORDER_STR, "1", orderInfXML };
+				Object[] orderInf = { INFConstants.INF_ORDER_RECEIVE_STR, "1", orderInfXML };
 				try
 				{
 					String result = (String)getCall().invoke(orderInf);
