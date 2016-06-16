@@ -110,7 +110,7 @@
         现金券名称：
           <span >${coupon.typeTitle!''}</span>&emsp;&emsp;&emsp;
         现金券金额：
-          <span>${coupon.price?string('0.00')}</span>&emsp;&emsp;&emsp;
+          <span>${coupon.price!'0'?number?string('0.00')}</span>&emsp;&emsp;&emsp;
         剩余数量：
           <span id="leftNumber">${coupon.leftNumber!'0'}</span>
       </dd>
