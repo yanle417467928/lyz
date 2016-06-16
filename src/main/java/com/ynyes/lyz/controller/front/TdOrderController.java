@@ -308,7 +308,7 @@ public class TdOrderController {
 
 		// 再次计算促销和价格
 		if (null != count) {
-			tdCommonService.rePresent(req, order_temp);
+			tdCommonService.rePresent(req, order_temp, true);
 			tdPriceCouintService.countPrice(order_temp, realUser);
 		}
 
@@ -1964,10 +1964,8 @@ public class TdOrderController {
 
 		// 获取指定的订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
-		if (null != order)
-		{
-			if ((order.getIsCoupon() != null && !order.getIsCoupon()) || order.getIsCoupon() == null)
-			{
+		if (null != order) {
+			if ((order.getIsCoupon() != null && !order.getIsCoupon()) || order.getIsCoupon() == null) {
 				TdOrder tdOrder = tdOrderService.findOne(order.getId());
 				Long regionId = null;
 				Long diysiteId = tdOrder.getDiySiteId();
@@ -2026,8 +2024,8 @@ public class TdOrderController {
 						return res;
 					}
 				}
-			// 再存一次 后面改
-			req.getSession().setAttribute("order_temp", tdOrder);
+				// 再存一次 后面改
+				req.getSession().setAttribute("order_temp", tdOrder);
 			}
 			// 获取用户的支付方式
 			Long payTypeId = order.getPayTypeId();

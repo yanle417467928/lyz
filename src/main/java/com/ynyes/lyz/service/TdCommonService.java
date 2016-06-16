@@ -1566,7 +1566,7 @@ public class TdCommonService {
 		for (Long brandId : order_map.keySet()) {
 			TdOrder order = order_map.get(brandId);
 			if (null != order) {
-				order = this.rePresent(req, order);
+				order = this.rePresent(req, order,false);
 				order_map.put(brandId, order);
 			}
 		}
@@ -3239,7 +3239,7 @@ public class TdCommonService {
 		return order;
 	}
 
-	public TdOrder rePresent(HttpServletRequest req, TdOrder order) {
+	public TdOrder rePresent(HttpServletRequest req, TdOrder order, Boolean isSave) {
 		// 获取用户的已选
 		List<TdOrderGoods> all_selected = order.getOrderGoodsList();
 
@@ -3362,7 +3362,9 @@ public class TdCommonService {
 
 		}
 		order.setPresentedList(presentedList);
-		order = tdOrderService.save(order);
+		if (!(null != isSave && !isSave)) {
+			order = tdOrderService.save(order);
+		}
 		return order;
 
 	}
