@@ -388,6 +388,19 @@ public class TdInterfaceService {
 			}
 		}
 		
+		//获取满金额赠金额
+		if(tdOrder.getActivitySubPrice() != null && tdOrder.getActivitySubPrice() >= 0)
+		{
+			TdOrderCouponInf couponInf = new TdOrderCouponInf();
+			couponInf.setOrderHeaderId(orderInf.getHeaderId());
+			couponInf.setCouponTypeId(3);
+			couponInf.setSku(null);
+			couponInf.setQuantity(1L);
+			couponInf.setPrice(tdOrder.getActivitySubPrice());
+			couponInf.setHistoryFlag("N");
+			tdOrderCouponInfService.save(couponInf);
+		}
+		
 		//收款
 		if (tdOrder.getOtherPay()!= null && tdOrder.getOtherPay() != 0)
 		{
@@ -545,7 +558,7 @@ public class TdInterfaceService {
 	 * 根据退货单生成相应的销退单
 	 * @param returnNote
 	 */
-	public void initReturnOrder(TdReturnNote returnNote)
+	public void initReturnOrder(TdReturnNote returnNote,Integer type)
 	{
 		if(returnNote==null){
 			return;
@@ -600,6 +613,14 @@ public class TdInterfaceService {
 		returnOrderInf.setAuditDate(returnNote.getCheckTime());
 		returnOrderInf.setRefundAmount(returnNote.getTurnPrice());
 		returnOrderInf.setPrepayAmt(returnNote.getTurnPrice());
+		if (type == INFConstants.INF_RETURN_ORDER_CANCEL_INT)
+		{
+			returnOrderInf.setStatus("订单取消");
+		}
+		else if (type == INFConstants.INF_RETURN_ORDER_SUB_INT)
+		{
+			returnOrderInf.setStatus("销售退货");
+		}
 		tdReturnOrderInfService.save(returnOrderInf);
 		//退货单商品
 		List<TdOrderGoods> goodsList = returnNote.getReturnGoodsList();
@@ -657,7 +678,7 @@ public class TdInterfaceService {
 			List<TdCoupon> coupons = tdCouponService.findByTypeIdAndOrderId(3l, tdOrder.getId());
 			if (coupons != null && coupons.size() > 0)
 			{
-				for (TdCoupon tdCoupon : coupons) 
+				for (TdCoupon tdCoupon : coupons)
 				{
 					TdReturnCouponInf returnCouponInf = new TdReturnCouponInf();
 					returnCouponInf.setRtHeaderId(returnOrderInf.getRtHeaderId());

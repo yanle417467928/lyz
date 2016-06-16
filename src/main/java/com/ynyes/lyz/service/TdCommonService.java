@@ -340,7 +340,7 @@ public class TdCommonService {
 
 		returnNote.setReturnGoodsList(orderGoodsList);
 		tdOrderGoodsService.save(orderGoodsList);
-		tdInterfaceService.initReturnOrder(returnNote);
+		tdInterfaceService.initReturnOrder(returnNote,INFConstants.INF_RETURN_ORDER_CANCEL_INT);
 		tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
 		tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 		return tdReturnNoteService.save(returnNote);

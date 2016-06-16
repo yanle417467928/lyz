@@ -68,6 +68,9 @@ public class TdReturnOrderInf extends TdInfBaseEntity
 	@Column
 	private Double prepayAmt;
 	
+	@Column
+	private String status;
+	
 	//预留字段1
 	@Column
 	private String attribute1;
@@ -190,6 +193,14 @@ public class TdReturnOrderInf extends TdInfBaseEntity
 
 	public void setPrepayAmt(Double prepayAmt) {
 		this.prepayAmt = prepayAmt;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getAttribute1() {
