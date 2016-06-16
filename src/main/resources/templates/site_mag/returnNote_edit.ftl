@@ -295,7 +295,8 @@
                             当前状态
                         </th>
                         <td>
-                            <#if returnNote.statusId??>
+                        ${returnNote.statusName!'' }
+                            <#-- <#if returnNote.statusId??>
                             <#switch returnNote.statusId>
                                   <#case 1>待通知物流<#break>
                                   <#case 2>待确认收货<#break>
@@ -303,7 +304,7 @@
                                   <#case 4>还未定义的状态<#break>
                                   <#case 5>已完成<#break> 
                             </#switch>
-                            </#if>
+                            </#if> -->
                         </td>
                     </tr>
                     <tr>
@@ -346,7 +347,8 @@
                 <#elseif returnNote.statusId==3>
                     <input type="button" id="btnOrderReceive" value="确认退款" class="btn green">
                 <#elseif returnNote.statusId==4>
-                    <input type="button" id="btnOrderExpress" value="验货确认" class="btn">
+                	<input type="button" id="btnOrderReceive" value="确认退款" class="btn green">
+                    <#-- <input type="button" id="btnOrderExpress" value="验货确认" class="btn"> -->
                 <#elseif returnNote.statusId==5>
                      <#-- <input type="button" class="btn yellow" value="已完成" class="btn"> -->
                 </#if>
