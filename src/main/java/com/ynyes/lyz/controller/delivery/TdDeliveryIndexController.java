@@ -777,7 +777,7 @@ public class TdDeliveryIndexController {
 						//增加库存
 						tdDiySiteInventoryService.changeGoodsInventory(subOrder, 1L,req,"退货");
 						
-						tdInterfaceService.initReturnOrder(returnNote);
+						tdInterfaceService.initReturnOrder(returnNote,INFConstants.INF_RETURN_ORDER_SUB_INT);
 						tdInterfaceService.initReturnCouponInfByOrder(subOrder, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
 						tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 

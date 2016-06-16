@@ -1373,8 +1373,8 @@ public class CallEBSImpl implements ICallEBS {
 				inventory.setInventory(inventory.getInventory() + quantity);
 				tdDiySiteInventoryLogService.saveChangeLog(inventory, quantity, null, null,transType);
 				tdDiySiteInventoryService.save(inventory);
-				
 			}
+			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
 		
 		return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>不支持该表数据传输："+ STRTABLE +"</MESSAGE></STATUS></RESULTS>";
