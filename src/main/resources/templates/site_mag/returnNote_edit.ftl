@@ -340,7 +340,9 @@
                    <#-- <input type="button" id="btnConfirm" value="确认退货单" class="btn">-->
                         <input type="button" id="btnPayment" value="通知物流" class="btn">
                 <#elseif returnNote.statusId==2>
+                	<#if order?? && order.deliverTypeTitle=='门店自提'>
                     <input type="button" id="btnConfirm" value="确认收货" class="btn">
+                    </#if>
                 <#elseif returnNote.statusId==3>
                     <input type="button" id="btnOrderReceive" value="确认退款" class="btn green">
                 <#elseif returnNote.statusId==4>
