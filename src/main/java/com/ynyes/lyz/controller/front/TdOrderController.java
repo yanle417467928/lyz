@@ -1742,8 +1742,12 @@ public class TdOrderController {
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null != order && null != order.getOrderNumber()) {
 			if (order.getOrderNumber().contains("XN")) {
-				// 拆单钱先去扣减库存
-				tdDiySiteInventoryService.changeGoodsInventory(order, 2L, req, "发货");
+				//门店自提 确认发货时扣库存
+				if(!"门店自提".equals(order.getDeliverTypeTitle())){
+					// 拆单钱先去扣减库存
+					tdDiySiteInventoryService.changeGoodsInventory(order, 2L, req, "发货");
+				}
+				
 				tdCommonService.dismantleOrder(req, username);
 			}
 		}
@@ -1965,7 +1969,7 @@ public class TdOrderController {
 		// 获取指定的订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null != order) {
-			if ((order.getIsCoupon() != null && !order.getIsCoupon()) || order.getIsCoupon() == null) {
+			if ((order.getIsCoupon() != null && !order.getIsCoupon()) || order.getIsCoupon() == null || !"门店自提".equals(order.getDeliverTypeTitle())) {
 				TdOrder tdOrder = tdOrderService.findOne(order.getId());
 				Long regionId = null;
 				Long diysiteId = tdOrder.getDiySiteId();

@@ -1044,9 +1044,11 @@ public class TdManagerOrderController {
 								return res;
 							}
 						}
+						tdDiySiteInventoryService.changeGoodsInventory(order, 2L, req, "发货");
+						order.setStatusId(4L);
+						order.setSendTime(new Date());
 					}
-					order.setStatusId(4L);
-					order.setSendTime(new Date());
+					
 				}
 			}
 			// 确认收货
