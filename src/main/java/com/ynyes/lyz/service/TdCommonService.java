@@ -1562,6 +1562,15 @@ public class TdCommonService {
 			}
 		}
 
+		// 重新计算促销。目的是将满减信息正确的存储到分单上
+		for (Long brandId : order_map.keySet()) {
+			TdOrder order = order_map.get(brandId);
+			if (null != order) {
+				order = this.rePresent(req, order);
+				order_map.put(brandId, order);
+			}
+		}
+
 		// 查询是否存在乐易装的品牌
 		if (null != order_temp.getDeliverTypeTitle() && !"门店自提".equals(order_temp.getDeliverTypeTitle())) {
 			TdBrand brand = tdBrandService.findByTitle("乐易装");
@@ -3078,9 +3087,8 @@ public class TdCommonService {
 						if (null != param && param.length == 2) {
 							Long id = Long.parseLong(param[0]);
 							Long buyQuantity = selected_map.get(id);
-							
-							if (buyQuantity == null)
-							{
+
+							if (buyQuantity == null) {
 								buyQuantity = 0l;
 							}
 							// 记录参加活动的id和数量 接口用
@@ -3237,7 +3245,7 @@ public class TdCommonService {
 
 		// 获取赠品列表
 		List<TdOrderGoods> presentedList = order.getPresentedList();
-		
+
 		order.setActivitySubPrice(0.00);
 
 		presentedList = new ArrayList<>();
