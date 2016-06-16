@@ -1208,7 +1208,7 @@ public class TdManagerOrderController {
 			pos=0.0;
 		}
 		//判断是否还清
-		if(own.getOwned()!=(money+pos)){
+		if(!own.getOwned().equals((money+pos))){
 			res.put("message", "必须一次性还清");
 			res.put("code", -1);
 			return res;
