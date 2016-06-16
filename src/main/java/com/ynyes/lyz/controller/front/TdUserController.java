@@ -551,22 +551,24 @@ public class TdUserController {
 				if (null != goods) {
 					//查询商品单店库存
 					TdDiySiteInventory diySiteInventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goods.getCode(), diySite.getRegionId());
+					Long inventoryNumber=0L;
 					//设置单店库存
 					if(diySiteInventory!=null){
 						map.addAttribute("goods" + i, diySiteInventory.getInventory());
+						inventoryNumber=diySiteInventory.getInventory();
 					}else{
 						map.addAttribute("goods" + i, 0);
 					}
 					
 					
 					// 如果已选数量大于了最大库存，则消减已选数量
-					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > diySiteInventory.getInventory()) {
+					if (null != cartGoods.getQuantity() && cartGoods.getQuantity() > inventoryNumber) {
 						//如果为负库存设置为0
-						if(diySiteInventory.getInventory()<0){
+						if(inventoryNumber<0){
 							cartGoods.setQuantity(0L);
 							cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
 						}else{
-							cartGoods.setQuantity(diySiteInventory.getInventory());
+							cartGoods.setQuantity(inventoryNumber);
 							cartGoods.setTotalPrice(cartGoods.getPrice() * cartGoods.getQuantity());
 						}
 						
@@ -1985,7 +1987,7 @@ public class TdUserController {
 										// oGoods.setIsReturnApplied(true);
 										// 更新订单商品信息是否退货状态
 										tdOrderGoodsService.save(orderGoods);
-										totalGoodsPrice += price;
+										totalGoodsPrice += (price*unit);
 									}
 								}
 							}
