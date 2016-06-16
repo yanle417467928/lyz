@@ -935,7 +935,7 @@ public class TdInterfaceService {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
 			String receiveDate = sdf.format(object.getReceiveDate());
 			xml =   "<TABLE><SOB_ID>" + object.getSobId() + "</SOB_ID>"
-					+ "<HEADER_ID>" + object.getHeaderId() + "</HEADER_ID>"
+					+ "<ORDER_HEADER_ID>" + object.getHeaderId() + "</ORDER_HEADER_ID>"
 					+ "<ORDER_NUMBER>" + object.getOrderNumber() + "</ORDER_NUMBER>"
 					+ "<RECEIVE_DATE>" + receiveDate + "</RECEIVE_DATE>"
 					+ "<DELIVER_TYPE_TITLE>" + object.getDeliverTypeTitle() + "</DELIVER_TYPE_TITLE>"

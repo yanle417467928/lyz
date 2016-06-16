@@ -1278,7 +1278,12 @@ public class CallEBSImpl implements ICallEBS {
 				}
 				
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				TdDiySiteInventoryEbs diySiteInventoryEbs = new TdDiySiteInventoryEbs();
+				
+				TdDiySiteInventoryEbs diySiteInventoryEbs = tdDiySiteInventoryEbsService.findByTransId(transId);
+				if (diySiteInventoryEbs == null)
+				{
+					diySiteInventoryEbs = new TdDiySiteInventoryEbs();
+				}
 				diySiteInventoryEbs.setSobId(sobId);
 				diySiteInventoryEbs.setTransId(transId);
 				diySiteInventoryEbs.setTransType(transType);
@@ -1336,7 +1341,10 @@ public class CallEBSImpl implements ICallEBS {
 				diySiteInventoryEbs.setAttribute3(attribute3);
 				diySiteInventoryEbs.setAttribute4(attribute4);
 				diySiteInventoryEbs.setAttribute5(attribute5);
-				
+				if (diySiteInventoryEbs.getId() != null) 
+				{
+					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>事物编码重复："+ transId + "</MESSAGE></STATUS></RESULTS>";
+				}
 				tdDiySiteInventoryEbsService.save(diySiteInventoryEbs);
 				
 				TdGoods tdGoods = tdGoodsService.findByCodeAndStatus(itemCode,1l);

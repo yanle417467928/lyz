@@ -86,6 +86,15 @@ public class TdDiySiteInventoryEbsService
 //    	return repository.findByOrderNumber(orderNumber);
 //    }
     
+    public TdDiySiteInventoryEbs findByTransId(Long transId)
+    {
+    	if (transId == null)
+    	{
+			return null;
+		}
+    	return repository.findByTransId(transId);
+    }
+    
     /**
      * 保存
      * 

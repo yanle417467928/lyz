@@ -7,5 +7,5 @@ import com.ynyes.lyz.interfaces.entity.TdDiySiteInventoryEbs;
 
 public interface TdDiySiteInventoryEbsRepo extends PagingAndSortingRepository<TdDiySiteInventoryEbs, Long> ,JpaSpecificationExecutor<TdDiySiteInventoryEbs>
 {
-
+	TdDiySiteInventoryEbs findByTransId(Long transId);
 }
