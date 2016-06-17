@@ -240,7 +240,7 @@ $(function () {
             <label>不允许</label>
         </span>
       </div>
-      <span class="Validform_checktip">*禁用账户无法登录</span>
+      <span class="Validform_checktip"></span>
     </dd>
   </dl>
     <dl>
