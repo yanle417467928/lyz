@@ -185,12 +185,18 @@ public class TdUserService {
 	 * @author DengXiao
 	 */
 	public List<TdUser> findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(
-			Long cityId, String keywords) {
+			Long cityId, String keywords,Long customerId) {
 		if (null == cityId || null == keywords) {
 			return null;
 		}
-		return repository.findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(cityId,
-				keywords, 1L, cityId, keywords, 2L);
+		if(customerId==null){
+			return repository.findByCityIdAndRealNameContainingAndUserTypeAndIsEnableTrueOrCityIdAndRealNameContainingAndUserTypeAndIsEnableTrue(cityId,
+					keywords, 1L, cityId, keywords, 2L);
+		}else{
+			return repository.findByCityIdAndCustomerIdAndRealNameContainingAndUserTypeAndIsEnableTrueOrCityIdAndCustomerIdAndRealNameContainingAndUserTypeAndIsEnableTrue(cityId,
+					customerId,keywords, 1L, cityId,customerId, keywords, 2L);
+		}
+		
 	}
 
 	/**

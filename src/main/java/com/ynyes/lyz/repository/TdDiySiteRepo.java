@@ -85,7 +85,7 @@ public interface TdDiySiteRepo
 	 * 
 	 * @author DengXiao
 	 */
-	List<TdDiySite> findByRegionIdAndTitleContainingOrderBySortIdAsc(Long regionId, String keywords);
+	List<TdDiySite> findByRegionIdAndTitleContainingAndIsEnableTrueOrderBySortIdAsc(Long regionId, String keywords);
 	
 	/**
 	 * 根据城市id查询城市下面的所有门店

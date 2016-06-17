@@ -513,7 +513,7 @@ public class TdOrderController {
 	 * @author DengXiao
 	 */
 	@RequestMapping(value = "/search/info")
-	public String orderSearchInfo(HttpServletRequest req, ModelMap map, String keywords, Long type) {
+	public String orderSearchInfo(HttpServletRequest req, ModelMap map, String keywords, Long type, String diySiteName) {
 		// 获取当前登陆用户的信息
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
@@ -525,9 +525,19 @@ public class TdOrderController {
 						keywords);
 				map.addAttribute("info_list", info_list);
 			} else if (1L == type.longValue()) {
-				List<TdUser> info_list = tdUserService
-						.findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(cityId,
-								keywords);
+				// 根据门店查询导购
+				TdDiySite diySite = tdDiySiteService.findByTitleAndIsEnableTrue(diySiteName);
+				List<TdUser> info_list = null;
+				if(diySite!=null){
+					info_list = tdUserService
+							.findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(cityId,
+									keywords,diySite.getCustomerId());
+				}else{
+					info_list = tdUserService
+							.findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(cityId,
+									keywords,null);
+				}
+				
 				map.addAttribute("info_list", info_list);
 			}
 		}

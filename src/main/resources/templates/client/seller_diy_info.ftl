@@ -17,13 +17,15 @@
 function searchSomeInfo(){
     wait();
     var keywords = $("#info_keywords").val();
+    var diySiteName= $("#diySite_info").html();
     $.ajax({
         url:"/order/search/info",
         type:"POST",
         timeout:10000,
         data:{
             keywords:keywords,
-            type:${operation_type!'-1'}
+            type:${operation_type!'-1'},
+            diySiteName:diySiteName
         },
         error:function(){
             close(1);

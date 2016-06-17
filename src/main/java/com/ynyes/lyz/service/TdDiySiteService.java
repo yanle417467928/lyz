@@ -215,7 +215,7 @@ public class TdDiySiteService {
 		if (null == regionId || null == keywords) {
 			return null;
 		}
-		return repository.findByRegionIdAndTitleContainingOrderBySortIdAsc(regionId, keywords);
+		return repository.findByRegionIdAndTitleContainingAndIsEnableTrueOrderBySortIdAsc(regionId, keywords);
 	}
 	
 	public List<TdDiySite> findAll(){

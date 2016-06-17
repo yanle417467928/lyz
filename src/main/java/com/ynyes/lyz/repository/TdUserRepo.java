@@ -46,9 +46,18 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 * 
 	 * @author DengXiao
 	 */
-	List<TdUser> findByCityIdAndRealNameContainingAndUserTypeOrCityIdAndRealNameContainingAndUserType(Long cityId1,
-			String keywords1, Long userType1, Long cityId2, String keywords2, Long userType2);
+	List<TdUser> findByCityIdAndRealNameContainingAndUserTypeAndIsEnableTrueOrCityIdAndRealNameContainingAndUserTypeAndIsEnableTrue(Long cityId1,
+			 String keywords1, Long userType1, Long cityId2, String keywords2, Long userType2);
 
+	/**
+	 * 根据关键字查找销售顾问和店长
+	 * 
+	 * @author DengXiao
+	 */
+	List<TdUser> findByCityIdAndCustomerIdAndRealNameContainingAndUserTypeAndIsEnableTrueOrCityIdAndCustomerIdAndRealNameContainingAndUserTypeAndIsEnableTrue(Long cityId1,
+			 Long customerId1,String keywords1, Long userType1, Long cityId2, Long customerId2, String keywords2, Long userType2);
+
+	
 	/**
 	 * 根据指定的城市查找所有的销顾和店长
 	 * 
