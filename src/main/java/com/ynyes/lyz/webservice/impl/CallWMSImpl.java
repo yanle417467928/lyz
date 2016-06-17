@@ -72,6 +72,7 @@ import com.ynyes.lyz.service.TdUserService;
 import com.ynyes.lyz.webservice.ICallWMS;
 
 
+
 @WebService
 public class CallWMSImpl implements ICallWMS {
 	
@@ -1671,7 +1672,7 @@ public class CallWMSImpl implements ICallWMS {
 				String cModifiedDt = null;
 				// 采购单号
 				String cPoNo = null;
-				//城市sobId
+				// 城市sobId
 				Long cCompanyId = null;//分公司Id
 
 				Node node = nodeList.item(i);
@@ -1939,10 +1940,14 @@ public class CallWMSImpl implements ICallWMS {
 					{
 						return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>城市编码为："+ cCompanyId +"的城市不存在</MESSAGE></STATUS></RESULTS>";
 					}
-					Long cRecQty = Long.parseLong(tdTbwRecd.getRecQty());
-					inventory.setInventory(inventory.getInventory() + cRecQty);
+					Double.parseDouble(tdTbwRecd.getRecQty());
+					Double cRecQty = Double.parseDouble(tdTbwRecd.getRecQty());
+					cRecQty = cRecQty * 100;
+					Long recQtyFromDouble = cRecQty.longValue();
+					recQtyFromDouble = recQtyFromDouble/100;
+					inventory.setInventory(inventory.getInventory() + recQtyFromDouble);
 					tdDiySiteInventoryService.save(inventory);
-					tdDiySiteInventoryLogService.saveChangeLog(inventory, cRecQty, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_ADD);
+					tdDiySiteInventoryLogService.saveChangeLog(inventory, recQtyFromDouble, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_ADD);
 				}
 			}
 			
@@ -1956,11 +1961,11 @@ public class CallWMSImpl implements ICallWMS {
 				String cRecNo = null;//任务编号
 				Long cRecId = null;//任务id
 				String cGcode = null;//商品编号
-				Long cPackQty = null;//包装数量
-				Long cPrice = null;//价格
-				Long cGiftQty = null;//验收赠品数量
-				Long cBadQty = null;//验收不良品数量
-				Long cRecQty = null;//验收数量
+				String cPackQty = null;//包装数量 :long
+				Double cPrice = null;//价格 :long
+				String cGiftQty = null;//验收赠品数量 :long
+				String cBadQty = null;//验收不良品数量:long
+				String cRecQty = null;//验收数量:long
 				String cRecUser = null;//作业人员
 				String cPlatNo = null;//月台
 				String cOpTools = null;//操作工具(表单,pda,电子标签)
@@ -2015,35 +2020,35 @@ public class CallWMSImpl implements ICallWMS {
 					{
 					    if (null != childNode.getChildNodes().item(0))
 					    {
-					        cPackQty = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+					        cPackQty = childNode.getChildNodes().item(0).getNodeValue();
 					    }
 					}
 					else if (childNode.getNodeName().equalsIgnoreCase("c_price"))
 					{
 					    if (null != childNode.getChildNodes().item(0))
 					    {
-					        cPrice = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+					        cPrice = Double.parseDouble(childNode.getChildNodes().item(0).getNodeValue());
 					    }
 					}
 					else if (childNode.getNodeName().equalsIgnoreCase("c_gift_qty"))
 					{
 					    if (null != childNode.getChildNodes().item(0))
 					    {
-					        cGiftQty = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+					        cGiftQty = childNode.getChildNodes().item(0).getNodeValue();
 					    }
 					}
 					else if (childNode.getNodeName().equalsIgnoreCase("c_bad_qty"))
 					{
 					    if (null != childNode.getChildNodes().item(0))
 					    {
-					        cBadQty = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+					        cBadQty = childNode.getChildNodes().item(0).getNodeValue();
 					    }
 					}
 					else if (childNode.getNodeName().equalsIgnoreCase("c_rec_qty"))
 					{
 					    if (null != childNode.getChildNodes().item(0))
 					    {
-					        cRecQty = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
+					        cRecQty = childNode.getChildNodes().item(0).getNodeValue();
 					    }
 					}
 					else if (childNode.getNodeName().equalsIgnoreCase("c_rec_user"))
@@ -2423,7 +2428,11 @@ public class CallWMSImpl implements ICallWMS {
 					{
 						return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>城市编码为："+ cCompanyId +"的城市不存在</MESSAGE></STATUS></RESULTS>";
 					}
-					Long cRecQty = tdTbwBackRecD.getcRecQty();
+					
+					Double doubleFromStr = Double.parseDouble(tdTbwBackRecD.getcRecQty());
+					doubleFromStr = doubleFromStr * 100;
+					Long cRecQty = doubleFromStr.longValue();
+					cRecQty = cRecQty / 100;
 					inventory.setInventory(inventory.getInventory() -cRecQty);
 					tdDiySiteInventoryService.save(inventory);
 					tdDiySiteInventoryLogService.saveChangeLog(inventory, -cRecQty, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_SUB);

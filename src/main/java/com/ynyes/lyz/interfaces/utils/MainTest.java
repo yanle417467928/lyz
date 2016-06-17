@@ -7,8 +7,27 @@ public class MainTest {
 		try {
 			// 测试
 //			TdInterfaceService.getCall();
+			String doubleStr = "80.00";
+//			Double doubleOfStr = Double.parseDouble(doubleStr);
+//			try
+//			{
+//				Long longOfStr = Long.parseLong(doubleStr);
+//			}
+//			catch (Exception e)
+//			{
+//				// TODO: handle exception
+//			}
+//			
+//			Long longOfDou = doubleOfStr.longValue();
+			Double cRecQty = Double.parseDouble(doubleStr);
+			cRecQty = cRecQty * 100;
+			System.out.println(cRecQty);
+			Long recQtyFromDouble = cRecQty.longValue();
+			recQtyFromDouble = recQtyFromDouble / 100;
+			System.out.println("------------" + "======" + recQtyFromDouble);
 		} catch (Exception e) {
 			// TODO: handle exception
+			System.out.println(e.getMessage());
 		}
 	}
 

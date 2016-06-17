@@ -41,23 +41,23 @@ public class TdTbwBackRecD extends TdInfBaseEntity
 
 	//包装数量
 	@Column
-	private Long cPackQty;
+	private String cPackQty;
 
 	//价格
 	@Column
-	private Long cPrice;
+	private Double cPrice;
 
 	//验收赠品数量
 	@Column
-	private Long cGiftQty;
+	private String cGiftQty;
 
 	//验收不良品数量
 	@Column
-	private Long cBadQty;
+	private String cBadQty;
 
 	//验收数量
 	@Column
-	private Long cRecQty;
+	private String cRecQty;
 
 	//作业人员
 	@Column(length = 10)
@@ -167,52 +167,52 @@ public class TdTbwBackRecD extends TdInfBaseEntity
 		this.cGcode = cGcode;
 	}
 
-	public Long getcPackQty()
+	public String getcPackQty()
 	{
 		return cPackQty;
 	}
 
-	public void setcPackQty(Long cPackQty)
+	public void setcPackQty(String cPackQty)
 	{
 		this.cPackQty = cPackQty;
 	}
 
-	public Long getcPrice()
+	public Double getcPrice()
 	{
 		return cPrice;
 	}
 
-	public void setcPrice(Long cPrice)
+	public void setcPrice(Double cPrice)
 	{
 		this.cPrice = cPrice;
 	}
 
-	public Long getcGiftQty()
+	public String getcGiftQty()
 	{
 		return cGiftQty;
 	}
 
-	public void setcGiftQty(Long cGiftQty)
+	public void setcGiftQty(String cGiftQty)
 	{
 		this.cGiftQty = cGiftQty;
 	}
 
-	public Long getcBadQty()
+	public String getcBadQty()
 	{
 		return cBadQty;
 	}
 
-	public void setcBadQty(Long cBadQty)
+	public void setcBadQty(String cBadQty)
 	{
 		this.cBadQty = cBadQty;
 	}
 
-	public Long getcRecQty()
+	public String getcRecQty()
 	{
 		return cRecQty;
 	}
 
-	public void setcRecQty(Long cRecQty)
+	public void setcRecQty(String cRecQty)
 	{
 		this.cRecQty = cRecQty;
 	}

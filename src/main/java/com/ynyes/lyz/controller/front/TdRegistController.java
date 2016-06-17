@@ -81,6 +81,7 @@ public class TdRegistController {
 		Map<String, Object> res = new HashMap<>();
 		res.put("status", -1);
 		String smsCode = (String) req.getSession().getAttribute("SMSCODE");
+		String smsMobile = (String) req.getSession().getAttribute("SMSMOBILE");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(phone);
 		if (null == cityInfo || "".equals(cityInfo) || "地区".equals(cityInfo)) {
 			res.put("message", "您还未选择您的地区");
@@ -90,11 +91,13 @@ public class TdRegistController {
 			res.put("message", "该手机号码已注册");
 			return res;
 		}
-		if (null == smsCode) {
+		if (null == smsCode || smsMobile == null)
+		{
 			res.put("message", "验证码错误");
 			return res;
 		}
-		if (!smsCode.equals(code)) {
+		if (!smsCode.equals(code) || !smsMobile.equalsIgnoreCase(phone)) 
+		{
 			res.put("message", "验证码错误");
 			return res;
 		}
@@ -178,8 +181,9 @@ public class TdRegistController {
 		String smscode = random.nextInt(9000) + 1000 + "";
 		HttpSession session = req.getSession();
 		session.setAttribute("SMSCODE", smscode);
+		session.setAttribute("SMSMOBILE", phone);
 		String info = "您的验证码为" + smscode + "，请在页面中输入以完成验证。";
-		System.err.println("MDJ:SMSCODE:" + smscode);
+		System.err.println("MDJ:SMSCODE:" + smscode + "AND Moblie:" + phone);
 		String content = null;
 		try {
 			content = URLEncoder.encode(info, "GB2312");
