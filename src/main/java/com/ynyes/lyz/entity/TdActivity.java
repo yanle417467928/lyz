@@ -69,6 +69,7 @@ public class TdActivity {
 	private String cityName;
 
 	// 门店名称
+	@Column
 	private String siteName;
 
 	// 是否是小辅料赠送活动
