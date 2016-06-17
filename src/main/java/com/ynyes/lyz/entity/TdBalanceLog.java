@@ -62,7 +62,7 @@ public class TdBalanceLog {
 	@Column(scale = 2)
 	private Double balance;
 	
-	// 管理员改变预存款的类型(0: balance 1: cashBalance 2:unCashBalance）
+	// 管理员改变预存款的类型(0: balance 1: cashBalance 2:unCashBalance 3: 退款可提现余额；4. 退款不可提现余额）
 	@Column
 	private Long balanceType;
 	

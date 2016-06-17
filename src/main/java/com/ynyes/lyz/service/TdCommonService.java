@@ -340,7 +340,7 @@ public class TdCommonService {
 
 		returnNote.setReturnGoodsList(orderGoodsList);
 		tdOrderGoodsService.save(orderGoodsList);
-		tdInterfaceService.initReturnOrder(returnNote,INFConstants.INF_RETURN_ORDER_CANCEL_INT);
+		tdInterfaceService.initReturnOrder(returnNote, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
 		tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
 		tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 		return tdReturnNoteService.save(returnNote);
@@ -1102,8 +1102,11 @@ public class TdCommonService {
 		if (null != payTypeList) {
 			for (TdPayType type : payTypeList) {
 				if (null != type && null != type.getTitle() && !"到店支付".equals(type.getTitle())) {
-					defaultType = type;
-					break;
+					if (!(null != user.getIsCashOnDelivery() && !user.getIsCashOnDelivery()
+							&& "货到付款".equalsIgnoreCase(type.getTitle()))) {
+						defaultType = type;
+						break;
+					}
 				}
 			}
 		}
@@ -1566,7 +1569,7 @@ public class TdCommonService {
 		for (Long brandId : order_map.keySet()) {
 			TdOrder order = order_map.get(brandId);
 			if (null != order) {
-				order = this.rePresent(req, order,false);
+				order = this.rePresent(req, order, false);
 				order_map.put(brandId, order);
 			}
 		}

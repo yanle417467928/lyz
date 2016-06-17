@@ -713,7 +713,12 @@ public class TdOrderController {
 			String title = order.getPayTypeTitle();
 			if (null != title && "到店支付".equals(title)) {
 				// 此时将支付方式更改为到店支付
-				TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
+				TdPayType payType = null;
+				if(null != user.getIsCashOnDelivery() && !user.getIsCashOnDelivery()){
+					payType = tdPayTypeService.findByTitleAndIsEnableTrue("支付宝");
+				}else{
+					payType = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
+				}
 				if (null != payType) {
 					order.setPayTypeId(payType.getId());
 					order.setPayTypeTitle(payType.getTitle());
@@ -784,8 +789,10 @@ public class TdOrderController {
 		if (!(null != order.getIsCoupon() && order.getIsCoupon())) {
 			if ("送货上门".equals(deliveryType)) {
 				// 查询是否具有货到付款的支付方式
-				TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
-				map.addAttribute("cashOndelivery", payType);
+				if (!(null != user.getIsCashOnDelivery() && !user.getIsCashOnDelivery())) {
+					TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
+					map.addAttribute("cashOndelivery", payType);
+				}
 			}
 
 			if ("门店自提".equals(deliveryType)) {
@@ -1516,6 +1523,15 @@ public class TdOrderController {
 			}
 		}
 
+		// 如果是货到付款的情况下，判断用户是否具有货到付款的资格
+		if ("货到付款".equalsIgnoreCase(order_temp.getPayTypeTitle())) {
+			Boolean isCashOnDelivery = user.getIsCashOnDelivery();
+			if (null != isCashOnDelivery && !isCashOnDelivery) {
+				res.put("message", "&nbsp;&nbsp;您不允许货到付款<br>请选择其他支付方式");
+				return res;
+			}
+		}
+
 		// 判断是否在有效时间之内
 		if (null != order_temp.getValidTime() && new Date().after(order_temp.getValidTime())) {
 			res.put("message", "超过有效支付时间请刷新订单重新支付");
@@ -1742,12 +1758,12 @@ public class TdOrderController {
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null != order && null != order.getOrderNumber()) {
 			if (order.getOrderNumber().contains("XN")) {
-				//门店自提 确认发货时扣库存
-				if(!"门店自提".equals(order.getDeliverTypeTitle())){
+				// 门店自提 确认发货时扣库存
+				if (!"门店自提".equals(order.getDeliverTypeTitle())) {
 					// 拆单钱先去扣减库存
 					tdDiySiteInventoryService.changeGoodsInventory(order, 2L, req, "发货");
 				}
-				
+
 				tdCommonService.dismantleOrder(req, username);
 			}
 		}
@@ -1969,7 +1985,8 @@ public class TdOrderController {
 		// 获取指定的订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null != order) {
-			if ((order.getIsCoupon() != null && !order.getIsCoupon()) || order.getIsCoupon() == null || !"门店自提".equals(order.getDeliverTypeTitle())) {
+			if ((order.getIsCoupon() != null && !order.getIsCoupon()) || order.getIsCoupon() == null
+					|| !"门店自提".equals(order.getDeliverTypeTitle())) {
 				TdOrder tdOrder = tdOrderService.findOne(order.getId());
 				Long regionId = null;
 				Long diysiteId = tdOrder.getDiySiteId();

@@ -229,6 +229,20 @@ $(function () {
       <span class="Validform_checktip">*禁用账户无法登录</span>
     </dd>
   </dl>
+  <dl>
+    <dt>是否允许货到付款</dt>
+    <dd>
+      <div class="rule-multi-radio">
+        <span id="rblStatus">
+            <input type="radio" name="isCashOnDelivery" value="1" datatype="n" <#if !(user?? && user.isCashOnDelivery?? && user.isCashOnDelivery == false)>checked="checked"</#if>>
+            <label>允许</label>
+            <input type="radio" name="isCashOnDelivery" value="0" datatype="n" <#if user?? && user.isCashOnDelivery?? && user.isCashOnDelivery == false>checked="checked"</#if>>
+            <label>不允许</label>
+        </span>
+      </div>
+      <span class="Validform_checktip">*禁用账户无法登录</span>
+    </dd>
+  </dl>
     <dl>
         <dt>用户名：</dt>
         <dd>

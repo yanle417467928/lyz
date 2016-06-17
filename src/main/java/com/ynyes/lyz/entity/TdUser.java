@@ -181,6 +181,10 @@ public class TdUser {
 	@Column
 	private String userCusId;
 	
+	//是否允许货到付款
+	@Column
+	private Boolean isCashOnDelivery;
+	
 	public String getUserCusId() {
 		return userCusId;
 	}
@@ -491,5 +495,13 @@ public class TdUser {
 
 	public void setSellerName(String sellerName) {
 		this.sellerName = sellerName;
+	}
+
+	public Boolean getIsCashOnDelivery() {
+		return isCashOnDelivery;
+	}
+
+	public void setIsCashOnDelivery(Boolean isCashOnDelivery) {
+		this.isCashOnDelivery = isCashOnDelivery;
 	}
 }

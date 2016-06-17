@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.ibm.icu.util.Calendar;
 import com.ynyes.lyz.entity.TdBalanceLog;
+import com.ynyes.lyz.entity.TdCashReturnNote;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdCouponModule;
@@ -50,9 +51,12 @@ public class TdPriceCountService {
 
 	@Autowired
 	private TdCouponModuleService tdCouponModuleService;
-	
+
 	@Autowired
 	private TdBalanceLogService tdBalanceLogService;
+
+	@Autowired
+	private TdCashReturnNoteService tdCashReturnNoteService;
 
 	/**
 	 * 计算订单价格和能使用的最大的预存款的方法
@@ -453,9 +457,9 @@ public class TdPriceCountService {
 		user.setBalance(user.getBalance() + unCashBalanceUsed + cashBalanceUsed);
 		// 开始返还用户的不可提现余额
 		user.setUnCashBalance(user.getUnCashBalance() + unCashBalanceUsed);
-		if(unCashBalanceUsed>0){
-			//添加退还日志
-			TdBalanceLog balanceLog=new TdBalanceLog();
+		if (unCashBalanceUsed > 0) {
+			// 添加退还日志
+			TdBalanceLog balanceLog = new TdBalanceLog();
 			balanceLog.setUserId(user.getId());
 			balanceLog.setUsername(user.getUsername());
 			balanceLog.setMoney(unCashBalanceUsed);
@@ -478,9 +482,9 @@ public class TdPriceCountService {
 		}
 		// 开始返还用户的可提现余额
 		user.setCashBalance(user.getCashBalance() + cashBalanceUsed);
-		if(cashBalanceUsed>0){
-			//添加退还日志
-			TdBalanceLog balanceLog=new TdBalanceLog();
+		if (cashBalanceUsed > 0) {
+			// 添加退还日志
+			TdBalanceLog balanceLog = new TdBalanceLog();
 			balanceLog.setUserId(user.getId());
 			balanceLog.setUsername(user.getUsername());
 			balanceLog.setMoney(cashBalanceUsed);
@@ -804,7 +808,7 @@ public class TdPriceCountService {
 	 * @param params的规则为【商品id】-【退货数量】-【退货单价】
 	 * @author DengXiao
 	 */
-	public void returnCashOrCoupon(Long orderId, String params) {
+	public void returnCashOrCoupon(Long orderId, String params, String returnNoteNumber) {
 		TdOrder order = tdOrderService.findOne(orderId);
 		Long userId = order.getRealUserId();
 		TdUser user = tdUserService.findOne(userId);
@@ -945,21 +949,36 @@ public class TdPriceCountService {
 
 									}
 								}
-								// 如果还有金额没有退还，那就只能够退还不可提现余额了
+								// 如果还有金额没有退还，再退还不可提现余额
 								if (total > 0) {
-									user.setUnCashBalance(user.getUnCashBalance() + total);
-									user.setBalance(user.getBalance() + total);
-									tdUserService.save(user);
-									//添加退还日志
-									TdBalanceLog balanceLog=new TdBalanceLog();
+									// 定义实际退还的不可提现余额
+									Double uncashBalance = 0.00;
+									// 获取订单使用的总不可提现余额
+									Double unCashBalanceUsed = order.getUnCashBalanceUsed();
+									if (null == unCashBalanceUsed) {
+										unCashBalanceUsed = 0.00;
+									}
+
+									if (total < unCashBalanceUsed) {
+										// 需要退还的金额小于用户使用的总的不可提现余额，则直接退还退还的总额
+										uncashBalance = total;
+									} else {
+										// 如果需要退还的金额大于等于用户使用的不可提现余额，则只能够退还用户使用的不可提现余额
+										uncashBalance = unCashBalanceUsed;
+									}
+									// 开始退还不可提现余额
+									user.setUnCashBalance(user.getUnCashBalance() + uncashBalance);
+									user.setBalance(user.getBalance() + uncashBalance);
+									// 添加用于余额变更明细
+									TdBalanceLog balanceLog = new TdBalanceLog();
 									balanceLog.setUserId(user.getId());
 									balanceLog.setUsername(user.getUsername());
-									balanceLog.setMoney(total);
+									balanceLog.setMoney(uncashBalance);
 									balanceLog.setType(4L);
 									balanceLog.setCreateTime(new Date());
 									balanceLog.setFinishTime(new Date());
 									balanceLog.setIsSuccess(true);
-									balanceLog.setBalanceType(2L);
+									balanceLog.setBalanceType(4L);
 									balanceLog.setBalance(user.getUnCashBalance());
 									balanceLog.setOperator(user.getUsername());
 									try {
@@ -971,14 +990,112 @@ public class TdPriceCountService {
 									balanceLog.setReason("订单退款");
 									balanceLog.setOrderNumber(order.getOrderNumber());
 									tdBalanceLogService.save(balanceLog);
-									
+
+									// 判断是否剩余部分金额需要退还
+									total -= uncashBalance;
 								}
+
+								// 如果还有剩余的金额没有退还，则开始退还可提现余额
+								if (total > 0) {
+									// 定义一个变量用于获取用户使用的可提现余额
+									Double cashBalance = 0.00;
+									// 获取用户使用的可提现余额
+									Double cashBalanceUsed = order.getCashBalanceUsed();
+									if (null == cashBalanceUsed) {
+										cashBalanceUsed = 0.00;
+									}
+									// 如果需要退还的金额小于用户使用的可提现余额，则将所有的金额以可提现余额的形式退还
+									if (total < cashBalanceUsed) {
+										cashBalance = total;
+									} else {
+										cashBalance = cashBalanceUsed;
+									}
+
+									// 开始退还余额
+									user.setCashBalance(user.getCashBalance() + cashBalance);
+									user.setBalance(user.getBalance() + cashBalance);
+									// 记录余额变更明细
+									TdBalanceLog balanceLog = new TdBalanceLog();
+									balanceLog.setUserId(user.getId());
+									balanceLog.setUsername(user.getUsername());
+									balanceLog.setMoney(total);
+									balanceLog.setType(4L);
+									balanceLog.setCreateTime(new Date());
+									balanceLog.setFinishTime(new Date());
+									balanceLog.setIsSuccess(true);
+									balanceLog.setBalanceType(3L);
+									balanceLog.setBalance(user.getUnCashBalance());
+									balanceLog.setOperator(user.getUsername());
+									try {
+										balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+									} catch (UnknownHostException e) {
+										System.out.println("获取ip地址报错");
+										e.printStackTrace();
+									}
+									balanceLog.setReason("订单退款");
+									balanceLog.setOrderNumber(order.getOrderNumber());
+									tdBalanceLogService.save(balanceLog);
+									total -= cashBalance;
+								}
+								// 如果还剩余部分金额没有退还，则需要根据支付方式进行第三方退还
+								if (total > 0) {
+									// 获取用户的支付方式
+									Long payTypeId = order.getPayTypeId();
+									TdPayType payType = tdPayTypeService.findOne(payTypeId);
+									// 定义一个变量表示退款金额数
+									Double otherReturn = 0.00;
+									// 获取用户第三方支付的总额
+									Double otherPay = order.getOtherPay();
+									if (null == otherPay) {
+										otherPay = 0.00;
+									}
+
+									if (total < otherPay) {
+										otherReturn = total;
+									} else {
+										otherReturn = otherPay;
+									}
+
+									// 根据退款方式和退货金额生成一个资金退还申请单据
+									TdCashReturnNote note = new TdCashReturnNote();
+									note.setCreateTime(new Date());
+									note.setMoney(otherReturn);
+									// 如果支付方式属于线上支付，那么一定是支付宝、微信、银行卡的一种，则按照正常逻辑处理
+									if (null != payType.getIsOnlinePay() && payType.getIsOnlinePay()) {
+										note.setTypeId(payTypeId);
+										note.setTypeTitle(payType.getTitle());
+									} else {
+										// 如果支付方式是线下支付，则涉及到真实的支付方式包含现金和POS（甚至混用）
+										// 目前不知道现金额度和POS额度的字段，所以无法添加相关逻辑
+										// ---------------------在此添加现金和POS的逻辑------------------
+
+										//此处逻辑及设置typeId和typeTitle的值
+										
+										
+										// ---------------------现金和POS的逻辑结束---------------------
+									}
+									note.setOrderNumber(order.getOrderNumber());
+									note.setMainOrderNumber(order.getMainOrderNumber());
+									note.setReturnNoteNumber(returnNoteNumber);
+									note.setUserId(user.getId());
+									note.setUsername(user.getUsername());
+									note.setIsOperated(false);
+									note = tdCashReturnNoteService.save(note);
+
+									// ----------在此处理退款申请单的一系列操作动作-------------------
+								}
+								/*
+								 * 退还第三方支付的钱之后，不再做任何退款处理 实际过程中可能会出现剩余金额还未退还的情况
+								 * 是因为用户本身可能未支付完订单的总额（门店确认欠款的情况）
+								 * 所以在退款界面看到的退款金额和实际退还给用户的金额是不一致的
+								 */
 							}
 						}
 					}
 				}
 			}
 		}
+		tdUserService.save(user);
 	}
 
 	/**
@@ -997,7 +1114,7 @@ public class TdPriceCountService {
 						params += goods.getGoodsId() + "-" + goods.getQuantity() + "-" + goods.getPrice() + ",";
 					}
 				}
-				this.returnCashOrCoupon(orderId, params);
+				this.returnCashOrCoupon(orderId, params, returnNote.getReturnNumber());
 			}
 		}
 	}
@@ -1083,5 +1200,4 @@ public class TdPriceCountService {
 		}
 	}
 
-	
 }
