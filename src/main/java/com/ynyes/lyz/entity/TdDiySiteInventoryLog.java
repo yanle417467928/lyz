@@ -29,6 +29,7 @@ public class TdDiySiteInventoryLog {
 	public static final String CHANGETYPE_INVENTORY_LOSE	= "库存盘亏";
 	public static final String CHANGETYPE_CITY_ADD			= "城市入货";
 	public static final String CHANGETYPE_CITY_SUB			= "城市退货";
+	public static final String CHANGETYPE_CITY_DO			= "城市调拨入库";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

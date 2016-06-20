@@ -10,7 +10,7 @@ public class INFConstants
 	/**
 	 * 销售订单行表
 	 */
-	public static final String	INF_ORDER_GOODS_STR			= "TD_ORDER_GOODS";
+	public static final String	INF_ORDER_GOODS_STR		= "TD_ORDER_GOODS";
 
 	/**
 	 * 销售订单券使用行表
@@ -25,12 +25,12 @@ public class INFConstants
 	/**
 	 * 销退订单头表
 	 */
-	public static final String	INF_RT_ORDER_STR		= "TD_RETURN_ORDER";
+	public static final String	INF_RT_ORDER_STR			= "TD_RETURN_ORDER";
 
 	/**
 	 * 销退订单行表
 	 */
-	public static final String	INF_RT_ORDER_GOODS_STR		= "TD_RT_ORDER_GOODS";
+	public static final String	INF_RT_ORDER_GOODS_STR	= "TD_RT_ORDER_GOODS";
 
 	/**
 	 * 销退单的券退回表
@@ -40,7 +40,7 @@ public class INFConstants
 	/**
 	 * 到店退货单退货时间表
 	 */
-	public static final String	INF_ORDER_RETMD_STR			= "TD_ORDER_RETMD";
+	public static final String	INF_ORDER_RETMD_STR		= "TD_ORDER_RETMD";
 
 	/**
 	 * 收款表

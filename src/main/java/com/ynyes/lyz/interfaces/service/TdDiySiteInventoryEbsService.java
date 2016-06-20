@@ -5,12 +5,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ynyes.lyz.interfaces.entity.TdDiySiteInventoryEbs;
 import com.ynyes.lyz.interfaces.repository.TdDiySiteInventoryEbsRepo;
 
 
 @Service
+@Transactional
 public class TdDiySiteInventoryEbsService
 {
 	@Autowired
