@@ -202,7 +202,11 @@ function submitOwnMoney()
 		{
         	if (data.code == 0)
         	{
-        		warning("申请成功");
+        		if(data.owned==0){
+        			warning("提交成功");
+        		}else{
+        			warning("申请成功");
+        		}
         		window.location.reload();
         	}
         	else

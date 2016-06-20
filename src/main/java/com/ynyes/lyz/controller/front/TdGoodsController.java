@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -539,8 +540,10 @@ public class TdGoodsController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-
 		map.addAttribute("user", user);
+		if(StringUtils.isBlank(keywords)){
+			return "/client/goods_search";
+		}
 		//查询一级分类 
 		List<String> categoryTitle=new ArrayList<String>();
 		TdProductCategory  productCategory= tdProductCategoryService.findByTitle(keywords);

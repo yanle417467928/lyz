@@ -891,7 +891,7 @@ public class TdDeliveryIndexController {
 		}*/
 
 		res.put("code", 0);
-
+		res.put("owned", owned);
 		return res;
 	}
 
