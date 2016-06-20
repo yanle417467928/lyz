@@ -399,8 +399,9 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 			// 确认退款
 			else if ("refund".equals(type)) 
 			{
-				if (returnNote.getStatusId().equals(3L)) 
-				{
+				//取消状态判断
+//				if (returnNote.getStatusId().equals(3L)) 
+//				{
 					// 查找订单
 					TdOrder order = tdOrderService.findByOrderNumber(returnNote.getOrderNumber());
 					if (order != null && order.getStatusId() != null && order.getStatusId() == 9L)
@@ -414,7 +415,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 					returnNote.setReturnTime(new Date());
 					TdReturnTimeInf returnTimeInf = tdInterfaceService.initReturnTimeByReturnNote(returnNote);
 					returnNote.setStatusId(5L);// 退货单设置已完成
-				}
+//				}
 			}
 
 			tdReturnNoteService.save(returnNote);

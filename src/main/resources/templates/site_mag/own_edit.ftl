@@ -571,6 +571,6 @@
 	<div class="dialog_title">还款 </div>
 	<div class="dialog_row">现金：<input id="money" type="number" value="0" /> </div>
 	<div class="dialog_row">pos：<input id="pos" type="number" value="0" /> </div>
-	<div class="dialog_row"><input onclick="sumbitBackMoney(<#if consult.owned??>${consult.owned?c}<#else>0</#if>,${consult.id })" class="dialog_btn" type="button" value="确定" /><input onclick="hiddenDialog()" class="dialog_btn" type="button" value="取消" /> </div>
+	<div class="dialog_row"><input onclick="sumbitBackMoney(<#if consult.owned??>${consult.owned?c}<#else>0</#if>,${consult.id?c })" class="dialog_btn" type="button" value="确定" /><input onclick="hiddenDialog()" class="dialog_btn" type="button" value="取消" /> </div>
 </div>
 </body></html>
