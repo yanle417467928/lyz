@@ -1987,7 +1987,7 @@ public class TdUserController {
 										// oGoods.setIsReturnApplied(true);
 										// 更新订单商品信息是否退货状态
 										tdOrderGoodsService.save(orderGoods);
-										totalGoodsPrice += (price*unit);
+										totalGoodsPrice += (price*quantity);
 									}
 								}
 							}
