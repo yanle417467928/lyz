@@ -36,7 +36,7 @@ delete from td_agency_fund where create_username=v_username;
 			-- 查询数据到agencyfund
 INSERT into td_agency_fund(diy_site_name,diy_site_phone,main_order_number,order_time,cash_balance_used,un_cash_balance_used,pay_price,payed,owned,real_name,username,shipping_name,shipping_phone,shipping_address,remark,cash_coupon,status_id,wh_no,total_price,delivery_date,delivery_detail_id,delivery_time,city_name,diy_site_code,create_username,deliver_type_title,diy_id) 
 select o.diy_site_name,o.diy_site_phone,o.main_order_number,o.order_time,sum(o.cash_balance_used) cash_balance_used,sum(o.un_cash_balance_used) un_cash_balance_used,o.all_total_pay as pay_price,omr.payed,omr.owned,u.real_name,u.username,o.shipping_name,o.shipping_phone,o.shipping_address,o.remark,o.cash_coupon,o.status_id,di.wh_no,o.all_actual_pay+o.all_total_pay+sum(o.cash_balance_used)+sum(o.un_cash_balance_used)+o.cash_coupon+o.product_coupon total_goods_price,o.delivery_date,o.delivery_detail_id,o.delivery_time,o.city,o.diy_site_code,v_username create_username,o.deliver_type_title,o.diy_site_id from td_order o
- left JOIN td_own_money_record omr on omr.order_number=o.order_number
+ left JOIN td_own_money_record omr on omr.order_number=o.main_order_number
 left join td_delivery_info di on di.order_number=o.main_order_number
 left join td_user u on u.op_user=di.driver
 where   o.status_id not in(1,2,7,8) and order_time>=startTime and order_time<=endTime and o.deliver_type_title <> "门店自提"
