@@ -562,6 +562,8 @@ public class TdManagerUserController {
 		{
 			balanceLog.setReason("后台新增会员设置预存款");
 		}
+		balanceLog.setDiySiteId(newUser.getUpperDiySiteId());
+		balanceLog.setCityId(newUser.getCityId());
 		tdBalanceLogService.save(balanceLog);
 	}
 

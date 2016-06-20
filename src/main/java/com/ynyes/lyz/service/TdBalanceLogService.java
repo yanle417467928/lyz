@@ -78,21 +78,90 @@ public class TdBalanceLogService {
 		return repository.findAll(pageRequest);
 	}
 	
-	public Page<TdBalanceLog> searchList(String keywords,List<Long> userIdList,Long type, int page, int size){
+	/**
+	 * 预存款变更记录查询(分页)
+	 * @param keywords 关键字
+	 * @param roleDiyIds 权限门店
+	 * @param type 类型
+	 * @param page 分页
+	 * @param size 分页
+	 * @param cityCode 城市
+	 * @param diyCode 门店
+	 * @param startTime 开始时间
+	 * @param endTime 结束时间
+	 * @return
+	 */
+	public Page<TdBalanceLog> searchList(String keywords,List<Long> roleDiyIds,Long type, int page, int size,Long cityCode,Long diyCode,String startTime,
+			String endTime){
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdBalanceLog> c = new Criteria<TdBalanceLog>();
 		//用户名
 		if (StringUtils.isNotBlank(keywords)) {
 			c.add(Restrictions.or(Restrictions.like("orderNumber",keywords, true),Restrictions.like("username", keywords, true)));
 		}
-//		if(userIdList!=null && userIdList.size()>0){
-//			c.add(Restrictions.in("userId", userIdList, true));
-//		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diySiteId", roleDiyIds, true));
+		}
 		if (type!=null) {
 			c.add(Restrictions.eq("type", type, true));
 		}
-		
-		c.setOrderByDesc("finishTime");
+		if(diyCode!=null){
+			c.add(Restrictions.eq("diySiteId", diyCode, true));
+		}
+		if(cityCode!=null){
+			c.add(Restrictions.eq("cityId", cityCode, true));
+		}
+		if (StringUtils.isNotBlank(startTime)) {
+			c.add(Restrictions.gte("createTime", com.ynyes.lyz.util.StringUtils.stringToDate(startTime, null), true));
+
+		}
+		if (StringUtils.isNotBlank(endTime)) {
+			c.add(Restrictions.lte("createTime", com.ynyes.lyz.util.StringUtils.stringToDate(endTime, null), true));
+		}
+//		c.add(Restrictions.ne("type", 2L, true));
+		c.setOrderByDesc("createTime");
 		return repository.findAll(c,pageRequest);
+	}
+	
+	/**
+	 * 预存款变更记录查询
+	 * @param keywords 关键字
+	 * @param roleDiyIds 权限门店
+	 * @param type 类型
+	 * @param cityCode 城市
+	 * @param diyCode 门店
+	 * @param startTime 开始时间
+	 * @param endTime 结束时间
+	 * @return
+	 */
+	public List<TdBalanceLog> searchList(String keywords,List<Long> roleDiyIds,Long type,Long cityCode,Long diyCode,String startTime,
+			String endTime){
+		Criteria<TdBalanceLog> c = new Criteria<TdBalanceLog>();
+		//用户名
+		if (StringUtils.isNotBlank(keywords)) {
+			c.add(Restrictions.or(Restrictions.like("orderNumber",keywords, true),Restrictions.like("username", keywords, true)));
+		}
+		if(roleDiyIds!=null && roleDiyIds.size()>0){
+			c.add(Restrictions.in("diySiteId", roleDiyIds, true));
+		}
+		if (type!=null) {
+			c.add(Restrictions.eq("type", type, true));
+		}
+		if(diyCode!=null){
+			c.add(Restrictions.eq("diySiteId", diyCode, true));
+		}
+		if(cityCode!=null){
+			c.add(Restrictions.eq("cityId", cityCode, true));
+		}
+		if (StringUtils.isNotBlank(startTime)) {
+			c.add(Restrictions.gte("createTime", com.ynyes.lyz.util.StringUtils.stringToDate(startTime, null), true));
+
+		}
+		if (StringUtils.isNotBlank(endTime)) {
+			c.add(Restrictions.lte("createTime", com.ynyes.lyz.util.StringUtils.stringToDate(endTime, null), true));
+		}
+//		c.add(Restrictions.ne("type", 2L, true));
+		c.setOrderByDesc("createTime");
+		return repository.findAll(c);
 	}
 }

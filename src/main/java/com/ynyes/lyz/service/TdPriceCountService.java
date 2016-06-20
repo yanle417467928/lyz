@@ -478,6 +478,8 @@ public class TdPriceCountService {
 			}
 			balanceLog.setReason("取消订单退款");
 			balanceLog.setOrderNumber(order.getOrderNumber());
+			balanceLog.setDiySiteId(user.getUpperDiySiteId());
+			balanceLog.setCityId(user.getCityId());
 			tdBalanceLogService.save(balanceLog);
 		}
 		// 开始返还用户的可提现余额
@@ -503,6 +505,8 @@ public class TdPriceCountService {
 			}
 			balanceLog.setReason("取消订单退款");
 			balanceLog.setOrderNumber(order.getOrderNumber());
+			balanceLog.setDiySiteId(user.getUpperDiySiteId());
+			balanceLog.setCityId(user.getCityId());
 			tdBalanceLogService.save(balanceLog);
 		}
 		user = tdUserService.save(user);
@@ -989,6 +993,8 @@ public class TdPriceCountService {
 									}
 									balanceLog.setReason("订单退款");
 									balanceLog.setOrderNumber(order.getOrderNumber());
+									balanceLog.setDiySiteId(user.getUpperDiySiteId());
+									balanceLog.setCityId(user.getCityId());
 									tdBalanceLogService.save(balanceLog);
 
 									// 判断是否剩余部分金额需要退还
@@ -1034,6 +1040,8 @@ public class TdPriceCountService {
 									}
 									balanceLog.setReason("订单退款");
 									balanceLog.setOrderNumber(order.getOrderNumber());
+									balanceLog.setDiySiteId(user.getUpperDiySiteId());
+									balanceLog.setCityId(user.getCityId());
 									tdBalanceLogService.save(balanceLog);
 									total -= cashBalance;
 								}

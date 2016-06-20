@@ -1666,7 +1666,7 @@ public class TdCommonService {
 							balanceLog.setCreateTime(new Date());
 							balanceLog.setFinishTime(new Date());
 							balanceLog.setIsSuccess(true);
-							balanceLog.setReason("订单只支付使用");
+							balanceLog.setReason("订单支付使用");
 							balanceLog.setBalance(user.getUnCashBalance());
 							balanceLog.setBalanceType(2L);
 							balanceLog.setOperator(order.getUsername());
@@ -1677,6 +1677,8 @@ public class TdCommonService {
 								System.out.println("获取ip地址报错");
 								e.printStackTrace();
 							}
+							balanceLog.setDiySiteId(user.getUpperDiySiteId());
+							balanceLog.setCityId(user.getCityId());
 							tdBalanceLogService.save(balanceLog);
 						}
 						// 可提现预存款
@@ -1689,7 +1691,7 @@ public class TdCommonService {
 							balanceLog.setCreateTime(new Date());
 							balanceLog.setFinishTime(new Date());
 							balanceLog.setIsSuccess(true);
-							balanceLog.setReason("订单只支付使用");
+							balanceLog.setReason("订单支付使用");
 							balanceLog.setBalance(user.getCashBalance());
 							balanceLog.setBalanceType(1L);
 							balanceLog.setOperator(order.getUsername());
@@ -1700,6 +1702,8 @@ public class TdCommonService {
 								System.out.println("获取ip地址报错");
 								e.printStackTrace();
 							}
+							balanceLog.setDiySiteId(user.getUpperDiySiteId());
+							balanceLog.setCityId(user.getCityId());
 							tdBalanceLogService.save(balanceLog);
 						}
 

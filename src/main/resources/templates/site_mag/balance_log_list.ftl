@@ -6,6 +6,7 @@
 <script type="text/javascript" src="/mag/js/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="/mag/js/lhgdialog.js"></script>
 <script type="text/javascript" src="/mag/js/layout.js"></script>
+<script type="text/javascript" src="/mag/js/WdatePicker.js"></script>
 <link href="/mag/style/pagination.css" rel="stylesheet" type="text/css">
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
 </head>
@@ -21,6 +22,25 @@ function __doPostBack(eventTarget, eventArgument) {
         theForm.__EVENTTARGET.value = eventTarget;
         theForm.__EVENTARGUMENT.value = eventArgument;
         theForm.submit();
+    }
+}
+function downloaddate()
+{
+    var begain = $("#begain").val();
+    var end = $("#end").val();
+    var diyCode = $("#diyCode").val();
+    var city = $("#cityCode").val();
+    var keywords = $("#keywords").val();
+    var type = $("#type").val();
+    if(begain==""){
+    	$.dialog.confirm("将导出全部数据,请确认导出?", function () {
+    		window.open("/Verwalter/balance/downdata?begindata="+ begain + "&enddata=" + end + "&diyCode=" + diyCode+ "&cityId=" + city
+    		+ "&keywords=" + keywords+ "&type=" + type);
+    		return;
+        });
+    }else{
+    	window.open("/Verwalter/balance/downdata?begindata="+ begain + "&enddata=" + end + "&diyCode=" + diyCode+ "&cityId=" + city
+    	+ "&keywords=" + keywords+ "&type=" + type);
     }
 }
 </script>
@@ -50,7 +70,7 @@ function __doPostBack(eventTarget, eventArgument) {
       </ul>
       <div class="menu-list">      
         <div class="rule-single-select single-select">
-        <select name="type" onchange="javascript:setTimeout(__doPostBack('type',''), 0)" style="display: none;">
+        <select name="type" id="type" onchange="javascript:setTimeout(__doPostBack('type',''), 0)" style="display: none;">
             <option <#if !type??>selected="selected"</#if> value="">变更类型</option>
             <option <#if type?? && type==0>selected="selected"</#if> value="0">充值</option>
             <option <#if type?? && type==1>selected="selected"</#if> value="1">提现</option>
@@ -59,7 +79,7 @@ function __doPostBack(eventTarget, eventArgument) {
         </select>
         </div>
       </div>
-      <#--
+      
       	<#if cityList?? && cityList?size gt 0 >
           	<div class="menu-list">
               	<div class="rule-single-select">
@@ -84,11 +104,17 @@ function __doPostBack(eventTarget, eventArgument) {
            		</div>
            	</div>
            	</#if>     
-           	-->
+           	<div class="menu-list">
+              	  变更时间:
+                <input name="startTime" id="begain" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " value="${startTime!'' }" />
+                <input name="endTime" id="end" type="text" class="input date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',lang:'zh-cn'})" datatype="/^\s*$|^\d{4}\-\d{1,2}\-\d{1,2}\s{1}(\d{1,2}:){2}\d{1,2}$/" errormsg="请选择正确的日期" sucmsg=" " value="${endTime!'' }" />
+               
+           	</div>
     </div>
     <div class="r-list">
-      <input name="keywords" type="text" class="keyword" value="${keywords!""}">
+      <input name="keywords" id="keywords" type="text" class="keyword" value="${keywords!""}">
       <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('btnSearch','')">查询</a>
+      <a style="color:black;line-height: 30px;margin-left: 20px;" target="_blank" href="javascript:downloaddate();">报表下载</a>
     </div>
   </div>
 </div>
@@ -103,8 +129,7 @@ function __doPostBack(eventTarget, eventArgument) {
     <th align="left" width="5%">类型</th>
     <th align="left" width="8%">金额变化</th>
     <th align="left" width="8%">变更后余额</th>
-    <th align="left" width="15%">生成时间</th>
-    <th align="left" width="15%">结束时间</th>
+    <th align="left" width="15%">变更时间</th>
     <th align="center" width="10%">是否成功</th>
     <th align="left" width="15%">操作描述</th>
     <th align="left" width="10%">涉及单号</th>
@@ -133,7 +158,6 @@ function __doPostBack(eventTarget, eventArgument) {
                 <td align="left"><#if item.money??>${item.money?string("0.00")}</#if></td>
                 <td align="left"><#if item.balance??>${item.balance?string("0.00")}</#if></td>
                 <td align="left"><#if item.createTime??>${item.createTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
-                <td align="left"><#if item.finishTime??>${item.finishTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
 				<td align="center"><#if item.isSuccess??&&item.isSuccess>完成<#else>未完成</#if></td>
 				<td align="left">${item.reason!''}</td>
 				<td align="left">${item.orderNumber!''}</td>

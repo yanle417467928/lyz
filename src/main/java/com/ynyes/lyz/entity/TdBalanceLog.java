@@ -82,6 +82,14 @@ public class TdBalanceLog {
 	@Transient
 	private String balanceTypeName;
 	
+	//门店id
+	@Column
+	private Long diySiteId;
+	
+	// 归属区域Id
+	@Column
+	private Long cityId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -203,6 +211,22 @@ public class TdBalanceLog {
 			return "不可提现";
 		}
 		return "";
+	}
+
+	public Long getDiySiteId() {
+		return diySiteId;
+	}
+
+	public void setDiySiteId(Long diySiteId) {
+		this.diySiteId = diySiteId;
+	}
+
+	public Long getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Long cityId) {
+		this.cityId = cityId;
 	}
 	
 }

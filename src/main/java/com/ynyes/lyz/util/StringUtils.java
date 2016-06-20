@@ -2,6 +2,9 @@ package com.ynyes.lyz.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import sun.misc.BASE64Encoder;
 /**
@@ -198,6 +201,27 @@ public static Boolean isEmpty(Object obj){
 		   return false;
 	   }
    }
+
+/**
+ * 字符串转换时间默认格式yyyy-MM-dd HH:mm:ss
+ * 
+ * @return
+ */
+public static Date stringToDate(String time, String dateFormat) {
+	if (null == dateFormat || "".equals(dateFormat)) {
+		dateFormat = "yyyy-MM-dd HH:mm:ss";
+	}
+	SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+	Date date = null;
+	if (null != time && !time.equals("")) {
+		try {
+			date = sdf.parse(time);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	return date;
+}
 } 
   
 
