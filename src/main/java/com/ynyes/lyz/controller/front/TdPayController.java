@@ -705,16 +705,36 @@ public class TdPayController {
 
 	@RequestMapping(value = "/wx/sign")
 	@ResponseBody
-	public Map<String, Object> WxPayReturnSign(Long orderId) {
+	public Map<String, Object> WxPayReturnSign(String orderId,HttpServletRequest req) 
+	{
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("code", 0);
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+
+		if (user == null)
+		{
+			resultMap.put("msg", "请先登录");
+			return resultMap;
+		}
 		if (orderId == null) {
 			resultMap.put("msg", "订单Id不存在");
 			return resultMap;
 		}
-		TdOrder tdOrder = tdOrderService.findOne(orderId);
+		TdOrder tdOrder = tdOrderService.findByOrderNumber(orderId);
 		if (tdOrder == null) {
-			resultMap.put("msg", "订单不存在，单号Id：" + orderId);
+			resultMap.put("msg", "订单不存在");
+			return resultMap;
+		}
+		String orderUsername = tdOrder.getRealUserUsername();
+		if (username == null || !username.equalsIgnoreCase(orderUsername)) 
+		{
+			resultMap.put("msg", "请先登录");
+			return resultMap;
+		}
+		if (tdOrder.getStatusId() == null || tdOrder.getStatusId() != 2)
+		{
+			resultMap.put("msg", "参数错误");
 			return resultMap;
 		}
 		String xml = TdWXPay.getUnifiedorderXML(tdOrder);

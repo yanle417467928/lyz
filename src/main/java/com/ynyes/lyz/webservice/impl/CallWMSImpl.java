@@ -2743,7 +2743,15 @@ public class CallWMSImpl implements ICallWMS {
 				tbOmD.setcModifiedDt(DateFromString(cModifiedDt));
 				tbOmD.setcUploadStatus(cUploadStatus);
 				tdTbOmDService.save(tbOmD);
-				
+				TdGoods tdGoods = tdGoodsService.findByCodeAndStatus(cGcode,1l);
+				if (cWaveQty == null)
+				{
+					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>商品验收数量不能为空</MESSAGE></STATUS></RESULTS>";
+				}
+				if (tdGoods == null)
+				{
+					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>商品编码为："+ cGcode +"的商品不存在或者不可用</MESSAGE></STATUS></RESULTS>";
+				}
 			}
 
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
@@ -2963,7 +2971,10 @@ public class CallWMSImpl implements ICallWMS {
 				tbOmM.setcUploadStatus(cUploadStatus);
 				tbOmM.setcUploadFilename(cUploadFilename);
 				tdTbOmMService.save(tbOmM);
-				
+				if(StringUtils.isBlank(cUploadStatus) || (!cUploadStatus.equalsIgnoreCase("in") && !cUploadStatus.equalsIgnoreCase("out")))
+				{
+					return "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>c_upload_status："+ cUploadStatus +" 为空或者不属于\"in\"且不属于\"out\"</MESSAGE></STATUS></RESULTS>";
+				}
 				List<TdTbOmD> tbOmDs = tdTbOmDService.findByCOmNo(cOmNo);
 				for (TdTbOmD tdTbOmD : tbOmDs)
 				{
@@ -2978,9 +2989,18 @@ public class CallWMSImpl implements ICallWMS {
 					doubleFromStr = doubleFromStr * 100;
 					Long cRecQty = doubleFromStr.longValue();
 					cRecQty = cRecQty / 100;
-					inventory.setInventory(inventory.getInventory() +cRecQty);
-					tdDiySiteInventoryService.save(inventory);
-					tdDiySiteInventoryLogService.saveChangeLog(inventory, cRecQty, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_DO);
+					if (cUploadStatus.equalsIgnoreCase("in"))
+					{
+						inventory.setInventory(inventory.getInventory() +cRecQty);
+						tdDiySiteInventoryService.save(inventory);
+						tdDiySiteInventoryLogService.saveChangeLog(inventory, cRecQty, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_DO_ADD);
+					}
+					else if (cUploadStatus.equalsIgnoreCase("out"))
+					{
+						inventory.setInventory(inventory.getInventory() - cRecQty);
+						tdDiySiteInventoryService.save(inventory);
+						tdDiySiteInventoryLogService.saveChangeLog(inventory, -cRecQty, null, null,TdDiySiteInventoryLog.CHANGETYPE_CITY_DO_SUB);
+					}
 				}
 			}
 			

@@ -556,7 +556,8 @@ public class TdInterfaceService {
 	
 	/**
 	 * 根据退货单生成相应的销退单
-	 * @param returnNote
+	 * @param returnNote 退货单
+	 * @param type 退货或者取消订单
 	 */
 	public void initReturnOrder(TdReturnNote returnNote,Integer type)
 	{
@@ -613,6 +614,7 @@ public class TdInterfaceService {
 		returnOrderInf.setAuditDate(returnNote.getCheckTime());
 		returnOrderInf.setRefundAmount(returnNote.getTurnPrice());
 		returnOrderInf.setPrepayAmt(returnNote.getTurnPrice());
+		returnOrderInf.setAuditDate(new Date());
 		if (type == INFConstants.INF_RETURN_ORDER_CANCEL_INT)
 		{
 			returnOrderInf.setStatus("订单取消");

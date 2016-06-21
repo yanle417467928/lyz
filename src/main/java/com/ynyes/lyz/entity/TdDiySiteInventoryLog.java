@@ -19,17 +19,18 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Entity
 public class TdDiySiteInventoryLog {
 	
-	public static final String CHANGETYPE_DIYSITE_ADD		= "门店要货";
-	public static final String CHANGETYPE_DIYSITE_SUB		= "门店退货";
-	public static final String CHANGETYPE_USER_SUB			= "自提单发货";
-	public static final String CHANGETYPE_USER_ADD			= "自提单退货";
-	public static final String CHANGETYPE_DELIVERY_SUB		= "配送出货";
-	public static final String CHANGETYPE_DELIVERY_ADD		= "配送退货";
-	public static final String CHANGETYPE_INVENTORY_OVERAGE = "库存盘盈";
-	public static final String CHANGETYPE_INVENTORY_LOSE	= "库存盘亏";
-	public static final String CHANGETYPE_CITY_ADD			= "城市入货";
-	public static final String CHANGETYPE_CITY_SUB			= "城市退货";
-	public static final String CHANGETYPE_CITY_DO			= "城市调拨入库";
+	public static final String CHANGETYPE_DIYSITE_ADD			= "门店要货";
+	public static final String CHANGETYPE_DIYSITE_SUB			= "门店退货";
+	public static final String CHANGETYPE_USER_SUB				= "自提单发货";
+	public static final String CHANGETYPE_USER_ADD				= "自提单退货";
+	public static final String CHANGETYPE_DELIVERY_SUB			= "配送出货";
+	public static final String CHANGETYPE_DELIVERY_ADD			= "配送退货";
+	public static final String CHANGETYPE_INVENTORY_OVERAGE	= "库存盘盈";
+	public static final String CHANGETYPE_INVENTORY_LOSE		= "库存盘亏";
+	public static final String CHANGETYPE_CITY_ADD				= "城市入货";
+	public static final String CHANGETYPE_CITY_SUB				= "城市退货";
+	public static final String CHANGETYPE_CITY_DO_ADD			= "城市调拨入库";
+	public static final String CHANGETYPE_CITY_DO_SUB			= "城市调拨出库";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
