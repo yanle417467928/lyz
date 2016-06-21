@@ -1278,6 +1278,10 @@ public class TdCommonService {
 
 			// 创建一个变量用于表示立减金额
 			Double subPrice = activity.getSubPrice();
+			if (subPrice == null)
+			{
+				subPrice = 0d;
+			}
 
 			// 创建一个存储顺序的集合
 			List<Long> sortList = new ArrayList<>();
@@ -3317,6 +3321,10 @@ public class TdCommonService {
 
 			// 创建一个变量用于表示立减金额
 			Double subPrice = activity.getSubPrice();
+			if (subPrice == null)
+			{
+				subPrice = 0d;
+			}
 
 			// 创建一个存储顺序的集合
 			List<Long> sortList = new ArrayList<>();

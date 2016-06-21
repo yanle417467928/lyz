@@ -42,6 +42,7 @@ import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
+import com.ynyes.lyz.service.TdReturnNoteService;
 
 
 @Service
@@ -89,6 +90,9 @@ public class TdInterfaceService {
 	
 	@Autowired
 	private TdOrderService tdOrderService;
+	
+	@Autowired
+	private TdReturnNoteService tdReturnNoteService;
 	
 	private Call call;
 	
@@ -389,7 +393,7 @@ public class TdInterfaceService {
 		}
 		
 		//获取满金额赠金额
-		if(tdOrder.getActivitySubPrice() != null && tdOrder.getActivitySubPrice() >= 0)
+		if(tdOrder.getActivitySubPrice() != null && tdOrder.getActivitySubPrice() > 0)
 		{
 			TdOrderCouponInf couponInf = new TdOrderCouponInf();
 			couponInf.setOrderHeaderId(orderInf.getHeaderId());
@@ -958,7 +962,7 @@ public class TdInterfaceService {
 					 + "<RT_FULL_FLAG>" + object.getRtFullFlag() + "</RT_FULL_FLAG>"
 					 + "<ORDER_HEADER_ID>" + object.getOrderHeaderId() + "</ORDER_HEADER_ID>"
 					 + "<ORDER_NUMBER>" + object.getOrderNumber() + "</ORDER_NUMBER>"
-					 + "<PRODECT_TYPE>" + object.getProdectType() + "</PRODECT_TYPE>"
+					 + "<PRODUCT_TYPE>" + object.getProdectType() + "</PRODUCT_TYPE>"
 					 + "<DIY_SITE_CODE>" + object.getDiySiteCode() + "</DIY_SITE_CODE>"
 					 + "<REFUND_TYPE>" + object.getRefundType() + "</REFUND_TYPE>"
 					 + "<AUDIT_DATE>" + object.getAuditDate() + "</AUDIT_DATE>"
@@ -1154,5 +1158,23 @@ public class TdInterfaceService {
 				break;
 		}
 	}
+	
+	/**     -=-=-=-=-=-=-     重传EBS       -=-=-=-=-=-=-       **/
+	public void reSendByIdAndType(Long id,INFTYPE type)
+	{
+		switch (type)
+		{
+		case RETURNORDERINF:
+		{
+			TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findOne(id);
+			TdReturnNote returnNote = tdReturnNoteService.findByReturnNumber(returnOrderInf.getReturnNumber());
+			this.sendReturnOrderByAsyn(returnNote);
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	
 
 }
