@@ -155,7 +155,7 @@ function downloaddate()
                 		<#break>
                 	</#switch>
                 </td>
-                <td align="left"><#if item.money??>${item.money?string("0.00")}</#if></td>
+                <td align="left"><#if item.type==1 || item.type==3>-</#if><#if item.money??>${item.money?string("0.00")}</#if></td>
                 <td align="left"><#if item.balance??>${item.balance?string("0.00")}</#if></td>
                 <td align="left"><#if item.createTime??>${item.createTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
 				<td align="center"><#if item.isSuccess??&&item.isSuccess>完成<#else>未完成</#if></td>
