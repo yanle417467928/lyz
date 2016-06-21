@@ -195,6 +195,8 @@ public class TdPayController {
 						log.setIsSuccess(true);
 						log.setBalance(user.getBalance());
 						log.setOrderNumber(out_trade_no);
+						log.setDiySiteId(user.getUpperDiySiteId());
+						log.setCityId(user.getCityId());
 						tdBalanceLogService.save(log);
 					}
 				} else {
@@ -380,6 +382,8 @@ public class TdPayController {
 						log.setIsSuccess(true);
 						log.setBalance(user.getBalance());
 						log.setOrderNumber(out_trade_no);
+						log.setDiySiteId(user.getUpperDiySiteId());
+						log.setCityId(user.getCityId());
 						tdBalanceLogService.save(log);
 					}
 				} else {
@@ -594,6 +598,8 @@ public class TdPayController {
 							log.setIsSuccess(true);
 							log.setBalance(user.getBalance());
 							log.setOrderNumber(ORDERID);
+							log.setDiySiteId(user.getUpperDiySiteId());
+							log.setCityId(user.getCityId());
 							tdBalanceLogService.save(log);
 						}
 					}
