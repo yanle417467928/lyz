@@ -220,7 +220,7 @@ public class TdUserService {
 		if (null == cityId || null == customerId) {
 			return null;
 		}
-		return repository.findByCityIdAndCustomerIdAndUserTypeOrderBySortIdAsc(cityId, customerId, 0L);
+		return repository.findByCityIdAndCustomerIdAndUserTypeAndIsEnableTrueOrderBySortIdAsc(cityId, customerId, 0L);
 	}
 
 	/**
@@ -234,7 +234,7 @@ public class TdUserService {
 			return null;
 		}
 		return repository
-				.findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingOrCityIdAndCustomerIdAndUserTypeAndUsernameContainingOrderBySortIdAsc(
+				.findByCityIdAndCustomerIdAndUserTypeAndRealNameContainingAndIsEnableTrueOrCityIdAndCustomerIdAndUserTypeAndUsernameContainingAndIsEnableTrueOrderBySortIdAsc(
 						cityId, customerId, 0L, keywords, cityId, customerId, 0L, keywords);
 	}
 
