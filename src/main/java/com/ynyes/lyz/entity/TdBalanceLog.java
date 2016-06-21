@@ -229,4 +229,19 @@ public class TdBalanceLog {
 		this.cityId = cityId;
 	}
 	
+	//（type:0. 代表充值；1. 代表提现; 2. 管理员修改; 3. 代表支付消费; 4.订单退款）
+	public String getTypeName(){
+		if(this.type==0L){
+			return "充值";
+		}else if(this.type==1L){
+			return "提现";
+		}else if(this.type==2L){
+			return "管理员修改";
+		}else if(this.type==3L){
+			return "支付";
+		}else if(this.type==4L){
+			return "退款";
+		}
+		return "";
+	}
 }
