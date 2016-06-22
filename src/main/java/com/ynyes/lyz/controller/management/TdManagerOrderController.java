@@ -1312,6 +1312,10 @@ public class TdManagerOrderController {
 		rec.setSortId(99L);
 		
 		tdOwnMoneyRecordService.save(rec);
+		
+		//保存订单实付款
+		order.setActualPay(money+pos);
+		tdOrderService.save(order);
 		// 收款发ebs
 //		recordAndSendToEbsByTdOwnMoneyRecord(own,INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
 //		tdInterfaceService.initCashReciptByTdOwnMoneyRecord(own, INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
