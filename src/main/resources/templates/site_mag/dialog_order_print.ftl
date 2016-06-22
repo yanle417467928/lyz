@@ -109,10 +109,10 @@
                     </tbody></table>
                     <table width="100%" border="0" align="center" cellpadding="5" cellspacing="0" style="border-top: 1px solid #000; font-size: 12px; font-family: '微软雅黑'; background: #fff;">
                         <tbody><tr>
-                            <td align="right">商品金额：￥${order.totalGoodsPrice?string("0.00")}
-                                + 配送费：￥${order.deliverTypeFee?string("0.00")}
-                                + 支付手续费：￥${order.payTypeFee?string("0.00")}
-                                = 订单总额：${order.totalPrice?string("0.00")}</td>
+                            <td align="right">商品金额：￥${order.totalGoodsPrice!"0.00"}
+                                + 配送费：￥${order.deliverTypeFee!"0.00"}
+                                + 支付手续费：￥${order.payTypeFee!"0.00"}
+                                = 订单总额：${order.totalPrice!"0.00"}</td>
                         </tr>
                     </tbody></table>
                 </td>
