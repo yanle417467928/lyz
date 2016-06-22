@@ -1798,8 +1798,8 @@ public class TdUserController {
 				// 保存退货单
 				tdReturnNoteService.save(returnNote);
 				
-				tdInterfaceService.initReturnOrder(returnNote,INFConstants.INF_RETURN_ORDER_SUB_INT);
-				tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_SUB_INT);
+//				tdInterfaceService.initReturnOrder(returnNote,INFConstants.INF_RETURN_ORDER_SUB_INT);
+//				tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_SUB_INT);
 
 				order.setStatusId(9L);
 				order.setIsRefund(true);
@@ -2012,8 +2012,8 @@ public class TdUserController {
 			order.setIsRefund(true);
 			tdOrderService.save(order);
 			tdReturnNoteService.save(returnNote);
-			tdInterfaceService.initReturnOrder(returnNote,INFConstants.INF_RETURN_ORDER_SUB_INT);
-			tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_SUB_INT);
+//			tdInterfaceService.initReturnOrder(returnNote,INFConstants.INF_RETURN_ORDER_SUB_INT);
+//			tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_SUB_INT);
 			tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 			// tdCommonService.sendBackToWMS(returnNote);
 		}

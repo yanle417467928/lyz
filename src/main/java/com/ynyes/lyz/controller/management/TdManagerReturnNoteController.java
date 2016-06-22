@@ -413,7 +413,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 						
 					}
 					returnNote.setReturnTime(new Date());
-					TdReturnTimeInf returnTimeInf = tdInterfaceService.initReturnTimeByReturnNote(returnNote);
+//					TdReturnTimeInf returnTimeInf = tdInterfaceService.initReturnTimeByReturnNote(returnNote);
 					returnNote.setStatusId(5L);// 退货单设置已完成
 //				}
 			}

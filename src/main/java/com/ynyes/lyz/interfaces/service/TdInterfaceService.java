@@ -259,7 +259,7 @@ public class TdInterfaceService {
 	 * 根据订单生成销售订单相关数据
 	 * @param tdOrder
 	 */
-	public void initOrderInf(TdOrder tdOrder)
+	/*public void initOrderInf(TdOrder tdOrder)
 	{
 		if (tdOrder == null)
 		{
@@ -432,7 +432,7 @@ public class TdInterfaceService {
 	 * @param tdOrder
 	 * @return
 	 */
-	public TdOrderReceiveInf initOrderReceiveByOrder(TdOrder tdOrder)
+	/*public TdOrderReceiveInf initOrderReceiveByOrder(TdOrder tdOrder)
 	{
 		TdOrderReceiveInf orderReceiveInf = new TdOrderReceiveInf();
 		if (tdOrder == null || tdOrder.getDeliverTypeTitle() == null)
@@ -464,7 +464,7 @@ public class TdInterfaceService {
 	 * @param tdOrder
 	 * @return
 	 */
-	public TdCashReciptInf initCashReciptByOrder(TdOrder tdOrder)
+	/*public TdCashReciptInf initCashReciptByOrder(TdOrder tdOrder)
 	{
 		if (tdOrder == null)
 		{
@@ -511,7 +511,7 @@ public class TdInterfaceService {
 	 * @param type 3代表门店  4代表配送员
 	 * @return
 	 */
-	public TdCashReciptInf initCashReciptByTdOwnMoneyRecord(TdOwnMoneyRecord ownMoneyRecord, Integer type)
+	/*public TdCashReciptInf initCashReciptByTdOwnMoneyRecord(TdOwnMoneyRecord ownMoneyRecord, Integer type)
 	{
 		if (ownMoneyRecord == null)
 		{
@@ -602,7 +602,7 @@ public class TdInterfaceService {
 	 * @param tdOrder
 	 * @return
 	 */
-	public TdCashRefundInf initCashRefundInf(TdOrder tdOrder)
+	/*public TdCashRefundInf initCashRefundInf(TdOrder tdOrder)
 	{
 		if (tdOrder == null)
 		{
@@ -632,7 +632,7 @@ public class TdInterfaceService {
 	 * @param returnNote
 	 * @return
 	 */
-	public TdReturnTimeInf initReturnTimeByReturnNote(TdReturnNote returnNote)
+	/*public TdReturnTimeInf initReturnTimeByReturnNote(TdReturnNote returnNote)
 	{
 		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
 		if (returnOrderInf == null)
@@ -655,7 +655,7 @@ public class TdInterfaceService {
 	 * @param returnNote 退货单
 	 * @param type 退货或者取消订单
 	 */
-	public void initReturnOrder(TdReturnNote returnNote,Integer type)
+	/*public void initReturnOrder(TdReturnNote returnNote,Integer type)
 	{
 		if(returnNote==null){
 			return;
@@ -746,7 +746,7 @@ public class TdInterfaceService {
 	 * @param tdOrder
 	 * @param type
 	 */
-	public void initReturnCouponInfByOrder(TdOrder tdOrder,Integer type)
+	/*public void initReturnCouponInfByOrder(TdOrder tdOrder,Integer type)
 	{
 		// type 0:取消订单 1:其他退货
 		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
