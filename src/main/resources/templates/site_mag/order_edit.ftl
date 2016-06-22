@@ -1114,7 +1114,7 @@
                 <input type="button" id= "btnPrint" value="打印订单" class="btn violet">
             </#if>
             <input type="button" value="返回上一页" class="btn yellow" onclick="javascript:history.back(-1);">
-        </div>
+        </div> 
         <div class="clear">
         </div>
     </div>
