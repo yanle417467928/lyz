@@ -1621,6 +1621,10 @@ public class TdCommonService {
 
 		totalPrice = totalPrice + cashBalanceUsed + unCashBalanceUsed;
 
+		//记录拆单预存款  用于记录分单号时剩余的预存款
+		Double remainCash=0.0;
+		Double remainUnCash=0.0;
+		
 		// 遍历当前生成的订单
 		for (TdOrder order : order_map.values()) {
 			if (null != order) {
@@ -1662,6 +1666,7 @@ public class TdCommonService {
 						TdUser user = tdUserService.findOne(order.getUserId());
 						// 不可提现预存款
 						if (!".00".equals(scale2_uncash)) {
+							
 							TdBalanceLog balanceLog = new TdBalanceLog();
 							balanceLog.setUserId(order.getRealUserId());
 							balanceLog.setUsername(order.getUsername());
@@ -1671,7 +1676,7 @@ public class TdCommonService {
 							balanceLog.setFinishTime(new Date());
 							balanceLog.setIsSuccess(true);
 							balanceLog.setReason("订单支付使用");
-							balanceLog.setBalance(user.getUnCashBalance());
+							balanceLog.setBalance(user.getUnCashBalance()+remainUnCash);
 							balanceLog.setBalanceType(2L);
 							balanceLog.setOperator(order.getUsername());
 							balanceLog.setOrderNumber(order.getOrderNumber());
@@ -1684,9 +1689,11 @@ public class TdCommonService {
 							balanceLog.setDiySiteId(user.getUpperDiySiteId());
 							balanceLog.setCityId(user.getCityId());
 							tdBalanceLogService.save(balanceLog);
+							remainUnCash+=Double.valueOf(scale2_uncash);
 						}
 						// 可提现预存款
 						if (!".00".equals(scale2_cash)) {
+							
 							TdBalanceLog balanceLog = new TdBalanceLog();
 							balanceLog.setUserId(order.getRealUserId());
 							balanceLog.setUsername(order.getUsername());
@@ -1696,7 +1703,7 @@ public class TdCommonService {
 							balanceLog.setFinishTime(new Date());
 							balanceLog.setIsSuccess(true);
 							balanceLog.setReason("订单支付使用");
-							balanceLog.setBalance(user.getCashBalance());
+							balanceLog.setBalance(user.getCashBalance()+remainCash);
 							balanceLog.setBalanceType(1L);
 							balanceLog.setOperator(order.getUsername());
 							balanceLog.setOrderNumber(order.getOrderNumber());
@@ -1709,6 +1716,7 @@ public class TdCommonService {
 							balanceLog.setDiySiteId(user.getUpperDiySiteId());
 							balanceLog.setCityId(user.getCityId());
 							tdBalanceLogService.save(balanceLog);
+							remainCash+=Double.valueOf(scale2_cash);
 						}
 
 					}
