@@ -945,15 +945,16 @@
                          <#if order.otherPay??> ${order.otherPay?string("0.00")}<#else>0.00</#if>元
                         </td>
                     </tr>
-                     <tr>
+                    <#-- <tr>
                         <th>
-                    货到付款金额                 
+                    欠款金额                
                         </th>
                         <td>
                         
                          ${(order.totalPrice-order.actualPay!'0'?number-order.otherPay!'0'?number)?string("0.00")}元
                         </td>
                     </tr>
+                    -->
                     <tr>
                         <th>
                             订单总金额
