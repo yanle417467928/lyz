@@ -54,7 +54,7 @@ public class TdBalanceLog {
 	@Column
 	private Boolean isSuccess;
 
-	// 未成功的原因
+	// 修改原因
 	@Column
 	private String reason;
 

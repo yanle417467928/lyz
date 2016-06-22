@@ -110,7 +110,7 @@
                             <#if item??&&item.type??&&item.type==4>
                                 <div class="details-list">
                                     <div class="div1">
-                                        <div class="c666">订单退款</div>
+                                        <div class="c666">${item.reason }</div>
                                         <div style="font-size: 0.9em;"><#if item.orderNumber??>${item.orderNumber }</#if></div>
                                         <div class="c999">${item.balanceTypeName }余额：<#if item.balance??>${item.balance?string("0.00")}<#else>0.00</#if></div>
                                     </div>
