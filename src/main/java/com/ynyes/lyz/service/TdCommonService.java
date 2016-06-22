@@ -58,9 +58,6 @@ import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
-import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
-import com.ynyes.lyz.interfaces.utils.INFConstants;
-import com.ynyes.lyz.interfaces.utils.StringTools;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
 

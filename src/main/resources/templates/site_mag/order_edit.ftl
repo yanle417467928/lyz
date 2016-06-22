@@ -1121,10 +1121,10 @@
     <!--/工具栏-->
     </form>
 <div class="dialog">
-	<div class="dialog_title">还款 </div>
+	<div class="dialog_title">还款 (<#if ownPrice??>${ownPrice?c}<#else>0</#if>)</div>
 	<div class="dialog_row">现金：<input id="money" type="number" value="0" /> </div>
 	<div class="dialog_row">pos：<input id="pos" type="number" value="0" /> </div>
-	<div class="dialog_row"><input onclick="sumbitBackMoney(<#if order.ownPrice??>${order.ownPrice?c}<#else>0</#if>,${order.id?c })" class="dialog_btn" type="button" value="确定" /><input onclick="hiddenDialog()" class="dialog_btn" type="button" value="取消" /> </div>
+	<div class="dialog_row"><input onclick="sumbitBackMoney(<#if ownPrice??>${ownPrice?c}<#else>0</#if>,${order.id?c })" class="dialog_btn" type="button" value="确定" /><input onclick="hiddenDialog()" class="dialog_btn" type="button" value="取消" /> </div>
 </div>
 
 </body></html>
