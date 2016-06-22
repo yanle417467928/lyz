@@ -205,9 +205,9 @@ public class TdBalanceLog {
 	public String getBalanceTypeName() {
 		if(this.balanceType==0L){
 			return "总";
-		}else if(this.balanceType==1L){
+		}else if(this.balanceType==1L || this.balanceType==3L){
 			return "可提现";
-		}else if(this.balanceType==2L){
+		}else if(this.balanceType==2L || this.balanceType==4L){
 			return "不可提现";
 		}
 		return "";

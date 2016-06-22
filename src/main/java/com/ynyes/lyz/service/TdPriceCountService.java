@@ -1030,7 +1030,7 @@ public class TdPriceCountService {
 									balanceLog.setFinishTime(new Date());
 									balanceLog.setIsSuccess(true);
 									balanceLog.setBalanceType(3L);
-									balanceLog.setBalance(user.getUnCashBalance());
+									balanceLog.setBalance(user.getCashBalance());
 									balanceLog.setOperator(user.getUsername());
 									try {
 										balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
