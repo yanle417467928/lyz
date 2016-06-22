@@ -9,6 +9,43 @@
 <script type="text/javascript" src="/mag/js/lhgdialog.js"></script>
 <script type="text/javascript" src="/mag/js/layout.js"></script>
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+.dialog{
+	position: fixed;
+	_position:absolute;
+	z-index:1;
+	top: 50%;
+	left: 50%;
+	margin: -141px 0 0 -201px;
+	width: 400px;
+	height:190px;
+	border:1px solid #CCC;
+	line-height: 190px;
+	text-align:center;
+	font-size: 14px;
+	background-color:#F4F4F4;
+	overflow:hidden;
+	border: 1px solid #cccccc;
+	display: none;
+}	
+.dialog_row{
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+}
+.dialog_title{
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+}
+.dialog_btn{
+	width:60px;
+	height: 30px;
+	line-height: 30px;
+	margin-left: 20px;
+    margin-top: 30px;
+}
+</style>
     <script type="text/javascript">
         $(function () {
             $("#btnConfirm").click(function () { OrderConfirm(); });   //确认订单
@@ -28,6 +65,7 @@
             $("#btnEditExpressFee").click(function () { EditExpressFee(); }); //修改配送费用
             $("#btnEditPaymentFee").click(function () { EditPaymentFee(); }); //修改支付手续费
             $("#signPhoto").click(function () { imgChange(); }); //修改签收图片大小
+            $("#backMoney").click(function () { showDialog(); }); //显示还款窗口
         });
 
         //确认收货
@@ -310,7 +348,41 @@
 	        	$("#signPhoto").height("100px");
         	} 
         }
-       
+        //打开还款窗口
+        function showDialog(){
+        	$(".dialog").show();
+        }
+        //关闭还款窗口
+        function hiddenDialog(){
+        	$(".dialog").hide();
+        }
+        //提交还款
+        function sumbitBackMoney(owned,id){
+        	var money=$('#money').val();
+        	var pos=$('#pos').val();
+        	
+        	if(parseFloat(money)+parseFloat(pos)==owned){
+        		 $.ajax({
+        	            type: "post",
+        	            url: "/Verwalter/order/backMoney",
+        	            data: {"id":id,"money":money,"pos":pos},
+        	            dataType: "json",
+        	            error: function (XMLHttpRequest, textStatus, errorThrown) {
+        	            	 $.dialog.alert('错误提示：' + '网络连接失败', function () { });
+        	            },
+        	            success: function (data) {
+        	                 if (data.code == -1) {
+        	                	 $.dialog.alert('错误提示：' + data.message, function () { });
+        	                } else if(data.code == 0){
+        	                	$.dialog.tips(data.message, 2, '32X32/succ.png', function () { location.reload(); }); //刷新页面
+        	                }
+        	             }
+        	        });
+        	}else{
+        		alert("必须一次性交清不允许欠款！");
+        	}
+        	
+        }
        
     </script>
 </head>
@@ -1022,7 +1094,12 @@
                     <input type="button" id="btnCancel" value="取消订单" class="btn green">
             <#elseif order.statusId==3>
                 <#if order.deliverTypeTitle=='门店自提'>
+                <#if isown==true>
                 <input type="button" id="btnOrderExpress" value="确认发货" class="btn">
+                <#else>
+                 <input type="button" id="backMoney" value="填写收款" class="btn">
+                </#if>
+                
                 </#if>
                 <#--<input type="button" id="btnCancel" value="取消订单" class="btn green">-->
             <#elseif order.statusId==4>
@@ -1042,6 +1119,11 @@
     </div>
     <!--/工具栏-->
     </form>
-
+<div class="dialog">
+	<div class="dialog_title">还款 </div>
+	<div class="dialog_row">现金：<input id="money" type="number" value="0" /> </div>
+	<div class="dialog_row">pos：<input id="pos" type="number" value="0" /> </div>
+	<div class="dialog_row"><input onclick="sumbitBackMoney(<#if order.totalPrice??>${order.totalPrice?c}<#else>0</#if>,${order.id?c })" class="dialog_btn" type="button" value="确定" /><input onclick="hiddenDialog()" class="dialog_btn" type="button" value="取消" /> </div>
+</div>
 
 </body></html>

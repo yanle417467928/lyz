@@ -43,10 +43,7 @@ import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdWareHouse;
-import com.ynyes.lyz.interfaces.entity.TdOrderReceiveInf;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
-import com.ynyes.lyz.interfaces.utils.INFConstants;
-import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
@@ -590,8 +587,28 @@ public class TdManagerOrderController {
 				}
 				
 			}
+			
+			//到店支付 是否收款
+			Boolean isown=false;
+			//查询收款信息
+			List<TdOwnMoneyRecord> ownList= tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(order.getMainOrderNumber());
+			//判断为空
+			if(ownList!=null && ownList.size()>0){
+				//写了循环其实还是只有一条数据
+				for (TdOwnMoneyRecord own : ownList) {
+					//欠款为0时表示门店已收款
+					if(own.getOwned()!=null && own.getOwned()==0){
+						isown=true;
+					}
+				}
+			}
+			//订单价格为0 不需要收款
+			if(order.getTotalPrice()!=null &&order.getTotalPrice()==0){
+				isown=true;
+			}
+			map.addAttribute("isown", isown);
 		}
-
+		
 		return "/site_mag/order_edit";
 	}
 
@@ -1226,6 +1243,82 @@ public class TdManagerOrderController {
 		res.put("message", "已还款");
 		return res;
 	}
+	
+	/**
+	 * 到店支付 门店收款
+	 * @param id 订单id
+	 * @param money 现金金额
+	 * @param pos pos金额
+	 * @param req
+	 * @return
+	 */
+	@RequestMapping(value = "/backMoney")
+	@ResponseBody
+	public Map<String, Object> backMoney(Long id,Double money,Double pos,HttpServletRequest req) {
+		Map<String, Object> res= new HashMap<String, Object>();
+		String username = (String) req.getSession().getAttribute("manager");
+		//判断登录
+		if (null == username) {
+			res.put("message", "请重新登录");
+			res.put("code", -1);
+			return res;
+		}
+
+		//查询订单是否存在
+		TdOrder order= tdOrderService.findOne(id);
+		if(order==null){
+			res.put("message", "未找到订单");
+			res.put("code", -1);
+			return res;
+		}
+		
+		//查询收款记录
+		List<TdOwnMoneyRecord> ownList= tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(order.getMainOrderNumber());
+		if(ownList!=null && ownList.size()>0){
+			res.put("message", "已有收款记录不能在收款");
+			res.put("code", -1);
+			return res;
+		}
+
+		//为空设置默认值
+		if(money==null){
+			money=0.0;
+		}
+		if(pos==null){
+			pos=0.0;
+		}
+		//判断是否还清
+		if(!order.getTotalPrice().equals((money+pos))){
+			res.put("message", "必须一次性交清不允许欠款");
+			res.put("code", -1);
+			return res;
+		}
+		//报错收款记录
+		TdOwnMoneyRecord rec = new TdOwnMoneyRecord();
+		rec.setCreateTime(new Date());
+		rec.setOrderNumber(order.getMainOrderNumber());
+		rec.setDiyCode(order.getDiySiteCode());
+		rec.setOwned(0.0);
+		rec.setPayed(money+pos);
+		rec.setMoney(money);
+		rec.setPos(pos);
+		rec.setUsername(order.getUsername());
+		rec.setIsOwn(false);
+		rec.setIsEnable(false);
+		rec.setIsPayed(false);
+		rec.setSortId(99L);
+		
+		tdOwnMoneyRecordService.save(rec);
+		// 收款发ebs
+//		recordAndSendToEbsByTdOwnMoneyRecord(own,INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
+//		tdInterfaceService.initCashReciptByTdOwnMoneyRecord(own, INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
+		
+		res.put("code", 0);
+		res.put("message", "已收款");
+		return res;
+	}
+	
+	
 	
 	/**
 	 * 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉 req 记录库存用
