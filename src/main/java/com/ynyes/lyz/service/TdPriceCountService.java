@@ -974,6 +974,8 @@ public class TdPriceCountService {
 									user.setUnCashBalance(user.getUnCashBalance() + uncashBalance);
 									user.setBalance(user.getBalance() + uncashBalance);
 									// 添加用于余额变更明细
+									if (uncashBalance > 0)
+									{
 									TdBalanceLog balanceLog = new TdBalanceLog();
 									balanceLog.setUserId(user.getId());
 									balanceLog.setUsername(user.getUsername());
@@ -983,7 +985,7 @@ public class TdPriceCountService {
 									balanceLog.setFinishTime(new Date());
 									balanceLog.setIsSuccess(true);
 									balanceLog.setBalanceType(4L);
-									balanceLog.setBalance(user.getUnCashBalance());
+									balanceLog.setBalance(user.getCashBalance());
 									balanceLog.setOperator(user.getUsername());
 									try {
 										balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
@@ -996,7 +998,7 @@ public class TdPriceCountService {
 									balanceLog.setDiySiteId(user.getUpperDiySiteId());
 									balanceLog.setCityId(user.getCityId());
 									tdBalanceLogService.save(balanceLog);
-
+									}
 									// 判断是否剩余部分金额需要退还
 									total -= uncashBalance;
 								}
@@ -1021,16 +1023,18 @@ public class TdPriceCountService {
 									user.setCashBalance(user.getCashBalance() + cashBalance);
 									user.setBalance(user.getBalance() + cashBalance);
 									// 记录余额变更明细
+									if (cashBalance > 0)
+									{
 									TdBalanceLog balanceLog = new TdBalanceLog();
 									balanceLog.setUserId(user.getId());
 									balanceLog.setUsername(user.getUsername());
-									balanceLog.setMoney(total);
+									balanceLog.setMoney(cashBalance);
 									balanceLog.setType(4L);
 									balanceLog.setCreateTime(new Date());
 									balanceLog.setFinishTime(new Date());
 									balanceLog.setIsSuccess(true);
 									balanceLog.setBalanceType(3L);
-									balanceLog.setBalance(user.getUnCashBalance());
+									balanceLog.setBalance(user.getCashBalance());
 									balanceLog.setOperator(user.getUsername());
 									try {
 										balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
@@ -1043,6 +1047,7 @@ public class TdPriceCountService {
 									balanceLog.setDiySiteId(user.getUpperDiySiteId());
 									balanceLog.setCityId(user.getCityId());
 									tdBalanceLogService.save(balanceLog);
+									}
 									total -= cashBalance;
 								}
 								// 如果还剩余部分金额没有退还，则需要根据支付方式进行第三方退还
