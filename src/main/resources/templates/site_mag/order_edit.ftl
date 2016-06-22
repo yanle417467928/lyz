@@ -945,15 +945,16 @@
                          <#if order.otherPay??> ${order.otherPay?string("0.00")}<#else>0.00</#if>元
                         </td>
                     </tr>
-                     <tr>
+                    <#-- <tr>
                         <th>
-                    货到付款金额                 
+                    欠款金额                
                         </th>
                         <td>
                         
                          ${(order.totalPrice-order.actualPay!'0'?number-order.otherPay!'0'?number)?string("0.00")}元
                         </td>
                     </tr>
+                    -->
                     <tr>
                         <th>
                             订单总金额
@@ -1123,7 +1124,7 @@
 	<div class="dialog_title">还款 </div>
 	<div class="dialog_row">现金：<input id="money" type="number" value="0" /> </div>
 	<div class="dialog_row">pos：<input id="pos" type="number" value="0" /> </div>
-	<div class="dialog_row"><input onclick="sumbitBackMoney(<#if order.totalPrice??>${order.totalPrice?c}<#else>0</#if>,${order.id?c })" class="dialog_btn" type="button" value="确定" /><input onclick="hiddenDialog()" class="dialog_btn" type="button" value="取消" /> </div>
+	<div class="dialog_row"><input onclick="sumbitBackMoney(<#if order.ownPrice??>${order.ownPrice?c}<#else>0</#if>,${order.id?c })" class="dialog_btn" type="button" value="确定" /><input onclick="hiddenDialog()" class="dialog_btn" type="button" value="取消" /> </div>
 </div>
 
 </body></html>
