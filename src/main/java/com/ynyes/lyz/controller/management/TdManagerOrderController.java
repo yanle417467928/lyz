@@ -603,9 +603,11 @@ public class TdManagerOrderController {
 				}
 			}
 			//订单价格为0 不需要收款
-			if(order.getTotalPrice()!=null &&order.getTotalPrice()==0){
+			Double ownPrice=order.getTotalPrice()-order.getActualPay();
+			if(ownPrice!=null &&ownPrice==0){
 				isown=true;
 			}
+			map.addAttribute("ownPrice",ownPrice);
 			map.addAttribute("isown", isown);
 		}
 		
@@ -1287,8 +1289,9 @@ public class TdManagerOrderController {
 		if(pos==null){
 			pos=0.0;
 		}
+		Double ownPrice= order.getTotalPrice()-order.getActualPay();
 		//判断是否还清
-		if(!order.getTotalPrice().equals((money+pos))){
+		if(!ownPrice.equals((money+pos))){
 			res.put("message", "必须一次性交清不允许欠款");
 			res.put("code", -1);
 			return res;
