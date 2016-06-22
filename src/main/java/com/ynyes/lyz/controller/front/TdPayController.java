@@ -365,7 +365,7 @@ public class TdPayController {
 						}
 						Double balance = user.getBalance();
 						if (null == balance) {
-							balance = 0.00;
+							balance = 0.00; 
 						}
 
 						recharge.setFinishTime(new Date());
