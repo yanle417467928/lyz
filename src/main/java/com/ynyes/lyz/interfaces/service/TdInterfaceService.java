@@ -162,7 +162,7 @@ public class TdInterfaceService {
 		}
 	}
 	
-	public void sendReturnOrderByAsyn(TdReturnNote returnNote)
+	/*public void sendReturnOrderByAsyn(TdReturnNote returnNote)
 	{
 		sendEbsReturnOrderThread ebsReturnOrderThread = new sendEbsReturnOrderThread(returnNote);
 		ebsReturnOrderThread.start();
@@ -822,7 +822,7 @@ public class TdInterfaceService {
 	
 	/**     -=-=-=-=-=-=-     生成XML       -=-=-=-=-=-=-       **/
 	
-	public String XmlByOrder(TdOrder tdOrder, INFTYPE type)
+	/*public String XmlByOrder(TdOrder tdOrder, INFTYPE type)
 	{
 		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
 		List<String> stringList = new ArrayList<String>();
@@ -943,7 +943,7 @@ public class TdInterfaceService {
 	 * @param type
 	 * @return
 	 */
-	public String XMLWithEntity(Object entity,INFTYPE type)
+	/*public String XMLWithEntity(Object entity,INFTYPE type)
 	{
 		String xml = null;
 		if (entity == null)
@@ -1174,7 +1174,7 @@ public class TdInterfaceService {
 	 * @param Tables
 	 * @return
 	 */
-	public String XmlWithTables(List<String> Tables)
+	/*public String XmlWithTables(List<String> Tables)
 	{
 		if (Tables == null)
 		{
@@ -1206,7 +1206,7 @@ public class TdInterfaceService {
 	 * @param object
 	 * @param type
 	 */
-	public void ebsWithObject(Object object, INFTYPE type) 
+	/*public void ebsWithObject(Object object, INFTYPE type) 
 	{
 		switch (type) 
 		{
@@ -1253,7 +1253,7 @@ public class TdInterfaceService {
 	}
 	
 	/**     -=-=-=-=-=-=-     重传EBS       -=-=-=-=-=-=-       **/
-	public void reSendByIdAndType(Long id,INFTYPE type)
+	/*public void reSendByIdAndType(Long id,INFTYPE type)
 	{
 		switch (type)
 		{
@@ -1268,6 +1268,6 @@ public class TdInterfaceService {
 			break;
 		}
 	}
-	
+	*/
 
 }

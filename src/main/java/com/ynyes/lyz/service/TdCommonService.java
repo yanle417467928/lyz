@@ -1777,8 +1777,8 @@ public class TdCommonService {
 					order_temp.getOrderNumber());
 			requsitThread.start();
 		}
-		sendEbsThread ebsThread = new sendEbsThread(ebsOrderList);
-		ebsThread.start();
+//		sendEbsThread ebsThread = new sendEbsThread(ebsOrderList);
+//		ebsThread.start();
 	}
 
 	/**
@@ -1967,7 +1967,7 @@ public class TdCommonService {
 			sendMsgToWMS(orderList, mainOrderNumber);
 		}
 	}
-
+/*
 	class sendEbsThread extends Thread {
 		List<TdOrder> orderList;
 
@@ -1979,9 +1979,9 @@ public class TdCommonService {
 			sendOrderToEBS(orderList);
 		}
 	}
-
+*/
 	// 传 order 给 EBS
-	private void sendOrderToEBS(List<TdOrder> orderList) {
+	/*private void sendOrderToEBS(List<TdOrder> orderList) {
 		for (TdOrder tdOrder : orderList) {
 			// if (tdOrder != null && tdOrder.getOrderNumber() != null &&
 			// tdOrder.getOrderNumber().contains("HR"))
@@ -2038,7 +2038,7 @@ public class TdCommonService {
 				}
 			}
 		}
-	}
+	}*/
 
 	// TODO 要货单
 	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {

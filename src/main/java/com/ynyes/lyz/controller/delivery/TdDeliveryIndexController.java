@@ -776,7 +776,7 @@ public class TdDeliveryIndexController {
 						
 //						tdInterfaceService.initReturnOrder(returnNote,INFConstants.INF_RETURN_ORDER_SUB_INT);
 //						tdInterfaceService.initReturnCouponInfByOrder(subOrder, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
-						tdInterfaceService.sendReturnOrderByAsyn(returnNote);
+//						tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 
 						subOrder.setStatusId(12L);
 						subOrder.setIsRefund(true);
