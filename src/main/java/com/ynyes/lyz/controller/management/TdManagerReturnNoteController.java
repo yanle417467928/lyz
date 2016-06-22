@@ -382,7 +382,7 @@ public class TdManagerReturnNoteController extends TdManagerBaseController{
 				}
 				if (returnNote.getStatusId() != null && returnNote.getStatusId() == 2L) 
 				{
-					returnNote.setStatusId(3L);
+					returnNote.setStatusId(4L);
 					returnNote.setReceiveTime(new Date());
 				}
 				//修改库存

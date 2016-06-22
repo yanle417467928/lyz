@@ -387,7 +387,7 @@ public class TdReturnNote {
 		}else if(this.statusId==2L){
 			return "待取货";
 		}else if(this.statusId==3L){
-			return "待确认收货";
+			return "待退款";
 		}else if(this.statusId==4L){
 			return "待退款";
 		}else if(this.statusId==5L){

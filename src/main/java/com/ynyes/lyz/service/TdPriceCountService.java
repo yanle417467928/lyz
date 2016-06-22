@@ -991,7 +991,7 @@ public class TdPriceCountService {
 										System.out.println("获取ip地址报错");
 										e.printStackTrace();
 									}
-									balanceLog.setReason("订单退款");
+									balanceLog.setReason("订单退货退款");
 									balanceLog.setOrderNumber(order.getOrderNumber());
 									balanceLog.setDiySiteId(user.getUpperDiySiteId());
 									balanceLog.setCityId(user.getCityId());
@@ -1038,7 +1038,7 @@ public class TdPriceCountService {
 										System.out.println("获取ip地址报错");
 										e.printStackTrace();
 									}
-									balanceLog.setReason("订单退款");
+									balanceLog.setReason("订单退货退款");
 									balanceLog.setOrderNumber(order.getOrderNumber());
 									balanceLog.setDiySiteId(user.getUpperDiySiteId());
 									balanceLog.setCityId(user.getCityId());
@@ -1069,7 +1069,8 @@ public class TdPriceCountService {
 									note.setCreateTime(new Date());
 									note.setMoney(otherReturn);
 									// 如果支付方式属于线上支付，那么一定是支付宝、微信、银行卡的一种，则按照正常逻辑处理
-									if (null != payType.getIsOnlinePay() && payType.getIsOnlinePay()) {
+									//当订单价格为0 支付方式为其他  payType值为null 
+									if (payType!=null && null != payType.getIsOnlinePay() && payType.getIsOnlinePay()) {
 										note.setTypeId(payTypeId);
 										note.setTypeTitle(payType.getTitle());
 									} else {
