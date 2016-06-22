@@ -22,6 +22,7 @@ import com.ynyes.lyz.entity.TdCoupon;
 import com.ynyes.lyz.entity.TdDiySite;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
+import com.ynyes.lyz.entity.TdOwnMoneyRecord;
 import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.interfaces.entity.TdCashReciptInf;
@@ -208,7 +209,7 @@ public class TdInterfaceService {
 				{
 					isSendSuccess = false;
 				}
-			} 
+			}
 			catch (RemoteException e)
 			{
 				e.printStackTrace();
@@ -459,7 +460,7 @@ public class TdInterfaceService {
 	
 	
 	/**
-	 * 收款
+	 * 订单支付后，支付宝，微信，银联的收款
 	 * @param tdOrder
 	 * @return
 	 */
@@ -504,6 +505,97 @@ public class TdInterfaceService {
 		return null;
 	}
 	
+	/**
+	 * 配送员或者门店收款
+	 * @param ownMoneyRecord
+	 * @param type 3代表门店  4代表配送员
+	 * @return
+	 */
+	public TdCashReciptInf initCashReciptByTdOwnMoneyRecord(TdOwnMoneyRecord ownMoneyRecord, Integer type)
+	{
+		if (ownMoneyRecord == null)
+		{
+			return null;
+		}
+		List<TdOrder> subOrders = tdOrderService.findByMainOrderNumberIgnoreCase(ownMoneyRecord.getOrderNumber());
+		if (subOrders == null || subOrders.size() < 1)
+		{
+			return null;
+		}
+		for (TdOrder tdOrder : subOrders)
+		{
+			if (tdOrder == null)
+			{
+				return null;
+			}
+			Double allActualPay = tdOrder.getAllActualPay() == null ? 0.00 : tdOrder.getAllActualPay();
+			Double allTotalPay = tdOrder.getAllTotalPay() == null ? 0.00 : tdOrder.getAllTotalPay();
+			Double totalPrice = tdOrder.getTotalPrice() == null ? 0.00 :tdOrder.getTotalPrice();
+			
+			//配送现金
+			if (INFConstants.INF_RECEIPT_TYPE_DELIVER_INT == type && ownMoneyRecord.getMoney() > 0)
+			{
+				
+				Double amount = totalPrice * ownMoneyRecord.getMoney() /(allActualPay + allTotalPay);
+				TdCashReciptInf cashReciptInf = this.initCashReceiptInfWithOrderAndReceiptTypeAndMoney(tdOrder, TdCashReciptInf.RECEIPT_TYPE_DELIVER_CASH, amount);
+				ebsWithObject(cashReciptInf, INFTYPE.CASHRECEIPTINF);
+			}
+			//配送pos
+			if (INFConstants.INF_RECEIPT_TYPE_DELIVER_INT == type && ownMoneyRecord.getPos() > 0)
+			{
+				Double amount = totalPrice * ownMoneyRecord.getPos() /(allActualPay + allTotalPay);
+				TdCashReciptInf cashReciptInf = this.initCashReceiptInfWithOrderAndReceiptTypeAndMoney(tdOrder, TdCashReciptInf.RECEIPT_TYPE_DELIVER_POS, amount);
+				ebsWithObject(cashReciptInf, INFTYPE.CASHRECEIPTINF);
+			}
+			//门店现金
+			if (INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT == type && ownMoneyRecord.getBackMoney() > 0)
+			{
+				Double amount = totalPrice * ownMoneyRecord.getBackMoney() /(allActualPay + allTotalPay);
+				TdCashReciptInf cashReciptInf = this.initCashReceiptInfWithOrderAndReceiptTypeAndMoney(tdOrder, TdCashReciptInf.RECEIPT_TYPE_DIYSITE_CASH, amount);
+				ebsWithObject(cashReciptInf, INFTYPE.CASHRECEIPTINF);
+			}
+			//门店pos
+			if (INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT == type && ownMoneyRecord.getBackPos() > 0)
+			{
+				Double amount = totalPrice * ownMoneyRecord.getBackPos() /(allActualPay + allTotalPay);
+				TdCashReciptInf cashReciptInf = this.initCashReceiptInfWithOrderAndReceiptTypeAndMoney(tdOrder, TdCashReciptInf.RECEIPT_TYPE_DIYSITE_POS, amount);
+				ebsWithObject(cashReciptInf, INFTYPE.CASHRECEIPTINF);
+			}
+			
+		}
+		
+		return null;
+	}
+	public TdCashReciptInf initCashReceiptInfWithOrderAndReceiptTypeAndMoney(TdOrder tdOrder,String receiptTtpe,Double amount)
+	{
+		TdOrderInf orderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
+		if (orderInf == null) 
+		{
+			return null;
+		}
+		
+		TdDiySite diySite = tdDiySiteService.findOne(tdOrder.getDiySiteId());
+		Long SobId = 0L;
+		if (diySite != null)
+		{
+			SobId = diySite.getRegionId();
+		}
+		TdCashReciptInf cashReciptInf = new TdCashReciptInf();
+		cashReciptInf.setSobId(SobId);
+		cashReciptInf.setReceiptNumber(tdOrder.getOrderNumber());
+		cashReciptInf.setUserid(tdOrder.getRealUserId());
+		cashReciptInf.setUsername(tdOrder.getRealUserRealName());
+		cashReciptInf.setUserphone(tdOrder.getRealUserUsername());
+		cashReciptInf.setDiySiteCode(tdOrder.getDiySiteCode());
+		cashReciptInf.setReceiptClass(StringTools.productClassStrByBoolean(tdOrder.getIsCoupon()));
+		cashReciptInf.setOrderHeaderId(orderInf.getHeaderId());
+		cashReciptInf.setOrderNumber(tdOrder.getOrderNumber());
+		cashReciptInf.setProductType(StringTools.getProductStrByOrderNumber(tdOrder.getOrderNumber()));
+		cashReciptInf.setReceiptType(receiptTtpe);
+		cashReciptInf.setReceiptDate(new Date());
+		cashReciptInf.setAmount(amount);
+		return tdCashReciptInfService.save(cashReciptInf);
+	}
 	
 	/**
 	 * 退款
@@ -968,6 +1060,7 @@ public class TdInterfaceService {
 					 + "<AUDIT_DATE>" + object.getAuditDate() + "</AUDIT_DATE>"
 					 + "<REFUND_AMOUNT>" + object.getRefundAmount() + "</REFUND_AMOUNT>"
 					 + "<PREPAY_AMT>" + object.getPrepayAmt() + "</PREPAY_AMT>"
+					 + "<STATUS>" + object.getStatus() + "</STATUS>"
 					 + "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
 					 + "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
 					 + "<ATTRIBUTE3>" + object.getAttribute3() + "</ATTRIBUTE3>"

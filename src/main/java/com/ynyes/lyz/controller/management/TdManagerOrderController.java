@@ -45,6 +45,7 @@ import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.interfaces.entity.TdOrderReceiveInf;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
+import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
@@ -1168,7 +1169,6 @@ public class TdManagerOrderController {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * 欠款 还款
 	 * @param id 欠款id
 	 * @param money 现金金额
@@ -1218,18 +1218,18 @@ public class TdManagerOrderController {
 		own.setBackPos(pos);
 		own.setIsPayed(true);
 		tdOwnMoneyRecordService.save(own);
+		// 收款发ebs
+//		recordAndSendToEbsByTdOwnMoneyRecord(own,INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
+		tdInterfaceService.initCashReciptByTdOwnMoneyRecord(own, INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
+		
 		res.put("code", 0);
 		res.put("message", "已还款");
 		return res;
 	}
 	
 	/**
-	 * 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉
-	 * req 记录库存用
-=======
 	 * 根据问题跟踪表-20160120第55号（序号），一个分单取消的时候，与其相关联的所有分单也取消掉 req 记录库存用
 	 * 
->>>>>>> refs/remotes/origin/master
 	 * @param order
 	 */
 	private void cancelRelativeOrderBySubOrder(TdOrder order, String username, HttpServletRequest req) {
@@ -1444,6 +1444,7 @@ public class TdManagerOrderController {
 					ownMoneyRecord.setIsEnable(true);
 					ownMoneyRecord.setIspassed(true);
 					tdOwnMoneyRecordService.save(ownMoneyRecord);
+					tdInterfaceService.initCashReciptByTdOwnMoneyRecord(ownMoneyRecord, INFConstants.INF_RECEIPT_TYPE_DELIVER_INT);
 				}
 			}
 		}

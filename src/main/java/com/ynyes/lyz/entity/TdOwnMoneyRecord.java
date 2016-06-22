@@ -33,11 +33,11 @@ public class TdOwnMoneyRecord {
     @Column
     private String orderNumber;
     
-    // 已付
+    // 已付 (配送员收款)
     @Column
     private Double payed;
     
-    // 欠款
+    // 欠款 
     @Column
     private Double owned;
     
@@ -69,16 +69,16 @@ public class TdOwnMoneyRecord {
     //是否是欠款记录 （ 后面添加的字段 默认为true表示为欠款记录） zp
     @Column
     private Boolean isOwn;
-    //收款现金
+    //收款现金（配送员）
     @Column
     private Double money;
-    //收款pos
+    //收款pos（配送员）
     @Column
     private Double pos;
-    //还款现金
+    //还款现金（门店）
     @Column
     private Double backMoney;
-    //还款pos
+    //还款pos（门店）
     @Column
     private Double backPos;
     

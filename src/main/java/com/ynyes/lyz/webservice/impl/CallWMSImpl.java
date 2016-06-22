@@ -1326,7 +1326,7 @@ public class CallWMSImpl implements ICallWMS {
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
-		else if (STRTABLE.equalsIgnoreCase("tbw_rec_d")) //城市库存入库明细
+		else if (STRTABLE.equalsIgnoreCase("tbw_rec_d")) //城市采购入库明细
 		{
 			for (int i = 0; i < nodeList.getLength(); i++)
 			{
@@ -1634,7 +1634,7 @@ public class CallWMSImpl implements ICallWMS {
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
-		else if (STRTABLE.equalsIgnoreCase("tbw_rec_m"))//城市库存入库主档
+		else if (STRTABLE.equalsIgnoreCase("tbw_rec_m"))//城市采购入库主档
 		{
 			for (int i = 0; i < nodeList.getLength(); i++)
 			{
@@ -1963,7 +1963,7 @@ public class CallWMSImpl implements ICallWMS {
 			
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
-		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_d"))//城市库存退货明细
+		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_d"))//城市采购退货明细
 		{
 			for (int i = 0; i < nodeList.getLength(); i++)
 			{
@@ -2222,7 +2222,7 @@ public class CallWMSImpl implements ICallWMS {
 			}
 			return "<RESULTS><STATUS><CODE>0</CODE><MESSAGE></MESSAGE></STATUS></RESULTS>";
 		}
-		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_m"))//城市库存退货主档
+		else if (STRTABLE.equalsIgnoreCase("tbw_back_rec_m"))//城市采购退货主档
 		{
 			for (int i = 0; i < nodeList.getLength(); i++)
 			{
@@ -2970,6 +2970,7 @@ public class CallWMSImpl implements ICallWMS {
 				tbOmM.setcModifiedDt(DateFromString(cModifiedDt));
 				tbOmM.setcUploadStatus(cUploadStatus);
 				tbOmM.setcUploadFilename(cUploadFilename);
+				tbOmM.setcCompanyId(cCompanyId);
 				tdTbOmMService.save(tbOmM);
 				if(StringUtils.isBlank(cUploadStatus) || (!cUploadStatus.equalsIgnoreCase("in") && !cUploadStatus.equalsIgnoreCase("out")))
 				{

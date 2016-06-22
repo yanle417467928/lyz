@@ -825,7 +825,7 @@ public class TdDeliveryIndexController {
 			modifyPayment(order.getMainOrderNumber(),payed);
 		}
 		
-		//自记录主单号
+		//只记录主单号
 		if (null != order.getMainOrderNumber()) {
 			List<TdOwnMoneyRecord> recList = tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(order.getMainOrderNumber());
 			TdOwnMoneyRecord rec = new TdOwnMoneyRecord();
@@ -849,8 +849,13 @@ public class TdDeliveryIndexController {
 			rec.setIsEnable(false);
 			rec.setIsPayed(false);
 			rec.setSortId(99L);
-
+			
 			rec = tdOwnMoneyRecordService.save(rec);
+			//全额收款
+			if (rec.getIsOwn() == false)
+			{
+				tdInterfaceService.initCashReciptByTdOwnMoneyRecord(rec, INFConstants.INF_RECEIPT_TYPE_DELIVER_INT);
+			}
 		}
 		
 		/*// 所有子单都确认收货

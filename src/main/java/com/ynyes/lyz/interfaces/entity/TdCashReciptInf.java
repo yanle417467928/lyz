@@ -12,6 +12,21 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 public class TdCashReciptInf extends TdInfBaseEntity{
+	
+	public static final Integer CASHRECEIPTTYPE_DIYSITE = 0;
+	public static final Integer CASHRECEIPTTYOE_DELIVER = 1;
+	
+	public static final String RECEIPT_ROLE_DIYSITE			= "门店";
+	public static final String RECEIPT_ROLE_DELIVER			= "配送员";
+	
+	public static final String RECEIPT_TYPE_ALIPAY			= "支付宝";
+	public static final String RECEIPT_TYPE_WECHAT			= "微信";
+	public static final String RECEIPT_TYPE_UNION			= "银联";
+	public static final String RECEIPT_TYPE_DIYSITE_CASH		= "门店现金";
+	public static final String RECEIPT_TYPE_DIYSITE_POS		= "门店POS";
+	public static final String RECEIPT_TYPE_DELIVER_CASH	= "配送现金";
+	public static final String RECEIPT_TYPE_DELIVER_POS		= "配送POS";
+	
 	//分公司id
 	@Column
 	private Long sobId;
@@ -70,6 +85,10 @@ public class TdCashReciptInf extends TdInfBaseEntity{
 	//收款金额
 	@Column
 	private Double amount;
+	
+	//配送单的收款人角色（配送员，门店）
+	@Column(length = 20)
+	private String receiptRole;
 	
 	//预留字段1
 	@Column
@@ -201,6 +220,14 @@ public class TdCashReciptInf extends TdInfBaseEntity{
 
 	public void setAmount(Double amount) {
 		this.amount = amount;
+	}
+
+	public String getReceiptRole() {
+		return receiptRole;
+	}
+
+	public void setReceiptRole(String receiptRole) {
+		this.receiptRole = receiptRole;
 	}
 
 	public String getAttribute1() {

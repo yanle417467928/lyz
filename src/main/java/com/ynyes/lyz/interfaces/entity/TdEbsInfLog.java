@@ -16,17 +16,25 @@ public class TdEbsInfLog extends TdInfBaseEntity
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
+	//错误信息
 	@Column
 	private String errorInfo;
 	
+	//成功与否
 	@Column(length = 10)
 	private String sendFlag;
 	
+	//ebs接口表名
 	@Column(length = 20)
 	private String tableName;
 	
+	//单号
 	@Column
 	private String orderNumber;
+	
+	//所传数据的唯一标识
+	@Column
+	private String sendId;
 
 	public Long getId()
 	{

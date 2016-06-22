@@ -59,6 +59,12 @@ public class INFConstants
 	 */
 	public static final Integer INF_RETURN_ORDER_SUB_INT	= 1;
 	
+	public static final Integer INF_RECEIPT_TYPE_ALIPAY_INT		= 0;
+	public static final Integer INF_RECEIPT_TYPE_WECHAT_INT		= 1;
+	public static final Integer INF_RECEIPT_TYPE_UNION_INT		= 2;
+	public static final Integer INF_RECEIPT_TYPE_DIYSITE_INT		= 3;
+	public static final Integer INF_RECEIPT_TYPE_DELIVER_INT		= 4;
+	
 	public enum INFTYPE
 	{
 		/**
