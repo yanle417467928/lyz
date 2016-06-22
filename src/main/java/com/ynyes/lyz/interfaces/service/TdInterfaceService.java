@@ -708,7 +708,7 @@ public class TdInterfaceService {
 		returnOrderInf.setDiySiteCode(returnNote.getDiyCode());
 //		returnOrderInf.setRefundType(returnNote);
 		returnOrderInf.setAuditDate(returnNote.getCheckTime());
-		returnOrderInf.setRefundAmount(returnNote.getTurnPrice());
+		returnOrderInf.setRefundAmount(0.0);
 		returnOrderInf.setPrepayAmt(returnNote.getTurnPrice());
 		returnOrderInf.setAuditDate(new Date());
 		if (type == INFConstants.INF_RETURN_ORDER_CANCEL_INT)

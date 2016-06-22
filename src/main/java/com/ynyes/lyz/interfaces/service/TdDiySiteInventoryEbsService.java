@@ -113,7 +113,7 @@ public class TdDiySiteInventoryEbsService
 //        {
 //			e.setSendFlag("N");
 //		}
-//        e.setModifyDate(new Date());
+        e.setModifyDate(new Date());
 
         return repository.save(e);
     }

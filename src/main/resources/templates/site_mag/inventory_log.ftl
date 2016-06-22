@@ -66,7 +66,7 @@ var theForm = document.forms['form1'];
     <th align="left" width="8%">所属门店</th>
     <th align="left" width="15%">产品编码</th>
     <th align="left" >产品名</th>
-    <th align="left" width="4%">改变数量</th>
+    <th align="left" width="5%">改变数量</th>
     <th align="left" width="15%">改变时间</th>
   </tr>
 
@@ -80,7 +80,7 @@ var theForm = document.forms['form1'];
                     <input type="hidden" name="listId" id="listId" value="${item.id?c}">
                 </td>
                 <td align="left">${item.manager!""}</td>
-                <td align="left"><#if item.description??>${item.description!""}<#else>无</#if></td>
+                <td align="left"><#if item.description??>${item.changeType!""}<#else>无</#if></td>
                 <td align="left"><#if item.regionName??>${item.regionName!'无'}<#else>${item.diySiteTitle!'无'}</#if></td>
                 <td align="left">${item.goodsSku!""}</td>
                 <td align="left">${item.goodsTitle!""}</td>

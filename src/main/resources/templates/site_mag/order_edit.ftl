@@ -1024,7 +1024,7 @@
                 <#if order.deliverTypeTitle=='门店自提'>
                 <input type="button" id="btnOrderExpress" value="确认发货" class="btn">
                 </#if>
-                <input type="button" id="btnCancel" value="取消订单" class="btn green">
+                <#--<input type="button" id="btnCancel" value="取消订单" class="btn green">-->
             <#elseif order.statusId==4>
                 <#if order.deliverTypeTitle=='门店自提'>
                 <input type="button" id="btnOrderReceive" value="确认收货" class="btn green">

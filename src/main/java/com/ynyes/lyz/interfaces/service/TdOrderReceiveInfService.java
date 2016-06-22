@@ -104,7 +104,7 @@ public class TdOrderReceiveInfService {
         {
             e.setInitDate(new Date());
         }
-//    	e.setModifyDate(new Date());
+    	e.setModifyDate(new Date());
         return repository.save(e);
     }
     

@@ -667,6 +667,7 @@ public class CallWMSImpl implements ICallWMS {
 					if (tdOrder != null && tdOrder.getStatusId() != null && tdOrder.getStatusId() == 3L)
 					{
 						tdOrder.setStatusId(4L);
+						tdOrder.setSendTime(new Date());
 						userId = tdOrder.getRealUserId();
 						if (tdOrder.getDeliverTypeTitle().equalsIgnoreCase("门店自提")) 
 						{
