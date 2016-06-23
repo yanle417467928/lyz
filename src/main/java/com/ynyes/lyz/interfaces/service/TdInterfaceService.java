@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 import javax.xml.namespace.QName;
@@ -43,6 +44,7 @@ import com.ynyes.lyz.service.TdCouponService;
 import com.ynyes.lyz.service.TdDiySiteService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
+import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 
 
@@ -94,6 +96,9 @@ public class TdInterfaceService {
 	
 	@Autowired
 	private TdReturnNoteService tdReturnNoteService;
+	
+	@Autowired
+	private TdPriceCountService tdPriceCountService;
 	
 	private Call call;
 	
@@ -162,7 +167,7 @@ public class TdInterfaceService {
 		}
 	}
 	
-	/*public void sendReturnOrderByAsyn(TdReturnNote returnNote)
+	public void sendReturnOrderByAsyn(TdReturnNote returnNote)
 	{
 		sendEbsReturnOrderThread ebsReturnOrderThread = new sendEbsReturnOrderThread(returnNote);
 		ebsReturnOrderThread.start();
@@ -259,7 +264,7 @@ public class TdInterfaceService {
 	 * 根据订单生成销售订单相关数据
 	 * @param tdOrder
 	 */
-	/*public void initOrderInf(TdOrder tdOrder)
+	public void initOrderInf(TdOrder tdOrder)
 	{
 		if (tdOrder == null)
 		{
@@ -432,7 +437,7 @@ public class TdInterfaceService {
 	 * @param tdOrder
 	 * @return
 	 */
-	/*public TdOrderReceiveInf initOrderReceiveByOrder(TdOrder tdOrder)
+	public TdOrderReceiveInf initOrderReceiveByOrder(TdOrder tdOrder)
 	{
 		TdOrderReceiveInf orderReceiveInf = new TdOrderReceiveInf();
 		if (tdOrder == null || tdOrder.getDeliverTypeTitle() == null)
@@ -464,7 +469,7 @@ public class TdInterfaceService {
 	 * @param tdOrder
 	 * @return
 	 */
-	/*public TdCashReciptInf initCashReciptByOrder(TdOrder tdOrder)
+	public TdCashReciptInf initCashReciptByOrder(TdOrder tdOrder)
 	{
 		if (tdOrder == null)
 		{
@@ -511,7 +516,7 @@ public class TdInterfaceService {
 	 * @param type 3代表门店  4代表配送员
 	 * @return
 	 */
-	/*public TdCashReciptInf initCashReciptByTdOwnMoneyRecord(TdOwnMoneyRecord ownMoneyRecord, Integer type)
+	public TdCashReciptInf initCashReciptByTdOwnMoneyRecord(TdOwnMoneyRecord ownMoneyRecord, Integer type)
 	{
 		if (ownMoneyRecord == null)
 		{
@@ -602,7 +607,7 @@ public class TdInterfaceService {
 	 * @param tdOrder
 	 * @return
 	 */
-	/*public TdCashRefundInf initCashRefundInf(TdOrder tdOrder)
+	public TdCashRefundInf initCashRefundInf(TdOrder tdOrder)
 	{
 		if (tdOrder == null)
 		{
@@ -632,7 +637,7 @@ public class TdInterfaceService {
 	 * @param returnNote
 	 * @return
 	 */
-	/*public TdReturnTimeInf initReturnTimeByReturnNote(TdReturnNote returnNote)
+	public TdReturnTimeInf initReturnTimeByReturnNote(TdReturnNote returnNote)
 	{
 		TdReturnOrderInf returnOrderInf = tdReturnOrderInfService.findByReturnNumber(returnNote.getReturnNumber());
 		if (returnOrderInf == null)
@@ -655,7 +660,7 @@ public class TdInterfaceService {
 	 * @param returnNote 退货单
 	 * @param type 退货或者取消订单
 	 */
-	/*public void initReturnOrder(TdReturnNote returnNote,Integer type)
+	public void initReturnOrder(TdReturnNote returnNote,Integer type)
 	{
 		if(returnNote==null){
 			return;
@@ -709,7 +714,11 @@ public class TdInterfaceService {
 //		returnOrderInf.setRefundType(returnNote);
 		returnOrderInf.setAuditDate(returnNote.getCheckTime());
 		returnOrderInf.setRefundAmount(0.0);
-		returnOrderInf.setPrepayAmt(returnNote.getTurnPrice());
+		
+		Map<String, Object> map = tdPriceCountService.getBalanceAndCouponWithReturnNoteAndOrder(order, returnNote);
+		Double returnBalance = (Double)map.get(INFConstants.kBalance);
+		
+		returnOrderInf.setPrepayAmt(returnBalance);
 		returnOrderInf.setAuditDate(new Date());
 		if (type == INFConstants.INF_RETURN_ORDER_CANCEL_INT)
 		{
@@ -746,7 +755,7 @@ public class TdInterfaceService {
 	 * @param tdOrder
 	 * @param type
 	 */
-	/*public void initReturnCouponInfByOrder(TdOrder tdOrder,Integer type)
+	public void initReturnCouponInfByOrder(TdOrder tdOrder,Integer type)
 	{
 		// type 0:取消订单 1:其他退货
 		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
@@ -822,7 +831,7 @@ public class TdInterfaceService {
 	
 	/**     -=-=-=-=-=-=-     生成XML       -=-=-=-=-=-=-       **/
 	
-	/*public String XmlByOrder(TdOrder tdOrder, INFTYPE type)
+	public String XmlByOrder(TdOrder tdOrder, INFTYPE type)
 	{
 		TdOrderInf tdOrderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
 		List<String> stringList = new ArrayList<String>();
@@ -943,7 +952,7 @@ public class TdInterfaceService {
 	 * @param type
 	 * @return
 	 */
-	/*public String XMLWithEntity(Object entity,INFTYPE type)
+	public String XMLWithEntity(Object entity,INFTYPE type)
 	{
 		String xml = null;
 		if (entity == null)
@@ -1174,7 +1183,7 @@ public class TdInterfaceService {
 	 * @param Tables
 	 * @return
 	 */
-	/*public String XmlWithTables(List<String> Tables)
+	public String XmlWithTables(List<String> Tables)
 	{
 		if (Tables == null)
 		{
@@ -1206,7 +1215,7 @@ public class TdInterfaceService {
 	 * @param object
 	 * @param type
 	 */
-	/*public void ebsWithObject(Object object, INFTYPE type) 
+	public void ebsWithObject(Object object, INFTYPE type) 
 	{
 		switch (type) 
 		{
@@ -1253,7 +1262,7 @@ public class TdInterfaceService {
 	}
 	
 	/**     -=-=-=-=-=-=-     重传EBS       -=-=-=-=-=-=-       **/
-	/*public void reSendByIdAndType(Long id,INFTYPE type)
+	public void reSendByIdAndType(Long id,INFTYPE type)
 	{
 		switch (type)
 		{
@@ -1268,6 +1277,6 @@ public class TdInterfaceService {
 			break;
 		}
 	}
-	*/
+	
 
 }

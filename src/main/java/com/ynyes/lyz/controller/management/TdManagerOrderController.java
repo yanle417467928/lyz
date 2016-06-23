@@ -43,7 +43,10 @@ import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdWareHouse;
+import com.ynyes.lyz.interfaces.entity.TdOrderReceiveInf;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
+import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
+import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.service.TdArticleService;
 import com.ynyes.lyz.service.TdCityService;
 import com.ynyes.lyz.service.TdCommonService;
@@ -1079,10 +1082,10 @@ public class TdManagerOrderController {
 
 					if (order.getDeliverTypeTitle().equalsIgnoreCase("门店自提")) {
 						// add send receive time to ebs
-//						TdOrderReceiveInf orderReceiveInf = tdInterfaceService.initOrderReceiveByOrder(order);
-//						if (orderReceiveInf != null) {
-//							tdInterfaceService.ebsWithObject(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
-//						}
+						TdOrderReceiveInf orderReceiveInf = tdInterfaceService.initOrderReceiveByOrder(order);
+						if (orderReceiveInf != null) {
+							tdInterfaceService.ebsWithObject(orderReceiveInf, INFTYPE.ORDERRECEIVEINF);
+						}
 					}
 				}
 			}
@@ -1238,8 +1241,7 @@ public class TdManagerOrderController {
 		own.setIsPayed(true);
 		tdOwnMoneyRecordService.save(own);
 		// 收款发ebs
-//		recordAndSendToEbsByTdOwnMoneyRecord(own,INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
-//		tdInterfaceService.initCashReciptByTdOwnMoneyRecord(own, INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
+		tdInterfaceService.initCashReciptByTdOwnMoneyRecord(own, INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
 		
 		res.put("code", 0);
 		res.put("message", "已还款");
@@ -1544,7 +1546,7 @@ public class TdManagerOrderController {
 					ownMoneyRecord.setIsEnable(true);
 					ownMoneyRecord.setIspassed(true);
 					tdOwnMoneyRecordService.save(ownMoneyRecord);
-//					tdInterfaceService.initCashReciptByTdOwnMoneyRecord(ownMoneyRecord, INFConstants.INF_RECEIPT_TYPE_DELIVER_INT);
+					tdInterfaceService.initCashReciptByTdOwnMoneyRecord(ownMoneyRecord, INFConstants.INF_RECEIPT_TYPE_DELIVER_INT);
 				}
 			}
 		}

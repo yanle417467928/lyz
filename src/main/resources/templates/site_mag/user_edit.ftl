@@ -424,14 +424,14 @@ $(function () {
     <#-- 不可修改
     <dd><input readonly="readonly" name="ocashBalance" id="ocashBalance" onkeyup="changeBalance()" type="text" class="input normal" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" " value="<#if user?? && user.cashBalance??>${user.cashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
   	-->
-  	<dd><div name="obalance" id="obalance"><#if user?? && user.cashBalance??>${user.cashBalance?string('0.00')}<#else>0</#if></div> <span class="Validform_checktip"></span></dd>
+  	<dd><div><#if user?? && user.cashBalance??>${user.cashBalance?string('0.00')}<#else>0</#if></div> <span class="Validform_checktip"></span></dd>
   </dl>
   <dl>
     <dt>不可提现余额</dt>
     <#-- 不可修改
     <dd><input readonly="readonly" name="ounCashBalance" id="ounCashBalance" onkeyup="changeBalance()" type="text" class="input normal" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" " value="<#if user?? && user.unCashBalance??>${user.unCashBalance?string('0.00')}<#else>0</#if>"> <span class="Validform_checktip"></span></dd>
   	-->
-  	<dd><div name="obalance" id="obalance"><#if user?? && user.unCashBalance??>${user.unCashBalance?string('0.00')}<#else>0</#if></div> <span class="Validform_checktip"></span></dd>
+  	<dd><div><#if user?? && user.unCashBalance??>${user.unCashBalance?string('0.00')}<#else>0</#if></div> <span class="Validform_checktip"></span></dd>
   </dl>
   </#if>
   <#if !user?? || user?? && user.userType?? && user.userType == 100>

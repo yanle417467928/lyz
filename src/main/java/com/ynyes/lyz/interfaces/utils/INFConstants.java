@@ -65,57 +65,12 @@ public class INFConstants
 	public static final Integer INF_RECEIPT_TYPE_DIYSITE_INT		= 3;
 	public static final Integer INF_RECEIPT_TYPE_DELIVER_INT		= 4;
 	
-	public enum INFTYPE
-	{
-		/**
-		 * 销售订单头表
-		 */
-		ORDERINF,
-		
-		/**
-		 * 销售订单行表
-		 */
-		ORDERGOODSINF,
-		
-		/**
-		 * 销售订单券使用行表
-		 */
-		ORDERCOUPONINF,
-		
-		/**
-		 * 到店自提单收货时间表
-		 */
-		ORDERRECEIVEINF,
-		
-		/**
-		 * 销退订单头表
-		 */
-		RETURNORDERINF,
-		
-		/**
-		 * 销退订单行表
-		 */
-		RETURNGOODSINF,
-		
-		/**
-		 * 销退单的券退回表
-		 */
-		RETURNCOUPONINF,
-		
-		/**
-		 * 到店退货单退货时间表
-		 */
-		RETURNTIMEINF,
-		
-		/**
-		 * 收款表
-		 */
-		CASHRECIPTINF,
-		
-		/**
-		 * 退款表
-		 */
-		CASHREFUNDINF
-	}
+	
+	
+	
+	/*         --  字典key  --         */
+	
+	public static final String kCouponList		= "coupon_list_key";
+	public static final String kBalance		= "balance_key";
 	
 }

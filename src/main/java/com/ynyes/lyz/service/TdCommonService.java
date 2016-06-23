@@ -58,14 +58,16 @@ import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.entity.TdUserRecentVisit;
 import com.ynyes.lyz.entity.TdWareHouse;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
+import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
+import com.ynyes.lyz.interfaces.utils.INFConstants;
+import com.ynyes.lyz.interfaces.utils.StringTools;
 import com.ynyes.lyz.util.ClientConstant;
 import com.ynyes.lyz.util.StringUtils;
 
 @Service
 public class TdCommonService {
 
-	// static String wmsUrl =
-	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
+//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
 	private String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	private JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	private org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -337,9 +339,9 @@ public class TdCommonService {
 
 		returnNote.setReturnGoodsList(orderGoodsList);
 		tdOrderGoodsService.save(orderGoodsList);
-//		tdInterfaceService.initReturnOrder(returnNote, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
-//		tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
-//		tdInterfaceService.sendReturnOrderByAsyn(returnNote);
+		tdInterfaceService.initReturnOrder(returnNote, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
+		tdInterfaceService.initReturnCouponInfByOrder(order, INFConstants.INF_RETURN_ORDER_CANCEL_INT);
+		tdInterfaceService.sendReturnOrderByAsyn(returnNote);
 		return tdReturnNoteService.save(returnNote);
 	}
 
@@ -1774,8 +1776,8 @@ public class TdCommonService {
 					order_temp.getOrderNumber());
 			requsitThread.start();
 		}
-//		sendEbsThread ebsThread = new sendEbsThread(ebsOrderList);
-//		ebsThread.start();
+		sendEbsThread ebsThread = new sendEbsThread(ebsOrderList);
+		ebsThread.start();
 	}
 
 	/**
@@ -1964,7 +1966,7 @@ public class TdCommonService {
 			sendMsgToWMS(orderList, mainOrderNumber);
 		}
 	}
-/*
+
 	class sendEbsThread extends Thread {
 		List<TdOrder> orderList;
 
@@ -1976,16 +1978,16 @@ public class TdCommonService {
 			sendOrderToEBS(orderList);
 		}
 	}
-*/
+
 	// 传 order 给 EBS
-	/*private void sendOrderToEBS(List<TdOrder> orderList) {
+	private void sendOrderToEBS(List<TdOrder> orderList) {
 		for (TdOrder tdOrder : orderList) {
 			// if (tdOrder != null && tdOrder.getOrderNumber() != null &&
 			// tdOrder.getOrderNumber().contains("HR"))
 			// {
 			// continue;
 			// }
-//			tdInterfaceService.initOrderInf(tdOrder);
+			tdInterfaceService.initOrderInf(tdOrder);
 
 			Boolean isOrderInfSucceed = false;
 			// 单头
@@ -2035,7 +2037,7 @@ public class TdCommonService {
 				}
 			}
 		}
-	}*/
+	}
 
 	// TODO 要货单
 	private void sendMsgToWMS(List<TdOrder> orderList, String mainOrderNumber) {
