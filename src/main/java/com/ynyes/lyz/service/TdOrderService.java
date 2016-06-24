@@ -260,7 +260,7 @@ public class TdOrderService {
 		if (null == username || null == statusId) {
 			return null;
 		}
-		return repository.findByUsernameAndStatusIdOrderByIdDesc(username, statusId);
+		return repository.findByUsernameAndStatusIdOrRealUserUsernameAndStatusIdOrderByIdDesc(username, statusId,username, statusId);
 	}
 
 	// 根据用户名查找所有的订单（不分页）
@@ -477,7 +477,7 @@ public class TdOrderService {
 			return null;
 		}
 		PageRequest pageRequest = new PageRequest(page, size);
-		return repository.findByUsernameAndStatusIdNotOrderByOrderTimeDesc(username, 8L, pageRequest);
+		return repository.findByUsernameAndStatusIdNotOrRealUserUsernameAndStatusIdNotOrderByOrderTimeDesc(username, 8L,username, 8L, pageRequest);
 	}
 
 	public List<TdOrder> findByOrderNumberContaining(String orderNumber) {
