@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
- * 代收款报表
+ * 代收款报表（1.1）
  * @author zp
  *
  */
@@ -22,19 +22,23 @@ public class TdAgencyFund {
 	//门店名称
 	@Column
 	private String diySiteName;
-	//门店电话
+	//门店电话（1.1不需要显示）
 	@Column
 	private String diySitePhone;
 	//主单号
 	@Column
 	private String mainOrderNumber;
+	//订单状态
+	@Column
+	private Long statusId;
 	//订单时间
 	@Column
 	private Date orderTime;
-	//可提现金额
+	
+	//可提现金额（1.1不需要显示）
 	@Column(scale = 2)
 	private Double cashBalanceUsed;
-	//不可提现金额
+	//不可提现金额（1.1不需要显示）
 	@Column(scale = 2)
 	private Double unCashBalanceUsed;
 	//代收款金额
@@ -46,12 +50,15 @@ public class TdAgencyFund {
 	//欠款
 	@Column(scale = 2)
 	private Double owned;
-	//配送人员
+	//仓库名称（1.1修改字段）
 	@Column
-	private String realName;
-	//配送人电话
+	private String whName;
+	//配送人员(1.1修改字段)
 	@Column
-	private String username;
+	private String deliveryName;
+	//配送人电话(1.1修改字段)
+	@Column
+	private String deliveryPhone;
 	//收获人
 	@Column
 	private String shippingName;
@@ -64,16 +71,10 @@ public class TdAgencyFund {
 	//备注信息
 	@Column
 	private String remark;
-	//现金卷额度
+	//现金卷额度（1.1不需要显示）
 	@Column
 	private Double cashCoupon;
-	//订单状态
-	@Column
-	private Long statusId;
-	//仓库名称
-	@Column
-	private String whNo;
-	//订单总金额
+	//订单总金额（1.1不需要显示）
 	@Column(scale = 2)
 	private Double totalPrice;
 	//预约配送日期
@@ -85,20 +86,40 @@ public class TdAgencyFund {
 	//实际配送时间
 	@Column
 	private Date deliveryTime;
-	// 城市
+	// 城市（1.1不需要显示）
 	@Column
 	private String cityName;
-	// 配送门店id
+	// 配送门店id（1.1不需要显示）
 	@Column
 	private String diySiteCode;
-	// 配送方式名称
+	// 配送方式名称（1.1不需要显示）
 	@Column
 	private String deliverTypeTitle;
 	//创建人
 	private String createUsername;
-	//门店id
+	//门店id（1.1不需要显示）
 	@Column
 	private Long diyId;
+	
+	//-------------------1.1版本添加字段---------------------
+	//归属导购姓名
+	@Column
+	private String sellerName;
+	// 归属销顾电话（推荐人电话）
+	@Column
+	private String sellerPhone;
+	//客户姓名
+	@Column
+	private String userName;
+	// 客户电话
+	@Column
+	private String userPhone;
+	// 收款现金
+	@Column
+	private Double payMoney;
+	// 收款pos
+	@Column
+	private Double payPos;
 	
 	public Long getId() {
 		return id;
@@ -160,18 +181,6 @@ public class TdAgencyFund {
 	public void setOwned(Double owned) {
 		this.owned = owned;
 	}
-	public String getRealName() {
-		return realName;
-	}
-	public void setRealName(String realName) {
-		this.realName = realName;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
 	public String getShippingName() {
 		return shippingName;
 	}
@@ -207,12 +216,6 @@ public class TdAgencyFund {
 	}
 	public void setStatusId(Long statusId) {
 		this.statusId = statusId;
-	}
-	public String getWhNo() {
-		return whNo;
-	}
-	public void setWhNo(String whNo) {
-		this.whNo = whNo;
 	}
 	public Double getTotalPrice() {
 		return totalPrice;
@@ -267,6 +270,60 @@ public class TdAgencyFund {
 	}
 	public void setDiyId(Long diyId) {
 		this.diyId = diyId;
+	}
+	public String getWhName() {
+		return whName;
+	}
+	public void setWhName(String whName) {
+		this.whName = whName;
+	}
+	public String getDeliveryName() {
+		return deliveryName;
+	}
+	public void setDeliveryName(String deliveryName) {
+		this.deliveryName = deliveryName;
+	}
+	public String getDeliveryPhone() {
+		return deliveryPhone;
+	}
+	public void setDeliveryPhone(String deliveryPhone) {
+		this.deliveryPhone = deliveryPhone;
+	}
+	public String getSellerName() {
+		return sellerName;
+	}
+	public void setSellerName(String sellerName) {
+		this.sellerName = sellerName;
+	}
+	public String getSellerPhone() {
+		return sellerPhone;
+	}
+	public void setSellerPhone(String sellerPhone) {
+		this.sellerPhone = sellerPhone;
+	}
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	public String getUserPhone() {
+		return userPhone;
+	}
+	public void setUserPhone(String userPhone) {
+		this.userPhone = userPhone;
+	}
+	public Double getPayMoney() {
+		return payMoney;
+	}
+	public void setPayMoney(Double payMoney) {
+		this.payMoney = payMoney;
+	}
+	public Double getPayPos() {
+		return payPos;
+	}
+	public void setPayPos(Double payPos) {
+		this.payPos = payPos;
 	}
 	
 	

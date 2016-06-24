@@ -491,7 +491,7 @@ public class TdOrderController {
 				map.addAttribute("info_list", info_list);
 			} else if (1L == type.longValue()) {
 				// 根据门店查询导购
-				TdDiySite diySite = tdDiySiteService.findByTitleAndIsEnableTrue(diySiteName);
+				TdDiySite diySite = tdDiySiteService.findByTitleAndIsEnableTrue(cityId,diySiteName);
 				List<TdUser> info_list = null;
 				if (null != diySite) {// 查询门店下面的导购
 					info_list = tdUserService.findByCityIdAndCustomerIdAndUserTypeOrCityIdAndCustomerIdAndUserType(
@@ -526,7 +526,7 @@ public class TdOrderController {
 				map.addAttribute("info_list", info_list);
 			} else if (1L == type.longValue()) {
 				// 根据门店查询导购
-				TdDiySite diySite = tdDiySiteService.findByTitleAndIsEnableTrue(diySiteName);
+				TdDiySite diySite = tdDiySiteService.findByTitleAndIsEnableTrue(cityId,diySiteName);
 				List<TdUser> info_list = null;
 				if(diySite!=null){
 					info_list = tdUserService
@@ -1500,7 +1500,7 @@ public class TdOrderController {
 
 		// add by Shawn
 		// 解决内存溢出的bug
-		if (null == order_temp) {
+		if (null == order_temp || "".equals((order_temp.getOrderNumber()))) {
 			res.put("message", "未找到虚拟订单");
 			return res;
 		}

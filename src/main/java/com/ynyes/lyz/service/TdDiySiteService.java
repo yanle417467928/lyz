@@ -163,11 +163,11 @@ public class TdDiySiteService {
 		return repository.findByDisctrictIdOrderBySortIdAsc(districtId);
 	}
 
-	public TdDiySite findByTitleAndIsEnableTrue(String title) {
+	public TdDiySite findByTitleAndIsEnableTrue(Long regionId,String title) {
 		if (null == title) {
 			return null;
 		}
-		return repository.findByTitleAndIsEnableTrue(title);
+		return repository.findByRegionIdAndTitleAndIsEnableTrue(regionId,title);
 	}
 
 	/**

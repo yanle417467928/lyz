@@ -535,7 +535,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	}
 	
 	/**
-	 * 代收款报表
+	 * 代收款报表(1.1修改)
 	 * @param begin 开始时间
 	 * @param end 结束时间
 	 * @param diyCode 门店编号
@@ -547,7 +547,6 @@ public class TdManagerStatementController extends TdManagerBaseController {
 		// 第一步，创建一个webbook，对应一个Excel文件 
         HSSFWorkbook wb = new HSSFWorkbook();  
         List<TdAgencyFund> agencyFundList = tdAgencyFundService.searchAgencyFund(begin, end, cityName, diyCode,username,roleDiyIds);
-        List<TdWareHouse> wareHouseList = tdWareHouseService.findAll();
         //excel单表最大行数是65535
         int maxRowNum = 60000;
         int maxSize=0;
@@ -562,8 +561,9 @@ public class TdManagerStatementController extends TdManagerBaseController {
 	        HSSFSheet sheet = wb.createSheet("第"+(i+1)+"页");  
 	        // 第三步，在sheet中添加表头第0行,注意老版本poi对Excel的行数列数有限制short  
 	        //列宽
-	        int[] widths={8,13,25,18,11,13,11,19,12,9,
-	        		13,13,13,40,40};
+	        int[] widths={13,25,13,13,18,13,13,9,9,9,
+	        		9,9,13,13,13,13,13,25,18,18,
+	        		25};
 	        sheetColumnWidth(sheet,widths);
 	        
 	        // 第四步，创建单元格，并设置值表头 设置表头居中  
@@ -574,10 +574,10 @@ public class TdManagerStatementController extends TdManagerBaseController {
 
 	       	//设置标题
 	        HSSFRow row = sheet.createRow((int) 0); 
-	        
-	        String[] cellValues={"门店名称","门店电话","主单号","订单日期","使用可提现金额","使用不可提现金额","代收款金额","实际代收款金额","欠款","配送人员",
-					"配送人电话","收货人","收货人电话","收货人地址","备注信息","现金券额度","订单状态","仓库名称","订单总金额","预约配送时间",
-					"实际配送时间","配送方式"};
+	        //版本1.1
+	        String[] cellValues={"门店名称","主单号","订单状态","导购","订单日期","客户名称","客户电话","需代收金额","实收现金","实收pos",
+	        		"实收总金额","欠款","仓库名称","配送人员","配送人电话","收货人","收货人电话","收货人地址","预约配送时间","实际配送时间",
+	        		"备注信息"};
 			cellDates(cellValues, style, row);
 			
 			for(int j=0;j<maxRowNum;j++)
@@ -588,103 +588,55 @@ public class TdManagerStatementController extends TdManagerBaseController {
 				TdAgencyFund agencyFund= agencyFundList.get(j+i*maxRowNum);
 				
 				row = sheet.createRow((int) j + 1);
-
-				if (null != agencyFund.getDiySiteName())
-				{
-					row.createCell(0).setCellValue(agencyFund.getDiySiteName());
+				//门店名称
+				row.createCell(0).setCellValue(objToString(agencyFund.getDiySiteName()));
+				//主单号
+				row.createCell(1).setCellValue(objToString(agencyFund.getMainOrderNumber()));
+				//订单状态
+				String statusStr = orderStatus(agencyFund.getStatusId());
+				row.createCell(2).setCellValue(objToString(statusStr));
+				//导购
+				row.createCell(3).setCellValue(objToString(agencyFund.getSellerName()));
+				//订单日期
+				row.createCell(4).setCellValue(objToString(dateToString(agencyFund.getOrderTime(), null)));
+				//客户名称
+				row.createCell(5).setCellValue(objToString(agencyFund.getUserName()));
+				//客户电话
+				row.createCell(6).setCellValue(objToString(agencyFund.getUserPhone()));
+				//需代收金额
+				row.createCell(7).setCellValue(objToString(agencyFund.getPayPrice()));
+				//实收现金
+				row.createCell(8).setCellValue(objToString(agencyFund.getPayMoney()));
+				//实收pos
+				row.createCell(9).setCellValue(objToString(agencyFund.getPayPos()));
+				//历史数据没有区分现金和pos这2个字段为空  默认为pos收款
+				if(null == agencyFund.getPayMoney() && null == agencyFund.getPayPos()){
+					row.createCell(9).setCellValue(objToString(agencyFund.getPayed()));
 				}
-				if (null != agencyFund.getDiySitePhone())
-				{
-					row.createCell(1).setCellValue(agencyFund.getDiySitePhone());
-				}
-				if (null != agencyFund.getMainOrderNumber())
-				{
-					row.createCell(2).setCellValue(agencyFund.getMainOrderNumber());
-				}
-				if (null != agencyFund.getOrderTime())
-				{
-					Date orderTime = agencyFund.getOrderTime();
-					String orderTimeStr = orderTime.toString();
-					row.createCell(3).setCellValue(orderTimeStr);
-				}
-				if (null != agencyFund.getCashBalanceUsed())
-				{
-					row.createCell(4).setCellValue(agencyFund.getCashBalanceUsed());
-				}
-				if (null != agencyFund.getUnCashBalanceUsed())
-				{
-					row.createCell(5).setCellValue(agencyFund.getUnCashBalanceUsed());
-				}
-
-				if (null != agencyFund.getPayPrice())
-				{
-					row.createCell(6).setCellValue(agencyFund.getPayPrice());
-				}
-				if (null != agencyFund.getPayed())
-				{
-					row.createCell(7).setCellValue(agencyFund.getPayed());
-				}
-				if (null != agencyFund.getOwned())
-				{
-					row.createCell(8).setCellValue(agencyFund.getOwned());
-				}
-
-				if (null != agencyFund.getWhNo())
-				{
-					row.createCell(17).setCellValue(changeName(wareHouseList,agencyFund.getWhNo()));
-				}
-				if (null != agencyFund.getRealName())
-				{
-					row.createCell(9).setCellValue(agencyFund.getRealName());
-				}
-				if (null != agencyFund.getUsername())
-				{
-					row.createCell(10).setCellValue(agencyFund.getUsername());
-				}
-				if(null != agencyFund.getDeliverTypeTitle()){
-					if (null != agencyFund.getShippingName())
-					{
-						row.createCell(11).setCellValue(agencyFund.getShippingName());
-					}
-					if (null != agencyFund.getShippingPhone())
-					{
-						row.createCell(12).setCellValue(agencyFund.getShippingPhone());
-					}
-					if (null != agencyFund.getShippingAddress())
-					{
-						row.createCell(13).setCellValue(agencyFund.getShippingAddress());
-					}
-				}
-				if (null != agencyFund.getRemark())
-				{
-					row.createCell(14).setCellValue(agencyFund.getRemark());
-				}
-				if (null != agencyFund.getCashCoupon())
-				{
-					row.createCell(15).setCellValue(agencyFund.getCashCoupon());
-				}
-				if (null != agencyFund.getStatusId())
-				{
-					String statusStr = orderStatus(agencyFund.getStatusId());
-					row.createCell(16).setCellValue(statusStr);
-				}
-				if (null != agencyFund.getTotalPrice())
-				{
-					row.createCell(18).setCellValue(agencyFund.getTotalPrice());
-				}
-				if (null != agencyFund.getDeliveryDate()) 
-				{
-					String dayTime = agencyFund.getDeliveryDate();
-					dayTime = dayTime + " " + agencyFund.getDeliveryDetailId() + ":30";
-					row.createCell(19).setCellValue(dayTime);
-				}
-				if (null != agencyFund.getDeliveryTime()) 
-				{
-					row.createCell(20).setCellValue(agencyFund.getDeliveryTime().toString());
-				}
-				if(null != agencyFund.getDeliverTypeTitle()){
-					row.createCell(21).setCellValue(agencyFund.getDeliverTypeTitle());
-				}
+				//实收总金额
+				row.createCell(10).setCellValue(objToString(agencyFund.getPayed()));
+				//欠款
+				row.createCell(11).setCellValue(objToString(agencyFund.getOwned()));
+				//仓库名称
+				row.createCell(12).setCellValue(objToString(agencyFund.getWhName()));
+				//配送人员
+				row.createCell(13).setCellValue(objToString(agencyFund.getDeliveryName()));
+				//配送人电话
+				row.createCell(14).setCellValue(objToString(agencyFund.getDeliveryPhone()));
+				//收货人
+				row.createCell(15).setCellValue(objToString(agencyFund.getShippingName()));
+				//收货人电话
+				row.createCell(16).setCellValue(objToString(agencyFund.getShippingPhone()));
+				//收货人地址
+				row.createCell(17).setCellValue(objToString(agencyFund.getShippingAddress()));
+				//预约配送时间
+				String dayTime = agencyFund.getDeliveryDate();
+				dayTime = dayTime + " " + agencyFund.getDeliveryDetailId() + ":30";
+				row.createCell(18).setCellValue(objToString(dayTime));
+				//实际配送时间
+				row.createCell(19).setCellValue(objToString(dateToString(agencyFund.getDeliveryTime(), null)));
+				//备注信息
+				row.createCell(20).setCellValue(objToString(agencyFund.getRemark()));
 	        }
 		}
         return wb;
@@ -1208,6 +1160,7 @@ public class TdManagerStatementController extends TdManagerBaseController {
 //	            System.out.println("正在生成excel文件的 sheet"+(i+1)+"第"+(j+1)+"行");
 			}
 //			System.out.println("正在生成excel文件的 sheet"+(i+1));
+			
 		}
         
         
@@ -1216,7 +1169,12 @@ public class TdManagerStatementController extends TdManagerBaseController {
         return wb;
 	}
 	
-	
+	private String objToString(Object obj){
+		if(obj==null){
+			return "";
+		}
+		return obj.toString();
+	}
 	
 	
 }
