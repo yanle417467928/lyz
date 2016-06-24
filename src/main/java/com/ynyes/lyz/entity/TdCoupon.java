@@ -198,6 +198,10 @@ public class TdCoupon {
 	// 是否是购买的券
 	@Column
 	private Boolean isBuy;
+	
+	// 买券时候的价格
+	@Column(scale = 2)
+	private Double buyPrice;
 
 	public String getCustomerId() {
 		return customerId;
@@ -541,5 +545,13 @@ public class TdCoupon {
 
 	public void setIsBuy(Boolean isBuy) {
 		this.isBuy = isBuy;
+	}
+
+	public Double getBuyPrice() {
+		return buyPrice;
+	}
+
+	public void setBuyPrice(Double buyPrice) {
+		this.buyPrice = buyPrice;
 	}
 }

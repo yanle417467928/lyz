@@ -683,40 +683,32 @@ public class TdInterfaceService {
 		returnOrderInf.setReturnNumber(returnNote.getReturnNumber());
 		returnOrderInf.setReturnDate(returnNote.getOrderTime());
 		TdOrder order= tdOrderService.findByOrderNumber(returnNote.getOrderNumber());
-		if(order!=null){
-			//是否整单退
-			Boolean isFull=true;
-			for (TdOrderGoods orderGood : order.getOrderGoodsList()) {
-				//是否退货
-				Boolean isReturn=false;
-				for(TdOrderGoods returnGood : returnNote.getReturnGoodsList()){
-					if(orderGood.getSku().equals(returnGood.getSku()) && orderGood.getQuantity().equals(returnGood.getQuantity())){
-						isReturn=true;
-					}
-				}
-				if(!isReturn){
-					isFull=false;
-					break;
-				}
-			}
-			if(isFull){
-				returnOrderInf.setRtFullFlag("Y");
-			}else{
-				returnOrderInf.setRtFullFlag("N");
-			}
-			returnOrderInf.setOrderHeaderId(tdOrderInf.getHeaderId());
-		}
-		
-		
+		returnOrderInf.setOrderHeaderId(tdOrderInf.getHeaderId());
 		returnOrderInf.setOrderNumber(returnNote.getOrderNumber());
 		returnOrderInf.setProdectType(StringTools.getProductStrByOrderNumber(returnNote.getOrderNumber()));
 		returnOrderInf.setDiySiteCode(returnNote.getDiyCode());
 //		returnOrderInf.setRefundType(returnNote);
 		returnOrderInf.setAuditDate(returnNote.getCheckTime());
 		returnOrderInf.setRefundAmount(0.0);
+		returnOrderInf.setRtFullFlag("A");
 		
 		Map<String, Object> map = tdPriceCountService.getBalanceAndCouponWithReturnNoteAndOrder(order, returnNote);
 		Double returnBalance = (Double)map.get(INFConstants.kBalance);
+		
+		@SuppressWarnings("unchecked")
+		List<TdCoupon> coupons = (List<TdCoupon>)map.get(INFConstants.kCouponList);
+		if (type == INFConstants.INF_RETURN_ORDER_SUB_INT && coupons != null && coupons.size() > 0)
+		{
+			for (TdCoupon tdCoupon : coupons) 
+			{
+				TdReturnCouponInf returnCouponInf = new TdReturnCouponInf();
+				returnCouponInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
+				returnCouponInf.setCouponTypeId(StringTools.coupontypeWithCoupon(tdCoupon));
+				returnCouponInf.setSku(tdCoupon.getSku());
+				returnCouponInf.setPrice(tdCoupon.getPrice());
+				returnCouponInf.setQuantity(1L);
+			}
+		}
 		
 		returnOrderInf.setPrepayAmt(returnBalance);
 		returnOrderInf.setAuditDate(new Date());
@@ -733,14 +725,44 @@ public class TdInterfaceService {
 		List<TdOrderGoods> goodsList = returnNote.getReturnGoodsList();
 		if (goodsList != null && goodsList.size() > 0)
 		{
-			for (TdOrderGoods tdOrderGoods : goodsList) 
+			for (TdOrderGoods tdOrderGoods : goodsList)
 			{
+				Integer usedCashProCouponCount = 0;	//电子产品券使用数量
+				Integer usedProCouponCount = 0;		//产品券数量
+				Double usedCashPrice = 0d;			//现金券金额
+				if (type == INFConstants.INF_RETURN_ORDER_SUB_INT && coupons != null && coupons.size() > 0)
+				{
+					for (TdCoupon coupon : coupons)
+					{
+						if (coupon.getSku().equalsIgnoreCase(tdOrderGoods.getSku()) && coupon.getIsBuy())
+						{
+							usedCashProCouponCount++;
+							usedCashPrice += coupon.getPrice();
+						}
+						if (coupon.getSku().equalsIgnoreCase(tdOrderGoods.getSku()) && (coupon.getIsBuy() == null || coupon.getIsBuy() == false))
+						{
+							usedProCouponCount++;
+						}
+					}
+				}
+				Long goodsQuantity = tdOrderGoods.getQuantity();		//退货数量
+				Double singlePrice = tdOrderGoods.getReturnUnitPrice();	//退货单价
+				
+				Double proPrice = usedProCouponCount * singlePrice;	//产品券的金额
+				Double totalPrice = singlePrice * goodsQuantity;		//所有商品的价格
+				
+				Double returnPrice = totalPrice - proPrice;			//去掉产品券金额
+				returnPrice = returnPrice - usedCashProCouponCount * singlePrice;	//减去电子产品券的金额（电子产品券有自身价格，所以减掉数量*退货算的单价）
+				returnPrice = returnPrice + usedCashPrice;			//加上电子产品券实际金额
+				
+				singlePrice = returnPrice / goodsQuantity;				//把总价平摊到所有商品
+				
 				TdReturnGoodsInf goodsInf = new TdReturnGoodsInf();
 				goodsInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
 				goodsInf.setSku(tdOrderGoods.getSku());
 				goodsInf.setQuantity(tdOrderGoods.getQuantity());
 //				goodsInf.setJxPrice(tdOrderGoods.g());
-				goodsInf.setLsPrice(tdOrderGoods.getReturnUnitPrice());
+				goodsInf.setLsPrice(singlePrice);
 				tdReturnGoodsInfService.save(goodsInf);
 			}
 		}

@@ -145,7 +145,8 @@ public class TdLoginController {
 			tdUserService.save(tdUser);
 		}
 		
-		req.getSession().setAttribute("username", null);
+		req.getSession().invalidate();
+//		req.getSession().setAttribute("username", null);
 		return "redirect:/login";
 	}
 }

@@ -67,7 +67,8 @@ import com.ynyes.lyz.util.StringUtils;
 @Service
 public class TdCommonService {
 
-//	static String wmsUrl = "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
+	// static String wmsUrl =
+	// "http://101.200.75.73:8999/WmsInterServer.asmx?wsdl"; // 正式
 	private String wmsUrl = "http://182.92.160.220:8199/WmsInterServer.asmx?wsdl"; // 测试
 	private JaxWsDynamicClientFactory WMSDcf = JaxWsDynamicClientFactory.newInstance();
 	private org.apache.cxf.endpoint.Client WMSClient = WMSDcf.createClient(wmsUrl);
@@ -1277,8 +1278,7 @@ public class TdCommonService {
 
 			// 创建一个变量用于表示立减金额
 			Double subPrice = activity.getSubPrice();
-			if (subPrice == null)
-			{
+			if (subPrice == null) {
 				subPrice = 0d;
 			}
 
@@ -1620,10 +1620,10 @@ public class TdCommonService {
 
 		totalPrice = totalPrice + cashBalanceUsed + unCashBalanceUsed;
 
-		//记录拆单预存款  用于记录分单号时剩余的预存款
-		Double remainCash=0.0;
-		Double remainUnCash=0.0;
-		
+		// 记录拆单预存款 用于记录分单号时剩余的预存款
+		Double remainCash = 0.0;
+		Double remainUnCash = 0.0;
+
 		// 遍历当前生成的订单
 		for (TdOrder order : order_map.values()) {
 			if (null != order) {
@@ -1665,7 +1665,7 @@ public class TdCommonService {
 						TdUser user = tdUserService.findOne(order.getUserId());
 						// 不可提现预存款
 						if (!".00".equals(scale2_uncash)) {
-							
+
 							TdBalanceLog balanceLog = new TdBalanceLog();
 							balanceLog.setUserId(order.getRealUserId());
 							balanceLog.setUsername(order.getUsername());
@@ -1675,7 +1675,7 @@ public class TdCommonService {
 							balanceLog.setFinishTime(new Date());
 							balanceLog.setIsSuccess(true);
 							balanceLog.setReason("订单支付使用");
-							balanceLog.setBalance(user.getUnCashBalance()+remainUnCash);
+							balanceLog.setBalance(user.getUnCashBalance() + remainUnCash);
 							balanceLog.setBalanceType(2L);
 							balanceLog.setOperator(order.getUsername());
 							balanceLog.setOrderNumber(order.getOrderNumber());
@@ -1688,11 +1688,11 @@ public class TdCommonService {
 							balanceLog.setDiySiteId(user.getUpperDiySiteId());
 							balanceLog.setCityId(user.getCityId());
 							tdBalanceLogService.save(balanceLog);
-							remainUnCash+=Double.valueOf(scale2_uncash);
+							remainUnCash += Double.valueOf(scale2_uncash);
 						}
 						// 可提现预存款
 						if (!".00".equals(scale2_cash)) {
-							
+
 							TdBalanceLog balanceLog = new TdBalanceLog();
 							balanceLog.setUserId(order.getRealUserId());
 							balanceLog.setUsername(order.getUsername());
@@ -1702,7 +1702,7 @@ public class TdCommonService {
 							balanceLog.setFinishTime(new Date());
 							balanceLog.setIsSuccess(true);
 							balanceLog.setReason("订单支付使用");
-							balanceLog.setBalance(user.getCashBalance()+remainCash);
+							balanceLog.setBalance(user.getCashBalance() + remainCash);
 							balanceLog.setBalanceType(1L);
 							balanceLog.setOperator(order.getUsername());
 							balanceLog.setOrderNumber(order.getOrderNumber());
@@ -1715,7 +1715,7 @@ public class TdCommonService {
 							balanceLog.setDiySiteId(user.getUpperDiySiteId());
 							balanceLog.setCityId(user.getCityId());
 							tdBalanceLogService.save(balanceLog);
-							remainCash+=Double.valueOf(scale2_cash);
+							remainCash += Double.valueOf(scale2_cash);
 						}
 
 					}
@@ -1757,7 +1757,7 @@ public class TdCommonService {
 		}
 
 		if (!isSend) {
-			this.getCoupon(order_temp);
+			this.getCoupon(order_temp, req);
 		}
 
 		// 删除虚拟订单
@@ -2720,7 +2720,7 @@ public class TdCommonService {
 	 * @author 作者：DengXiao
 	 * @version 创建时间：2016年4月27日下午4:06:40
 	 */
-	public void getCoupon(TdOrder order) {
+	public void getCoupon(TdOrder order, HttpServletRequest req) {
 		if (null == order) {
 			return;
 		}
@@ -2729,6 +2729,11 @@ public class TdCommonService {
 		if (null == isCoupon || !isCoupon) {
 			return;
 		}
+
+		/*
+		 * 在此计算券单价2016-06-24
+		 */
+		Map<Long, Double> unit_map = this.countCouponOrderUnit(req, order);
 
 		// 获取所有购买的商品
 		List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
@@ -2797,7 +2802,13 @@ public class TdCommonService {
 						coupon.setSellerUsername(order.getSellerUsername());
 
 						coupon.setIsBuy(true);
-
+						
+						// 2016-06-24修改
+						if(null != unit_map.get(goodsId)){
+							unit_map.put(goodsId, 0.00);
+						}
+						coupon.setBuyPrice(unit_map.get(goodsId));
+						
 						tdCouponService.save(coupon);
 					}
 				}
@@ -2844,6 +2855,8 @@ public class TdCommonService {
 						coupon.setSellerRealName(order.getSellerRealName());
 						coupon.setSellerUsername(order.getSellerUsername());
 
+						coupon.setBuyPrice(0.00);
+						
 						tdCouponService.save(coupon);
 					}
 				}
@@ -2890,6 +2903,8 @@ public class TdCommonService {
 						coupon.setSellerRealName(order.getSellerRealName());
 						coupon.setSellerUsername(order.getSellerUsername());
 
+						coupon.setBuyPrice(0.00);
+						
 						tdCouponService.save(coupon);
 					}
 				}
@@ -3328,8 +3343,7 @@ public class TdCommonService {
 
 			// 创建一个变量用于表示立减金额
 			Double subPrice = activity.getSubPrice();
-			if (subPrice == null)
-			{
+			if (subPrice == null) {
 				subPrice = 0d;
 			}
 
@@ -3389,5 +3403,48 @@ public class TdCommonService {
 		}
 		return order;
 
+	}
+
+	/**
+	 * 计算券单价的方法
+	 * 
+	 * @author 作者：DengXiao
+	 * @version 版本：2016年6月24日上午11:50:52
+	 */
+	public Map<Long, Double> countCouponOrderUnit(HttpServletRequest req, TdOrder order) {
+		Map<Long, Double> result = new HashMap<>();
+
+		if (null != order && null != order.getIsCoupon() && order.getIsCoupon()) {
+			// 获取订单的商品总价值
+			Double totalGoodsPrice = order.getTotalGoodsPrice();
+			if (null == totalGoodsPrice) {
+				totalGoodsPrice = 0.00;
+			}
+			// 获取订单价格
+			Double totalPrice = order.getTotalPrice();
+			if (null == totalPrice) {
+				totalPrice = 0.00;
+			}
+			// 获取订单商品
+			List<TdOrderGoods> orderGoodsList = order.getOrderGoodsList();
+			if (null != orderGoodsList && orderGoodsList.size() > 0) {
+				for (TdOrderGoods orderGoods : orderGoodsList) {
+					Long goodsId = orderGoods.getGoodsId();
+					Long quantity = orderGoods.getQuantity();
+					TdGoods goods = tdGoodsService.findOne(goodsId);
+					TdPriceListItem priceListItem = this.getGoodsPrice(req, goods);
+					Double goodsPrice = priceListItem.getCouponPrice() * quantity;
+					if (0.00 != totalGoodsPrice.doubleValue()) {
+						Double point = goodsPrice / totalGoodsPrice;
+						Double realGoodsPrice = totalPrice * point;
+						Double realUnit = realGoodsPrice / quantity;
+						BigDecimal b = new BigDecimal(realUnit);
+						realUnit = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+						result.put(goodsId, realUnit);
+					}
+				}
+			}
+		}
+		return result;
 	}
 }
