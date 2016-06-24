@@ -1981,7 +1981,8 @@ public class TdCommonService {
 
 	// 传 order 给 EBS
 	private void sendOrderToEBS(List<TdOrder> orderList) {
-		for (TdOrder tdOrder : orderList) {
+		for (TdOrder tdOrder : orderList)
+		{
 			// if (tdOrder != null && tdOrder.getOrderNumber() != null &&
 			// tdOrder.getOrderNumber().contains("HR"))
 			// {

@@ -790,6 +790,24 @@ public class TdPriceCountService {
 						TdCoupon coupon = tdCouponService.findOne(id);
 						if (null != coupon) {
 							Long goodsId = coupon.getGoodsId();
+							
+							//add 计算电子产品券金额 mdj
+							Boolean isCashPro = coupon.getIsBuy();//判断是否是电子产品券
+							if (isCashPro != null && isCashPro && null != null && null != result.get("cashPro"+goodsId))
+							{
+								Integer cashPorNumber = (Integer)result.get("cashPro" + goodsId);
+								List<Double> doubles = (List<Double>)result.get("cashPrice" + goodsId);
+								doubles.add(coupon.getPrice());
+								result.put("cashPro"+goodsId,cashPorNumber + 1);
+							}
+							if (isCashPro != null && isCashPro && null != null && null == result.get("cashPro"+goodsId))
+							{
+								result.put("cashPro"+goodsId,1);
+								List<Double> doubles = new ArrayList<Double>();
+								result.put("cashPrice" + goodsId, doubles.add(coupon.getPrice()));
+							}
+							//add end
+							
 							if (null != goodsId && null != result.get("pro" + goodsId)) {
 								Integer number = (Integer) result.get("pro" + goodsId);
 								result.put("pro" + goodsId, number + 1);
@@ -1309,8 +1327,16 @@ public class TdPriceCountService {
 								// 开始退还产品券
 								if (total > 0) {
 									if (useProCoupon) {
-										// 查找本产品是否使用了产品券
+										// 查找本产品是否使用了产品券(总的券)
 										Integer useNumber = (Integer) result.get("pro" + goodsId);
+										
+										//使用的电子产品券
+										Integer usedCashProNumber = (Integer) result.get("cashPro" + goodsId);
+										
+										//使用的电子产品金额
+										List<Double> usedCashProPrice = (List<Double>)result.get("cashPrice" + goodsId);
+										
+										
 										if (null != useNumber && useNumber > 0) {
 											// 开始计算退还几张券
 											for (int i = 0; i < useNumber; i++) {
@@ -1346,7 +1372,15 @@ public class TdPriceCountService {
 												// add MDJ
 												proCoupon.setOrderId(order.getId());
 												proCoupon.setOrderNumber(order.getOrderNumber());
+												
+												
+												 Integer unCashProNumber = useNumber - usedCashProNumber;
+												
+												//优先还产品券，最后还电子产品券
+												proCoupon.setIsBuy( (i < unCashProNumber) ? false : true);
+												proCoupon.setPrice(i < unCashProNumber ? null : usedCashProPrice.get(unCashProNumber - i));
 												// add end
+												
 												couponList.add(proCoupon);
 //												tdCouponService.save(proCoupon);
 												total -= unit;

@@ -683,31 +683,7 @@ public class TdInterfaceService {
 		returnOrderInf.setReturnNumber(returnNote.getReturnNumber());
 		returnOrderInf.setReturnDate(returnNote.getOrderTime());
 		TdOrder order= tdOrderService.findByOrderNumber(returnNote.getOrderNumber());
-		if(order!=null){
-			//是否整单退
-			Boolean isFull=true;
-			for (TdOrderGoods orderGood : order.getOrderGoodsList()) {
-				//是否退货
-				Boolean isReturn=false;
-				for(TdOrderGoods returnGood : returnNote.getReturnGoodsList()){
-					if(orderGood.getSku().equals(returnGood.getSku()) && orderGood.getQuantity().equals(returnGood.getQuantity())){
-						isReturn=true;
-					}
-				}
-				if(!isReturn){
-					isFull=false;
-					break;
-				}
-			}
-			if(isFull){
-				returnOrderInf.setRtFullFlag("Y");
-			}else{
-				returnOrderInf.setRtFullFlag("N");
-			}
-			returnOrderInf.setOrderHeaderId(tdOrderInf.getHeaderId());
-		}
-		
-		
+		returnOrderInf.setOrderHeaderId(tdOrderInf.getHeaderId());
 		returnOrderInf.setOrderNumber(returnNote.getOrderNumber());
 		returnOrderInf.setProdectType(StringTools.getProductStrByOrderNumber(returnNote.getOrderNumber()));
 		returnOrderInf.setDiySiteCode(returnNote.getDiyCode());
@@ -717,6 +693,20 @@ public class TdInterfaceService {
 		
 		Map<String, Object> map = tdPriceCountService.getBalanceAndCouponWithReturnNoteAndOrder(order, returnNote);
 		Double returnBalance = (Double)map.get(INFConstants.kBalance);
+		
+		List<TdCoupon> coupons = (List)map.get(INFConstants.kCouponList);
+		if (type == INFConstants.INF_RETURN_ORDER_SUB_INT && coupons != null && coupons.size() > 0)
+		{
+			for (TdCoupon tdCoupon : coupons) 
+			{
+				TdReturnCouponInf returnCouponInf = new TdReturnCouponInf();
+				returnCouponInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
+				returnCouponInf.setCouponTypeId(StringTools.coupontypeWithCoupon(tdCoupon));
+				returnCouponInf.setSku(tdCoupon.getSku());
+				returnCouponInf.setPrice(tdCoupon.getPrice());
+				returnCouponInf.setQuantity(1L);
+			}
+		}
 		
 		returnOrderInf.setPrepayAmt(returnBalance);
 		returnOrderInf.setAuditDate(new Date());
@@ -735,6 +725,20 @@ public class TdInterfaceService {
 		{
 			for (TdOrderGoods tdOrderGoods : goodsList) 
 			{
+				
+				if (type == INFConstants.INF_RETURN_ORDER_SUB_INT && coupons != null && coupons.size() > 0)
+				{
+					Integer userCouponCount = 0;
+					for (TdCoupon coupon : coupons)
+					{
+						if (coupon.getSku().equalsIgnoreCase(tdOrderGoods.getSku()) && coupon.getIsBuy())
+						{
+							userCouponCount++;
+						}
+					}
+				}
+//				tdOrderGoods.getQuantity() -
+				
 				TdReturnGoodsInf goodsInf = new TdReturnGoodsInf();
 				goodsInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
 				goodsInf.setSku(tdOrderGoods.getSku());
