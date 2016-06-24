@@ -104,10 +104,10 @@ function __doPostBack(eventTarget, eventArgument) {
   <tr class="odd_bg">
   	<th align="left" width="10%">申请用户</th>
     <th align="left" width="10%">申请时间</th>
-    <th align="left" width="10%">涉及主单</th>
-    <th align="left" width="10%">分单号</th>
-    <th align="left" width="10%">退货单号</th>
-    <th align="left" width="10%">打款金额</th>
+    <th align="center" width="10%">涉及主单</th>
+    <th align="center" width="10%">分单号</th>
+    <th align="center" width="10%">退货单号</th>
+    <th align="center" width="10%">打款金额</th>
     <th align="left" width="10%">打款方式</th>
     <th align="left" width="10%">是否处理</th>
     <th align="left" width="10%">完成时间</th>
@@ -119,15 +119,19 @@ function __doPostBack(eventTarget, eventArgument) {
             <tr>
             	<td align="left">${item.username!''}</td>
             	<td align="left"><#if item.createTime??>${item.createTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
-            	<td align="left">${item.mainOrderNumber!''}</td>
-            	<td align="left">${item.orderNumber!''}</td>
-            	<td align="left">${item.returnNoteNumber!''}</td>
-            	<td align="left"><#if item.money??>${item.money?string("0.00")}</#if></td>
+            	<td align="left" style="color:green;">${item.mainOrderNumber!''}</td>
+            	<td align="left" style="color:red;">${item.orderNumber!''}</td>
+            	<td align="left" style="color:blue;">${item.returnNoteNumber!''}</td>
+            	<td align="center"><#if item.money??>${item.money?string("0.00")}</#if></td>
             	<td align="left">${item.typeTitle!''}</td>
             	<td align="left"><#if item.isOperated><font color="green">已处理</font><#else><font color="red">未处理</font></#if></td>
             	<td align="left"><#if item.finishTime??>${item.finishTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
-            	<td align="left">
-            		<a href="javascript:__doPostBack("returnMoney",${item.id?c});">已经打款</a>
+            	<td align="center">
+            		<#if item.isOperated>
+            			<a>已经打款</a>
+            		<#else>
+            			<a href="javascript:__doPostBack('returnMoney',${item.id?c});">打款</a>
+            		</#if>
             	</td>
         </#list>
     </#if>
