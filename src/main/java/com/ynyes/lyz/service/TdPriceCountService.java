@@ -796,6 +796,7 @@ public class TdPriceCountService {
 							if (isCashPro != null && isCashPro && null != null && null != result.get("cashPro"+goodsId))
 							{
 								Integer cashPorNumber = (Integer)result.get("cashPro" + goodsId);
+								@SuppressWarnings("unchecked")
 								List<Double> doubles = (List<Double>)result.get("cashPrice" + goodsId);
 								doubles.add(coupon.getPrice());
 								result.put("cashPro"+goodsId,cashPorNumber + 1);
@@ -1332,8 +1333,14 @@ public class TdPriceCountService {
 										
 										//使用的电子产品券
 										Integer usedCashProNumber = (Integer) result.get("cashPro" + goodsId);
+										if (usedCashProNumber == null )
+										{
+											usedCashProNumber = 0;
+										}
+										
 										
 										//使用的电子产品金额
+										@SuppressWarnings("unchecked")
 										List<Double> usedCashProPrice = (List<Double>)result.get("cashPrice" + goodsId);
 										
 										
@@ -1374,7 +1381,7 @@ public class TdPriceCountService {
 												proCoupon.setOrderNumber(order.getOrderNumber());
 												
 												
-												 Integer unCashProNumber = useNumber - usedCashProNumber;
+												Integer unCashProNumber = useNumber - usedCashProNumber;
 												
 												//优先还产品券，最后还电子产品券
 												proCoupon.setIsBuy( (i < unCashProNumber) ? false : true);

@@ -1572,17 +1572,14 @@ public class TdOrderController {
 
 		if (isOnline) {
 			// 判断是否还有未支付的金额
-			if (order_temp.getTotalPrice() > 0) {
+			if (order_temp.getTotalPrice() > 0)
+			{
 				// 修改有效支付时间
 				orderValidTimeSet(req, order_temp);
-				if (null != order_temp.getIsSellerOrder() && order_temp.getIsSellerOrder()) {
-					res.put("message", "支付金额不足");
-				} else {
-					// status的值为3代表需要通过第三方支付
-					res.put("status", 3);
-					res.put("title", payType.getTitle());
-					res.put("order_number", order_temp.getOrderNumber());
-				}
+				// status的值为3代表需要通过第三方支付
+				res.put("status", 3);
+				res.put("title", payType.getTitle());
+				res.put("order_number", order_temp.getOrderNumber());
 				return res;
 			} else {
 				// 设置支付方式为其他
