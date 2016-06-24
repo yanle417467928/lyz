@@ -219,7 +219,9 @@
                                                 <#break>
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                                    <#if item.deliverTypeTitle!='门店自提'>
                                                     <a href="/user/order/map?oid=${item.id?c}">物流详情</a>
+                                                    </#if>
                                                     <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
@@ -310,7 +312,9 @@
                                                 <#break>
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                                    <#if item.deliverTypeTitle!='门店自提'>
                                                     <a href="/user/order/map?oid=${item.id?c}">物流详情</a>
+                                                    </#if>
                                                     <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
@@ -401,7 +405,9 @@
                                                 <#break>
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                                    <#if item.deliverTypeTitle!='门店自提'>
                                                     <a href="/user/order/map?oid=${item.id?c}">物流详情</a>
+                                                    </#if>
                                                     <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
@@ -492,7 +498,9 @@
                                                 <#break>
                                                 <#case 4>
                                                     <a href="/user/order/detail/${item.id?c}">订单详情</a>
+                                                    <#if item.deliverTypeTitle!='门店自提'>
                                                     <a href="/user/order/map?oid=${item.id?c}">物流详情</a>
+                                                    </#if>
                                                     <!-- <a href="javascript:win_yes('是否确定收货？','confirmAccipt(${item.id?c})');">确认收货</a> -->
                                                 <#break>
                                                 <#case 5>
