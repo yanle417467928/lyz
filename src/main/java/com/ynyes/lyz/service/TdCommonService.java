@@ -1573,6 +1573,7 @@ public class TdCommonService {
 			TdOrder order = order_map.get(brandId);
 			if (null != order) {
 				order = this.rePresent(req, order, false);
+				order.setTotalPrice(order.getTotalPrice() - order.getActivitySubPrice());
 				order_map.put(brandId, order);
 			}
 		}
