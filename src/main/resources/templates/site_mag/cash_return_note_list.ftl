@@ -102,7 +102,7 @@ function __doPostBack(eventTarget, eventArgument) {
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ltable">
   <tbody>
   <tr class="odd_bg">
-  	<th align="left" width="10%">申请用户</th>
+  	<th align="center" width="10%">申请用户</th>
     <th align="left" width="10%">申请时间</th>
     <th align="center" width="10%">涉及主单</th>
     <th align="center" width="10%">分单号</th>
@@ -117,7 +117,7 @@ function __doPostBack(eventTarget, eventArgument) {
     <#if cashReturnNote_page??>
         <#list cashReturnNote_page.content as item>
             <tr>
-            	<td align="left">${item.username!''}</td>
+            	<td align="center">${item.username!''}</td>
             	<td align="left"><#if item.createTime??>${item.createTime?string("yyyy-MM-dd HH:mm:ss")}</#if></td>
             	<td align="left" style="color:green;">${item.mainOrderNumber!''}</td>
             	<td align="left" style="color:red;">${item.orderNumber!''}</td>

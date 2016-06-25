@@ -351,7 +351,15 @@ public class TdOrder {
 	// 第三方支付的金额
 	@Column
 	private Double otherPay;
+	
+	//POS支付的金额
+	@Column
+	private Double posPay;
 
+	//现金支付的金额
+	@Column
+	private Double cashPay;
+	
 	// 有效时间(超过有效时间未支付将重新计算价格)
 	@Column
 	private Date validTime;
@@ -1024,5 +1032,21 @@ public class TdOrder {
 
 	public void setActivitySubPrice(Double activitySubPrice) {
 		this.activitySubPrice = activitySubPrice;
+	}
+
+	public Double getPosPay() {
+		return posPay;
+	}
+
+	public void setPosPay(Double posPay) {
+		this.posPay = posPay;
+	}
+
+	public Double getCashPay() {
+		return cashPay;
+	}
+
+	public void setCashPay(Double cashPay) {
+		this.cashPay = cashPay;
 	}
 }

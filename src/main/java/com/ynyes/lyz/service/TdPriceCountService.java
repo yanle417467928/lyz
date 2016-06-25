@@ -790,24 +790,25 @@ public class TdPriceCountService {
 						TdCoupon coupon = tdCouponService.findOne(id);
 						if (null != coupon) {
 							Long goodsId = coupon.getGoodsId();
-							
-							//add 计算电子产品券金额 mdj
-							Boolean isCashPro = coupon.getIsBuy();//判断是否是电子产品券
-							if (isCashPro != null && isCashPro && null != null && null != result.get("cashPro"+goodsId))
-							{
-								Integer cashPorNumber = (Integer)result.get("cashPro" + goodsId);
-								List<Double> doubles = (List<Double>)result.get("cashPrice" + goodsId);
+
+							// add 计算电子产品券金额 mdj
+							Boolean isCashPro = coupon.getIsBuy();// 判断是否是电子产品券
+							if (isCashPro != null && isCashPro && null != null
+									&& null != result.get("cashPro" + goodsId)) {
+								Integer cashPorNumber = (Integer) result.get("cashPro" + goodsId);
+								@SuppressWarnings("unchecked")
+								List<Double> doubles = (List<Double>) result.get("cashPrice" + goodsId);
 								doubles.add(coupon.getPrice());
-								result.put("cashPro"+goodsId,cashPorNumber + 1);
+								result.put("cashPro" + goodsId, cashPorNumber + 1);
 							}
-							if (isCashPro != null && isCashPro && null != null && null == result.get("cashPro"+goodsId))
-							{
-								result.put("cashPro"+goodsId,1);
+							if (isCashPro != null && isCashPro && null != null
+									&& null == result.get("cashPro" + goodsId)) {
+								result.put("cashPro" + goodsId, 1);
 								List<Double> doubles = new ArrayList<Double>();
 								result.put("cashPrice" + goodsId, doubles.add(coupon.getPrice()));
 							}
-							//add end
-							
+							// add end
+
 							if (null != goodsId && null != result.get("pro" + goodsId)) {
 								Integer number = (Integer) result.get("pro" + goodsId);
 								result.put("pro" + goodsId, number + 1);
@@ -846,6 +847,16 @@ public class TdPriceCountService {
 			Boolean useCashCoupon = (Boolean) result.get("useCashCoupon");
 
 			Double cashTotal = (Double) result.get("cashTotal");
+			// 获取订单使用的总不可提现余额
+			Double unCashBalanceUsed = order.getUnCashBalanceUsed();
+			// 获取用户使用的可提现余额
+			Double cashBalanceUsed = order.getCashBalanceUsed();
+			// 获取用户第三方支付的金额
+			Double otherPay = order.getOtherPay();
+			// 获取用户支付的现金
+			Double cashPay = order.getCashPay();
+			// 获取用户支付的POS
+			Double posPay = order.getPosPay();
 
 			// 获取一年后的时间（新的券的有效时间）
 			Calendar cal = Calendar.getInstance();
@@ -890,6 +901,7 @@ public class TdPriceCountService {
 											// 开始计算退还几张券
 											for (int i = 0; i < useNumber; i++) {
 												if (total < unit) {
+													result.put("pro" + goodsId, useNumber - i + 1);
 													break;
 												}
 												TdCoupon proCoupon = new TdCoupon();
@@ -970,6 +982,7 @@ public class TdPriceCountService {
 										tdCouponService.save(cashCoupon);
 
 										total -= cashPrice;
+										result.put("cashTotal", cashTotal - cashPrice);
 
 									}
 								}
@@ -977,8 +990,7 @@ public class TdPriceCountService {
 								if (total > 0) {
 									// 定义实际退还的不可提现余额
 									Double uncashBalance = 0.00;
-									// 获取订单使用的总不可提现余额
-									Double unCashBalanceUsed = order.getUnCashBalanceUsed();
+
 									if (null == unCashBalanceUsed) {
 										unCashBalanceUsed = 0.00;
 									}
@@ -994,44 +1006,42 @@ public class TdPriceCountService {
 									user.setUnCashBalance(user.getUnCashBalance() + uncashBalance);
 									user.setBalance(user.getBalance() + uncashBalance);
 									// 添加用于余额变更明细
-									if (uncashBalance > 0)
-									{
-									TdBalanceLog balanceLog = new TdBalanceLog();
-									balanceLog.setUserId(user.getId());
-									balanceLog.setUsername(user.getUsername());
-									balanceLog.setMoney(uncashBalance);
-									balanceLog.setType(4L);
-									balanceLog.setCreateTime(new Date());
-									balanceLog.setFinishTime(new Date());
-									balanceLog.setIsSuccess(true);
-									balanceLog.setBalanceType(4L);
-									balanceLog.setBalance(user.getUnCashBalance());
-									balanceLog.setOperator(user.getUsername());
-									try {
-										balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
-									} catch (UnknownHostException e) {
-										System.out.println("获取ip地址报错");
-										e.printStackTrace();
-									}
-									balanceLog.setReason("订单退货退款");
-									balanceLog.setOrderNumber(order.getOrderNumber());
-									balanceLog.setDiySiteId(user.getUpperDiySiteId());
-									balanceLog.setCityId(user.getCityId());
-									tdBalanceLogService.save(balanceLog);
+									if (uncashBalance > 0) {
+										TdBalanceLog balanceLog = new TdBalanceLog();
+										balanceLog.setUserId(user.getId());
+										balanceLog.setUsername(user.getUsername());
+										balanceLog.setMoney(uncashBalance);
+										balanceLog.setType(4L);
+										balanceLog.setCreateTime(new Date());
+										balanceLog.setFinishTime(new Date());
+										balanceLog.setIsSuccess(true);
+										balanceLog.setBalanceType(4L);
+										balanceLog.setBalance(user.getUnCashBalance());
+										balanceLog.setOperator(user.getUsername());
+										try {
+											balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+										} catch (UnknownHostException e) {
+											System.out.println("获取ip地址报错");
+											e.printStackTrace();
+										}
+										balanceLog.setReason("订单退货退款");
+										balanceLog.setOrderNumber(order.getOrderNumber());
+										balanceLog.setDiySiteId(user.getUpperDiySiteId());
+										balanceLog.setCityId(user.getCityId());
+										tdBalanceLogService.save(balanceLog);
 									}
 									// 判断是否剩余部分金额需要退还
 									total -= uncashBalance;
+									unCashBalanceUsed -= uncashBalance;
 								}
 
 								// 如果还有剩余的金额没有退还，则开始退还可提现余额
 								if (total > 0) {
-									// 定义一个变量用于获取用户使用的可提现余额
-									Double cashBalance = 0.00;
-									// 获取用户使用的可提现余额
-									Double cashBalanceUsed = order.getCashBalanceUsed();
 									if (null == cashBalanceUsed) {
 										cashBalanceUsed = 0.00;
 									}
+									// 定义一个变量用于获取用户使用的可提现余额
+									Double cashBalance = 0.00;
 									// 如果需要退还的金额小于用户使用的可提现余额，则将所有的金额以可提现余额的形式退还
 									if (total < cashBalanceUsed) {
 										cashBalance = total;
@@ -1043,86 +1053,180 @@ public class TdPriceCountService {
 									user.setCashBalance(user.getCashBalance() + cashBalance);
 									user.setBalance(user.getBalance() + cashBalance);
 									// 记录余额变更明细
-									if (cashBalance > 0)
-									{
-									TdBalanceLog balanceLog = new TdBalanceLog();
-									balanceLog.setUserId(user.getId());
-									balanceLog.setUsername(user.getUsername());
-									balanceLog.setMoney(cashBalance);
-									balanceLog.setType(4L);
-									balanceLog.setCreateTime(new Date());
-									balanceLog.setFinishTime(new Date());
-									balanceLog.setIsSuccess(true);
-									balanceLog.setBalanceType(3L);
-									balanceLog.setBalance(user.getCashBalance());
-									balanceLog.setOperator(user.getUsername());
-									try {
-										balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
-									} catch (UnknownHostException e) {
-										System.out.println("获取ip地址报错");
-										e.printStackTrace();
-									}
-									balanceLog.setReason("订单退货退款");
-									balanceLog.setOrderNumber(order.getOrderNumber());
-									balanceLog.setDiySiteId(user.getUpperDiySiteId());
-									balanceLog.setCityId(user.getCityId());
-									tdBalanceLogService.save(balanceLog);
+									if (cashBalance > 0) {
+										TdBalanceLog balanceLog = new TdBalanceLog();
+										balanceLog.setUserId(user.getId());
+										balanceLog.setUsername(user.getUsername());
+										balanceLog.setMoney(cashBalance);
+										balanceLog.setType(4L);
+										balanceLog.setCreateTime(new Date());
+										balanceLog.setFinishTime(new Date());
+										balanceLog.setIsSuccess(true);
+										balanceLog.setBalanceType(3L);
+										balanceLog.setBalance(user.getCashBalance());
+										balanceLog.setOperator(user.getUsername());
+										try {
+											balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
+										} catch (UnknownHostException e) {
+											System.out.println("获取ip地址报错");
+											e.printStackTrace();
+										}
+										balanceLog.setReason("订单退货退款");
+										balanceLog.setOrderNumber(order.getOrderNumber());
+										balanceLog.setDiySiteId(user.getUpperDiySiteId());
+										balanceLog.setCityId(user.getCityId());
+										tdBalanceLogService.save(balanceLog);
 									}
 									total -= cashBalance;
+									cashBalanceUsed -= cashBalance;
 								}
 								// 如果还剩余部分金额没有退还，则需要根据支付方式进行第三方退还
 								if (total > 0) {
-									// 获取用户的支付方式
-									Long payTypeId = order.getPayTypeId();
-									TdPayType payType = tdPayTypeService.findOne(payTypeId);
-									// 定义一个变量表示退款金额数
-									Double otherReturn = 0.00;
-									// 获取用户第三方支付的总额
-									Double otherPay = order.getOtherPay();
-									if (null == otherPay) {
-										otherPay = 0.00;
-									}
 
-									if (total < otherPay) {
-										otherReturn = total;
+									// 判断用户是否使用了第三方支付
+									if (null != otherPay && otherPay > 0.00) {
+										// 获取用户的支付方式
+										Long payTypeId = order.getPayTypeId();
+										TdPayType payType = tdPayTypeService.findOne(payTypeId);
+										// 定义一个变量表示退款金额数
+										Double otherReturn = 0.00;
+										if (total < otherPay) {
+											otherReturn = total;
+										} else {
+											otherReturn = otherPay;
+										}
+
+										if (otherReturn > 0.00) {
+											// 根据退款方式和退货金额生成一个资金退还申请单据
+											TdCashReturnNote note = new TdCashReturnNote();
+											note.setCreateTime(new Date());
+											note.setMoney(otherReturn);
+											// 如果支付方式属于线上支付，那么一定是支付宝、微信、银行卡的一种，则按照正常逻辑处理
+											// 当订单价格为0 支付方式为其他 payType值为null
+											note.setTypeId(payTypeId);
+											note.setTypeTitle(payType.getTitle());
+											note.setOrderNumber(order.getOrderNumber());
+											note.setMainOrderNumber(order.getMainOrderNumber());
+											note.setReturnNoteNumber(returnNoteNumber);
+											note.setUserId(user.getId());
+											note.setUsername(user.getUsername());
+											note.setIsOperated(false);
+											note = tdCashReturnNoteService.save(note);
+
+											otherPay -= otherReturn;
+										}
+										// ----------在此处理退款申请单的一系列操作动作-------------------
+
 									} else {
-										otherReturn = otherPay;
-									}
+										if (null == cashPay) {
+											cashPay = 0.00;
+										}
 
-									// 根据退款方式和退货金额生成一个资金退还申请单据
-									TdCashReturnNote note = new TdCashReturnNote();
-									note.setCreateTime(new Date());
-									note.setMoney(otherReturn);
+										Double cashReturn = 0.00;
+
+										if (total < cashPay) {
+											cashReturn = total;
+										} else {
+											cashReturn = cashPay;
+										}
+
+										if (cashReturn > 0.00) {
+											// 根据退款方式和退货金额生成一个资金退还申请单据
+											TdCashReturnNote note = new TdCashReturnNote();
+											note.setCreateTime(new Date());
+											note.setMoney(cashReturn);
+											note.setTypeId(-1L);
+											note.setTypeTitle("现金");
+											note.setOrderNumber(order.getOrderNumber());
+											note.setMainOrderNumber(order.getMainOrderNumber());
+											note.setReturnNoteNumber(returnNoteNumber);
+											note.setUserId(user.getId());
+											note.setUsername(user.getUsername());
+											note.setIsOperated(false);
+											note = tdCashReturnNoteService.save(note);
+
+											total -= cashReturn;
+											cashPay -= cashReturn;
+										}
+										// 退还现金后还剩余未退还的金额，就退还POS
+										if (total > 0) {
+											Double posReturn = 0.00;
+
+											if (total < posPay) {
+												posReturn = total;
+											} else {
+												posReturn = posPay;
+											}
+
+											if (posReturn > 0.00) {
+												// 根据退款方式和退货金额生成一个资金退还申请单据
+												TdCashReturnNote note01 = new TdCashReturnNote();
+												note01.setCreateTime(new Date());
+												note01.setMoney(posReturn);
+												// 如果支付方式属于线上支付，那么一定是支付宝、微信、银行卡的一种，则按照正常逻辑处理
+												// 当订单价格为0 支付方式为其他 payType值为null
+												note01.setTypeId(-2L);
+												note01.setTypeTitle("POS");
+												note01.setOrderNumber(order.getOrderNumber());
+												note01.setMainOrderNumber(order.getMainOrderNumber());
+												note01.setReturnNoteNumber(returnNoteNumber);
+												note01.setUserId(user.getId());
+												note01.setUsername(user.getUsername());
+												note01.setIsOperated(false);
+												note01 = tdCashReturnNoteService.save(note01);
+
+												posPay -= posReturn;
+											}
+										}
+									}
+									//
+									//
+									//
+									//
+									// // 获取用户第三方支付的总额
+									// if (null == otherPay) {
+									// otherPay = 0.00;
+									// }
+									//
+									//
+									//
+									// // 根据退款方式和退货金额生成一个资金退还申请单据
+									// TdCashReturnNote note = new
+									// TdCashReturnNote();
+									// note.setCreateTime(new Date());
+									// note.setMoney(otherReturn);
+									// //
 									// 如果支付方式属于线上支付，那么一定是支付宝、微信、银行卡的一种，则按照正常逻辑处理
-									//当订单价格为0 支付方式为其他  payType值为null 
-									if (payType!=null && null != payType.getIsOnlinePay() && payType.getIsOnlinePay()) {
-										note.setTypeId(payTypeId);
-										note.setTypeTitle(payType.getTitle());
-									} else {
-										// 如果支付方式是线下支付，则涉及到真实的支付方式包含现金和POS（甚至混用）
-										// 目前不知道现金额度和POS额度的字段，所以无法添加相关逻辑
-										// ---------------------在此添加现金和POS的逻辑------------------
-
-										//此处逻辑及设置typeId和typeTitle的值
-										
-										
-										// ---------------------现金和POS的逻辑结束---------------------
-									}
-									note.setOrderNumber(order.getOrderNumber());
-									note.setMainOrderNumber(order.getMainOrderNumber());
-									note.setReturnNoteNumber(returnNoteNumber);
-									note.setUserId(user.getId());
-									note.setUsername(user.getUsername());
-									note.setIsOperated(false);
-									note = tdCashReturnNoteService.save(note);
-
+									// //当订单价格为0 支付方式为其他 payType值为null
+									// if (payType!=null && null !=
+									// payType.getIsOnlinePay() &&
+									// payType.getIsOnlinePay()) {
+									// note.setTypeId(payTypeId);
+									// note.setTypeTitle(payType.getTitle());
+									// } else {
+									// // 如果支付方式是线下支付，则涉及到真实的支付方式包含现金和POS（甚至混用）
+									// // 目前不知道现金额度和POS额度的字段，所以无法添加相关逻辑
+									// //
+									// ---------------------在此添加现金和POS的逻辑------------------
+									//
+									// //此处逻辑及设置typeId和typeTitle的值
+									//
+									//
+									// //
+									// ---------------------现金和POS的逻辑结束---------------------
+									// }
+									// note.setOrderNumber(order.getOrderNumber());
+									// note.setMainOrderNumber(order.getMainOrderNumber());
+									// note.setReturnNoteNumber(returnNoteNumber);
+									// note.setUserId(user.getId());
+									// note.setUsername(user.getUsername());
+									// note.setIsOperated(false);
+									// note =
+									// tdCashReturnNoteService.save(note);
+									//
+									// //
 									// ----------在此处理退款申请单的一系列操作动作-------------------
 								}
-								/*
-								 * 退还第三方支付的钱之后，不再做任何退款处理 实际过程中可能会出现剩余金额还未退还的情况
-								 * 是因为用户本身可能未支付完订单的总额（门店确认欠款的情况）
-								 * 所以在退款界面看到的退款金额和实际退还给用户的金额是不一致的
-								 */
 							}
 						}
 					}
@@ -1131,9 +1235,6 @@ public class TdPriceCountService {
 		}
 		tdUserService.save(user);
 	}
-	
-	
-	
 
 	/**
 	 * 根据WMS返回信息退还券和钱
@@ -1236,53 +1337,46 @@ public class TdPriceCountService {
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * 
-	 * @param order 订单
+	 * @param order
+	 *            订单
 	 * @param returnNote
 	 * @return resultMap 包含券和预存款
 	 */
-	public Map<String, Object> getBalanceAndCouponWithReturnNoteAndOrder(TdOrder order,TdReturnNote returnNote)
-	{
-		Map<String, Object> resultMap = new HashMap<String,Object>();
-		if (order == null || returnNote == null)
-		{
+	public Map<String, Object> getBalanceAndCouponWithReturnNoteAndOrder(TdOrder order, TdReturnNote returnNote) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		if (order == null || returnNote == null) {
 			return null;
 		}
-		
-		//券
+
+		// 券
 		List<TdCoupon> couponList = new ArrayList<TdCoupon>();
-		
-		//预存款
+
+		// 预存款
 		Double returnBalance = 0.0;
-		
+
 		String params = "";
-		
-		
-		if (null != returnNote)
-		{
+
+		if (null != returnNote) {
 			List<TdOrderGoods> returnGoodsList = returnNote.getReturnGoodsList();
-			if (null != returnGoodsList && returnGoodsList.size() > 0)
-			{
-				for (TdOrderGoods goods : returnGoodsList) 
-				{
-					if (null != goods && null != goods.getGoodsId() && null != goods.getQuantity() && null != goods.getPrice())
-					{
+			if (null != returnGoodsList && returnGoodsList.size() > 0) {
+				for (TdOrderGoods goods : returnGoodsList) {
+					if (null != goods && null != goods.getGoodsId() && null != goods.getQuantity()
+							&& null != goods.getPrice()) {
 						params += goods.getGoodsId() + "-" + goods.getQuantity() + "-" + goods.getPrice() + ",";
 					}
 				}
 			}
 		}
-		
+
 		Long userId = order.getRealUserId();
 		TdUser user = tdUserService.findOne(userId);
 		String cityName = user.getCityName();
 		TdCity city = tdCityService.findByCityName(cityName);
 		if (null != order && null != params && !"".equals(params)
-				&& (null != order.getIsRefund() && order.getIsRefund()))
-		{
+				&& (null != order.getIsRefund() && order.getIsRefund())) {
 			Map<String, Object> result = this.countCouponCondition(order.getId());
 
 			Boolean useProCoupon = (Boolean) result.get("useProCoupon");
@@ -1329,14 +1423,18 @@ public class TdPriceCountService {
 									if (useProCoupon) {
 										// 查找本产品是否使用了产品券(总的券)
 										Integer useNumber = (Integer) result.get("pro" + goodsId);
-										
-										//使用的电子产品券
+
+										// 使用的电子产品券
 										Integer usedCashProNumber = (Integer) result.get("cashPro" + goodsId);
-										
-										//使用的电子产品金额
-										List<Double> usedCashProPrice = (List<Double>)result.get("cashPrice" + goodsId);
-										
-										
+										if (usedCashProNumber == null) {
+											usedCashProNumber = 0;
+										}
+
+										// 使用的电子产品金额
+										@SuppressWarnings("unchecked")
+										List<Double> usedCashProPrice = (List<Double>) result
+												.get("cashPrice" + goodsId);
+
 										if (null != useNumber && useNumber > 0) {
 											// 开始计算退还几张券
 											for (int i = 0; i < useNumber; i++) {
@@ -1372,17 +1470,17 @@ public class TdPriceCountService {
 												// add MDJ
 												proCoupon.setOrderId(order.getId());
 												proCoupon.setOrderNumber(order.getOrderNumber());
-												
-												
-												 Integer unCashProNumber = useNumber - usedCashProNumber;
-												
-												//优先还产品券，最后还电子产品券
-												proCoupon.setIsBuy( (i < unCashProNumber) ? false : true);
-												proCoupon.setPrice(i < unCashProNumber ? null : usedCashProPrice.get(unCashProNumber - i));
+
+												Integer unCashProNumber = useNumber - usedCashProNumber;
+
+												// 优先还产品券，最后还电子产品券
+												proCoupon.setIsBuy((i < unCashProNumber) ? false : true);
+												proCoupon.setPrice(i < unCashProNumber ? null
+														: usedCashProPrice.get(unCashProNumber - i));
 												// add end
-												
+
 												couponList.add(proCoupon);
-//												tdCouponService.save(proCoupon);
+												// tdCouponService.save(proCoupon);
 												total -= unit;
 											}
 										}
@@ -1428,7 +1526,7 @@ public class TdPriceCountService {
 										cashCoupon.setOrderNumber(order.getOrderNumber());
 										// add end
 										couponList.add(cashCoupon);
-//										tdCouponService.save(cashCoupon);
+										// tdCouponService.save(cashCoupon);
 
 										total -= cashPrice;
 
@@ -1471,7 +1569,7 @@ public class TdPriceCountService {
 									} else {
 										cashBalance = cashBalanceUsed;
 									}
-									
+
 									returnBalance += cashBalance;
 									total -= cashBalance;
 								}
@@ -1499,8 +1597,9 @@ public class TdPriceCountService {
 									note.setCreateTime(new Date());
 									note.setMoney(otherReturn);
 									// 如果支付方式属于线上支付，那么一定是支付宝、微信、银行卡的一种，则按照正常逻辑处理
-									//当订单价格为0 支付方式为其他  payType值为null 
-									if (payType!=null && null != payType.getIsOnlinePay() && payType.getIsOnlinePay()) {
+									// 当订单价格为0 支付方式为其他 payType值为null
+									if (payType != null && null != payType.getIsOnlinePay()
+											&& payType.getIsOnlinePay()) {
 										note.setTypeId(payTypeId);
 										note.setTypeTitle(payType.getTitle());
 									} else {
@@ -1508,9 +1607,8 @@ public class TdPriceCountService {
 										// 目前不知道现金额度和POS额度的字段，所以无法添加相关逻辑
 										// ---------------------在此添加现金和POS的逻辑------------------
 
-										//此处逻辑及设置typeId和typeTitle的值
-										
-										
+										// 此处逻辑及设置typeId和typeTitle的值
+
 										// ---------------------现金和POS的逻辑结束---------------------
 									}
 									note.setOrderNumber(order.getOrderNumber());
@@ -1519,7 +1617,8 @@ public class TdPriceCountService {
 									note.setUserId(user.getId());
 									note.setUsername(user.getUsername());
 									note.setIsOperated(false);
-//									note = tdCashReturnNoteService.save(note);
+									// note =
+									// tdCashReturnNoteService.save(note);
 
 									// ----------在此处理退款申请单的一系列操作动作-------------------
 								}
@@ -1534,15 +1633,13 @@ public class TdPriceCountService {
 				}
 			}
 		}
-		if (couponList != null && couponList.size() > 0) 
-		{
+		if (couponList != null && couponList.size() > 0) {
 			resultMap.put(INFConstants.kCouponList, couponList);
 		}
-		if (returnBalance > 0)
-		{
+		if (returnBalance > 0) {
 			resultMap.put(INFConstants.kBalance, returnBalance);
 		}
-		
+
 		return resultMap;
 	}
 
