@@ -14,6 +14,7 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -74,6 +75,7 @@ import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
+import com.ynyes.lyz.service.TdOwnMoneyRecordService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReChargeService;
@@ -191,6 +193,7 @@ public class TdUserController {
 	
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
+	
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1485,7 +1488,7 @@ public class TdUserController {
 	}
 
 	/**
-	 * 跳转到订单详情的方法 增加退货单信息 zp
+	 * 跳转到订单详情的方法 增加退货单信息  计算实付款zp
 	 * 
 	 * @author dengxiao
 	 */
@@ -1543,7 +1546,45 @@ public class TdUserController {
 				map.addAttribute("returnNote", returnNoteList.get(0));
 			}
 		}
-
+		
+		//代付款状态的订单 使用产品劵只记录了产品劵id
+		String productCouponIds= order.getProductCouponId();
+		//判断不为空
+		if(StringUtils.isNotBlank(productCouponIds)){
+			String couponTitles="";
+			String[] coupons= productCouponIds.split(",");
+			for (String couponStrId : coupons) {
+				Long couponId = Long.parseLong(couponStrId);
+				TdCoupon coupon= tdCouponService.findOne(couponId);
+				if(coupon!=null && StringUtils.isNotBlank(coupon.getTypeTitle())){
+					couponTitles+=coupon.getTypeTitle()+", ";
+				}
+			}
+			map.addAttribute("couponTitles", couponTitles);
+		}
+		
+		//计算实付款
+		Double totolPayment =0.0;
+		//预存款
+		if(order.getActualPay()!=null){
+			totolPayment+=order.getActualPay();
+		}
+		//第三方支付
+		if(order.getOtherPay()!=null){
+			totolPayment+=order.getOtherPay();
+		}
+		//促销立减
+		if(order.getActivitySubPrice()!=null){
+			totolPayment+=order.getActivitySubPrice();
+		}
+		//保存实付款
+		map.addAttribute("totolPayment", totolPayment);
+		
+//		//查询代收款信息
+//		TdOwnMoneyRecordService
+//		
+//		
+		
 		map.addAttribute("orderId", id);
 		return "/client/user_order_detail";
 	}

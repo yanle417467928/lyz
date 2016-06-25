@@ -82,6 +82,16 @@ public class TdOwnMoneyRecord {
     @Column
     private Double backPos;
     
+    //收款时间
+    @Column
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date payTime;
+    
+    //还款时间
+    @Column
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date ownTime;
+    
 
 	public Boolean getIspassed() {
 		return ispassed;

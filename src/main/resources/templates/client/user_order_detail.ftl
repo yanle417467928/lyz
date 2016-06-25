@@ -11,6 +11,23 @@
         <link rel="stylesheet" type="text/css" href="/client/css/my_base.css"/>
         <link rel="stylesheet" type="text/css" href="/client/css/x_common.css"/>
         <link rel="stylesheet" type="text/css" href="/client/css/x_order_manage.css"/>
+        <style type="text/css">
+        	.order_row{
+        	    height: 30px;
+			    line-height: 30px;
+			    color: #999;
+			    text-indent: 2%;
+        	}
+        	.order_right{
+	        	float: right;
+	   			text-align: right;
+	   			margin-right: 2%;
+	   			color: #cc1421;
+        	}
+        	.order_border{
+        		border-bottom: 1px dashed #ddd;
+        	}
+        </style>
     </head>
     <body class="bgc-f3f4f6">
         <!-- 头部 -->
@@ -125,14 +142,24 @@
                     		<li class="li5">退货金额：<div class="div1"><p>￥<span><#if returnNote.turnPrice??>${returnNote.turnPrice?string("0.00")}<#else>0.00</#if></span></p></div></li>
                     	</#if>
                     </#if>
-                    
-                    <li class="li5">支付方式：${order.payTypeTitle!''}<div class="div1">实付款：<p>￥<span><#if order.actualPay??>${order.actualPay?string("0.00")}<#else>0.00</#if></span></p></div></li>
+                    <#-- 代付款订单和取消订单特殊处理 -->
+                    <#if order.statusId==2 || order.statusId==7>
+                    <li class="li5">支付方式：${order.payTypeTitle!''}<div class="div1">商品总额：<p>￥<span><#if order.totalGoodsPrice??>${order.totalGoodsPrice?string("0.00")}<#else>0.00</#if></span></p></div></li>
+                    <#else>
+                    <li class="li5">支付方式：${order.payTypeTitle!''}<div class="div1">订单总额：<p>￥<span><#if order.totalPrice??>${order.totalPrice?string("0.00")}<#else>0.00</#if></span></p></div></li>
+                    </#if>
                     <li class="li5">是否代下单：<#if order.isSellerOrder??&&order.isSellerOrder>是<#else>否</#if></li>
                     <li class="li5" style="overflow: visible;height: auto;">订单备注：${order.remark!''}</li>
                     <li class="li5">服务导购：${order.sellerRealName!''}</li>
                     <li class="li5">导购电话：${order.sellerUsername!''}</li>
                     <li class="li5">使用现金券：<div class="div1">券金额：<p>￥<span><#if order.cashCoupon??>${order.cashCoupon?string("0.00")}<#else>0.00</#if></span></p></div></li>
+                    <#-- 代付款订单和取消订单特殊处理 -->
+                    <#if order.statusId==2 || order.statusId==7>
+                    <li class="li6"><span>使用产品券：</span><div class="div1"><p>${couponTitles!''}</p></div></li>
+                    <#else>
                     <li class="li6"><span>使用产品券：</span><div class="div1"><p>${order.productCoupon!''}</p></div></li>
+                    </#if>
+                    
                     <style type="text/css">
                         .li6 {
                             height: auto;
@@ -147,10 +174,33 @@
                		<li class="li5">配送仓库：<#if tdWareHouse??>${tdWareHouse.whName!''}</#if></li>
                 </ol>   
             </article>
+            <article class="order-list">
+            	<#-- 代付款订单和取消订单特殊处理 -->
+                <#if order.statusId==2 || order.statusId==7>
+            		<#if order.actualPay?? && order.actualPay!=0>
+	            	<div class="order_row">预存款<div class="order_right">${order.actualPay?string("currency") }</div></div>
+	            	</#if>
+            	<#else>
+	            	<#if order.cashBalanceUsed?? && order.cashBalanceUsed!=0>
+	            	<div class="order_row">可提现预存款<div class="order_right">${order.cashBalanceUsed?string("currency") }</div></div>
+	            	</#if>
+	           		<#if order.unCashBalanceUsed?? && order.unCashBalanceUsed!=0>
+	           		<div class="order_row">不可提现预存款<div class="order_right">${order.unCashBalanceUsed?string("currency") }</div></div>
+	           		</#if>
+            	</#if>
+            	<#if order.activitySubPrice?? && order.activitySubPrice!=0>
+	           	<div class="order_row">促销扣减<div class="order_right">${order.activitySubPrice?string("currency") }</div></div>
+	           	</#if>
+	           	<#if order.otherPay?? && order.otherPay!=0>
+	           	<div class="order_row">第三方支付<div class="order_right">${order.otherPay?string("currency") }</div></div>
+	           	</#if>
+           		<div class="order_border"></div>
+           		<div class="order_row">实付款<div class="order_right">${totolPayment?string("currency") }</div></div>
+            </article>
             <!-- 订单详情 END -->
                     
             <!-- 配送信息 -->
-            <article class="delivery-info">
+            <article class="delivery-info" style="margin-bottom:60px;">
                 <#if order.statusId==4>
                 <div class="title">
                     <span>配送信息</span>

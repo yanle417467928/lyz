@@ -1068,23 +1068,23 @@ public class TdDeliveryIndexController {
 
 	
 	/**
-	 * 修改订单实付款
+	 * 修改订单实付款 (有问题的方法)
 	 * @param mainOrderNumber 主单号
 	 * @param payed 代收款
 	 */
 	private void modifyPayment(String mainOrderNumber,Double payed){
-		// 所有子单都处理
-		if (StringUtils.isNotBlank(mainOrderNumber)) {
-			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(mainOrderNumber);
-
-			if (null != orderList) {
-				for (TdOrder subOrder : orderList) {
-					//修改实付款 
-					subOrder.setActualPay(subOrder.getActualPay()==null?0:subOrder.getActualPay() + payed);
-					subOrder = tdOrderService.save(subOrder);
-				}
-			}
-		}
+//		// 所有子单都处理
+//		if (StringUtils.isNotBlank(mainOrderNumber)) {
+//			List<TdOrder> orderList = tdOrderService.findByMainOrderNumberIgnoreCase(mainOrderNumber);
+//
+//			if (null != orderList) {
+//				for (TdOrder subOrder : orderList) {
+//					//修改实付款 
+//					subOrder.setActualPay(subOrder.getActualPay()==null?0:subOrder.getActualPay() + payed);
+//					subOrder = tdOrderService.save(subOrder);
+//				}
+//			}
+//		}
 	}
 	
 	/**
