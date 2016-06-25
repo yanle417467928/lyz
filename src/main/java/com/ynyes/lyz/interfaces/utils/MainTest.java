@@ -1,11 +1,19 @@
 package com.ynyes.lyz.interfaces.utils;
 
+
+import com.ynyes.lyz.service.TdOrderService;
+
 public class MainTest {
 	
+//	@Autowired
+//	TdOrderService tdOrderService;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		try {
+			TdOrderService tdOrderService = new TdOrderService();
+			
+			tdOrderService.findByOrderNumber("123");
 			// 测试
 //			TdInterfaceService.getCall();
 //			String doubleStr = "80.00";

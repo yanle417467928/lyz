@@ -49,7 +49,7 @@ public interface TdDiySiteRepo
 	Page<TdDiySite> findByRegionIdAndIsEnableTrueOrderBySortIdAsc(Long regionId, Pageable page);
 
 	Page<TdDiySite> findByCityIdAndIsEnableTrueOrderBySortIdAsc(Long cityId, Pageable page);
-
+    //  这个方法有问题 不使用
 	TdDiySite findByTitleAndIsEnableTrue(String title);
 
 	/**

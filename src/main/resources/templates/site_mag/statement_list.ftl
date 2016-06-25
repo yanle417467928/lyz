@@ -163,11 +163,11 @@ function downloaddate(type)
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ltable">
 <tbody>
     <tr class="odd_bg">
-     <th align="center">
+     <th align="center" width="10%">
             主单号
         </th>
         <#if statusId!=1>
-        <th align="center">
+        <th align="center" width="10%">
             分单号
         </th>
         </#if>
@@ -218,7 +218,11 @@ function downloaddate(type)
            		<#if statusId!=1>
                 <td align="center">${order.orderNumber!""}</td>
                 </#if>
-                <td>${order.username!""}</td>
+                <#if statusId!=1>
+		        	<td>${order.username!""}</td>
+		        <#else>
+		        	<td>${order.deliveryPhone!""}</td>
+		        </#if>
                 <td>${order.deliverTypeTitle!""}</td>
                 <td align="center">
                 	<#if statusId!=4>

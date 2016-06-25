@@ -434,6 +434,7 @@ $(function () {
   	<dd><div><#if user?? && user.unCashBalance??>${user.unCashBalance?string('0.00')}<#else>0</#if></div> <span class="Validform_checktip"></span></dd>
   </dl>
   </#if>
+  <#-- 没有这些字段
   <#if !user?? || user?? && user.userType?? && user.userType == 100>
   <dl>
     <dt>下级用户总数</dt>
@@ -448,6 +449,7 @@ $(function () {
     <dd><input name="cashRewardsFrozen" type="text" id="txtPay_Password" class="input normal"sucmsg=" " value="<#if user?? && user.cashRewardsFrozen??>${user.cashRewardsFrozen?c}</#if>"> <span class="Validform_checktip"></span></dd>
   </dl>
   </#if>
+  -->
 </div> 
 
 <!--工具栏-->

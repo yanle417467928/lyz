@@ -116,7 +116,7 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 
 	Page<TdOrder> findByUsernameAndStatusIdOrderByIdDesc(String username, Long statusId, Pageable page);
 
-	List<TdOrder> findByUsernameAndStatusIdOrderByIdDesc(String username, Long statusId);
+	List<TdOrder> findByUsernameAndStatusIdOrRealUserUsernameAndStatusIdOrderByIdDesc(String username, Long statusId,String username1, Long statusId1);
 
 	Page<TdOrder> findByUsernameAndIsCancelTrue(String username, Pageable page); // 取消订单
 																					// zhangji
@@ -156,7 +156,7 @@ public interface TdOrderRepo extends PagingAndSortingRepository<TdOrder, Long>, 
 	List<TdOrder> findByUsernameAndStatusIdNotOrderByOrderTimeDesc(String username, Long status);
 
 	// 查找用户所有非删除的订单
-	Page<TdOrder> findByUsernameAndStatusIdNotOrderByOrderTimeDesc(String username, Long status, Pageable page);
+	Page<TdOrder> findByUsernameAndStatusIdNotOrRealUserUsernameAndStatusIdNotOrderByOrderTimeDesc(String username, Long status,String username1, Long status1, Pageable page);
 
 	// 根据订单号查找订单
 	List<TdOrder> findByOrderNumberContaining(String orderNumber);
