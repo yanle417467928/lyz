@@ -1097,18 +1097,36 @@ public class TdCommonService {
 		// 订单编号生成结束
 
 		// 获取默认的支付方式
-		TdPayType defaultType = new TdPayType();
-		List<TdPayType> payTypeList = tdPayTypeService.findAllOrderBySortIdAsc();
-		if (null != payTypeList) {
-			for (TdPayType type : payTypeList) {
-				if (null != type && null != type.getTitle() && !"到店支付".equals(type.getTitle())) {
-					if (!(null != user.getIsCashOnDelivery() && !user.getIsCashOnDelivery()
-							&& "货到付款".equalsIgnoreCase(type.getTitle()))) {
-						defaultType = type;
-						break;
-					}
-				}
+//		TdPayType defaultType = new TdPayType();
+//		List<TdPayType> payTypeList = tdPayTypeService.findAllOrderBySortIdAsc();
+//		if (null != payTypeList) {
+//			for (TdPayType type : payTypeList) {
+//				if (null != type && null != type.getTitle() && !"到店支付".equals(type.getTitle())) {
+//					if (!(null != user.getIsCashOnDelivery() && !user.getIsCashOnDelivery()
+//							&& "货到付款".equalsIgnoreCase(type.getTitle()))) {
+//						defaultType = type;
+//						break;
+//					}
+//				}
+//			}
+//		}
+		TdPayType defaultType=null;
+		//导购代下单
+		TdUser realUser = tdUserService.findOne(realUserId);
+		//要导购和会员都允许货到付款才可以选择货到付款
+		if ((user.getIsCashOnDelivery()==null || user.getIsCashOnDelivery()) && 
+				(realUser==null || realUser.getIsCashOnDelivery()==null || realUser.getIsCashOnDelivery())) {
+			defaultType=tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
+		}else{
+			//默认选择一个线上支付方式
+			List<TdPayType> payList= tdPayTypeService.findByIsOnlinePayTrueAndIsEnableTrueOrderBySortIdAsc();
+			if(payList!=null && payList.size()>0){
+				defaultType=payList.get(0);
 			}
+		}
+		//没有支付方式 避免报错
+		if(defaultType==null){
+			defaultType=new TdPayType();
 		}
 
 		// 获取运费
@@ -1171,7 +1189,7 @@ public class TdCommonService {
 
 		if (1L == user.getUserType() || 2L == user.getUserType()) {
 			virtual.setIsSellerOrder(true);
-			TdUser realUser = tdUserService.findOne(realUserId);
+//			TdUser realUser = tdUserService.findOne(realUserId);
 			if (null != realUser) {
 				virtual.setRealUserId(realUser.getId());
 				virtual.setRealUserRealName(realUser.getRealName());

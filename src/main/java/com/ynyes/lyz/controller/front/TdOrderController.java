@@ -741,7 +741,14 @@ public class TdOrderController {
 			if (null != title && "到店支付".equals(title)) {
 				// 此时将支付方式更改为到店支付
 				TdPayType payType = null;
-				if(null != user.getIsCashOnDelivery() && !user.getIsCashOnDelivery()){
+				//导购代下单
+				TdUser realUser=null;
+				if(user.getUserType()==1L || user.getUserType()==2L){
+					realUser=tdUserService.findOne(order.getRealUserId());
+				}
+				
+				if(null != user.getIsCashOnDelivery() && !user.getIsCashOnDelivery() || 
+						((realUser!=null && realUser.getIsCashOnDelivery()!=null && !realUser.getIsCashOnDelivery())) ){
 					payType = tdPayTypeService.findByTitleAndIsEnableTrue("支付宝");
 				}else{
 					payType = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
@@ -797,13 +804,17 @@ public class TdOrderController {
 		if (null == user) {
 			return "redirect:/login";
 		}
-
+		
 		// 从session获取临时订单
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 		if (null == order) {
 			order = new TdOrder();
 		}
-
+		//导购代下单
+		TdUser realUser=null;
+		if(user.getUserType()==1L || user.getUserType()==2L){
+			realUser=tdUserService.findOne(order.getRealUserId());
+		}
 		map.addAttribute("payTypeId", order.getPayTypeId());
 
 		// 获取所有的在线支付方式
@@ -816,7 +827,8 @@ public class TdOrderController {
 		if (!(null != order.getIsCoupon() && order.getIsCoupon())) {
 			if ("送货上门".equals(deliveryType)) {
 				// 查询是否具有货到付款的支付方式
-				if (!(null != user.getIsCashOnDelivery() && !user.getIsCashOnDelivery())) {
+				if ((user.getIsCashOnDelivery()==null || user.getIsCashOnDelivery()) && 
+						(realUser==null || realUser.getIsCashOnDelivery()==null || realUser.getIsCashOnDelivery())) {
 					TdPayType payType = tdPayTypeService.findByTitleAndIsEnableTrue("货到付款");
 					map.addAttribute("cashOndelivery", payType);
 				}

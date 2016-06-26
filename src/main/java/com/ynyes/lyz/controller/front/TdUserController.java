@@ -849,6 +849,8 @@ public class TdUserController {
 				}
 			}
 		}
+		//倒叙排列
+		Collections.reverse(address_list);
 		map.addAttribute("address_list", address_list);
 		return "/client/user_address";
 	}
