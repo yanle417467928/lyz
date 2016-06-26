@@ -796,7 +796,7 @@ public class TdDeliveryIndexController {
 
 	/*
 	 * 申请欠款 
-	 * isOwn 默认为true 增加现金 和pos
+	 * isOwn 默认为true 增加现金 和pos 增加收款时间
 	 */
 	@RequestMapping(value = "/submitOwnMoney/{id}", method = RequestMethod.POST)
 	@ResponseBody
@@ -832,8 +832,10 @@ public class TdDeliveryIndexController {
 			if (null != recList && recList.size() > 0) {
 				//如果存在修改欠款申请
 				rec=recList.get(0);
+			}else{
+				rec.setCreateTime(new Date());
 			}
-			rec.setCreateTime(new Date());
+			
 			rec.setOrderNumber(order.getMainOrderNumber());
 			rec.setDiyCode(order.getDiySiteCode());
 			rec.setOwned(owned);
@@ -849,8 +851,8 @@ public class TdDeliveryIndexController {
 			rec.setIsEnable(false);
 			rec.setIsPayed(false);
 			rec.setSortId(99L);
-			
 			rec = tdOwnMoneyRecordService.save(rec);
+			
 			//全额收款
 			if (rec.getIsOwn() == false)
 			{

@@ -17,6 +17,7 @@ import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.repository.TdOrderRepo;
 import com.ynyes.lyz.util.Criteria;
 import com.ynyes.lyz.util.Restrictions;
+import com.ynyes.lyz.util.Utils;
 
 /**
  * TdOrder 服务类
@@ -739,4 +740,40 @@ public class TdOrderService {
 		return repository.queryCountDeliverysearch(statusIds, keyword, opUser);
 	}
 	
+	/**
+	 * 修改订单实收款
+	 * @param cash 收款现金
+	 * @param pos 收款pos
+	 * @param mainOrderNumber 主单号
+	 * @return 默认不会出现问题 没想好怎么处理这些异常状态
+	 * @author zp
+	 */
+	public Long modifyOrderPay(Double cash,Double pos,String mainOrderNumber){
+		//主单号为空 
+		if(mainOrderNumber==null){
+			return 1L;
+		}
+		cash=Utils.checkNull(cash);
+		pos=Utils.checkNull(pos);
+		//收款为0 
+		if(cash==0.0 && pos==0.0){
+			return 2L;
+		}
+		List<TdOrder> orderList= repository.findByMainOrderNumberIgnoreCase(mainOrderNumber);
+		//意思一下 
+		if(orderList!=null && orderList.size()>0){
+			//循环所有分单
+			for (TdOrder order : orderList) {
+				//计算比例(暂定)
+				Double point=order.getTotalPrice()/order.getAllTotalPay();
+				//修改实收款
+				order.setCashPay(cash*point+Utils.checkNull(order.getCashPay()));
+				order.setPosPay(pos*point+Utils.checkNull(order.getPosPay()));
+				//保存修改
+				repository.save(order);
+			}
+		}
+		
+		return 0L;
+	}
 }

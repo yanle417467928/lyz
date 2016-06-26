@@ -188,11 +188,14 @@
 	           		<div class="order_row">不可提现预存款<div class="order_right">${order.unCashBalanceUsed?string("currency") }</div></div>
 	           		</#if>
             	</#if>
-            	<#if order.activitySubPrice?? && order.activitySubPrice!=0>
-	           	<div class="order_row">促销扣减<div class="order_right">${order.activitySubPrice?string("currency") }</div></div>
-	           	</#if>
 	           	<#if order.otherPay?? && order.otherPay!=0>
 	           	<div class="order_row">第三方支付<div class="order_right">${order.otherPay?string("currency") }</div></div>
+	           	</#if>
+	           	<#if order.cashPay?? && order.cashPay!=0>
+	           	<div class="order_row">现金支付<div class="order_right">${order.cashPay?string("currency") }</div></div>
+	           	</#if>
+	           	<#if order.posPay?? && order.posPay!=0>
+	           	<div class="order_row">pos支付<div class="order_right">${order.posPay?string("currency") }</div></div>
 	           	</#if>
            		<div class="order_border"></div>
            		<div class="order_row">实付款<div class="order_right">${totolPayment?string("currency") }</div></div>

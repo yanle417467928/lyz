@@ -75,7 +75,6 @@ import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdGoodsService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
-import com.ynyes.lyz.service.TdOwnMoneyRecordService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReChargeService;
@@ -193,7 +192,6 @@ public class TdUserController {
 	
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
-	
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1573,17 +1571,16 @@ public class TdUserController {
 		if(order.getOtherPay()!=null){
 			totolPayment+=order.getOtherPay();
 		}
-		//促销立减
-		if(order.getActivitySubPrice()!=null){
-			totolPayment+=order.getActivitySubPrice();
+		//支付现金
+		if(order.getCashPay() !=null){
+			totolPayment+=order.getCashPay();
 		}
+		//支付POS
+		if(order.getPosPay() !=null){
+			totolPayment+=order.getPosPay();
+		}		
 		//保存实付款
 		map.addAttribute("totolPayment", totolPayment);
-		
-//		//查询代收款信息
-//		TdOwnMoneyRecordService
-//		
-//		
 		
 		map.addAttribute("orderId", id);
 		return "/client/user_order_detail";

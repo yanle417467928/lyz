@@ -1664,7 +1664,7 @@ public class TdCommonService {
 						order.setCashBalanceUsed(Double.parseDouble(scale2_cash));
 						order.setOtherPay(Double.parseDouble(scale2_other));
 						order.setActualPay(order.getUnCashBalanceUsed() + order.getCashBalanceUsed());
-//						order.setTotalPrice(order.getTotalPrice()-order.getUnCashBalanceUsed()-order.getCashBalanceUsed());
+						order.setTotalPrice(order.getTotalPrice()-order.getUnCashBalanceUsed()-order.getCashBalanceUsed());
 
 						// 记录预存款使用
 						TdUser user = tdUserService.findOne(order.getUserId());
@@ -2862,6 +2862,7 @@ public class TdCommonService {
 
 						coupon.setBuyPrice(0.00);
 						
+						coupon.setIsBuy(false);
 						tdCouponService.save(coupon);
 					}
 				}
@@ -2910,6 +2911,7 @@ public class TdCommonService {
 
 						coupon.setBuyPrice(0.00);
 						
+						coupon.setIsBuy(false);
 						tdCouponService.save(coupon);
 					}
 				}

@@ -220,5 +220,21 @@ public class TdOwnMoneyRecord {
 	public void setBackPos(Double backPos) {
 		this.backPos = backPos;
 	}
+
+	public Date getPayTime() {
+		return payTime;
+	}
+
+	public void setPayTime(Date payTime) {
+		this.payTime = payTime;
+	}
+
+	public Date getOwnTime() {
+		return ownTime;
+	}
+
+	public void setOwnTime(Date ownTime) {
+		this.ownTime = ownTime;
+	}
 	
 }
