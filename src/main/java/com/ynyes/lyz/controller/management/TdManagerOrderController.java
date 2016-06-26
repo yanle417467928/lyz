@@ -1245,6 +1245,9 @@ public class TdManagerOrderController {
 		//设置值 并保存
 		own.setBackMoney(money);
 		own.setBackPos(pos);
+		//还款后增加欠款和收款
+		own.setPayed(own.getPayed()+money+pos);
+		own.setOwned(own.getOwned()-money-pos);
 		own.setIsPayed(true);
 		own.setOwnTime(new Date());
 		tdOwnMoneyRecordService.save(own);
