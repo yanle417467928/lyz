@@ -311,7 +311,24 @@ public class TdOrderController {
 			tdCommonService.rePresent(req, order_temp, true);
 			tdPriceCouintService.countPrice(order_temp, realUser);
 		}
-
+		
+		List<TdOrderGoods> orderGoodsList= order_temp.getOrderGoodsList();
+		List<TdOrderGoods> orderGiftList= order_temp.getGiftGoodsList();
+		List<TdOrderGoods> orderPresentList= order_temp.getPresentedList();
+		
+		//计算商品总数
+		Integer totalGoods=0;
+		if(orderGoodsList!=null && orderGoodsList.size()>0){
+			totalGoods+=orderGoodsList.size();
+		}
+		if(orderGiftList!=null && orderGiftList.size()>0){
+			totalGoods+=orderGiftList.size();
+		}
+		if(orderPresentList!=null && orderPresentList.size()>0){
+			totalGoods+=orderPresentList.size();
+		}
+		
+		map.addAttribute("totalGoods",totalGoods);
 		map.addAttribute("order", order_temp);
 		map.addAttribute("no_product_coupon_list", no_product_coupon_list);
 		map.addAttribute("product_coupon_list", product_coupon_list);

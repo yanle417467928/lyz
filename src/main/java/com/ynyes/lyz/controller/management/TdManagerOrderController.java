@@ -593,6 +593,13 @@ public class TdManagerOrderController {
 			
 			//到店支付 是否收款
 			Boolean isown=false;
+			
+			//判断是否是线上支付
+			TdPayType payType= tdPayTypeService.findOne(order.getPayTypeId());
+			if(payType!=null && payType.getIsOnlinePay()){
+				isown=true;
+			}
+			
 			//查询收款信息
 			List<TdOwnMoneyRecord> ownList= tdOwnMoneyRecordService.findByOrderNumberIgnoreCase(order.getMainOrderNumber());
 			//判断为空
@@ -606,7 +613,7 @@ public class TdManagerOrderController {
 				}
 			}
 			//订单价格为0 不需要收款
-			Double ownPrice=order.getTotalPrice()-order.getActualPay();
+			Double ownPrice=order.getTotalPrice();
 			if(ownPrice!=null &&ownPrice==0){
 				isown=true;
 			}

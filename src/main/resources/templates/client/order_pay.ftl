@@ -67,7 +67,7 @@
                                     <div class="img"><img src="${item.goodsCoverImageUri!''}" alt="产品图片"></div>
                                 </#if>
                             </#list>
-                            <div class="total">共${order.orderGoodsList?size}件</div>
+                            <div class="total">共${totalGoods!''}件</div>
                         </a>
                     </section>
                 </#if>
