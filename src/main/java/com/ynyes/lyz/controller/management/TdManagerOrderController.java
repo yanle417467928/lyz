@@ -1191,7 +1191,7 @@ public class TdManagerOrderController {
 	}
 
 	/**
-	 * 欠款 还款
+	 * 欠款 还款 
 	 * @param id 欠款id
 	 * @param money 现金金额
 	 * @param pos pos金额
@@ -1239,7 +1239,11 @@ public class TdManagerOrderController {
 		own.setBackMoney(money);
 		own.setBackPos(pos);
 		own.setIsPayed(true);
+		own.setOwnTime(new Date());
 		tdOwnMoneyRecordService.save(own);
+		
+		//修改订单收款金额
+		tdOrderService.modifyOrderPay(money, pos, own.getOrderNumber());
 		// 收款发ebs
 		tdInterfaceService.initCashReciptByTdOwnMoneyRecord(own, INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
 		
@@ -1312,12 +1316,12 @@ public class TdManagerOrderController {
 		rec.setIsEnable(false);
 		rec.setIsPayed(false);
 		rec.setSortId(99L);
-		
+		rec.setPayTime(new Date());
 		tdOwnMoneyRecordService.save(rec);
 		
-		//保存订单实付款
-		order.setActualPay(money+pos);
-		tdOrderService.save(order);
+		//保存订单实付款(有问题)
+//		order.setActualPay(money+pos);
+//		tdOrderService.save(order);
 		// 收款发ebs
 //		recordAndSendToEbsByTdOwnMoneyRecord(own,INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
 //		tdInterfaceService.initCashReciptByTdOwnMoneyRecord(own, INFConstants.INF_RECEIPT_TYPE_DIYSITE_INT);
@@ -1545,7 +1549,12 @@ public class TdManagerOrderController {
 
 					ownMoneyRecord.setIsEnable(true);
 					ownMoneyRecord.setIspassed(true);
+					//收款时间 门店审核通过时间 (配送员收款时间  门店审核通过时间)
+					ownMoneyRecord.setPayTime(new Date());
 					tdOwnMoneyRecordService.save(ownMoneyRecord);
+					//修改订单收款金额
+					tdOrderService.modifyOrderPay(ownMoneyRecord.getMoney(),ownMoneyRecord.getPos(), ownMoneyRecord.getOrderNumber());
+					
 					tdInterfaceService.initCashReciptByTdOwnMoneyRecord(ownMoneyRecord, INFConstants.INF_RECEIPT_TYPE_DELIVER_INT);
 				}
 			}
