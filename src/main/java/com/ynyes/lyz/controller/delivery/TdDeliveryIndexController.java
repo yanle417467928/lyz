@@ -35,6 +35,7 @@ import com.ynyes.lyz.entity.TdGeoInfo;
 import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.entity.TdOrderGoods;
 import com.ynyes.lyz.entity.TdOwnMoneyRecord;
+import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdReturnNote;
 import com.ynyes.lyz.entity.TdUser;
 import com.ynyes.lyz.interfaces.entity.TdCashReciptInf;
@@ -50,6 +51,7 @@ import com.ynyes.lyz.service.TdGeoInfoService;
 import com.ynyes.lyz.service.TdOrderGoodsService;
 import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdOwnMoneyRecordService;
+import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReturnNoteService;
 import com.ynyes.lyz.service.TdUserService;
@@ -97,6 +99,9 @@ public class TdDeliveryIndexController {
 	
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
+	
+	@Autowired
+	private TdPayTypeService tdPayTypeService;
 
 	@RequestMapping
 	public String deliveryIndex(HttpServletRequest req) {
@@ -405,6 +410,12 @@ public class TdDeliveryIndexController {
 				}
 			}
 			map.addAttribute("td_order", order);
+			TdPayType payType= tdPayTypeService.findOne(order.getPayTypeId());
+			if(payType!=null && payType.getIsOnlinePay()){
+				map.addAttribute("isOnlinePay", true);
+			}else{
+				map.addAttribute("isOnlinePay", false);
+			}
 		}
 
 		map.addAttribute("id", id);
