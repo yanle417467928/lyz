@@ -53,7 +53,7 @@ public class StringTools {
 	 * @param resultStr
 	 * @return
 	 */
-	public static String interfaceMessage(String resultStr) 
+	public static String interfaceMessage(String resultStr)
 	{
 		// "<RESULTS><STATUS><CODE>1</CODE><MESSAGE>XML参数错误</MESSAGE></STATUS></RESULTS>";
 		if (!resultStr.contains("<CODE>") || !resultStr.contains("</CODE>") || !resultStr.contains("<MESSAGE>") || !resultStr.contains("</MESSAGE>")) 

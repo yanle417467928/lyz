@@ -20,10 +20,6 @@ public class TdEbsInfLog extends TdInfBaseEntity
 	@Column
 	private String errorInfo;
 	
-	//成功与否
-	@Column(length = 10)
-	private String sendFlag;
-	
 	//ebs接口表名
 	@Column(length = 20)
 	private String tableName;
@@ -56,16 +52,6 @@ public class TdEbsInfLog extends TdInfBaseEntity
 		this.errorInfo = errorInfo;
 	}
 
-	public String getSendFlag()
-	{
-		return sendFlag;
-	}
-
-	public void setSendFlag(String sendFlag)
-	{
-		this.sendFlag = sendFlag;
-	}
-
 	public String getTableName()
 	{
 		return tableName;
@@ -87,10 +73,9 @@ public class TdEbsInfLog extends TdInfBaseEntity
 	}
 
 	@Override
-	public String toString()
-	{
-		return "TdEbsInfLog [id=" + id + ", errorInfo=" + errorInfo + ", sendFlag=" + sendFlag + ", tableName="
-		        + tableName + ", orderNumber=" + orderNumber + "]";
+	public String toString() {
+		return "TdEbsInfLog [id=" + id + ", errorInfo=" + errorInfo + ", tableName=" + tableName + ", orderNumber="
+				+ orderNumber + ", sendId=" + sendId + "]";
 	} 
 	
 }

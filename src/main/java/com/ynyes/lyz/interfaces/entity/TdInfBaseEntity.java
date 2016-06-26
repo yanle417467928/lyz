@@ -10,19 +10,20 @@ import org.springframework.format.annotation.DateTimeFormat;
 @MappedSuperclass
 public class TdInfBaseEntity {
 	
+	// 初始化时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date initDate;
 	
+	// 修改时间
 	@Column
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date modifyDate;
-//	
-//	
-//	// N:未传送 Y:传送成功 F:传送失败
-//	@Column(length=2)
-//	private String sendFlag;
-//	
+
+	// N:未传送 Y:传送成功 F:传送失败
+	@Column(length=2)
+	private String sendFlag;
+	
 //	// 日志
 //	@Column
 //	private String errorMsg;

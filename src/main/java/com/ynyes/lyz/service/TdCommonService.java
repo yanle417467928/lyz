@@ -1997,7 +1997,8 @@ public class TdCommonService {
 				String object = (String) tdInterfaceService.getCall().invoke(orderInf);
 				System.out.println(object);
 				String resultStr = StringTools.interfaceMessage(object);
-				if (org.apache.commons.lang3.StringUtils.isBlank(resultStr)) {
+				if (org.apache.commons.lang3.StringUtils.isBlank(resultStr))
+				{
 					isOrderInfSucceed = true;
 				}
 			} catch (Exception e) {
@@ -2220,9 +2221,15 @@ public class TdCommonService {
 			// Double left = order.getTotalPrice() - order.getAllActualPay();
 			// add MDJ totalPrice修改后，改变
 			Double left = order.getAllTotalPay();
-
-			requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
-
+			String payTypeTitle = order.getPayTypeTitle();
+			if ("支付宝".equalsIgnoreCase(payTypeTitle) || "银行卡".equalsIgnoreCase(payTypeTitle) || "微信支付".equalsIgnoreCase(payTypeTitle) )
+			{
+				requisition.setLeftPrice(0.0);
+			}
+			else
+			{
+				requisition.setLeftPrice(left.compareTo(0.0) < 0 ? 0.0 : left);
+			}
 			// requisition.setLeftPrice(order.getAllActualPay());
 
 			// Add by Shawn
