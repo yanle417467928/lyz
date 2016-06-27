@@ -106,7 +106,7 @@ public class TdAgencyFundService {
 		PageRequest pageRequest = new PageRequest(page, size);
 		Criteria<TdAgencyFund> c = new Criteria<TdAgencyFund>();
 		if (null != keywords && !keywords.equalsIgnoreCase("")) {
-			c.add(Restrictions.like("orderNumber", keywords, true));
+			c.add(Restrictions.like("mainOrderNumber", keywords, true));
 		}
 		if(null!=begin){
 			c.add(Restrictions.gte("orderTime", begin, true));
