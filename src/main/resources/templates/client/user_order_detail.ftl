@@ -24,8 +24,17 @@
 	   			margin-right: 2%;
 	   			color: #cc1421;
         	}
+        	.order_right span{
+	   			color: black;
+        	}
         	.order_border{
         		border-bottom: 1px dashed #ddd;
+        	}
+        	.total_pay{
+        		height: 40px;
+			    line-height: 40px;
+			    font-weight: bold;
+    			font-size: medium;
         	}
         </style>
     </head>
@@ -198,7 +207,7 @@
 	           	<div class="order_row">pos支付<div class="order_right">${order.posPay?string("currency") }</div></div>
 	           	</#if>
            		<div class="order_border"></div>
-           		<div class="order_row">实付款<div class="order_right">${totolPayment?string("currency") }</div></div>
+           		<div class="order_row total_pay"><div class="order_right"><span>实付款 ：</span>${totolPayment?string("currency") }</div></div>
             </article>
             <!-- 订单详情 END -->
                     

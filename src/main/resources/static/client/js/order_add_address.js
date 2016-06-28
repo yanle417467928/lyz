@@ -109,10 +109,12 @@ function saveAddress() {
 			}
 			if (0 == res.status) {
 				warning("收货地址保存成功");
-				window.location.href = "/order";
+				setTimeout(function() {
+					window.location.href = "/order";
+				}, 1000);
 			}
 			// 关闭等待图标
-			close(100);
+			close(1000);
 		}
 	});
 

@@ -88,7 +88,7 @@
                 </section>
                 <!-- 发票信息 -->
                 <section class="invoice-info">
-                    <label>发票信息</label>
+                    <label>门店信息</label>
                     <div>${order.diySiteName!''}（${order.diySitePhone!''}）</div>
                 </section>
                 <!-- 发票信息 -->
