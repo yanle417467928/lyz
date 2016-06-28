@@ -920,11 +920,11 @@
                      -->
                     <tr>
                         <th>
-                            可获取积分总计
+                            使用现金券、产品券
                         </th>
                         <td>
                             <div class="position">
-                                ${order.points!"0"}分
+                                使用现金卷金额${order.cashCoupon!'0'}元 | 使用产品劵情况 ：${order.productCoupon!''}
                             </div>
                         </td>
                     </tr>
@@ -994,19 +994,19 @@
                             <span id="spanAddress">${order.shippingAddress!""}</span>
                         </td>
                     </tr>
-                    <tr>
+                    <#--<tr>
                         <th>
                             邮政编码
                         </th>
                         <td><span id="spanPostCode">${order.postalCode!""}</span></td>
-                    </tr>
+                    </tr>-->
                     <tr>
                         <th>
                             电话
                         </th>
                         <td><span id="spanMobile">${order.shippingPhone!""}</span></td>
                     </tr>
-                    <tr>
+                    <#--<tr>
                         <th>
                             是否索要发票
                         </th>
@@ -1022,6 +1022,7 @@
                         </td>
                         
                     </tr>
+                    -->
                 </tbody></table>
             </dd>
         </dl>

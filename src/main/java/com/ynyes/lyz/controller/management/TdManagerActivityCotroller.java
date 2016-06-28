@@ -178,7 +178,7 @@ public class TdManagerActivityCotroller {
 		String giftAndNumber = "";
 
 		if (diySiteIds != null) {
-			List<TdDiySiteList> siteLists = new ArrayList();
+			List<TdDiySiteList> siteLists = new ArrayList<TdDiySiteList>();
 			for (Long id : diySiteIds) {
 				TdDiySiteList siteList = new TdDiySiteList();
 				TdDiySite diySite = TdDiySiteService.findOne(id);
@@ -347,7 +347,7 @@ public class TdManagerActivityCotroller {
 		String type = null;
 
 		if (diySiteIds != null) {
-			List<TdDiySiteList> siteLists = new ArrayList();
+			List<TdDiySiteList> siteLists = new ArrayList<TdDiySiteList>();
 			for (Long id : diySiteIds) {
 				TdDiySiteList siteList = new TdDiySiteList();
 				TdDiySite diySite = TdDiySiteService.findOne(id);

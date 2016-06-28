@@ -576,6 +576,10 @@ public class TdPayController {
 					if (null != SUCCESS && SUCCESS.charValue() == 'Y') {
 						if (recharge.getStatusId().longValue() == 1L) {
 							recharge.setStatusId(2L);
+							if(null==username){
+								username=recharge.getUsername();
+								req.getSession().setAttribute("username", username);
+							}
 							TdUser user = tdUserService.findOne(recharge.getUserId());
 							Double cashBalance = user.getCashBalance();
 							if (null == cashBalance) {
@@ -614,6 +618,10 @@ public class TdPayController {
 		} else {
 			// 根据指定的订单号查找订单
 			TdOrder order = tdOrderService.findByOrderNumber(ORDERID);
+			if(null==username){
+				username=order.getUsername();
+				req.getSession().setAttribute("username", username);
+			}
 			// 在能查询到具体订单的情况下进行业务逻辑处理
 			if (null != order) {
 				Double totalPrice = order.getTotalPrice();

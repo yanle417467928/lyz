@@ -1592,7 +1592,10 @@ public class TdManagerOrderController {
 
 		Map<String, String> map = new HashMap<>();
 		for (TdOrder tdOrder : orders) {
-			String username = tdOrder.getUsername();
+			String username = tdOrder.getRealUserUsername();
+			if(username==null){
+				username=tdOrder.getUsername();
+			}
 			if (map.containsKey(username)) {
 				continue;
 			} else {
