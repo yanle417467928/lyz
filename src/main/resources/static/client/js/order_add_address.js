@@ -61,6 +61,23 @@ function saveAddress() {
 		return;
 	}
 	
+	if(!/^1\d{10}$/.test(receiveMobile)){
+		warning("请输入正确的手机号码");
+		return;
+	}
+	
+	if(!isAllLegal(receiveName)){
+		warning("不能输入特殊字符");
+		return;
+	}
+	
+	if(!isAllLegal(detail)){
+		warning("不能输入特殊字符");
+		return;
+	}
+	
+	
+	
 	// 开启等待图标
 	wait();
 
@@ -114,4 +131,23 @@ function cleanSpelChar(obj){
 //    if(/["'<>%;)(&+]/.test(obj.value)){
 //          $(obj).val(obj.value.replace(/["'<>%;)(&+]/,""));
 //    }
+}
+
+function isLegal(str){
+	if(str >= '0' && str <= '9')return true;
+	if(str >= 'a' && str <= 'z')return true;
+	if(str >= 'A' && str <= 'Z')return true;
+	if(str == '_')return true;
+	var reg = /^[\u4e00-\u9fa5]+$/i;
+	if (reg.test(str))return true;
+	return false;
+}
+function isAllLegal(str1){
+	if(str1=="" || str1==undefined)return false;
+	for (i=0; i<str1.length; i++) {
+		if (!isLegal(str1.charAt(i))){
+			return false;
+		}
+	}
+	return true;
 }
