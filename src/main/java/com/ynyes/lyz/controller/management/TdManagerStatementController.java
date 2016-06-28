@@ -605,16 +605,19 @@ public class TdManagerStatementController extends TdManagerBaseController {
 				row.createCell(6).setCellValue(objToString(agencyFund.getUserPhone()));
 				//需代收金额
 				row.createCell(7).setCellValue(objToString(agencyFund.getPayPrice()));
+				Double payMoney= agencyFund.getPayMoney();
+				Double payPos= agencyFund.getPayPos();
+				Double payed= agencyFund.getPayed();
 				//实收现金
-				row.createCell(8).setCellValue(objToString(agencyFund.getPayMoney()));
+				row.createCell(8).setCellValue(objToString(payMoney));
 				//实收pos
-				row.createCell(9).setCellValue(objToString(agencyFund.getPayPos()));
+				row.createCell(9).setCellValue(objToString(payPos));
 				//历史数据没有区分现金和pos这2个字段为空  默认为pos收款
-				if(null == agencyFund.getPayMoney() && null == agencyFund.getPayPos()){
-					row.createCell(9).setCellValue(objToString(agencyFund.getPayed()));
+				if((null == payMoney || payMoney==0) && (null ==payPos || payPos==0) && (payed!=null && payed!=0)){
+					row.createCell(9).setCellValue(objToString(payed));
 				}
 				//实收总金额
-				row.createCell(10).setCellValue(objToString(agencyFund.getPayed()));
+				row.createCell(10).setCellValue(objToString(payed));
 				//欠款
 				row.createCell(11).setCellValue(objToString(agencyFund.getOwned()));
 				//仓库名称
