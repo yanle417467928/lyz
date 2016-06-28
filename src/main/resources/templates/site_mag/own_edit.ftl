@@ -472,18 +472,20 @@
                             <span id="spanAddress">${order.shippingAddress!""}</span>
                         </td>
                     </tr>
-                    <tr>
+                    <#--<tr>
                         <th>
                             邮政编码
                         </th>
                         <td><span id="spanPostCode">${order.postalCode!""}</span></td>
                     </tr>
+                    -->
                     <tr>
                         <th>
                             电话
                         </th>
                         <td><span id="spanMobile">${order.shippingPhone!""}</span></td>
                     </tr>
+                    <#--
                     <tr>
                         <th>
                             是否索要发票
@@ -500,6 +502,7 @@
                         </td>
                         
                     </tr>
+                    -->
                 </tbody></table>
             </dd>
         </dl>
