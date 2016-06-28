@@ -104,17 +104,15 @@ function saveAddress() {
 				window.location.href = "/login";
 				return;
 			}
-			// 关闭等待图标
-			close(100);
 			if (-1 == res.status) {
 				warning(res.message);
 			}
 			if (0 == res.status) {
 				warning("收货地址保存成功");
-				setTimeout(function() {
-					window.location.href = "/order";
-				}, 1000);
+				window.location.href = "/order";
 			}
+			// 关闭等待图标
+			close(100);
 		}
 	});
 
