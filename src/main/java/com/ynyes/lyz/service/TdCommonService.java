@@ -290,7 +290,7 @@ public class TdCommonService {
 			}
 		}
 		// 小辅料赠送
-		if (null != order.getOrderGoodsList()) {
+		if (null != order.getGiftGoodsList()) {
 			for (TdOrderGoods oGoods : order.getGiftGoodsList()) {
 				TdOrderGoods orderGoods = new TdOrderGoods();
 

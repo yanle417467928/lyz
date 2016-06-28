@@ -756,6 +756,14 @@ public class TdInterfaceService {
 				}
 				Long goodsQuantity = tdOrderGoods.getQuantity();		//退货数量
 				Double singlePrice = tdOrderGoods.getReturnUnitPrice();	//退货单价
+				if (singlePrice == null)
+				{
+					singlePrice = 0d;
+				}
+				if (goodsQuantity == null)
+				{
+					goodsQuantity = 0l;
+				}
 				
 				Double proPrice = usedProCouponCount * singlePrice;	//产品券的金额
 				Double totalPrice = singlePrice * goodsQuantity;		//所有商品的价格
