@@ -426,19 +426,17 @@ public class TdManagerGoodsController {
 		if (type == 0)
 		{
 			//设置门店库存
-			List<TdDiySite> diySites = tdDiySiteService.findAll();
-			for (TdDiySite tdDiySite : diySites) 
-			{
-				setInventoryByDiySite(tdDiySite,page);
-			}
-		}
-		else
-		{
-			//设置城市库存
+			
 			List<TdCity> cityList = tdCityService.findAll();
 			for (TdCity tdCity : cityList)
 			{
-				this.setInventoryByCity(tdCity, 0);
+				List<TdGoods> goods = tdGoodsService.findBySobId(tdCity.getSobIdCity());
+				this.setInventoryByCity(tdCity, 0,goods);
+				List<TdDiySite> diySites = tdDiySiteService.findByCityId(tdCity.getId());
+				for (TdDiySite tdDiySite : diySites)
+				{
+					setInventoryByDiySite(tdDiySite,page,goods);
+				}
 			}
 		}
 		return "yes";
@@ -449,19 +447,18 @@ public class TdManagerGoodsController {
 	 * @param site
 	 * @param page
 	 */
-	public void setInventoryByCity(TdCity city,int page)
+	public void setInventoryByCity(TdCity city,int page,List<TdGoods>goods)
 	{
 		if (city == null || city.getSobIdCity() == null)
 		{
 			return ;
 		}
-		List<TdGoods> goods = tdGoodsService.findBySobId(city.getSobIdCity());
+		List<Long> goodIds = tdDiySiteInventoryService.findGoodsIdByRegionIdAndDiySiteIdIsNull(city.getSobIdCity());
 		for (TdGoods tdGoods : goods) 
 		{
-			TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(tdGoods.getCode(), city.getSobIdCity());
-			if (inventory == null)
+			if (!goodIds.contains(tdGoods.getId()))
 			{
-				inventory = new TdDiySiteInventory();
+				TdDiySiteInventory inventory = new TdDiySiteInventory();
 				inventory.setInventory(0L);
 				inventory.setGoodsCode(tdGoods.getCode());
 				inventory.setGoodsId(tdGoods.getId());
@@ -480,36 +477,37 @@ public class TdManagerGoodsController {
 	 * @param site
 	 * @param page
 	 */
-	public void setInventoryByDiySite(TdDiySite site,int page)
+	public void setInventoryByDiySite(TdDiySite site,int page,List<TdGoods> goods)
 	{
 		if (site == null || site.getCity() == null)
 		{
 			return ;
 		}
-		List<TdGoods> goods = tdGoodsService.findBySobId(site.getRegionId());
-		for (TdGoods tdGoods : goods) 
+		List<TdDiySiteInventory> inventories = new ArrayList<>();
+		List<Long> existGoodsId = tdDiySiteInventoryService.findGoodsIdByDiySiteId(site.getId());
+		for (TdGoods tdGoods : goods)
 		{
-			tdDiySiteInventoryService.findAll();
-			
-			TdDiySiteInventory inventory = tdDiySiteInventoryService.findByGoodsCodeAndDiySiteId(tdGoods.getCode(), site.getId());
-			if (inventory == null)
+			if (existGoodsId.contains(tdGoods.getId()))
 			{
-				inventory = new TdDiySiteInventory();
-				inventory.setInventory(0L);
-				inventory.setDiySiteId(site.getId());
-				inventory.setDiySiteName(site.getTitle());
-				inventory.setGoodsCode(tdGoods.getCode());
-				inventory.setGoodsId(tdGoods.getId());
-				inventory.setCategoryId(tdGoods.getCategoryId());
-				inventory.setCategoryIdTree(tdGoods.getCategoryIdTree());
-				inventory.setCategoryTitle(tdGoods.getCategoryTitle());
-				inventory.setDiyCode(site.getStoreCode());
-				inventory.setGoodsTitle(tdGoods.getTitle());
-				inventory.setRegionId(site.getRegionId());
-				inventory.setRegionName(site.getCity());
-				tdDiySiteInventoryService.save(inventory);
+				continue;
 			}
+			TdDiySiteInventory inventory = new TdDiySiteInventory();
+			inventory.setInventory(0L);
+			inventory.setDiySiteId(site.getId());
+			inventory.setDiySiteName(site.getTitle());
+			inventory.setGoodsCode(tdGoods.getCode());
+			inventory.setGoodsId(tdGoods.getId());
+			inventory.setCategoryId(tdGoods.getCategoryId());
+			inventory.setCategoryIdTree(tdGoods.getCategoryIdTree());
+			inventory.setCategoryTitle(tdGoods.getCategoryTitle());
+			inventory.setDiyCode(site.getStoreCode());
+			inventory.setGoodsTitle(tdGoods.getTitle());
+			inventory.setRegionId(site.getRegionId());
+			inventory.setRegionName(site.getCity());
+			//tdDiySiteInventoryService.save(inventory);
+			inventories.add(inventory);
 		}
+		tdDiySiteInventoryService.save(inventories);
 	}
 	
 	/**

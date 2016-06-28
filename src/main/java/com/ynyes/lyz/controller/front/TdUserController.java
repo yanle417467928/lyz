@@ -893,11 +893,11 @@ public class TdUserController {
 			// 设置行政街道
 			req.getSession().setAttribute("new_subdistrict", address.getSubdistrict());
 			req.getSession().setAttribute("new_subdistrict_id", address.getSubdistrictId());
-			if (null != returnPage && "1".equals(returnPage)) {
-				req.getSession().setAttribute("returnPage", "1");
-			} else {
-				req.getSession().setAttribute("returnPage", "0");
-			}
+		}
+		if (null != returnPage && "1".equals(returnPage)) {
+			req.getSession().setAttribute("returnPage", "1");
+		} else {
+			req.getSession().setAttribute("returnPage", "0");
 		}
 		map.addAttribute("city", user.getCityName());
 		map.addAttribute("operation", type);
@@ -1012,6 +1012,10 @@ public class TdUserController {
 		if (tdSettingService.checkMaxShipping(res, user, operation)) {
 			return res;
 		}
+		//过滤特殊字符
+		receiver=com.ynyes.lyz.util.StringUtils.StringFilter(receiver);
+		receiverMobile=com.ynyes.lyz.util.StringUtils.StringNumberFilter(receiverMobile);
+		detailAddress=com.ynyes.lyz.util.StringUtils.StringFilter(detailAddress);
 
 		TdShippingAddress address = null;
 
