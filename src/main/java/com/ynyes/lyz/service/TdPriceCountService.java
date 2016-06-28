@@ -640,6 +640,7 @@ public class TdPriceCountService {
 				total += (orderGoods.getPrice() * orderGoods.getQuantity());
 			}
 		}
+
 		return total;
 	}
 
@@ -682,6 +683,9 @@ public class TdPriceCountService {
 
 		DecimalFormat decimalFormat = new DecimalFormat("#.00");
 
+		// 获取用户使用的产品券
+		String productCouponId = order.getProductCouponId();
+
 		// 获取订单商品数量、总价队列
 		Map<Long, Double[]> allOrderGoods = this.getAllOrderGoods(order);
 		if (null != allOrderGoods && null != realPrice && 0.0 != realPrice && null != totalOrderGoodsPrice
@@ -701,6 +705,30 @@ public class TdPriceCountService {
 							// 通过这个比例计算实际上的商品退货单价
 							Double GoodsRealTotal = realPrice * point;
 							if (null != GoodsRealTotal && null != infos[1] && 0.0 != infos[1]) {
+
+								// 修改：2016-06-26 在计算单价的时候排除产品券的使用价值和使用数量
+								if (null != productCouponId && !"".equals(productCouponId)) {
+									String[] sIds = productCouponId.split(",");
+									if (null != sIds && sIds.length > 0) {
+										for (String sId : sIds) {
+											Long id = Long.parseLong(sId);
+											TdCoupon coupon = tdCouponService.findOne(id);
+											if (null != coupon && null != coupon.getTypeCategoryId()
+													&& coupon.getTypeCategoryId().longValue() == 3L
+													&& null != coupon.getGoodsId()
+													&& coupon.getGoodsId().longValue() == goodsId.longValue()) {
+												Double productCouponRealPrice = coupon.getRealPrice();
+												if (null == productCouponRealPrice) {
+													productCouponRealPrice = 0.00;
+												}
+												GoodsRealTotal -= productCouponRealPrice;
+												infos[1] -= 1;
+											}
+										}
+									}
+								}
+								// ----------------------------2016-06-26修改结束-------------------------
+
 								Double unit = GoodsRealTotal / infos[1];
 								String sUnit = decimalFormat.format(unit);
 								unit = Double.parseDouble(sUnit);
@@ -790,14 +818,14 @@ public class TdPriceCountService {
 						TdCoupon coupon = tdCouponService.findOne(id);
 						if (null != coupon) {
 							Long goodsId = coupon.getGoodsId();
-							
-							//add 计算电子产品券金额 mdj
-							Boolean isCashPro = coupon.getIsBuy();//判断是否是电子产品券
-							if (isCashPro != null && isCashPro && null != null && null != result.get("cashPro"+goodsId))
-							{
-								Integer cashPorNumber = (Integer)result.get("cashPro" + goodsId);
+
+							// add 计算电子产品券金额 mdj
+							Boolean isCashPro = coupon.getIsBuy();// 判断是否是电子产品券
+							if (isCashPro != null && isCashPro && null != null
+									&& null != result.get("cashPro" + goodsId)) {
+								Integer cashPorNumber = (Integer) result.get("cashPro" + goodsId);
 								@SuppressWarnings("unchecked")
-								List<Double> doubles = (List<Double>)result.get("cashPrice" + goodsId);
+								List<Double> doubles = (List<Double>) result.get("cashPrice" + goodsId);
 								doubles.add(coupon.getPrice());
 								result.put("cashPro" + goodsId, cashPorNumber + 1);
 							}
@@ -864,6 +892,71 @@ public class TdPriceCountService {
 			cal.add(Calendar.YEAR, 1);
 			Date endTime = cal.getTime();
 
+			Map<Long, Double> price_difference = new HashMap<>();
+
+			// 2016-06-26修改：需要获取用户使用赠送的产品券和购买的产品券的集合
+			Map<Long, ArrayList<TdCoupon>> buy_pro_coupon_condition = new HashMap<>();
+			Map<Long, ArrayList<TdCoupon>> send_pro_coupon_condition = new HashMap<>();
+
+			String productCouponId = order.getProductCouponId();
+
+			if (null != productCouponId && !"".equalsIgnoreCase(productCouponId)) {
+				String[] sIds = productCouponId.split(",");
+				if (null != sIds && sIds.length > 0) {
+					for (String sId : sIds) {
+						if (null != sId && !"".equalsIgnoreCase(sId)) {
+							Long couponId = Long.parseLong(sId);
+							TdCoupon coupon = tdCouponService.findOne(couponId);
+							if (null != coupon) {
+								Long goodsId = coupon.getGoodsId();
+								if (null != coupon.getIsBuy() && coupon.getIsBuy()) {
+									ArrayList<TdCoupon> list = buy_pro_coupon_condition.get(goodsId);
+									if (null == list) {
+										list = new ArrayList<>();
+									}
+									list.add(coupon);
+									buy_pro_coupon_condition.put(goodsId, list);
+								} else {
+									ArrayList<TdCoupon> list = send_pro_coupon_condition.get(goodsId);
+									if (null == list) {
+										list = new ArrayList<>();
+									}
+									list.add(coupon);
+									send_pro_coupon_condition.put(goodsId, list);
+								}
+							}
+						}
+					}
+				}
+			}
+			// -----------------------------修改结束--------------------------------
+
+			// 修改：2016-06-26 计算这些商品使用的指定产品现金券的金额，这部分金额是不会退还的
+			Map<Long, ArrayList<TdCoupon>> cash__pro_coupon_condition = new HashMap<>();
+			String cashCouponId = order.getCashCouponId();
+			if (null != cashCouponId && !"".equalsIgnoreCase(cashCouponId)) {
+				String[] sCashIds = cashCouponId.split(",");
+				if (null != sCashIds && sCashIds.length > 0) {
+					for (String sId : sCashIds) {
+						if (null != sId && !"".equalsIgnoreCase(sId)) {
+							Long id = Long.parseLong(sId);
+							TdCoupon coupon = tdCouponService.findOne(id);
+							if (null != coupon && null != coupon.getTypeCategoryId()
+									&& 2L == coupon.getTypeCategoryId().longValue()) {
+								Long goodsId = coupon.getGoodsId();
+								ArrayList<TdCoupon> cash_coupon = cash__pro_coupon_condition.get(goodsId);
+								if (null == cash_coupon) {
+									cash_coupon = new ArrayList<>();
+								}
+								cash_coupon.add(coupon);
+								cash__pro_coupon_condition.put(goodsId, cash_coupon);
+							}
+						}
+					}
+				}
+			}
+			// -----------------------------修改结束-----------------------------------
+
 			// 开始拆分退货参数
 			String[] param = params.split(",");
 			if (null != param && param.length > 0) {
@@ -892,6 +985,37 @@ public class TdPriceCountService {
 							Double total = number * unit;
 							if (null != goodsId) {
 								TdGoods goods = tdGoodsService.findOne(goodsId);
+
+								// 2016-06-24修改：需要排除是退货部分使用的指定产品现金券的价格
+								Double sub_coupon_price = 0.00;
+								ArrayList<TdCoupon> coupon_list = cash__pro_coupon_condition.get(goodsId);
+								List<TdCoupon> delete_coupon =  new ArrayList<>();
+								if (null != coupon_list) {
+									for (int i = 0; i < number; i++) {
+										if (coupon_list.size() > i) {
+											TdCoupon tdCoupon = coupon_list.get(i);
+											Double realPrice = tdCoupon.getRealPrice();
+											sub_coupon_price += realPrice;
+											delete_coupon.add(tdCoupon);
+										}
+									}
+
+									for (TdCoupon tdCoupon : delete_coupon) {
+										coupon_list.remove(tdCoupon);
+									}	
+									delete_coupon = null;
+									cash__pro_coupon_condition.put(goodsId, coupon_list);
+								}
+
+								total -= sub_coupon_price;
+								Double record = price_difference.get(goodsId);
+								if(null == record){
+									record = 0.00;
+								}
+								record += sub_coupon_price;
+								price_difference.put(goodsId, record);
+								// --------------------修改结束-----------------------
+
 								// 开始退还产品券
 								if (total > 0) {
 									if (useProCoupon) {
@@ -900,42 +1024,66 @@ public class TdPriceCountService {
 										if (null != useNumber && useNumber > 0) {
 											// 开始计算退还几张券
 											for (int i = 0; i < useNumber; i++) {
-												if (total < unit) {
-													result.put("pro" + goodsId, useNumber - i + 1);
-													break;
+												if (number > 0) {
+													TdCoupon proCoupon = new TdCoupon();
+													proCoupon.setTypeId(3L);
+													proCoupon.setTypeCategoryId(3L);
+													if (null != goods) {
+														proCoupon.setBrandId(goods.getBrandId());
+														proCoupon.setBrandTitle(goods.getBrandTitle());
+													}
+													proCoupon.setPicUri(goods.getCoverImageUri());
+													proCoupon.setGoodsId(goods.getId());
+													proCoupon.setPrice(0.0);
+													proCoupon.setTypeTitle("退货返还的优惠券");
+													proCoupon.setGoodsName(goods.getTitle());
+													proCoupon.setIsDistributted(true);
+													if (null != city) {
+														proCoupon.setCityName(city.getCityName());
+														proCoupon.setCityId(city.getId());
+													}
+													proCoupon.setGetTime(new Date());
+													proCoupon.setAddTime(new Date());
+													proCoupon.setGetNumber(1L);
+													proCoupon.setExpireTime(endTime);
+													proCoupon.setUsername(order.getUsername());
+													proCoupon.setIsUsed(false);
+													proCoupon.setIsOutDate(false);
+													proCoupon.setMobile(order.getUsername());
+													proCoupon.setSku(goods.getCode());
+													// add MDJ
+													proCoupon.setOrderId(orderId);
+													proCoupon.setOrderNumber(order.getOrderNumber());
+													// add end
+
+													// 在此判断是返回送的券还是返回买的券，优先返还送的券
+													ArrayList<TdCoupon> buy_list = buy_pro_coupon_condition
+															.get(goodsId);
+													ArrayList<TdCoupon> send_list = send_pro_coupon_condition
+															.get(goodsId);
+
+													if (null != send_list && send_list.size() > 0) {
+														TdCoupon tdCoupon = send_list.get(0);
+														proCoupon.setIsBuy(false);
+														proCoupon.setRealPrice(tdCoupon.getRealPrice());
+														proCoupon.setBuyPrice(0.00);
+														send_list.remove(tdCoupon);
+														send_pro_coupon_condition.put(goodsId, send_list);
+													} else if (null != buy_list && buy_list.size() > 0) {
+														TdCoupon tdCoupon = buy_list.get(0);
+														proCoupon.setIsBuy(true);
+														proCoupon.setRealPrice(tdCoupon.getRealPrice());
+														proCoupon.setBuyPrice(tdCoupon.getBuyPrice());
+														buy_list.remove(tdCoupon);
+														buy_pro_coupon_condition.put(goodsId, buy_list);
+													}
+
+													tdCouponService.save(proCoupon);
+													total -= unit;
+													number--;
+													result.put("pro" + goodsId,
+															((Integer) result.get("pro" + goodsId) - 1));
 												}
-												TdCoupon proCoupon = new TdCoupon();
-												proCoupon.setTypeId(3L);
-												proCoupon.setTypeCategoryId(3L);
-												if (null != goods) {
-													proCoupon.setBrandId(goods.getBrandId());
-													proCoupon.setBrandTitle(goods.getBrandTitle());
-												}
-												proCoupon.setPicUri(goods.getCoverImageUri());
-												proCoupon.setGoodsId(goods.getId());
-												proCoupon.setPrice(0.0);
-												proCoupon.setTypeTitle("退货返还的优惠券");
-												proCoupon.setGoodsName(goods.getTitle());
-												proCoupon.setIsDistributted(true);
-												if (null != city) {
-													proCoupon.setCityName(city.getCityName());
-													proCoupon.setCityId(city.getId());
-												}
-												proCoupon.setGetTime(new Date());
-												proCoupon.setAddTime(new Date());
-												proCoupon.setGetNumber(1L);
-												proCoupon.setExpireTime(endTime);
-												proCoupon.setUsername(order.getUsername());
-												proCoupon.setIsUsed(false);
-												proCoupon.setIsOutDate(false);
-												proCoupon.setMobile(order.getUsername());
-												proCoupon.setSku(goods.getCode());
-												// add MDJ
-												proCoupon.setOrderId(orderId);
-												proCoupon.setOrderNumber(order.getOrderNumber());
-												// add end
-												tdCouponService.save(proCoupon);
-												total -= unit;
 											}
 										}
 									}
@@ -1426,17 +1574,15 @@ public class TdPriceCountService {
 
 										// 使用的电子产品券
 										Integer usedCashProNumber = (Integer) result.get("cashPro" + goodsId);
-										if (usedCashProNumber == null )
-										{
+										if (usedCashProNumber == null) {
 											usedCashProNumber = 0;
 										}
-										
-										
-										//使用的电子产品金额
+
+										// 使用的电子产品金额
 										@SuppressWarnings("unchecked")
-										List<Double> usedCashProPrice = (List<Double>)result.get("cashPrice" + goodsId);
-										
-										
+										List<Double> usedCashProPrice = (List<Double>) result
+												.get("cashPrice" + goodsId);
+
 										if (null != useNumber && useNumber > 0) {
 											// 开始计算退还几张券
 											for (int i = 0; i < useNumber; i++) {
@@ -1472,13 +1618,13 @@ public class TdPriceCountService {
 												// add MDJ
 												proCoupon.setOrderId(order.getId());
 												proCoupon.setOrderNumber(order.getOrderNumber());
-												
-												
+
 												Integer unCashProNumber = useNumber - usedCashProNumber;
-												
-												//优先还产品券，最后还电子产品券
-												proCoupon.setIsBuy( (i < unCashProNumber) ? false : true);
-												proCoupon.setPrice(i < unCashProNumber ? null : usedCashProPrice.get(unCashProNumber - i));
+
+												// 优先还产品券，最后还电子产品券
+												proCoupon.setIsBuy((i < unCashProNumber) ? false : true);
+												proCoupon.setPrice(i < unCashProNumber ? null
+														: usedCashProPrice.get(unCashProNumber - i));
 												// add end
 
 												couponList.add(proCoupon);

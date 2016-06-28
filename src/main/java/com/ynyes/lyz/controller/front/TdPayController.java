@@ -311,10 +311,8 @@ public class TdPayController {
 
 	@RequestMapping(value = "/pay/alipay/return/async")
 	@ResponseBody
-	public Map<String, Object> payAlipayReturnAsync(HttpServletRequest req) {
+	public String payAlipayReturnAsync(HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("username");
-		Map<String, Object> res = new HashMap<>();
-		res.put("status", -1);
 
 		// String username = (String) req.getSession().getAttribute("username");
 
@@ -365,7 +363,7 @@ public class TdPayController {
 						}
 						Double balance = user.getBalance();
 						if (null == balance) {
-							balance = 0.00; 
+							balance = 0.00;
 						}
 
 						recharge.setFinishTime(new Date());
@@ -493,10 +491,11 @@ public class TdPayController {
 						}
 					}
 				}
-				res.put("status", 0);
 			}
+			return "success";
+		} else {
+			return "fail";
 		}
-		return res;
 	}
 
 	@RequestMapping(value = "/union")
@@ -576,6 +575,10 @@ public class TdPayController {
 					if (null != SUCCESS && SUCCESS.charValue() == 'Y') {
 						if (recharge.getStatusId().longValue() == 1L) {
 							recharge.setStatusId(2L);
+							if (null == username) {
+								username = recharge.getUsername();
+								req.getSession().setAttribute("username", username);
+							}
 							TdUser user = tdUserService.findOne(recharge.getUserId());
 							Double cashBalance = user.getCashBalance();
 							if (null == cashBalance) {
@@ -614,6 +617,10 @@ public class TdPayController {
 		} else {
 			// 根据指定的订单号查找订单
 			TdOrder order = tdOrderService.findByOrderNumber(ORDERID);
+			if (null == username) {
+				username = order.getUsername();
+				req.getSession().setAttribute("username", username);
+			}
 			// 在能查询到具体订单的情况下进行业务逻辑处理
 			if (null != order) {
 				Double totalPrice = order.getTotalPrice();
@@ -717,15 +724,13 @@ public class TdPayController {
 
 	@RequestMapping(value = "/wx/sign")
 	@ResponseBody
-	public Map<String, Object> WxPayReturnSign(String orderId,HttpServletRequest req) 
-	{
+	public Map<String, Object> WxPayReturnSign(String orderId, HttpServletRequest req) {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("code", 0);
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 
-		if (user == null)
-		{
+		if (user == null) {
 			resultMap.put("msg", "请先登录");
 			return resultMap;
 		}
@@ -739,13 +744,11 @@ public class TdPayController {
 			return resultMap;
 		}
 		String orderUsername = tdOrder.getRealUserUsername();
-		if (username == null || !username.equalsIgnoreCase(orderUsername)) 
-		{
+		if (username == null || !username.equalsIgnoreCase(orderUsername)) {
 			resultMap.put("msg", "请先登录");
 			return resultMap;
 		}
-		if (tdOrder.getStatusId() == null || tdOrder.getStatusId() != 2)
-		{
+		if (tdOrder.getStatusId() == null || tdOrder.getStatusId() != 2) {
 			resultMap.put("msg", "参数错误");
 			return resultMap;
 		}

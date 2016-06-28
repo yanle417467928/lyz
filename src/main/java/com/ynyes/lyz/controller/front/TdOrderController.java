@@ -1522,7 +1522,7 @@ public class TdOrderController {
 			res.put("message", "未找到指定的用户");
 			return res;
 		}
-
+		
 		// 获取虚拟订单
 		// System.err.println("开始获取虚拟订单");
 		TdOrder order_temp = (TdOrder) req.getSession().getAttribute("order_temp");
