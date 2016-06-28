@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.ynyes.lyz.entity.TdActivityGiftList;
 import com.ynyes.lyz.entity.TdCity;
 import com.ynyes.lyz.entity.TdDiySiteInventory;
 import com.ynyes.lyz.entity.TdGoods;
@@ -47,6 +48,11 @@ public class TdDiySiteInventoryService {
 		}
 		return repository.save(e);
 	}
+	
+	public List<TdDiySiteInventory> save(List<TdDiySiteInventory> entities)
+    {
+        return (List<TdDiySiteInventory>) repository.save(entities);
+    }
 
 	public void delete(Long id) {
 		if (null != id) {
@@ -72,6 +78,10 @@ public class TdDiySiteInventoryService {
 		return repository.findByGoodsCodeAndDiySiteId(goodsCode, siteId);
 	}
 
+	public List<Long> findGoodsIdByDiySiteId(Long siteId)
+	{
+		return repository.findGoodsIdByDiySiteId(siteId);
+	}
 	// public TdDiySiteInventory findBygoodsCodeAndDiySiteIdNull(String
 	// goodsCode)
 	// {
@@ -138,6 +148,11 @@ public class TdDiySiteInventoryService {
 		if (StringUtils.isBlank(goodsCode) || regionId == null)
 			return null;
 		return repository.findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(goodsCode, regionId);
+	}
+	
+	public List<Long> findGoodsIdByRegionIdAndDiySiteIdIsNull(Long regionId)
+	{
+		return repository.findGoodsIdByRegionIdAndDiySiteIdIsNull(regionId);
 	}
 
 	/**

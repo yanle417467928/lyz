@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.ynyes.lyz.entity.TdDiySiteInventory;
@@ -12,6 +13,9 @@ import com.ynyes.lyz.entity.TdDiySiteInventory;
 public interface TdDiySiteInventoryRepo extends PagingAndSortingRepository<TdDiySiteInventory, Long>, JpaSpecificationExecutor<TdDiySiteInventory> 
 {
 	TdDiySiteInventory findByGoodsCodeAndDiySiteId(String goodsCode,Long siteId);
+	
+	@Query("select t.goodsId from TdDiySiteInventory t where t.diySiteId = ?1")
+	List<Long> findGoodsIdByDiySiteId(Long siteId);
 	
 	TdDiySiteInventory findBygoodsCodeAndDiySiteIdNull(String goodsCode);
 
@@ -32,4 +36,7 @@ public interface TdDiySiteInventoryRepo extends PagingAndSortingRepository<TdDiy
 	Page<TdDiySiteInventory> findByRegionIdAndDiySiteIdIsNullAndGoodsCodeContainingOrRegionIdAndDiySiteIdIsNullAndGoodsTitleContainingOrderByIdAsc(Long regionId,String code,Long regionid,String title,Pageable pageable);
 	
 	TdDiySiteInventory findByGoodsCodeAndRegionIdAndDiySiteIdIsNull(String goodsCode,Long regionId);
+	
+	@Query("select t.goodsId from TdDiySiteInventory t where t.regionId = ?1 and t.diySiteId is null")
+	List<Long> findGoodsIdByRegionIdAndDiySiteIdIsNull(Long regionId);
 }

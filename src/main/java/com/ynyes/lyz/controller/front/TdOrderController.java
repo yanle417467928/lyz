@@ -1488,18 +1488,21 @@ public class TdOrderController {
 		TdOrder order = (TdOrder) req.getSession().getAttribute("order_temp");
 
 		// Add by Shawn
-		order.setProvince(address.getProvince());
-		order.setCity(address.getCity());
-		order.setDisctrict(address.getDisctrict());
-		order.setSubdistrict(address.getSubdistrict());
-		order.setDetailAddress(address.getDetailAddress());
+		if (order !=null && address != null)
+		{
+			order.setProvince(address.getProvince());
+			order.setCity(address.getCity());
+			order.setDisctrict(address.getDisctrict());
+			order.setSubdistrict(address.getSubdistrict());
+			order.setDetailAddress(address.getDetailAddress());
 
-		order.setShippingAddress(
-				address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
-		order.setShippingName(address.getReceiverName());
-		order.setShippingPhone(address.getReceiverMobile());
-		tdOrderService.save(order);
-		req.getSession().setAttribute("order_temp", order);
+			order.setShippingAddress(
+					address.getCity() + address.getDisctrict() + address.getSubdistrict() + address.getDetailAddress());
+			order.setShippingName(address.getReceiverName());
+			order.setShippingPhone(address.getReceiverMobile());
+			tdOrderService.save(order);
+			req.getSession().setAttribute("order_temp", order);
+		}
 		return "redirect:/order";
 	}
 

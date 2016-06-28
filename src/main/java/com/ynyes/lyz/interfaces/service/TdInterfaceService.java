@@ -264,16 +264,16 @@ public class TdInterfaceService {
 	 * 根据订单生成销售订单相关数据
 	 * @param tdOrder
 	 */
-	public void initOrderInf(TdOrder tdOrder)
+	public TdOrderInf initOrderInf(TdOrder tdOrder)
 	{
 		if (tdOrder == null)
 		{
-			return ;
+			return null;
 		}
 		TdOrderInf orderInf = tdOrderInfService.findByOrderNumber(tdOrder.getOrderNumber());
 		if (orderInf != null) 
 		{
-			return;
+			return null;
 		}
 		orderInf = new TdOrderInf();
 		TdDiySite diySite = tdDiySiteService.findOne(tdOrder.getDiySiteId());
@@ -308,7 +308,15 @@ public class TdInterfaceService {
 		orderInf.setPayDate(tdOrder.getPayTime());
 		orderInf.setPayAmt(booleanByStr(orderInf.getIsonlinepay())?tdOrder.getTotalPrice():0);
 		orderInf.setPrepayAmt(tdOrder.getCashBalanceUsed() + tdOrder.getUnCashBalanceUsed());
-		orderInf.setRecAmt(tdOrder.getTotalPrice() - orderInf.getPrepayAmt());
+		String payTypeTitle = tdOrder.getPayTypeTitle();
+		if ("支付宝".equalsIgnoreCase(payTypeTitle) || "银行卡".equalsIgnoreCase(payTypeTitle) || "微信支付".equalsIgnoreCase(payTypeTitle) )
+		{
+			orderInf.setRecAmt(0.0);
+		}
+		else
+		{
+			orderInf.setRecAmt(tdOrder.getTotalPrice());
+		}
 		tdOrderInfService.save(orderInf);
 		
 		
@@ -430,6 +438,7 @@ public class TdInterfaceService {
 			cashReciptInf.setAmount(tdOrder.getOtherPay());
 			tdCashReciptInfService.save(cashReciptInf);
 		}
+		return orderInf;
 	}
 	
 	/**
