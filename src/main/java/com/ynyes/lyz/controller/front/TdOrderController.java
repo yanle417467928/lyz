@@ -1392,6 +1392,11 @@ public class TdOrderController {
 			if (tdSettingService.checkMaxShipping(res, realUser, 0L)) {
 				return res;
 			}
+			
+			//过滤特殊字符
+			receiveName=com.ynyes.lyz.util.StringUtils.StringFilter(receiveName);
+			receiveMobile=com.ynyes.lyz.util.StringUtils.StringNumberFilter(receiveMobile);
+			detail=com.ynyes.lyz.util.StringUtils.StringFilter(detail);
 
 			TdDistrict tdDistrict = tdDistrictService.findOne(district);
 			TdSubdistrict tdSubdistrict = tdSubdistrictService.findOne(subdistrict);

@@ -1011,6 +1011,10 @@ public class TdUserController {
 		if (tdSettingService.checkMaxShipping(res, user, operation)) {
 			return res;
 		}
+		//过滤特殊字符
+		receiver=com.ynyes.lyz.util.StringUtils.StringFilter(receiver);
+		receiverMobile=com.ynyes.lyz.util.StringUtils.StringNumberFilter(receiverMobile);
+		detailAddress=com.ynyes.lyz.util.StringUtils.StringFilter(detailAddress);
 
 		TdShippingAddress address = null;
 
