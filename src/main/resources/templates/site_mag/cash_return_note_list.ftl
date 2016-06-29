@@ -146,9 +146,11 @@ function __doPostBack(eventTarget, eventArgument) {
 <#include "/site_mag/list_footer.ftl" />
 <!--/内容底部-->
 </form>
-<!-- <form id="upload" action="/Verwalter/upload" enctype="multipart/form-data" method="post">
-            <input type="file" onchange="upload()" name="Filedata" id="clickFile">
-        	</form> -->
+<#--
+<form id="upload" action="/Verwalter/upload" enctype="multipart/form-data" method="post">
+<input type="file" onchange="upload()" name="Filedata" id="clickFile">
+</form> 
+-->
 
 </body>
 <script>

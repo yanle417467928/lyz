@@ -2765,72 +2765,6 @@ public class TdUserController {
 													number--;
 													total -= unit;
 												}
-												// TdCoupon proCoupon = new
-												// TdCoupon();
-												// proCoupon.setTypeId(3L);
-												// proCoupon.setTypeCategoryId(3L);
-												// if (null != goods) {
-												// proCoupon.setBrandId(goods.getBrandId());
-												// proCoupon.setBrandTitle(goods.getBrandTitle());
-												// }
-												// proCoupon.setPicUri(goods.getCoverImageUri());
-												// proCoupon.setGoodsId(goods.getId());
-												// proCoupon.setPrice(0.0);
-												// proCoupon.setTypeTitle("退货返还的优惠券");
-												// proCoupon.setGoodsName(goods.getTitle());
-												// proCoupon.setIsDistributted(true);
-												// if (null != city) {
-												// proCoupon.setCityName(city.getCityName());
-												// proCoupon.setCityId(city.getId());
-												// }
-												// proCoupon.setGetTime(new
-												// Date());
-												// proCoupon.setAddTime(new
-												// Date());
-												// proCoupon.setGetNumber(1L);
-												// proCoupon.setExpireTime(endTime);
-												// proCoupon.setUsername(order.getUsername());
-												// proCoupon.setIsUsed(false);
-												// proCoupon.setIsOutDate(false);
-												// proCoupon.setMobile(order.getUsername());
-												// proCoupon.setSku(goods.getCode());
-												// // add MDJ
-												// proCoupon.setOrderId(orderId);
-												// proCoupon.setOrderNumber(order.getOrderNumber());
-												// // add end
-												//
-												// // 在此判断是返回送的券还是返回买的券，优先返还送的券
-												// ArrayList<TdCoupon> buy_list
-												// =
-												// buy_pro_coupon_condition.get(goodsId);
-												// ArrayList<TdCoupon> send_list
-												// =
-												// send_pro_coupon_condition.get(goodsId);
-												//
-												// if (null != send_list &&
-												// send_list.size() > 0) {
-												// TdCoupon tdCoupon =
-												// send_list.get(0);
-												// proCoupon.setIsBuy(false);
-												// proCoupon.setRealPrice(tdCoupon.getRealPrice());
-												// proCoupon.setBuyPrice(tdCoupon.getBuyPrice());
-												// send_list.remove(tdCoupon);
-												// send_pro_coupon_condition.put(goodsId,
-												// send_list);
-												// } else if (null != buy_list
-												// && buy_list.size() > 0) {
-												// TdCoupon tdCoupon =
-												// buy_list.get(0);
-												// proCoupon.setIsBuy(true);
-												// proCoupon.setRealPrice(tdCoupon.getRealPrice());
-												// proCoupon.setBuyPrice(tdCoupon.getBuyPrice());
-												// buy_list.remove(tdCoupon);
-												// buy_pro_coupon_condition.put(goodsId,
-												// buy_list);
-												// }
-												//
-												// tdCouponService.save(proCoupon);
-												// total -= unit;
 											}
 										}
 									}
@@ -2846,35 +2780,6 @@ public class TdUserController {
 											cashPrice = cashTotal;
 										}
 										infos.add(cashPrice + "元【通用现金券】*1");
-										// TdCoupon cashCoupon = new TdCoupon();
-										// cashCoupon.setTypeId(3L);
-										// cashCoupon.setTypeCategoryId(1L);
-										// if (null != goods) {
-										// cashCoupon.setBrandId(goods.getBrandId());
-										// cashCoupon.setBrandTitle(goods.getBrandTitle());
-										// }
-										// cashCoupon.setPicUri(goods.getCoverImageUri());
-										// cashCoupon.setGoodsName(goods.getTitle());
-										// cashCoupon.setPrice(cashPrice);
-										// cashCoupon.setTypeTitle("退货返还的优惠券");
-										// cashCoupon.setGetNumber(1L);
-										// if (null != city) {
-										// cashCoupon.setCityName(city.getCityName());
-										// cashCoupon.setCityId(city.getId());
-										// }
-										// cashCoupon.setAddTime(new Date());
-										// cashCoupon.setIsDistributted(true);
-										// cashCoupon.setGetTime(new Date());
-										// cashCoupon.setExpireTime(endTime);
-										// cashCoupon.setUsername(order.getUsername());
-										// cashCoupon.setIsUsed(false);
-										// cashCoupon.setIsOutDate(false);
-										// cashCoupon.setMobile(order.getUsername());
-										// // add MDJ
-										// cashCoupon.setOrderId(orderId);
-										// cashCoupon.setOrderNumber(order.getOrderNumber());
-										// // add end
-										// tdCouponService.save(cashCoupon);
 
 										total -= cashPrice;
 										result.put("cashTotal", cashTotal - cashPrice);
@@ -2899,36 +2804,6 @@ public class TdUserController {
 									}
 									infos.add(uncashBalance + "元【不可提现预存款】");
 									// // 开始退还不可提现余额
-									// user.setUnCashBalance(user.getUnCashBalance()
-									// + uncashBalance);
-									// user.setBalance(user.getBalance() +
-									// uncashBalance);
-									// // 添加用于余额变更明细
-									// if (uncashBalance > 0) {
-									// TdBalanceLog balanceLog = new
-									// TdBalanceLog();
-									// balanceLog.setUserId(user.getId());
-									// balanceLog.setUsername(user.getUsername());
-									// balanceLog.setMoney(uncashBalance);
-									// balanceLog.setType(4L);
-									// balanceLog.setCreateTime(new Date());
-									// balanceLog.setFinishTime(new Date());
-									// balanceLog.setIsSuccess(true);
-									// balanceLog.setBalanceType(4L);
-									// balanceLog.setBalance(user.getUnCashBalance());
-									// balanceLog.setOperator(user.getUsername());
-									// try {
-									// balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
-									// } catch (UnknownHostException e) {
-									// System.out.println("获取ip地址报错");
-									// e.printStackTrace();
-									// }
-									// balanceLog.setReason("订单退货退款");
-									// balanceLog.setOrderNumber(order.getOrderNumber());
-									// balanceLog.setDiySiteId(user.getUpperDiySiteId());
-									// balanceLog.setCityId(user.getCityId());
-									// tdBalanceLogService.save(balanceLog);
-									// }
 									// 判断是否剩余部分金额需要退还
 									total -= uncashBalance;
 									unCashBalanceUsed -= uncashBalance;
@@ -2949,37 +2824,6 @@ public class TdUserController {
 									}
 									infos.add(cashBalance + "元【可提现预存款】");
 
-									// // 开始退还余额
-									// user.setCashBalance(user.getCashBalance()
-									// + cashBalance);
-									// user.setBalance(user.getBalance() +
-									// cashBalance);
-									// // 记录余额变更明细
-									// if (cashBalance > 0) {
-									// TdBalanceLog balanceLog = new
-									// TdBalanceLog();
-									// balanceLog.setUserId(user.getId());
-									// balanceLog.setUsername(user.getUsername());
-									// balanceLog.setMoney(cashBalance);
-									// balanceLog.setType(4L);
-									// balanceLog.setCreateTime(new Date());
-									// balanceLog.setFinishTime(new Date());
-									// balanceLog.setIsSuccess(true);
-									// balanceLog.setBalanceType(3L);
-									// balanceLog.setBalance(user.getCashBalance());
-									// balanceLog.setOperator(user.getUsername());
-									// try {
-									// balanceLog.setOperatorIp(InetAddress.getLocalHost().getHostAddress());
-									// } catch (UnknownHostException e) {
-									// System.out.println("获取ip地址报错");
-									// e.printStackTrace();
-									// }
-									// balanceLog.setReason("订单退货退款");
-									// balanceLog.setOrderNumber(order.getOrderNumber());
-									// balanceLog.setDiySiteId(user.getUpperDiySiteId());
-									// balanceLog.setCityId(user.getCityId());
-									// tdBalanceLogService.save(balanceLog);
-									// }
 									total -= cashBalance;
 									cashBalanceUsed -= cashBalance;
 								}
@@ -3000,25 +2844,6 @@ public class TdUserController {
 
 										if (otherReturn > 0.00) {
 											infos.add(otherReturn + "元【" + payTypeTitle + "】");
-											// // 根据退款方式和退货金额生成一个资金退还申请单据
-											// TdCashReturnNote note = new
-											// TdCashReturnNote();
-											// note.setCreateTime(new Date());
-											// note.setMoney(otherReturn);
-											// //
-											// 如果支付方式属于线上支付，那么一定是支付宝、微信、银行卡的一种，则按照正常逻辑处理
-											// // 当订单价格为0 支付方式为其他 payType值为null
-											// note.setTypeId(payTypeId);
-											// note.setTypeTitle(payType.getTitle());
-											// note.setOrderNumber(order.getOrderNumber());
-											// note.setMainOrderNumber(order.getMainOrderNumber());
-											// note.setReturnNoteNumber(returnNoteNumber);
-											// note.setUserId(user.getId());
-											// note.setUsername(user.getUsername());
-											// note.setIsOperated(false);
-											// note =
-											// tdCashReturnNoteService.save(note);
-
 											otherPay -= otherReturn;
 										}
 										// ----------在此处理退款申请单的一系列操作动作-------------------
@@ -3038,22 +2863,6 @@ public class TdUserController {
 
 										if (cashReturn > 0.00) {
 											infos.add(cashReturn + "元【现金】");
-											// // 根据退款方式和退货金额生成一个资金退还申请单据
-											// TdCashReturnNote note = new
-											// TdCashReturnNote();
-											// note.setCreateTime(new Date());
-											// note.setMoney(cashReturn);
-											// note.setTypeId(-1L);
-											// note.setTypeTitle("现金");
-											// note.setOrderNumber(order.getOrderNumber());
-											// note.setMainOrderNumber(order.getMainOrderNumber());
-											// note.setReturnNoteNumber(returnNoteNumber);
-											// note.setUserId(user.getId());
-											// note.setUsername(user.getUsername());
-											// note.setIsOperated(false);
-											// note =
-											// tdCashReturnNoteService.save(note);
-
 											total -= cashReturn;
 											cashPay -= cashReturn;
 										}
@@ -3069,78 +2878,10 @@ public class TdUserController {
 
 											if (posReturn > 0.00) {
 												infos.add(posReturn + "元【POS退还】");
-												// // 根据退款方式和退货金额生成一个资金退还申请单据
-												// TdCashReturnNote note01 = new
-												// TdCashReturnNote();
-												// note01.setCreateTime(new
-												// Date());
-												// note01.setMoney(posReturn);
-												// //
-												// 如果支付方式属于线上支付，那么一定是支付宝、微信、银行卡的一种，则按照正常逻辑处理
-												// // 当订单价格为0 支付方式为其他
-												// payType值为null
-												// note01.setTypeId(-2L);
-												// note01.setTypeTitle("POS");
-												// note01.setOrderNumber(order.getOrderNumber());
-												// note01.setMainOrderNumber(order.getMainOrderNumber());
-												// note01.setReturnNoteNumber(returnNoteNumber);
-												// note01.setUserId(user.getId());
-												// note01.setUsername(user.getUsername());
-												// note01.setIsOperated(false);
-												// note01 =
-												// tdCashReturnNoteService.save(note01);
-
 												posPay -= posReturn;
 											}
 										}
 									}
-									//
-									//
-									//
-									//
-									// // 获取用户第三方支付的总额
-									// if (null == otherPay) {
-									// otherPay = 0.00;
-									// }
-									//
-									//
-									//
-									// // 根据退款方式和退货金额生成一个资金退还申请单据
-									// TdCashReturnNote note = new
-									// TdCashReturnNote();
-									// note.setCreateTime(new Date());
-									// note.setMoney(otherReturn);
-									// //
-									// 如果支付方式属于线上支付，那么一定是支付宝、微信、银行卡的一种，则按照正常逻辑处理
-									// //当订单价格为0 支付方式为其他 payType值为null
-									// if (payType!=null && null !=
-									// payType.getIsOnlinePay() &&
-									// payType.getIsOnlinePay()) {
-									// note.setTypeId(payTypeId);
-									// note.setTypeTitle(payType.getTitle());
-									// } else {
-									// // 如果支付方式是线下支付，则涉及到真实的支付方式包含现金和POS（甚至混用）
-									// // 目前不知道现金额度和POS额度的字段，所以无法添加相关逻辑
-									// //
-									// ---------------------在此添加现金和POS的逻辑------------------
-									//
-									// //此处逻辑及设置typeId和typeTitle的值
-									//
-									//
-									// //
-									// ---------------------现金和POS的逻辑结束---------------------
-									// }
-									// note.setOrderNumber(order.getOrderNumber());
-									// note.setMainOrderNumber(order.getMainOrderNumber());
-									// note.setReturnNoteNumber(returnNoteNumber);
-									// note.setUserId(user.getId());
-									// note.setUsername(user.getUsername());
-									// note.setIsOperated(false);
-									// note =
-									// tdCashReturnNoteService.save(note);
-									//
-									// //
-									// ----------在此处理退款申请单的一系列操作动作-------------------
 								}
 							}
 						}
