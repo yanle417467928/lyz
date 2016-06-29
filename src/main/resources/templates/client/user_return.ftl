@@ -294,7 +294,6 @@
 	        <div style="height:140px;margin-top:160px;">                   
 	            <p id="title">退货原因</p>
 	            <select name="remark" id="remark" style="width:100%;outline:none;line-height:30px;-webkit-appearance:none;font-size:0.8em;padding:5px;">
-	            	<option value="规格拍错">规格拍错</option>
 	            	<#if reason_list??>
 	            		<#list reason_list as item>
 			            	<option value="${item.title!''}">${item.title!''}</option>

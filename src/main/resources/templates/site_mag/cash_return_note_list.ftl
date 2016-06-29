@@ -130,7 +130,7 @@ function __doPostBack(eventTarget, eventArgument) {
             		<#if item.isOperated>
             			<a>已经打款</a>
             		<#else>
-            			<a href="javascript:__doPostBack('returnMoney',${item.id?c});">打款</a>
+            			<a href="javascript:showConfirm(${item.id?c});">打款</a>
             		</#if>
             	</td>
         </#list>
@@ -150,4 +150,14 @@ function __doPostBack(eventTarget, eventArgument) {
             <input type="file" onchange="upload()" name="Filedata" id="clickFile">
         	</form> -->
 
-</body></html>
+</body>
+<script>
+	function showConfirm(id){
+		$.dialog.confirm("是否确认已经打款",function(check){
+			if(check){
+				__doPostBack('returnMoney',id)
+			}
+		});
+	}
+</script>
+</html>
