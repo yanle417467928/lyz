@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.front;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,6 +79,9 @@ public class TdPayController {
 			fee = order.getTotalPrice();
 		}
 
+		BigDecimal bd = new BigDecimal(fee);
+		fee = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
 		// 获取需要支付的订单
 
 		// 页面跳转同步通知页面路径
@@ -105,6 +109,7 @@ public class TdPayController {
 		sParaTemp.put("show_url", "http://101.200.128.65:8080/");
 		sParaTemp.put("subject", subject);
 		sParaTemp.put("total_fee", fee + "");
+
 		String sHtmlText = AlipaySubmit.buildRequest(sParaTemp, "get", "确认");
 		map.put("code", sHtmlText);
 		return "/client/waiting_pay";
