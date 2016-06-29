@@ -33,6 +33,10 @@ public class TdReturnGoodsInf extends TdInfBaseEntity
 	@Column
 	private Double jxPrice;
 	
+	// 平摊价
+	@Column
+	private Double lsSharePrice;
+	
 	//零售平摊价
 	//①会员下单传零售平摊价，
 	//②直营门店下LYZ和YR产品传零售平摊价
@@ -106,6 +110,14 @@ public class TdReturnGoodsInf extends TdInfBaseEntity
 
 	public void setLsPrice(Double lsPrice) {
 		this.lsPrice = lsPrice;
+	}
+	
+	public Double getLsSharePrice() {
+		return lsSharePrice;
+	}
+
+	public void setLsSharePrice(Double lsSharePrice) {
+		this.lsSharePrice = lsSharePrice;
 	}
 
 	public String getAttribute1() {

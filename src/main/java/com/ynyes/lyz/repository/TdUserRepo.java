@@ -150,4 +150,7 @@ public interface TdUserRepo extends PagingAndSortingRepository<TdUser, Long>, Jp
 	 */
 	List<TdUser> findByCityId(Long cityId);
 	
+//	@Query("update TdUser set opUser = (?1).opUser where id = (?1).id")
+//	TdUser saveWithOutBalance(TdUser user);
+	
 }

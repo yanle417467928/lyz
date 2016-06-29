@@ -31,6 +31,11 @@ public class TdUserService {
 		}
 		return repository.save(user);
 	}
+	
+//	public TdUser saveWithOutBalance(TdUser user)
+//	{
+//		return repository.saveWithOutBalance(user);
+//	}
 
 	public void delete(Long id) {
 		if (null != id) {

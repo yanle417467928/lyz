@@ -72,5 +72,6 @@ public class INFConstants
 	
 	public static final String kCouponList		= "coupon_list_key";
 	public static final String kBalance		= "balance_key";
+	public static final String kPrcieDif		= "price_difference";
 	
 }
