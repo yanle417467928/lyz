@@ -194,7 +194,7 @@ public class TdUserController {
 
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
-	
+
 	@Autowired
 	private TdReturnReasonService tdReturnReasonService;
 
@@ -1017,10 +1017,10 @@ public class TdUserController {
 		if (tdSettingService.checkMaxShipping(res, user, operation)) {
 			return res;
 		}
-		//过滤特殊字符
-		receiver=com.ynyes.lyz.util.StringUtils.StringFilter(receiver);
-		receiverMobile=com.ynyes.lyz.util.StringUtils.StringNumberFilter(receiverMobile);
-		detailAddress=com.ynyes.lyz.util.StringUtils.StringFilter(detailAddress);
+		// 过滤特殊字符
+		receiver = com.ynyes.lyz.util.StringUtils.StringFilter(receiver);
+		receiverMobile = com.ynyes.lyz.util.StringUtils.StringNumberFilter(receiverMobile);
+		detailAddress = com.ynyes.lyz.util.StringUtils.StringFilter(detailAddress);
 
 		TdShippingAddress address = null;
 
@@ -1920,7 +1920,7 @@ public class TdUserController {
 
 		TdSetting setting = tdSettingService.findTopBy();
 		map.addAttribute("telphone", setting.getTelephone());
-		
+
 		// 查找所有的退货原因
 		List<TdReturnReason> reason_list = tdReturnReasonService.findAll();
 		map.addAttribute("reason_list", reason_list);
@@ -2779,8 +2779,10 @@ public class TdUserController {
 										} else {
 											cashPrice = cashTotal;
 										}
-										infos.add(cashPrice + "元【通用现金券】*1");
 
+										if (cashPrice > 0) {
+											infos.add(cashPrice + "元【通用现金券】*1");
+										}
 										total -= cashPrice;
 										result.put("cashTotal", cashTotal - cashPrice);
 
@@ -2802,7 +2804,9 @@ public class TdUserController {
 										// 如果需要退还的金额大于等于用户使用的不可提现余额，则只能够退还用户使用的不可提现余额
 										uncashBalance = unCashBalanceUsed;
 									}
-									infos.add(uncashBalance + "元【不可提现预存款】");
+									if (uncashBalance > 0) {
+										infos.add(uncashBalance + "元【不可提现预存款】");
+									}
 									// // 开始退还不可提现余额
 									// 判断是否剩余部分金额需要退还
 									total -= uncashBalance;
@@ -2822,8 +2826,9 @@ public class TdUserController {
 									} else {
 										cashBalance = cashBalanceUsed;
 									}
-									infos.add(cashBalance + "元【可提现预存款】");
-
+									if (cashBalance > 0) {
+										infos.add(cashBalance + "元【可提现预存款】");
+									}
 									total -= cashBalance;
 									cashBalanceUsed -= cashBalance;
 								}
