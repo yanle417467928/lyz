@@ -130,7 +130,7 @@ function __doPostBack(eventTarget, eventArgument) {
             		<#if item.isOperated>
             			<a>已经打款</a>
             		<#else>
-            			<a href="javascript:showConfirm(${item.id?c});">打款</a>
+            			<a href="javascript:showConfirm('${item.orderNumber!''}','${item.mainOrderNumber!''}',${item.id?c});">打款</a>
             		</#if>
             	</td>
         </#list>
@@ -152,8 +152,8 @@ function __doPostBack(eventTarget, eventArgument) {
 
 </body>
 <script>
-	function showConfirm(id){
-		$.dialog.confirm("是否确认已经打款",function(check){
+	function showConfirm(orderNumber,mainOrderNumber,id){
+		$.dialog.confirm("订单" + orderNumber + "（主单号：" + mainOrderNumber + "）是否确认已经打款",function(check){
 			if(check){
 				__doPostBack('returnMoney',id)
 			}
