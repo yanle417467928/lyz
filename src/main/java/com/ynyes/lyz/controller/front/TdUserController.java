@@ -2030,11 +2030,11 @@ public class TdUserController {
 										orderGoods.setSku(oGoods.getCode());
 										orderGoods.setGoodsCoverImageUri(oGoods.getCoverImageUri());
 										orderGoods.setGoodsTitle(oGoods.getTitle());
-										orderGoods.setPrice(unit);
+										orderGoods.setPrice(price);
 										orderGoods.setQuantity(quantity);
 										orderGoods.setReturnNoteNumber(returnNote.getReturnNumber());
 										orderGoods.setSubOrderNumber(order.getOrderNumber());
-										orderGoods.setReturnUnitPrice(price);
+										orderGoods.setReturnUnitPrice(unit);
 										// orderGoods.setDeliveredQuantity(oGoods.getDeliveredQuantity());
 										// orderGoods.setPoints(oGoods.getPoints());
 										// tdOrderGoodsService.save(orderGoods);

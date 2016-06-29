@@ -711,30 +711,6 @@ public class TdInterfaceService {
 		List<TdCoupon> coupons = (List<TdCoupon>)map.get(INFConstants.kCouponList);
 		@SuppressWarnings("unchecked")
 		Map<String, Double> priceDifference = (Map<String, Double>)map.get(INFConstants.kPrcieDif);
-		if (type == INFConstants.INF_RETURN_ORDER_SUB_INT && coupons != null && coupons.size() > 0)
-		{
-			for (TdCoupon tdCoupon : coupons) 
-			{
-				TdReturnCouponInf returnCouponInf = new TdReturnCouponInf();
-				returnCouponInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
-				returnCouponInf.setCouponTypeId(StringTools.coupontypeWithCoupon(tdCoupon));
-				returnCouponInf.setSku(tdCoupon.getSku());
-				returnCouponInf.setPrice(tdCoupon.getPrice());
-				returnCouponInf.setQuantity(1L);
-			}
-			if (priceDifference != null && priceDifference.size() > 0)
-			{
-				for (Map.Entry<String,Double> entry : priceDifference.entrySet())
-				{
-					TdReturnCouponInf returnCouponInf = new TdReturnCouponInf();
-					returnCouponInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
-					returnCouponInf.setCouponTypeId(2);
-					returnCouponInf.setSku(entry.getKey());
-					returnCouponInf.setPrice(entry.getValue());
-					returnCouponInf.setQuantity(1L);
-				}
-			}
-		}
 		
 		returnOrderInf.setPrepayAmt(returnBalance);
 		returnOrderInf.setAuditDate(new Date());
@@ -783,17 +759,8 @@ public class TdInterfaceService {
 					goodsQuantity = 0l;
 				}
 				
-				Double proPrice = usedProCouponCount * singlePrice;	//产品券的金额
-				Double totalPrice = singlePrice * goodsQuantity;		//所有商品的价格
-				
-				Double returnPrice = totalPrice - proPrice;			//去掉产品券金额
-				returnPrice = returnPrice - usedCashProCouponCount * singlePrice;	//减去电子产品券的金额（电子产品券有自身价格，所以减掉数量*退货算的单价）
-				returnPrice = returnPrice + usedCashPrice;			//加上电子产品券实际金额
-				
-				singlePrice = returnPrice / goodsQuantity;				//把总价平摊到所有商品
-				
 				// 抵用电子产品券的商品
-				if (usedCashProCouponCount + usedProCouponCount <= goodsQuantity)
+				if (usedCashProCouponCount + usedProCouponCount <= goodsQuantity && usedCashProCouponCount + usedProCouponCount > 0)
 				{
 					TdReturnGoodsInf goodsInf = new TdReturnGoodsInf();
 					goodsInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
@@ -803,15 +770,42 @@ public class TdInterfaceService {
 					goodsInf.setLsSharePrice(tdOrderGoods.getPrice());
 					tdReturnGoodsInfService.save(goodsInf);
 				}
-				else
+				else if (goodsQuantity - (usedCashProCouponCount + usedProCouponCount) > 0)
 				{
 					TdReturnGoodsInf goodsInf = new TdReturnGoodsInf();
 					goodsInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
 					goodsInf.setSku(tdOrderGoods.getSku());
-					goodsInf.setQuantity(usedCashProCouponCount.longValue() + usedProCouponCount.longValue());
+					goodsInf.setQuantity(goodsQuantity - (usedCashProCouponCount + usedProCouponCount));
 					goodsInf.setLsPrice(tdOrderGoods.getPrice());
 					goodsInf.setLsSharePrice(singlePrice);
 					tdReturnGoodsInfService.save(goodsInf);
+				}
+			}
+		}
+		// 退单的券和抵扣券
+		if (type == INFConstants.INF_RETURN_ORDER_SUB_INT && coupons != null && coupons.size() > 0)
+		{
+			for (TdCoupon tdCoupon : coupons)
+			{
+				TdReturnCouponInf returnCouponInf = new TdReturnCouponInf();
+				returnCouponInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
+				returnCouponInf.setCouponTypeId(StringTools.coupontypeWithCoupon(tdCoupon));
+				returnCouponInf.setSku(tdCoupon.getSku());
+				returnCouponInf.setPrice(tdCoupon.getPrice());
+				returnCouponInf.setQuantity(1L);
+				tdReturnCouponInfService.save(returnCouponInf);
+			}
+			if (priceDifference != null && priceDifference.size() > 0)
+			{
+				for (Map.Entry<String,Double> entry : priceDifference.entrySet())
+				{
+					TdReturnCouponInf returnCouponInf = new TdReturnCouponInf();
+					returnCouponInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
+					returnCouponInf.setCouponTypeId(2);
+					returnCouponInf.setSku(entry.getKey());
+					returnCouponInf.setPrice(entry.getValue());
+					returnCouponInf.setQuantity(1L);
+					tdReturnCouponInfService.save(returnCouponInf);
 				}
 			}
 		}

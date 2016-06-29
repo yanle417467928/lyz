@@ -1686,7 +1686,10 @@ public class TdPriceCountService {
 									record = 0.00;
 								}
 								record += sub_coupon_price;
-								price_difference.put(goods.getCode(), record);
+								if (record > 0)
+								{
+									price_difference.put(goods.getCode(), record);
+								}
 								// --------------------修改结束-----------------------
 
 								// 开始退还产品券
