@@ -239,13 +239,15 @@
 					warning("请填写要退商品数量");
 					return;
 				}
+				<#--
 				if("" === $scope.remark || "请输入您的退货原因" === $scope.remark){
 					$scope.remark = "请输入您的退货原因";
 					close(1);
 					return;
 				}
+				-->
 				
-				var remark = $scope.remark;
+				var remark = document.getElementById("remark").value;
 				
 				$.ajax({
 					type:"post",
@@ -289,9 +291,19 @@
 		<#include "/client/return_detail_list.ftl">
    	    <div class="turn_div">
 			<input type="hidden" value="" id="orderId" name="id">
-	        <div>                   
+	        <div style="height:140px;margin-top:160px;">                   
 	            <p id="title">退货原因</p>
+	            <select name="remark" id="remark" style="width:100%;outline:none;line-height:30px;-webkit-appearance:none;font-size:0.8em;padding:5px;">
+	            	<option value="规格拍错">规格拍错</option>
+	            	<#if reason_list??>
+	            		<#list reason_list as item>
+			            	<option value="${item.title!''}">${item.title!''}</option>
+		            	</#list>
+	            	</#if>
+	            <select>
+	            <#--
 	            <textarea name="remark" ng-model="remark"></textarea>
+	            -->
 	            <span>
 	                <input type="button" name="" id="" value="是" ng-click="send();" />
 	                <input onclick="javascript:win_no_return();" type="button" value="否" />

@@ -46,6 +46,7 @@ import com.ynyes.lyz.entity.TdPayType;
 import com.ynyes.lyz.entity.TdPriceListItem;
 import com.ynyes.lyz.entity.TdRecharge;
 import com.ynyes.lyz.entity.TdReturnNote;
+import com.ynyes.lyz.entity.TdReturnReason;
 import com.ynyes.lyz.entity.TdSetting;
 import com.ynyes.lyz.entity.TdShippingAddress;
 import com.ynyes.lyz.entity.TdSubdistrict;
@@ -79,6 +80,7 @@ import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReChargeService;
 import com.ynyes.lyz.service.TdReturnNoteService;
+import com.ynyes.lyz.service.TdReturnReasonService;
 import com.ynyes.lyz.service.TdSettingService;
 import com.ynyes.lyz.service.TdShippingAddressService;
 import com.ynyes.lyz.service.TdSubdistrictService;
@@ -192,6 +194,9 @@ public class TdUserController {
 
 	@Autowired
 	private TdDiySiteInventoryService tdDiySiteInventoryService;
+	
+	@Autowired
+	private TdReturnReasonService tdReturnReasonService;
 
 	/**
 	 * 跳转到个人中心的方法（后期会进行修改，根据不同的角色，跳转的页面不同）
@@ -1915,6 +1920,10 @@ public class TdUserController {
 
 		TdSetting setting = tdSettingService.findTopBy();
 		map.addAttribute("telphone", setting.getTelephone());
+		
+		// 查找所有的退货原因
+		List<TdReturnReason> reason_list = tdReturnReasonService.findAll();
+		map.addAttribute("reason_list", reason_list);
 		return "/client/user_return";
 	}
 

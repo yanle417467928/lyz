@@ -541,6 +541,9 @@ public class TdPayController {
 			newNumber = order.getOrderNumber();
 		}
 
+		BigDecimal bd = new BigDecimal(fee);
+		fee = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		
 		// 开始组合参数
 		String MERCHANTID = "105510148160146";
 		String POSID = "632776177";
