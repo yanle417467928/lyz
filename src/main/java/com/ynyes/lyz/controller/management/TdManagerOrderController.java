@@ -1305,7 +1305,7 @@ public class TdManagerOrderController {
 		if(pos==null){
 			pos=0.0;
 		}
-		Double ownPrice= order.getTotalPrice()-order.getActualPay();
+		Double ownPrice= order.getTotalPrice();
 		//判断是否还清
 		if(!ownPrice.equals((money+pos))){
 			res.put("message", "必须一次性交清不允许欠款");
