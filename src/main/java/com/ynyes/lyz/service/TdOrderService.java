@@ -459,8 +459,14 @@ public class TdOrderService {
 			return e;
 		}
 		//过滤特殊字符
-		e.setRemark(StringUtils.StringFilter(e.getRemark()));
-		e.setRemarkInfo(StringUtils.StringFilter(e.getRemarkInfo()));
+		if (e.getRemark() != null)
+		{
+			e.setRemark(StringUtils.StringFilter(e.getRemark()));
+		}
+		if (e.getRemarkInfo() != null)
+		{
+			e.setRemarkInfo(StringUtils.StringFilter(e.getRemarkInfo()));
+		}
 		return repository.save(e);
 	}
 

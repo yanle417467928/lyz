@@ -234,6 +234,10 @@ public class StringUtils {
 	 * @throws PatternSyntaxException
 	 */
 	public static String StringFilter(String str) throws PatternSyntaxException { 
+		if (str == null)
+		{
+			return null;
+		}
 		String regEx="[`~!@$%^&*+=|{}':;'\\[\\].<>/?~！@#￥%……&*——+|{}【】‘；：”“’。、？]"; 
 		Pattern p = Pattern.compile(regEx); 
 		Matcher m = p.matcher(str);
@@ -249,6 +253,10 @@ public class StringUtils {
 	 * @throws PatternSyntaxException
 	 */
 	public static String StringNumberFilter(String str) throws PatternSyntaxException { 
+		if (str == null)
+		{
+			return null;
+		}
 		String regEx ="[^a-zA-Z0-9]"; 
 		Pattern p = Pattern.compile(regEx); 
 		Matcher m = p.matcher(str);
