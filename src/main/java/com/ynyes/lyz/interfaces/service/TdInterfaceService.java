@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.transaction.Transactional;
 import javax.xml.namespace.QName;
@@ -47,8 +46,6 @@ import com.ynyes.lyz.service.TdOrderService;
 import com.ynyes.lyz.service.TdPayTypeService;
 import com.ynyes.lyz.service.TdPriceCountService;
 import com.ynyes.lyz.service.TdReturnNoteService;
-
-import groovy.time.BaseDuration.From;
 
 
 @Service
@@ -770,7 +767,7 @@ public class TdInterfaceService {
 					goodsInf.setLsSharePrice(tdOrderGoods.getPrice());
 					tdReturnGoodsInfService.save(goodsInf);
 				}
-				else if (goodsQuantity - (usedCashProCouponCount + usedProCouponCount) > 0)
+				if (goodsQuantity - (usedCashProCouponCount + usedProCouponCount) > 0)
 				{
 					TdReturnGoodsInf goodsInf = new TdReturnGoodsInf();
 					goodsInf.setRtHeaderId(returnOrderInf.getRtHeaderId());
@@ -1151,6 +1148,7 @@ public class TdInterfaceService {
 					 + "<QUANTITY>" + object.getQuantity() + "</QUANTITY>"
 					 + "<JX_PRICE>" + object.getJxPrice() + "</JX_PRICE>"
 					 + "<LS_PRICE>" + object.getLsPrice() + "</LS_PRICE>"
+					 + "<LS_SHARE_PRICE>" + object.getLsSharePrice() + "</LS_SHARE_PRICE>"
 					 + "<ATTRIBUTE1>" + object.getAttribute1() + "</ATTRIBUTE1>"
 					 + "<ATTRIBUTE2>" + object.getAttribute2() + "</ATTRIBUTE2>"
 					 + "<ATTRIBUTE3>" + object.getAttribute3() + "</ATTRIBUTE3>"

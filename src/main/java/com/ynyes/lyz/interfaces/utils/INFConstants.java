@@ -35,7 +35,7 @@ public class INFConstants
 	/**
 	 * 销退单的券退回表
 	 */
-	public static final String	INF_RT_ORDER_COUPONS_STR	= "TD_RT_ORDER_COUPONS";
+	public static final String	INF_RT_ORDER_COUPONS_STR	= "TD_RT_COUPONS";
 
 	/**
 	 * 到店退货单退货时间表

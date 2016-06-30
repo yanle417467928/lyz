@@ -65,6 +65,7 @@ import com.ynyes.lyz.interfaces.service.TdCashReciptInfService;
 import com.ynyes.lyz.interfaces.service.TdInterfaceService;
 import com.ynyes.lyz.interfaces.service.TdOrderCouponInfService;
 import com.ynyes.lyz.interfaces.service.TdOrderGoodsInfService;
+import com.ynyes.lyz.interfaces.service.TdOrderInfService;
 import com.ynyes.lyz.interfaces.utils.EnumUtils.INFTYPE;
 import com.ynyes.lyz.interfaces.utils.INFConstants;
 import com.ynyes.lyz.interfaces.utils.StringTools;
@@ -167,6 +168,9 @@ public class TdCommonService {
 	
 	@Autowired
 	private TdCashReciptInfService tdCashReciptInfService;
+	
+	@Autowired
+	private TdOrderInfService tdOrderInfService;
 
 	/**
 	 * 根据仓库编号获取仓库名
@@ -2046,6 +2050,7 @@ public class TdCommonService {
 					orderInf.setSendFlag(1);
 					orderInf.setErrorMsg(resultStr);
 				}
+				tdOrderInfService.save(orderInf);
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -2080,6 +2085,7 @@ public class TdCommonService {
 						goodsInfs.get(i).setSendFlag(1);
 						goodsInfs.get(i).setErrorMsg(e.getMessage());
 					}
+					tdOrderGoodsInfService.save(goodsInfs);
 				}
 			}
 			// 券
@@ -2110,6 +2116,7 @@ public class TdCommonService {
 						couponInfs.get(i).setSendFlag(1);
 						couponInfs.get(i).setErrorMsg(e.getMessage());
 					}
+					tdOrderCouponInfService.save(couponInfs);
 				}
 			}
 			// 收款
@@ -2140,6 +2147,7 @@ public class TdCommonService {
 						cashReciptInfs.get(i).setErrorMsg(e.getMessage());
 					}
 				}
+				tdCashReciptInfService.save(cashReciptInfs);
 			}
 		}
 	}

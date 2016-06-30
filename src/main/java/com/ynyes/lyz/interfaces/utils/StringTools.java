@@ -130,7 +130,18 @@ public class StringTools {
 				return 4;
 			}
 		}
-		else 
+		else  if (typeCategoryId == 3)
+		{
+			if (coupon.getIsBuy() == null || coupon.getIsBuy() == false)
+			{
+				return 1;
+			}
+			else
+			{
+				return 4;
+			}
+		}
+		else
 		{
 			return 1;
 		}
