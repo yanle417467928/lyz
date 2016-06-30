@@ -2,6 +2,7 @@ package com.ynyes.lyz.controller.front;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,6 +79,9 @@ public class TdPayController {
 			fee = order.getTotalPrice();
 		}
 
+		BigDecimal bd = new BigDecimal(fee);
+		fee = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
 		// 获取需要支付的订单
 
 		// 页面跳转同步通知页面路径
@@ -105,6 +109,7 @@ public class TdPayController {
 		sParaTemp.put("show_url", "http://101.200.128.65:8080/");
 		sParaTemp.put("subject", subject);
 		sParaTemp.put("total_fee", fee + "");
+
 		String sHtmlText = AlipaySubmit.buildRequest(sParaTemp, "get", "确认");
 		map.put("code", sHtmlText);
 		return "/client/waiting_pay";
@@ -311,10 +316,8 @@ public class TdPayController {
 
 	@RequestMapping(value = "/pay/alipay/return/async")
 	@ResponseBody
-	public Map<String, Object> payAlipayReturnAsync(HttpServletRequest req) {
+	public String payAlipayReturnAsync(HttpServletRequest req) {
 		String username = (String) req.getSession().getAttribute("username");
-		Map<String, Object> res = new HashMap<>();
-		res.put("status", -1);
 
 		// String username = (String) req.getSession().getAttribute("username");
 
@@ -365,7 +368,7 @@ public class TdPayController {
 						}
 						Double balance = user.getBalance();
 						if (null == balance) {
-							balance = 0.00; 
+							balance = 0.00;
 						}
 
 						recharge.setFinishTime(new Date());
@@ -493,10 +496,12 @@ public class TdPayController {
 						}
 					}
 				}
-				res.put("status", 0);
 			}
+			return "success";
+		} else {
+			return "fail";
 		}
-		return res;
+
 	}
 
 	@RequestMapping(value = "/union")
@@ -536,6 +541,9 @@ public class TdPayController {
 			newNumber = order.getOrderNumber();
 		}
 
+		BigDecimal bd = new BigDecimal(fee);
+		fee = bd.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+		
 		// 开始组合参数
 		String MERCHANTID = "105510148160146";
 		String POSID = "632776177";
@@ -576,8 +584,8 @@ public class TdPayController {
 					if (null != SUCCESS && SUCCESS.charValue() == 'Y') {
 						if (recharge.getStatusId().longValue() == 1L) {
 							recharge.setStatusId(2L);
-							if(null==username){
-								username=recharge.getUsername();
+							if (null == username) {
+								username = recharge.getUsername();
 								req.getSession().setAttribute("username", username);
 							}
 							TdUser user = tdUserService.findOne(recharge.getUserId());
@@ -618,8 +626,8 @@ public class TdPayController {
 		} else {
 			// 根据指定的订单号查找订单
 			TdOrder order = tdOrderService.findByOrderNumber(ORDERID);
-			if(null==username){
-				username=order.getUsername();
+			if (null == username) {
+				username = order.getUsername();
 				req.getSession().setAttribute("username", username);
 			}
 			// 在能查询到具体订单的情况下进行业务逻辑处理
@@ -725,15 +733,13 @@ public class TdPayController {
 
 	@RequestMapping(value = "/wx/sign")
 	@ResponseBody
-	public Map<String, Object> WxPayReturnSign(String orderId,HttpServletRequest req) 
-	{
+	public Map<String, Object> WxPayReturnSign(String orderId, HttpServletRequest req) {
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("code", 0);
 		String username = (String) req.getSession().getAttribute("username");
 		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
 
-		if (user == null)
-		{
+		if (user == null) {
 			resultMap.put("msg", "请先登录");
 			return resultMap;
 		}
@@ -747,13 +753,11 @@ public class TdPayController {
 			return resultMap;
 		}
 		String orderUsername = tdOrder.getRealUserUsername();
-		if (username == null || !username.equalsIgnoreCase(orderUsername)) 
-		{
+		if (username == null || !username.equalsIgnoreCase(orderUsername)) {
 			resultMap.put("msg", "请先登录");
 			return resultMap;
 		}
-		if (tdOrder.getStatusId() == null || tdOrder.getStatusId() != 2)
-		{
+		if (tdOrder.getStatusId() == null || tdOrder.getStatusId() != 2) {
 			resultMap.put("msg", "参数错误");
 			return resultMap;
 		}

@@ -183,6 +183,46 @@
 					this.countTotal();
 				}
 			}
+			
+			$scope.get_return_detail = function(){
+				<#-- 先获取所有的退货信息 -->
+				var condition = "";
+				for(var i = 0; i < $scope.goods.length; i++){
+					var single = $scope.goods[i];
+					var id = single.id;
+					var reQuantity = single.reQuantity;
+					var unit = single.unit;
+					if(reQuantity){
+						var info = id + "-" + reQuantity + "-" + unit + ",";
+						condition += info;
+					}
+				}
+				
+				wait();
+				
+				$.ajax({
+					url : "/user/return/detail/get",
+					data : {
+						orderId : ${order.id?c},
+						params : condition
+					},
+					type : "POST",
+					error : function(){
+						close(1);
+						warning("亲，您的网速不给力啊");
+					},
+					success : function(res){
+						close(1);
+						var infos = res.infos;
+						$("#info_detail").html("");
+						for(var i = 0; i < infos.length; i++){
+							$("#info_detail").append("<li>" + infos[i] + "</li>");
+						}
+						windowoc('win_yn_return',true);
+					}
+				});
+				
+			}
 
 			$scope.send = function(){
 				wait();
@@ -199,13 +239,15 @@
 					warning("请填写要退商品数量");
 					return;
 				}
+				<#--
 				if("" === $scope.remark || "请输入您的退货原因" === $scope.remark){
 					$scope.remark = "请输入您的退货原因";
 					close(1);
 					return;
 				}
+				-->
 				
-				var remark = $scope.remark;
+				var remark = document.getElementById("remark").value;
 				
 				$.ajax({
 					type:"post",
@@ -244,12 +286,23 @@
 		<#-- 引入警告提示样式 -->
         <#include "/client/common_warn.ftl">
         <#-- 引入等待提示样式 -->
-       	<#include "/client/common_wait.ftl">  
+       	<#include "/client/common_wait.ftl"> 
+       	<#-- 引入退款明细窗口 -->
+		<#include "/client/return_detail_list.ftl">
    	    <div class="turn_div">
 			<input type="hidden" value="" id="orderId" name="id">
-	        <div>                   
+	        <div style="height:140px;margin-top:160px;">                   
 	            <p id="title">退货原因</p>
+	            <select name="remark" id="remark" style="width:100%;outline:none;line-height:30px;-webkit-appearance:none;font-size:0.8em;padding:5px;">
+	            	<#if reason_list??>
+	            		<#list reason_list as item>
+			            	<option value="${item.title!''}">${item.title!''}</option>
+		            	</#list>
+	            	</#if>
+	            <select>
+	            <#--
 	            <textarea name="remark" ng-model="remark"></textarea>
+	            -->
 	            <span>
 	                <input type="button" name="" id="" value="是" ng-click="send();" />
 	                <input onclick="javascript:win_no_return();" type="button" value="否" />
@@ -279,15 +332,19 @@
 							<a>￥{{item.unit}}</a>
 					</div>
 				</dd>
-			</dl>	
+			</dl>
+			<#--	
 			<span style="
 				margin:10px;
 				float:left;
 				color:#cc1421;
 				display:block;
 			">总金额：￥{{total | number:2}}</span>
-			<div style="float: left;width: 100%;height: 60px;"></div>
-			<input class="sub" type="button" onclick="order_return();" value="去退货" />
+			-->
+			<div class="sub">
+			<input style="width:50%;height:100%;border:none;background:#ffaa00;color:white;font-size:1em;float:left;display:block;" type="button" ng-click="get_return_detail();" value="退款明细" />
+			<input style="width:50%;height:100%;border:none;background:#cc1421;color:white;font-size:1em;float:left;display:block;" type="button" onclick="order_return();" value="去退货" />
+			</div>
 		</div>
 	
 	</body>
