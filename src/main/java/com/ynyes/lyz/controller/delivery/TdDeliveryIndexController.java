@@ -263,7 +263,7 @@ public class TdDeliveryIndexController {
 		}
 
 		if (null == type) {
-			type = 1;
+			type = 2;
 		}
 
 		map.addAttribute("type", type);
@@ -361,8 +361,6 @@ public class TdDeliveryIndexController {
 						tdOrderService.countByStatusIdAndOrderTimeAfter(3L, startDate, orderNumberList));
 			}
 		}
-
-		map.addAttribute("order_list", orderList);
 
 		map.addAttribute("order_list", orderList);
 
@@ -856,6 +854,7 @@ public class TdDeliveryIndexController {
 			rec.setUsername(order.getUsername());
 			if(owned != null && owned==0){
 				rec.setIsOwn(false);
+				
 			}else{
 				rec.setIsOwn(true);
 			}
@@ -867,6 +866,8 @@ public class TdDeliveryIndexController {
 			//全额收款
 			if (rec.getIsOwn() == false)
 			{
+				//修改订单收款金额
+				tdOrderService.modifyOrderPay(rec.getMoney(),rec.getPos(), rec.getOrderNumber());
 				tdInterfaceService.initCashReciptByTdOwnMoneyRecord(rec, INFConstants.INF_RECEIPT_TYPE_DELIVER_INT);
 			}
 		}

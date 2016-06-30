@@ -63,6 +63,7 @@ import com.ynyes.lyz.service.TdUserSuggestionCategoryService;
 import com.ynyes.lyz.service.TdUserSuggestionService;
 import com.ynyes.lyz.util.MD5;
 import com.ynyes.lyz.util.SiteMagConstant;
+import com.ynyes.lyz.util.Utils;
 
 /**
  * 后台用户管理控制器
@@ -165,6 +166,17 @@ public class TdManagerUserController {
 				res.put("info", "已存在同名用户");
 				return res;
 			}
+		}
+		
+		//判断配送员编号是否重复
+		try {
+			if (null != tdUserService.findByOpUser(param)){
+				res.put("info", "已存在相同配送员编号");
+				return res;
+			}
+		} catch (Exception e) {
+			res.put("info", "已存在相同配送员编号");
+			return res;
 		}
 
 		res.put("status", "y");
@@ -336,6 +348,7 @@ public class TdManagerUserController {
 						diySite.getRegionId(), diySite.getCustomerId());
 				map.addAttribute("user_list", user_list);
 			}
+			map.addAttribute("userDesc",Utils.encryptionBalance(user.getBalance()));
 //			List<TdCity> cities = tdCityService.findAll();
 //			map.addAttribute("city_list",cities);
 //			// 获取用户所在城市
@@ -362,7 +375,8 @@ public class TdManagerUserController {
 	}
 
 	@RequestMapping(value = "/save")
-	public String orderEdit(TdUser tdUser,Double obalance,Double ocashBalance,Double ounCashBalance, String oldPassword, String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req) {
+	public String orderEdit(TdUser tdUser,Double obalance,Double ocashBalance,Double ounCashBalance, String oldPassword,
+			String __VIEWSTATE, ModelMap map, String birthdate, HttpServletRequest req,String userDesc) {
 		String username = (String) req.getSession().getAttribute("manager");
 		if (null == username) {
 			return "redirect:/Verwalter/login";
@@ -372,6 +386,9 @@ public class TdManagerUserController {
 		{
 			return "redirect:/Verwalter/login";
 		}
+		
+		
+//		TdUser oldUser= tdUserService.findByUsername(tdUser.geti);
 		
 		// 修改门店的时候要修改用户的customerId和diyName
 		Long diySiteId = tdUser.getUpperDiySiteId();
@@ -408,25 +425,6 @@ public class TdManagerUserController {
 			}
 		}
 		
-		Boolean isVipUser0 = true;
-		Boolean isVipUser1 = true;
-		Boolean isVipUser2 = true;
-		if (obalance == null) 
-		{
-			obalance = 0.00;
-			isVipUser0 = false;
-		}
-		if (ocashBalance == null) 
-		{
-			ocashBalance = 0.00;
-			isVipUser1 = false;
-		}
-		if (ounCashBalance == null) 
-		{
-			ounCashBalance = 0.00;
-			isVipUser2 = false;
-		}
-		
 		// 设置新密码 zhangji 2016-1-7 22:01:45
 		if (null != tdUser.getId()) //老用户
 		{
@@ -434,23 +432,35 @@ public class TdManagerUserController {
 			{
 				tdUser.setPassword(MD5.md5(oldPassword, 32));
 			}
+			Double newBalance= tdUser.getBalance();
+			Double oldBalance= Utils.decryptionBalance(userDesc);
+			if(newBalance==null){
+				newBalance=0.0;
+			}
 			
-			// add MDJ
-			if (!obalance.equals(tdUser.getBalance()) && isVipUser0)
-			{
-				this.setAndSaveBalanceLog(obalance - tdUser.getBalance(),0L, tdUser, manager);
-				tdUser.setBalance(obalance);
+			//预存款总额不对
+			//不能修改预存款
+			if((!oldBalance.equals(newBalance)) || (tdUser.getBalance()!=tdUser.getCashBalance()+tdUser.getUnCashBalance())){
+				tdUser.setIsEnable(false);
+				this.setAndSaveBalanceLog(obalance,0L, tdUser, manager);
 			}
-			if (!ocashBalance.equals(tdUser.getCashBalance()) && isVipUser1)
-			{
-				this.setAndSaveBalanceLog(ocashBalance - tdUser.getCashBalance(),1L, tdUser, manager);
-				tdUser.setCashBalance(ocashBalance);
-			}
-			if (!ounCashBalance.equals(tdUser.getUnCashBalance()) && isVipUser2)
-			{
-				this.setAndSaveBalanceLog(ounCashBalance - tdUser.getUnCashBalance(),2L, tdUser, manager);
-				tdUser.setUnCashBalance(ounCashBalance);
-			}
+			
+//			// add MDJ
+//			if (!obalance.equals(tdUser.getBalance()) && isVipUser0)
+//			{
+//				this.setAndSaveBalanceLog(obalance - tdUser.getBalance(),0L, tdUser, manager);
+//				tdUser.setBalance(obalance);
+//			}
+//			if (!ocashBalance.equals(tdUser.getCashBalance()) && isVipUser1)
+//			{
+//				this.setAndSaveBalanceLog(ocashBalance - tdUser.getCashBalance(),1L, tdUser, manager);
+//				tdUser.setCashBalance(ocashBalance);
+//			}
+//			if (!ounCashBalance.equals(tdUser.getUnCashBalance()) && isVipUser2)
+//			{
+//				this.setAndSaveBalanceLog(ounCashBalance - tdUser.getUnCashBalance(),2L, tdUser, manager);
+//				tdUser.setUnCashBalance(ounCashBalance);
+//			}
 		}
 		else//新用户
 		{
@@ -478,21 +488,21 @@ public class TdManagerUserController {
 			tdUser.setBalance(0d);
 			tdUser.setCashBalance(0d);
 			tdUser.setUnCashBalance(0d);
-			if (obalance != 0)
-			{
-				this.setAndSaveBalanceLog(obalance,0L, tdUser, manager);
-			}
-			if (ocashBalance != 0)
-			{
-				this.setAndSaveBalanceLog(ocashBalance,1L, tdUser, manager);
-			}
-			if (ounCashBalance != 0)
-			{
-				this.setAndSaveBalanceLog(ounCashBalance,2L, tdUser, manager);
-			}
-			tdUser.setBalance(obalance);
-			tdUser.setCashBalance(ocashBalance);
-			tdUser.setUnCashBalance(ounCashBalance);
+//			if (obalance != 0)
+//			{
+//				this.setAndSaveBalanceLog(obalance,0L, tdUser, manager);
+//			}
+//			if (ocashBalance != 0)
+//			{
+//				this.setAndSaveBalanceLog(ocashBalance,1L, tdUser, manager);
+//			}
+//			if (ounCashBalance != 0)
+//			{
+//				this.setAndSaveBalanceLog(ounCashBalance,2L, tdUser, manager);
+//			}
+//			tdUser.setBalance(obalance);
+//			tdUser.setCashBalance(ocashBalance);
+//			tdUser.setUnCashBalance(ounCashBalance);
 		}
 		
 		//如果是导购或者店长修改其名下的会员导购电话 zp

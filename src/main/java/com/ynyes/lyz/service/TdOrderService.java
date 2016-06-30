@@ -17,6 +17,7 @@ import com.ynyes.lyz.entity.TdOrder;
 import com.ynyes.lyz.repository.TdOrderRepo;
 import com.ynyes.lyz.util.Criteria;
 import com.ynyes.lyz.util.Restrictions;
+import com.ynyes.lyz.util.StringUtils;
 import com.ynyes.lyz.util.Utils;
 
 /**
@@ -457,6 +458,9 @@ public class TdOrderService {
 		if (null == e) {
 			return e;
 		}
+		//过滤特殊字符
+		e.setRemark(StringUtils.StringFilter(e.getRemark()));
+		e.setRemarkInfo(StringUtils.StringFilter(e.getRemarkInfo()));
 		return repository.save(e);
 	}
 
