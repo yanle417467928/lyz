@@ -370,73 +370,24 @@ public class TdManagerGoodsController {
 		// 文字列表模式
 		return "/site_mag/goods_txt_list";
 	}
-	
-	/**
-	 * 单门店库存管理数据初始化
-	 */
-	@RequestMapping(value = "/setting/goodsleft/number")
-	@ResponseBody
-	public void setGoodsLeftNumber(Integer page)
-	{
-		if (page == null)
-		{
-			page = 0;
-		}
-		List<TdManagerRole> managerRoles = tdManagerRoleService.findByRoleTitle("门店");
-		List<TdManager> managers = tdManagerService.findByRoleId(managerRoles.get(0).getId());
-		Page<TdGoods> goodsPage = tdGoodsService.findAllOrderById(page, 100);
-		for (TdManager tdManager : managers)
-		{
-			for (int goodsIndex = 0; goodsIndex < goodsPage.getSize(); goodsIndex++)
-			{
-				TdGoods goods = goodsPage.getContent().get(goodsIndex);
-				List<TdDiySiteInventory> diySiteInventories = goods.getInventoryList();
-				Boolean isNotIn = true;
-				for (int inventoryIndex = 0; inventoryIndex < diySiteInventories.size(); inventoryIndex++)
-				{
-					TdDiySiteInventory tdDiySiteInventory = diySiteInventories.get(inventoryIndex);
-					if(tdDiySiteInventory.getDiyCode().equalsIgnoreCase(tdManager.getDiyCode()))
-					{
-						isNotIn = false;
-						break;
-					}
-				}
-				if (isNotIn)
-				{
-					TdDiySiteInventory siteInventory = new TdDiySiteInventory();
-					siteInventory.setDiyCode(tdManager.getDiyCode());
-					siteInventory.setInventory(0L);
-					siteInventory.setManagerId(tdManager.getId());
-					diySiteInventories.add(siteInventory);
-					tdDiySiteInventoryService.save(siteInventory);
-					tdGoodsService.save(goods, "添加门店库存");
-				}
-			}
-		}
-	}
 
 	@RequestMapping(value = "/setting/goodsleft/numbers")
 	@ResponseBody
-	public String setGoodsLeftNumbers(Integer page,Long type)
+	public String setGoodsLeftNumbers(Integer page)
 	{
 		if (page == null)
 		{
 			page = 0;
 		}
-		if (type == 0)
+		List<TdCity> cityList = tdCityService.findAll();
+		for (TdCity tdCity : cityList)
 		{
-			//设置门店库存
-			
-			List<TdCity> cityList = tdCityService.findAll();
-			for (TdCity tdCity : cityList)
+			List<TdGoods> goods = tdGoodsService.findBySobId(tdCity.getSobIdCity());
+			this.setInventoryByCity(tdCity, 0,goods);
+			List<TdDiySite> diySites = tdDiySiteService.findByCityId(tdCity.getId());
+			for (TdDiySite tdDiySite : diySites)
 			{
-				List<TdGoods> goods = tdGoodsService.findBySobId(tdCity.getSobIdCity());
-				this.setInventoryByCity(tdCity, 0,goods);
-				List<TdDiySite> diySites = tdDiySiteService.findByCityId(tdCity.getId());
-				for (TdDiySite tdDiySite : diySites)
-				{
-					setInventoryByDiySite(tdDiySite,page,goods);
-				}
+				setInventoryByDiySite(tdDiySite,page,goods);
 			}
 		}
 		return "yes";
