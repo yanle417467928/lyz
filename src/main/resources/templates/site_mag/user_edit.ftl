@@ -169,6 +169,7 @@ $(function () {
 <div>
 <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="${__VIEWSTATE!""}" >
 <input type="hidden" id="userId" name="userId" value="<#if user??>${user.id?c!""}</#if>" >
+<input type="hidden" id="userDesc" name="userDesc" value="<#if userDesc??>${userDesc!""}</#if>" >
 </div>
 <!--导航栏-->
 <div class="location" style="position: static; top: 0px;">
@@ -249,7 +250,7 @@ $(function () {
             <#if user??>
                 <span>${user.username!""}</span>
             <#else>
-                <input name="username" type="text" maxlength="200" class="input normal" datatype="m|/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/"ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id}</#if>" sucmsg=" " minlength="2">
+                <input name="username" type="text" maxlength="200" class="input normal" datatype="m|/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/"ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id?c}</#if>" sucmsg=" " minlength="2">
             </#if>
        <dd>
     </dl>
@@ -260,7 +261,7 @@ $(function () {
   <dl>
     <dt>用户编码</dt>
     <dd>
-    	<input name="opUser" type="text" value="<#if user??>${user.opUser!""}</#if>" class="input normal">
+    	<input name="opUser" type="text" value="<#if user??>${user.opUser!""}</#if>" class="input normal" datatype="*" ajaxurl="/Verwalter/user/check<#if user??>?id=${user.id?c}</#if>" >
     	<span class="Validform_checktip">仅配送员填写</span>
     </dd>
   </dl>
@@ -417,7 +418,7 @@ $(function () {
     <#-- 不可修改
     <dd><input name="obalance" id="obalance" type="text" class="input normal" datatype="/^(([1-9]{1}\d*)|([0]{1}))(\.(\d){1,2})?$/" sucmsg=" " value="<#if user?? && user.balance??>${user.balance?string('0.00')}<#else>0</#if>" readonly="readonly"> <span class="Validform_checktip"></span></dd>
   	-->
-    <dd><div name="obalance" id="obalance"><#if user?? && user.balance??>${user.balance?string('0.00')}<#else>0</#if></div> <span class="Validform_checktip"></span></dd>
+    <dd><div><#if user?? && user.balance??>${user.balance?string('0.00')}<#else>0</#if></div> <span class="Validform_checktip"></span></dd>
   </dl>
   <dl>
     <dt>可提现余额</dt>

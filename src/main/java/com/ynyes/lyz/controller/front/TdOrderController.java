@@ -3,6 +3,7 @@ package com.ynyes.lyz.controller.front;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1472,6 +1473,20 @@ public class TdOrderController {
 		TdUser realUser = tdUserService.findOne(realUserId);
 		if (null != realUser) {
 			List<TdShippingAddress> address_list = realUser.getShippingAddressList();
+			//倒叙排列
+			Collections.reverse(address_list);
+			TdShippingAddress shipDefault=null;
+			if(address_list!=null && address_list.size()>0){
+				for (TdShippingAddress ship : address_list) {
+					if(ship.getIsDefaultAddress()!=null && ship.getIsDefaultAddress()){
+						shipDefault=ship;
+					}
+				}
+			}
+			if(shipDefault!=null){
+				address_list.remove(shipDefault);
+				address_list.add(0,shipDefault);
+			}
 			map.addAttribute("address_list", address_list);
 		}
 		return "/client/order_change_address";

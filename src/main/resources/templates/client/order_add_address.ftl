@@ -41,7 +41,7 @@
         	}
 
         	function checkSpecificKey(keyCode) {
-        	    var specialKey = "~!/@#$%\^&*=\+\|[{}];:\'\"<.>\\?";//Specific Key list # / - : ; () * .
+        	    var specialKey = "~!/@$%\^&*=\+\|[{}];:\'\"<.>\\?";//Specific Key list # / - : ; () * .
         	    var realkey = String.fromCharCode(keyCode);
         	    var flg = false;
         	 flg = (specialKey.indexOf(realkey) >= 0);
@@ -71,7 +71,7 @@
             <form>
                 <div class="edit-info">
                     <label>收货人：</label>
-                    <input type="text" id="receiveName" value="" onkeyup="cleanSpelChar(this)">
+                    <input type="text" id="receiveName" value="">
                 </div>
                 <div class="edit-info">
                     <label>手机号码：</label>
@@ -100,7 +100,7 @@
                 </div>
                 <div class="edit-info">
                     <label>详细地址：</label>
-                    <input type="text" id="detail" onkeyup="cleanSpelChar(this)">
+                    <input type="text" id="detail">
                 </div>
                 <input style="background-color:#cc1421;" class="btn-submit-save" type="button" onclick="saveAddress();" value="保存">
             </form>

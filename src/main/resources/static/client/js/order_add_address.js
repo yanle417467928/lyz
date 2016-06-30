@@ -67,12 +67,12 @@ function saveAddress() {
 	}
 	
 	if(!isAllLegal(receiveName)){
-		warning("不能输入特殊字符");
+		warning("收货人信息不能输入除-()#,外的特殊字符");
 		return;
 	}
 	
 	if(!isAllLegal(detail)){
-		warning("不能输入特殊字符");
+		warning("详细地址不能输入除-()#,外的特殊字符");
 		return;
 	}
 	
@@ -137,7 +137,8 @@ function isLegal(str){
 	if(str >= '0' && str <= '9')return true;
 	if(str >= 'a' && str <= 'z')return true;
 	if(str >= 'A' && str <= 'Z')return true;
-	if(str == '_')return true;
+	var regEx=new RegExp("[-()#, ，（）]");
+	if (regEx.test(str))return true;
 	var reg = /^[\u4e00-\u9fa5]+$/i;
 	if (reg.test(str))return true;
 	return false;

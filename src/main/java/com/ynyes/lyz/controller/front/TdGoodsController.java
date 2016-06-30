@@ -114,6 +114,11 @@ public class TdGoodsController {
 	 */
 	@RequestMapping(value = "/normal/get")
 	public String normalGetGoods(HttpServletRequest req, ModelMap map, Long categoryId) {
+		String username = (String) req.getSession().getAttribute("username");
+		TdUser user = tdUserService.findByUsernameAndIsEnableTrue(username);
+		if (null == user) {
+			return "redirect:/login";
+		}
 		// 获取指定id分类下的所有商品和其价格
 		tdCommonService.getGoodsAndPrice(req, map, categoryId);
 		return "/client/normal_goods";

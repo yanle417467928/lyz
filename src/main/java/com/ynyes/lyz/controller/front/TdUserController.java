@@ -1021,6 +1021,7 @@ public class TdUserController {
 		TdCity tdCity = tdCityService.findByCityName(user.getCityName());
 		if (0L == operation) {
 			address = new TdShippingAddress();
+			address.setIsDefaultAddress(false);
 		} else if (1L == operation) {
 			address = tdShippingAddressService.findOne(addressId);
 		}
