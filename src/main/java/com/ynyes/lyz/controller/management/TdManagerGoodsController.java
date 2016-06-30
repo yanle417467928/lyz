@@ -373,24 +373,32 @@ public class TdManagerGoodsController {
 
 	@RequestMapping(value = "/setting/goodsleft/numbers")
 	@ResponseBody
-	public String setGoodsLeftNumbers(Integer page)
+	public Map<String, Object> setGoodsLeftNumbers(Integer page,Long defualtInventory)
 	{
+		Map<String, Object> map=new HashMap<String, Object>();
+		String res=null;
 		if (page == null)
 		{
 			page = 0;
 		}
+		if(defualtInventory==null || defualtInventory<0){
+			res="初始库存必须是大于等于〇的数字";
+		}
+		Integer sum=0;
 		List<TdCity> cityList = tdCityService.findAll();
 		for (TdCity tdCity : cityList)
 		{
 			List<TdGoods> goods = tdGoodsService.findBySobId(tdCity.getSobIdCity());
-			this.setInventoryByCity(tdCity, 0,goods);
+			this.setInventoryByCity(tdCity, 0,goods,defualtInventory,sum);
 			List<TdDiySite> diySites = tdDiySiteService.findByCityId(tdCity.getId());
 			for (TdDiySite tdDiySite : diySites)
 			{
-				setInventoryByDiySite(tdDiySite,page,goods);
+				setInventoryByDiySite(tdDiySite,page,goods,defualtInventory,sum);
 			}
 		}
-		return "yes";
+		res="本次运行一共添加库存商品"+sum+"件";
+		map.put("res", res);
+		return map;
 	}
 	
 	/**
@@ -398,11 +406,11 @@ public class TdManagerGoodsController {
 	 * @param site
 	 * @param page
 	 */
-	public void setInventoryByCity(TdCity city,int page,List<TdGoods>goods)
+	public Integer setInventoryByCity(TdCity city,int page,List<TdGoods>goods,Long defualtInventory,Integer sum)
 	{
 		if (city == null || city.getSobIdCity() == null)
 		{
-			return ;
+			return sum;
 		}
 		List<Long> goodIds = tdDiySiteInventoryService.findGoodsIdByRegionIdAndDiySiteIdIsNull(city.getSobIdCity());
 		for (TdGoods tdGoods : goods) 
@@ -410,7 +418,7 @@ public class TdManagerGoodsController {
 			if (!goodIds.contains(tdGoods.getId()))
 			{
 				TdDiySiteInventory inventory = new TdDiySiteInventory();
-				inventory.setInventory(0L);
+				inventory.setInventory(defualtInventory);
 				inventory.setGoodsCode(tdGoods.getCode());
 				inventory.setGoodsId(tdGoods.getId());
 				inventory.setCategoryId(tdGoods.getCategoryId());
@@ -420,19 +428,21 @@ public class TdManagerGoodsController {
 				inventory.setRegionId(city.getSobIdCity());
 				inventory.setRegionName(city.getCityName());
 				tdDiySiteInventoryService.save(inventory);
+				sum++;
 			}
 		}
+		return sum;
 	}
 	/**
 	 * 设置门店库存，初始库存为0
 	 * @param site
 	 * @param page
 	 */
-	public void setInventoryByDiySite(TdDiySite site,int page,List<TdGoods> goods)
+	public Integer setInventoryByDiySite(TdDiySite site,int page,List<TdGoods> goods,Long defualtInventory,Integer sum)
 	{
 		if (site == null || site.getCity() == null)
 		{
-			return ;
+			return sum;
 		}
 		List<TdDiySiteInventory> inventories = new ArrayList<>();
 		List<Long> existGoodsId = tdDiySiteInventoryService.findGoodsIdByDiySiteId(site.getId());
@@ -443,7 +453,7 @@ public class TdManagerGoodsController {
 				continue;
 			}
 			TdDiySiteInventory inventory = new TdDiySiteInventory();
-			inventory.setInventory(0L);
+			inventory.setInventory(defualtInventory);
 			inventory.setDiySiteId(site.getId());
 			inventory.setDiySiteName(site.getTitle());
 			inventory.setGoodsCode(tdGoods.getCode());
@@ -457,8 +467,10 @@ public class TdManagerGoodsController {
 			inventory.setRegionName(site.getCity());
 			//tdDiySiteInventoryService.save(inventory);
 			inventories.add(inventory);
+			sum++;
 		}
 		tdDiySiteInventoryService.save(inventories);
+		return sum;
 	}
 	
 	/**

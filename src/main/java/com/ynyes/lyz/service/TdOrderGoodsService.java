@@ -151,7 +151,9 @@ public class TdOrderGoodsService {
     					//记录活动id
     					String activityIds=orderGood.getActivityId();
     					if(StringUtils.isNotBlank(activityIds)){
-    						orderGood.setActivityId(activityIds+","+activityId.toString()+"_"+cost.get(orderGood.getGoodsId())*min);
+    						if(!activityIds.contains(activityId+"_")){
+    							orderGood.setActivityId(activityIds+","+activityId.toString()+"_"+cost.get(orderGood.getGoodsId())*min);
+    						}
     					}else{
     						orderGood.setActivityId(""+activityId.toString()+"_"+cost.get(orderGood.getGoodsId())*min);
     					}
@@ -172,7 +174,9 @@ public class TdOrderGoodsService {
     						//记录活动id
     						String activityIds=orderGood.getActivityId();
     						if(StringUtils.isNotBlank(activityIds)){
-    							orderGood.setActivityId(activityIds+",A"+activityId.toString()+"_"+orderGood.getQuantity());
+    							if(!activityIds.contains(activityId+"_")){
+    								orderGood.setActivityId(activityIds+",A"+activityId.toString()+"_"+orderGood.getQuantity());
+    							}
     						}else{
     							orderGood.setActivityId("A"+activityId.toString()+"_"+orderGood.getQuantity());
     						}
@@ -185,7 +189,9 @@ public class TdOrderGoodsService {
     					//记录活动id
     					String activityIds=orderGood.getActivityId();
     					if(StringUtils.isNotBlank(activityIds)){
-    						orderGood.setActivityId(activityIds+",M"+activityId.toString()+"_"+orderGood.getQuantity());
+    						if(!activityIds.contains(activityId+"_")){
+    							orderGood.setActivityId(activityIds+",M"+activityId.toString()+"_"+orderGood.getQuantity());
+    						}
     					}else{
     						orderGood.setActivityId("M"+activityId.toString()+"_"+orderGood.getQuantity());
     					}

@@ -8,6 +8,87 @@
 <script type="text/javascript" src="/mag/js/layout.js"></script>
 <link href="/mag/style/pagination.css" rel="stylesheet" type="text/css">
 <link href="/mag/style/style.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+.dialog{
+	position: fixed;
+	_position:absolute;
+	z-index:1;
+	top: 50%;
+	left: 50%;
+	margin: -141px 0 0 -201px;
+	width: 400px;
+	height:230px;
+	border:1px solid #CCC;
+	line-height: 190px;
+	text-align:center;
+	font-size: 14px;
+	background-color:#F4F4F4;
+	overflow:hidden;
+	border: 1px solid #cccccc;
+	display: none;
+}	
+.dialog_row{
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+}
+.dialog_tip{
+	width: 100%;
+	height: 30px;
+	color: red;
+	line-height: 30px;
+	text-align: center;
+}
+.dialog_title{
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+}
+.dialog_btn{
+	width:60px;
+	height: 30px;
+	line-height: 30px;
+	margin-left: 20px;
+    margin-top: 30px;
+}
+</style>
+<script type="text/javascript">
+//打开还款窗口
+    function showDialog(){
+    	$(".dialog").show();
+    }
+    //关闭还款窗口
+    function hiddenDialog(){
+    	$(".dialog").hide();
+    }
+    //提交还款
+    function sumbitBackMoney(owned,id){
+    	var defualtInventory=$('#defualtInventory').val();
+    	
+    	if(!isNaN(defualtInventory) && Number(defualtInventory)>=0){
+    		$.dialog.confirm("确认运行,点击确定后请勿操作?",function(){
+    			$.ajax({
+     	            type: "post",
+     	            url: "/Verwalter/goods/setting/goodsleft/numbers",
+     	            data: {"defualtInventory":defualtInventory},
+     	            dataType: "json",
+     	            error: function (XMLHttpRequest, textStatus, errorThrown) {
+     	            	 $.dialog.alert('错误提示：' + '网络连接失败', function () { });
+     	            },
+     	            success: function (data) {
+     	            	$.dialog.alert(data.res, function () { });
+     	            	hiddenDialog();
+     	             }
+     	        });
+    		},function(){});
+    		
+    	}else{
+    		alert("初始库存必须是大于等于0的数字");
+    	}
+    }
+    
+    </script>
 </head>
 
 <body class="mainbody"><div class="" style="left: 0px; top: 0px; visibility: hidden; position: absolute;"><table class="ui_border"><tbody><tr><td class="ui_lt"></td><td class="ui_t"></td><td class="ui_rt"></td></tr><tr><td class="ui_l"></td><td class="ui_c"><div class="ui_inner"><table class="ui_dialog"><tbody><tr><td colspan="2"><div class="ui_title_bar"><div class="ui_title" unselectable="on" style="cursor: move;"></div><div class="ui_title_buttons"><a class="ui_min" href="javascript:void(0);" title="最小化" style="display: inline-block;"><b class="ui_min_b"></b></a><a class="ui_max" href="javascript:void(0);" title="最大化" style="display: inline-block;"><b class="ui_max_b"></b></a><a class="ui_res" href="javascript:void(0);" title="还原"><b class="ui_res_b"></b><b class="ui_res_t"></b></a><a class="ui_close" href="javascript:void(0);" title="关闭(esc键)" style="display: inline-block;">×</a></div></div></td></tr><tr><td class="ui_icon" style="display: none;"></td><td class="ui_main" style="width: auto; height: auto;"><div class="ui_content" style="padding: 10px;"></div></td></tr><tr><td colspan="2"><div class="ui_buttons" style="display: none;"></div></td></tr></tbody></table></div></td><td class="ui_r"></td></tr><tr><td class="ui_lb"></td><td class="ui_b"></td><td class="ui_rb" style="cursor: se-resize;"></td></tr></tbody></table></div>
@@ -81,6 +162,7 @@ var theForm = document.forms['form1'];
     <div class="r-list">
       <input name="keywords" type="text" class="keyword" value="${keywords!''}">
       <a id="lbtnSearch" class="btn-search" href="javascript:__doPostBack('lbtnSearch','')">查询</a>
+      <a style="color:black;line-height: 30px;margin-left: 20px;" href="javascript:showDialog()">添加库存</a>
     </div>
   </div>
 </div>
@@ -126,6 +208,11 @@ var theForm = document.forms['form1'];
 <#include "/site_mag/list_footer.ftl" />
 <!--/内容底部-->
 </form>
-
-
-</body></html>
+<div class="dialog">
+	<div class="dialog_title">添加库存</div>
+	<div class="dialog_tip">此操作可能会运行几分钟.</div>
+	<div class="dialog_tip">运行结果会在几分钟后提示请勿重复操作! </div>
+	<div class="dialog_row">默认初始库存：<input id="defualtInventory" type="number" value="0" /> </div>
+	<div class="dialog_row"><input onclick="sumbitBackMoney()" class="dialog_btn" type="button" value="确定" /><input onclick="hiddenDialog()" class="dialog_btn" type="button" value="取消" /> </div>
+</div>
+ </body></html>
